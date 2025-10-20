@@ -1,0 +1,105 @@
+"use client"
+
+import { useState } from "react"
+import { useTranslations, useLocale } from "next-intl"
+import { useClickOutside } from "@/src/hooks/useClickOutside"
+
+const mauritaniaCities = {
+  en: [
+    "Nouakchott",
+    "Nouadhibou",
+    "Rosso",
+    "Kaédi",
+    "Zouérat",
+    "Kiffa",
+    "Atar",
+    "Sélibaby",
+    "Akjoujt",
+    "Tidjikja",
+  ],
+  ar: [
+    "نواكشوط",
+    "نواذيبو",
+    "روصو",
+    "كيهيدي",
+    "الزويرات",
+    "كيفة",
+    "أطار",
+    "سيليبابي",
+    "أكجوجت",
+    "تيجيكجة",
+  ],
+  fr: [
+    "Nouakchott",
+    "Nouadhibou",
+    "Rosso",
+    "Kaédi",
+    "Zouérat",
+    "Kiffa",
+    "Atar",
+    "Sélibaby",
+    "Akjoujt",
+    "Tidjikja",
+  ],
+}
+
+interface CitySelectorProps {
+  selectedCity: string
+  onCityChange: (city: string) => void
+  placeholder?: string
+}
+
+export default function CitySelector({
+  selectedCity,
+  onCityChange,
+  placeholder,
+}: CitySelectorProps) {
+  const t = useTranslations("landing")
+  const locale = useLocale() as "en" | "ar" | "fr"
+  const [showCities, setShowCities] = useState(false)
+  const cityDropdownRef = useClickOutside<HTMLDivElement>(() =>
+    setShowCities(false)
+  )
+
+  // Get default city in current language
+  const getDefaultCity = () => {
+    return mauritaniaCities[locale][0] // First city is always Nouakchott
+  }
+
+  // Display selected city or default
+  const displayValue = selectedCity || getDefaultCity()
+
+  const selectCity = (city: string) => {
+    onCityChange(city)
+    setShowCities(false)
+  }
+
+  return (
+    <div className="flex-1 relative" ref={cityDropdownRef}>
+      <button
+        type="button"
+        onClick={() => setShowCities(true)}
+        className="w-full px-4 py-3 text-left text-gray-900 rounded-lg border border-gray-200 focus:ring-2 focus:ring-orange-500 focus:outline-none focus:border-transparent cursor-pointer"
+      >
+        {displayValue}
+      </button>
+      {showCities && (
+        <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg mt-1 shadow-lg z-50 max-h-48 overflow-y-auto">
+          {mauritaniaCities[locale].map((city) => (
+              <button
+                key={city}
+                onClick={() => selectCity(city)}
+                className={`w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-900 first:rounded-t-lg last:rounded-b-lg cursor-pointer ${
+                  displayValue === city
+                    ? "bg-orange-100 text-orange-700 font-semibold"
+                    : ""
+                }`}
+              >
+                {city}
+              </button>
+            ))}
+        </div>
+      )}
+    </div>
+  )
+}
