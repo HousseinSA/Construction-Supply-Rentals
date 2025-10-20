@@ -17,9 +17,12 @@ export interface Equipment {
   description: string;
   categoryId: ObjectId;
   dailyPrice: number;
+  minRentalDays: number; // Minimum rental period (default: 1)
+  maxRentalDays: number; // Maximum rental period (default: 365)
   city: string;
   images: string[]; // Cloudinary URLs
   status: EquipmentStatus;
+  isAvailable: boolean; // Separate from approval status
   createdAt: Date;
   updatedAt: Date;
 }

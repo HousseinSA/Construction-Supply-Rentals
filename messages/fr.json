@@ -3,6 +3,64 @@
     "title": "Plateforme de Location d'Équipement de Construction",
     "login": "Connexion",
     "logout": "Déconnexion",
-    "signup": "S'inscrire"
+    "signup": "S'inscrire",
+
+    "phone": "+222 11 11 11 11"
+  },
+  "landing": {
+    "hero": {
+      "title": "Louez l'Équipement dont Vous Avez Besoin, Quand Vous en Avez Besoin",
+      "subtitle": "Trouvez l'équipement de construction dont vous avez besoin et réservez-le facilement.",
+      "searchPlaceholder": "Sélectionnez une ville",
+      "datesPlaceholder": "Sélectionnez les dates",
+      "searchButton": "Rechercher"
+    },
+    "categories": {
+      "title": "Équipement de Location Populaire",
+      "available": "disponible",
+      "excavator": "Excavatrice",
+      "bulldozer": "Bulldozer",
+      "dump-truck": "Camion-benne",
+      "crane": "Grue mobile",
+      "loader": "Chargeuse sur pneus",
+      "grader": "Niveleuse"
+    },
+    "features": {
+      "title": "Pourquoi Choisir Notre Plateforme?",
+      "subtitle": "Nous rendons la location d'équipement simple, sûre et abordable pour les professionnels de la construction."
+    },
+    "howItWorks": {
+      "title": "Comment Ça Marche",
+      "subtitle": "Louez de l'équipement en quatre étapes simples",
+      "step1": {
+        "title": "Soumettre une Demande",
+        "description": "Sélectionnez l'équipement et soumettez une demande de location avec vos détails."
+      },
+      "step2": {
+        "title": "Approbation Admin",
+        "description": "Notre équipe examine et approuve votre demande de location."
+      },
+      "step3": {
+        "title": "Effectuer le Paiement",
+        "description": "Complétez le paiement après approbation pour confirmer votre location."
+      },
+      "step4": {
+        "title": "Obtenir l'Équipement",
+        "description": "Recevez votre équipement et commencez votre projet de construction."
+      }
+    },
+    "datePicker": {
+      "clear": "Effacer",
+      "apply": "Appliquer",
+      "cancel": "Annuler",
+      "confirm": "Confirmer",
+      "from": "Du",
+      "to": "Au",
+      "until": "Jusqu'au",
+      "selectDates": "Sélectionnez les dates"
+    },
+    "footer": {
+      "support": "Support et Contact"
+    }
   }
 }

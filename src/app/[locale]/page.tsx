@@ -1,13 +1,15 @@
-import { useTranslations } from 'next-intl';
+import HeroSection from '@/components/landing/HeroSection'
+import EquipmentCategories from '@/components/landing/EquipmentCategories'
+import HowItWorksSection from '@/components/landing/HowItWorksSection'
+import Footer from '@/components/landing/Footer'
 
 export default function Home() {
-  const t = useTranslations('common');
-
   return (
-    <div className="min-h-screen p-8">
-      <h1 className="text-3xl font-bold text-center">
-        {t('title')}
-      </h1>
-    </div>
-  );
+    <main className="min-h-screen">
+      <HeroSection />
+      <EquipmentCategories />
+      <HowItWorksSection />
+      <Footer />
+    </main>
+  )
 }

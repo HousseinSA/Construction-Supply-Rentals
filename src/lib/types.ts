@@ -9,7 +9,7 @@ export type UserStatus = 'approved' | 'blocked';
 export type EquipmentStatus = 'pending' | 'approved' | 'rejected';
 
 // Booking Types
-export type BookingStatus = 'pending' | 'admin_approved' | 'rejected' | 'completed';
+export type BookingStatus = 'pending' | 'admin_approved' | 'rejected' | 'completed' | 'returned';
 
 // Payment Types
 export type PaymentMethod = 'cash' | 'mobile_money';

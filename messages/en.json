@@ -3,6 +3,64 @@
     "title": "Construction Rental Platform",
     "login": "Login",
     "logout": "Logout",
-    "signup": "Sign Up"
+    "signup": "Sign Up",
+
+    "phone": "+222 11 11 11 11"
+  },
+  "landing": {
+    "hero": {
+      "title": "Rent the Equipment You Need, When You Need it",
+      "subtitle": "Find the construction equipment you need and book it easily.",
+      "searchPlaceholder": "Select city",
+      "datesPlaceholder": "Select dates",
+      "searchButton": "Search"
+    },
+    "categories": {
+      "title": "Popular Rental Equipment",
+      "available": "available",
+      "excavator": "Excavator",
+      "bulldozer": "Bulldozer",
+      "dump-truck": "Dump Truck",
+      "crane": "Mobile Crane",
+      "loader": "Wheel Loader",
+      "grader": "Motor Grader"
+    },
+    "features": {
+      "title": "Why Choose Our Platform?",
+      "subtitle": "We make equipment rental simple, safe, and affordable for construction professionals."
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "subtitle": "Rent equipment in four simple steps",
+      "step1": {
+        "title": "Submit Request",
+        "description": "Select equipment and submit a rental request with your details."
+      },
+      "step2": {
+        "title": "Admin Approval",
+        "description": "Our team reviews and approves your rental request."
+      },
+      "step3": {
+        "title": "Make Payment",
+        "description": "Complete payment after approval to confirm your rental."
+      },
+      "step4": {
+        "title": "Get Equipment",
+        "description": "Receive your equipment and start your construction project."
+      }
+    },
+    "datePicker": {
+      "clear": "Clear",
+      "apply": "Apply",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "from": "From",
+      "to": "To",
+      "until": "Until",
+      "selectDates": "Select dates"
+    },
+    "footer": {
+      "support": "Support & Contact"
+    }
   }
 }
