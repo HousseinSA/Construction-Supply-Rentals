@@ -1,0 +1,8 @@
+{
+  "common": {
+    "title": "Construction Rental Platform",
+    "login": "Login",
+    "logout": "Logout",
+    "signup": "Sign Up"
+  }
+}

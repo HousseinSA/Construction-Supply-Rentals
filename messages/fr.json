@@ -1,0 +1,8 @@
+{
+  "common": {
+    "title": "Plateforme de Location d'Équipement de Construction",
+    "login": "Connexion",
+    "logout": "Déconnexion",
+    "signup": "S'inscrire"
+  }
+}
