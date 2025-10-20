@@ -1,7 +1,7 @@
-import NextAuth from "next-auth"
+// import NextAuth from "next-auth"
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
-  providers: [],
-  session: { strategy: "jwt" },
-  secret: process.env.NEXTAUTH_SECRET || "fallback-secret-for-build",
-})
+// export const { handlers, auth, signIn, signOut } = NextAuth({
+//   providers: [],
+//   session: { strategy: "jwt" },
+//   secret: process.env.NEXTAUTH_SECRET || "fallback-secret-for-build",
+// })
