@@ -10,9 +10,7 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  experimental: {
-    serverComponentsExternalPackages: ['mongodb'],
-  },
+
   images: {
     remotePatterns: [
       {
