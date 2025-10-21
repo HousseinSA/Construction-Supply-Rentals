@@ -7,7 +7,8 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "seed": "node -r ts-node/register scripts/seed.js"
+    "seed": "node -r ts-node/register scripts/seed.js",
+    "ngrok": "ngrok http 3000 --domain=margarette-floretty-ivory.ngrok-free.dev"
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.11.0",
