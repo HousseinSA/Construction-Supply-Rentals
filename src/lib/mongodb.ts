@@ -1,4 +1,4 @@
-import { MongoClient } from "mongodb"
+import { MongoClient, Db } from "mongodb"
 
 if (!process.env.MONGODB_URI) {
   throw new Error("Please add your MongoDB URI to .env.local")
@@ -29,6 +29,11 @@ if (process.env.NODE_ENV === "development") {
 } else {
   client = new MongoClient(uri, options)
   clientPromise = client.connect()
+}
+
+export async function connectDB(): Promise<Db> {
+  const client = await clientPromise
+  return client.db('construction_rental')
 }
 
 export default clientPromise
