@@ -54,7 +54,7 @@ export default function EquipmentCategories() {
           {equipmentCategories.map((category) => (
             <div
               key={category.id}
-              className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group border border-gray-100 hover:border-orange-200"
+              className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group border border-gray-100 hover:border-primary"
             >
               <div className="relative h-36 overflow-hidden rounded-t-xl">
                 <Image
@@ -66,10 +66,10 @@ export default function EquipmentCategories() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
               <div className="p-4 text-center">
-                <h3 className="font-bold text-sm text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">
+                <h3 className="font-bold text-sm text-gray-900 mb-2 group-hover:text-primary transition-colors">
                   {t(`categories.${category.id}`)}
                 </h3>
-                <p className="text-xs text-orange-600 font-semibold bg-orange-50 px-2 py-1 rounded-full inline-block">
+                <p className="text-xs text-primary font-semibold bg-gray-50 px-2 py-1 rounded-full inline-block">
                   {category.count} {t("categories.available")}
                 </p>
               </div>

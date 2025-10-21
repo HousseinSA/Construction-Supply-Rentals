@@ -46,7 +46,7 @@ export default function HowItWorksSection() {
           {steps.map((step, index) => (
             <div key={index} className="text-center relative">
               {/* Step Number */}
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-600 text-white text-xl font-bold rounded-full mb-6">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-primary text-white text-xl font-bold rounded-full mb-6">
                 {step.step}
               </div>
 
@@ -65,7 +65,7 @@ export default function HowItWorksSection() {
               {index < steps.length - 1 && (
                 <div className={`hidden md:block absolute top-8 ${locale === 'ar' ? 'right-full transform translate-x-1/2 -translate-x-8' : 'left-full transform -translate-x-1/2 translate-x-8'}`}>
                   <svg
-                    className={`w-8 h-8 text-orange-600 ${locale === 'ar' ? 'rotate-180' : ''}`}
+                    className={`w-8 h-8 text-primary ${locale === 'ar' ? 'rotate-180' : ''}`}
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
