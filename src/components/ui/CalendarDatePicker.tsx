@@ -110,7 +110,7 @@ export default function CalendarDatePicker({ startDate, endDate, onDateChange, p
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-4 py-3 text-left text-gray-900 bg-white rounded-lg border border-gray-200 focus:ring-2 focus:ring-orange-500 focus:outline-none focus:border-transparent cursor-pointer"
+        className="w-full px-4 py-3 text-left text-gray-900 bg-white rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary focus:outline-none focus:border-transparent cursor-pointer"
       >
         {formatDateRange()}
       </button>
@@ -154,9 +154,9 @@ export default function CalendarDatePicker({ startDate, endDate, onDateChange, p
                     onClick={() => handleDateClick(date)}
                     className={`w-full h-full rounded text-sm cursor-pointer ${
                       isDateSelected(date)
-                        ? 'bg-orange-600 text-white'
+                        ? 'bg-primary text-white'
                         : isDateInRange(date)
-                        ? 'bg-orange-100 text-orange-800'
+                        ? 'bg-gray-100 text-primary'
                         : 'text-gray-900 hover:bg-gray-100'
                     }`}
                   >
@@ -178,7 +178,7 @@ export default function CalendarDatePicker({ startDate, endDate, onDateChange, p
             <button
               onClick={handleApply}
               disabled={!selectedStart || !selectedEnd}
-              className="px-6 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {t('datePicker.apply')}
             </button>

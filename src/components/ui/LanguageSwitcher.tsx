@@ -58,7 +58,7 @@ export default function LanguageSwitcher() {
               onClick={() => handleLanguageChange(lang.code)}
               className={`w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg cursor-pointer ${
                 locale === lang.code
-                  ? "bg-orange-50 text-primary"
+                  ? "bg-gray-50 text-primary"
                   : "text-gray-700"
               }`}
             >

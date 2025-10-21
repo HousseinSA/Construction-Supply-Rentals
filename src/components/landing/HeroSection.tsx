@@ -63,7 +63,7 @@ export default function HeroSection() {
           {/* Search Button */}
           <button
             onClick={handleSearch}
-            className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 rounded-lg transition-colors font-semibold whitespace-nowrap cursor-pointer"
+            className="bg-primary hover:bg-primary-dark text-white px-8 py-3 rounded-lg transition-colors font-semibold whitespace-nowrap cursor-pointer"
           >
             {t('hero.searchButton')}
           </button>

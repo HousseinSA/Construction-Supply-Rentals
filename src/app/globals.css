@@ -44,10 +44,42 @@ body {
   background-color: var(--primary-dark);
 }
 
+.bg-secondary {
+  background-color: var(--secondary);
+}
+
 .text-primary {
   color: var(--primary);
 }
 
+.text-secondary {
+  color: var(--secondary);
+}
+
 .border-primary {
+  border-color: var(--primary);
+}
+
+.border-secondary {
+  border-color: var(--secondary);
+}
+
+.hover\:bg-primary-dark:hover {
+  background-color: var(--primary-dark);
+}
+
+.hover\:text-primary:hover {
+  color: var(--primary);
+}
+
+.hover\:border-primary:hover {
+  border-color: var(--primary);
+}
+
+.focus\:ring-primary:focus {
+  --tw-ring-color: var(--primary);
+}
+
+.focus\:border-primary:focus {
   border-color: var(--primary);
 }

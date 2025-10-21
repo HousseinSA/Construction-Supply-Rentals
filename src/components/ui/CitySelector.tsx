@@ -79,7 +79,7 @@ export default function CitySelector({
       <button
         type="button"
         onClick={() => setShowCities(true)}
-        className="w-full px-4 py-3 text-left text-gray-900 rounded-lg border border-gray-200 focus:ring-2 focus:ring-orange-500 focus:outline-none focus:border-transparent cursor-pointer"
+        className="w-full px-4 py-3 text-left text-gray-900 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary focus:outline-none focus:border-transparent cursor-pointer"
       >
         {displayValue}
       </button>
@@ -91,7 +91,7 @@ export default function CitySelector({
                 onClick={() => selectCity(city)}
                 className={`w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-900 first:rounded-t-lg last:rounded-b-lg cursor-pointer ${
                   displayValue === city
-                    ? "bg-orange-100 text-orange-700 font-semibold"
+                    ? "bg-gray-100 text-primary font-semibold"
                     : ""
                 }`}
               >
