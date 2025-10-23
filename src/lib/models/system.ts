@@ -1,21 +1,21 @@
 import { ObjectId } from 'mongodb';
-import { NotificationType } from '../types';
-
-export interface Notification {
-  _id?: ObjectId;
-  type: NotificationType;
-  title: string;
-  message: string;
-  isRead: boolean;
-  relatedId?: ObjectId; // Related booking/equipment/payment/user ID
-  createdAt: Date;
-}
 
 export interface AdminSettings {
   _id?: ObjectId;
-  commissionRate: number; // Percentage
-  supportPhone?: string;
-  supportEmail?: string;
+  canManageCategories: boolean;
+  canManageEquipmentTypes: boolean;
+  canApproveEquipment: boolean;
+  canManageUsers: boolean;
+  canViewReports: boolean;
+  emailNotifications: boolean;
+  smsNotifications: boolean;
+  createdAt: Date;
   updatedAt: Date;
-  updatedBy: ObjectId; // Admin ID
+}
+
+export interface UserSettings {
+  _id?: ObjectId;
+  userId: ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
 }
