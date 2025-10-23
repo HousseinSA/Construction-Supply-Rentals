@@ -8,9 +8,13 @@ export type UserStatus = 'approved' | 'blocked';
 // Equipment Types
 export type EquipmentStatus = 'pending' | 'approved' | 'rejected';
 export type UsageCategory = 'hours' | 'kilometers' | 'tonnage';
+export type PricingType = 'hourly' | 'daily' | 'per_km' | 'per_ton';
 
 // Booking Types
-export type BookingStatus = 'pending' | 'admin_handling' | 'completed' | 'cancelled';
+export type BookingStatus = 'pending' | 'paid' | 'completed' | 'cancelled';
+
+// Notification Types
+export type NotificationType = 'new_booking' | 'new_equipment' | 'booking_status_change' | 'equipment_approved';
 
 // Payment handled offline by admin - no payment types needed
 
