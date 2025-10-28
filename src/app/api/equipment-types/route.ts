@@ -8,9 +8,20 @@ export async function GET(request: Request) {
     const categoryId = searchParams.get('categoryId')
     
     const db = await connectDB()
+    
+    // Get excluded category IDs
+    const excludedCategories = ['Engins spécialisés', 'Engins légers et auxiliaires']
+    const excludedCategoryIds = await db.collection('categories')
+      .find({ name: { $in: excludedCategories } })
+      .project({ _id: 1 })
+      .toArray()
+    
     const query = categoryId 
       ? { categoryId: new ObjectId(categoryId), isActive: true }
-      : { isActive: true }
+      : { 
+          isActive: true,
+          categoryId: { $nin: excludedCategoryIds.map(cat => cat._id) }
+        }
     
     const equipmentTypes = await db.collection('equipmentTypes')
       .find(query)
