@@ -1,41 +1,43 @@
-import { NextResponse } from 'next/server'
-import { connectDB } from '@/lib/mongodb'
+import { NextResponse } from "next/server"
+import { connectDB } from "@/lib/mongodb"
+import { COLLECTIONS } from "@/lib/types"
 
 export async function GET() {
   try {
     const db = await connectDB()
-    
-    // Get all categories with equipment type counts
-    const categories = await db.collection('categories').aggregate([
-      {
-        $lookup: {
-          from: 'equipmentTypes',
-          localField: '_id',
-          foreignField: 'categoryId',
-          as: 'equipmentTypes'
-        }
-      },
-      {
-        $addFields: {
-          equipmentTypeCount: { $size: '$equipmentTypes' }
-        }
-      },
-      {
-        $project: {
-          name: 1,
-          nameAr: 1,
-          nameFr: 1,
-          equipmentTypeCount: 1
-        }
-      },
-      {
-        $sort: { name: 1 }
-      }
-    ]).toArray()
+
+    const categories = await db
+      .collection(COLLECTIONS.CATEGORIES)
+      .aggregate([
+        {
+          $match: { isActive: true },
+        },
+        {
+          $lookup: {
+            from: COLLECTIONS.EQUIPMENT_TYPES,
+            localField: "_id",
+            foreignField: "categoryId",
+            as: "equipmentTypes",
+          },
+        },
+        {
+          $addFields: {
+            equipmentTypes: {
+              $filter: {
+                input: "$equipmentTypes",
+                cond: { $eq: ["$$this.isActive", true] },
+              },
+            },
+          },
+        },
+      ])
+      .toArray()
 
     return NextResponse.json(categories)
   } catch (error) {
-    console.error('Failed to fetch categories:', error)
-    return NextResponse.json({ error: 'Failed to fetch categories' }, { status: 500 })
+    return NextResponse.json(
+      { error: "Failed to fetch categories" },
+      { status: 500 }
+    )
   }
 }
