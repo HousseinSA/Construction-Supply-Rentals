@@ -13,17 +13,24 @@
       "subtitle": "Trouvez l'équipement de construction dont vous avez besoin et réservez-le facilement.",
       "searchPlaceholder": "Sélectionnez une ville",
       "datesPlaceholder": "Sélectionnez les dates",
-      "searchButton": "Rechercher"
+      "searchButton": "Rechercher",
+      "browseAllButton": "Parcourir Tous les Équipements"
     },
     "categories": {
-      "title": "Équipement de Location Populaire",
-      "available": "disponible",
-      "excavator": "Excavatrice",
-      "bulldozer": "Bulldozer",
-      "dump-truck": "Camion-benne",
-      "crane": "Grue mobile",
-      "loader": "Chargeuse sur pneus",
-      "grader": "Niveleuse"
+      "title": "Catégories Populaires",
+      "type": "genres",
+      "terrassement": "Terrassement",
+      "terrassementDesc": "Excavation et terrassement",
+      "nivellementcompactage": "Nivellement & Compactage",
+      "nivellementcompactageDesc": "Nivellement du sol et compactage",
+      "transport": "Transport",
+      "transportDesc": "Transport de matériaux et équipements",
+      "levageemanutention": "Levage & Manutention",
+      "levageemanutentionDesc": "Levage lourd et manutention",
+      "enginsspecialises": "Engins Spécialisés",
+      "enginsspecialisesDesc": "Équipements pour tâches spécialisées",
+      "enginslegerseteauxiliaires": "Engins Légers Auxiliaires",
+      "enginslegerseteauxiliairesDesc": "Petits outils et équipements auxiliaires"
     },
     "features": {
       "title": "Pourquoi Choisir Notre Plateforme?",

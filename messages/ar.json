@@ -13,17 +13,27 @@
       "subtitle": "ابحث عن معدات البناء التي تحتاجها واحجزها بسهولة.",
       "searchPlaceholder": "اختر مدينة",
       "datesPlaceholder": "اختر التواريخ",
-      "searchButton": "بحث"
+      "searchButton": "بحث",
+      "browseAllButton": "تصفح جميع المعدات"
     },
     "categories": {
-      "title": "معدات التأجير الشائعة",
-      "available": "متاح",
-      "excavator": "حفارة",
-      "bulldozer": "جرافة",
-      "dump-truck": "شاحنة قلابة",
-      "crane": "رافعة متحركة",
-      "loader": "محملة بعجلات",
-      "grader": "مسوية طرق"
+      "title": "الفئات الشائعة",
+      "type": "نوع",
+      "errorTitle": "خطأ في تحميل الفئات",
+      "errorMessage": "حدث خطأ أثناء تحميل فئات المعدات. يرجى المحاولة مرة أخرى.",
+      "retryButton": "إعادة المحاولة",
+      "terrassement": "حفريات",
+      "terrassementDesc": "حفر وتحريك التربة",
+      "nivellementcompactage": "تسوية وضغط",
+      "nivellementcompactageDesc": "تسوية الأرض وضغط التربة",
+      "transport": "نقل",
+      "transportDesc": "نقل المواد والمعدات",
+      "levageemanutention": "رفع ومناولة",
+      "levageemanutentionDesc": "رفع ونقل الأحمال الثقيلة",
+      "enginsspecialises": "معدات متخصصة",
+      "enginsspecialisesDesc": "معدات للأعمال المتخصصة",
+      "enginslegerseteauxiliaires": "معدات خفيفة مساعدة",
+      "enginslegerseteauxiliairesDesc": "أدوات ومعدات مساعدة صغيرة"
     },
     "features": {
       "title": "لماذا تختار منصتنا؟",

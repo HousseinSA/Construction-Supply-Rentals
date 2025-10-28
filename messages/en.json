@@ -13,17 +13,27 @@
       "subtitle": "Find the construction equipment you need and book it easily.",
       "searchPlaceholder": "Select city",
       "datesPlaceholder": "Select dates",
-      "searchButton": "Search"
+      "searchButton": "Search",
+      "browseAllButton": "Browse All Equipment"
     },
     "categories": {
-      "title": "Popular Rental Equipment",
-      "available": "available",
-      "excavator": "Excavator",
-      "bulldozer": "Bulldozer",
-      "dump-truck": "Dump Truck",
-      "crane": "Mobile Crane",
-      "loader": "Wheel Loader",
-      "grader": "Motor Grader"
+      "title": "Popular Categories",
+      "type": "types",
+      "errorTitle": "Error Loading Categories",
+      "errorMessage": "An error occurred while loading equipment categories. Please try again.",
+      "retryButton": "Try Again",
+      "terrassement": "Excavation",
+      "terrassementDesc": "Digging and earthmoving",
+      "nivellementcompactage": "Leveling & Compaction",
+      "nivellementcompactageDesc": "Ground leveling and soil compaction",
+      "transport": "Transport",
+      "transportDesc": "Material and equipment transport",
+      "levageemanutention": "Lifting & Handling",
+      "levageemanutentionDesc": "Heavy lifting and material handling",
+      "enginsspecialises": "Specialized Equipment",
+      "enginsspecialisesDesc": "Equipment for specialized tasks",
+      "enginslegerseteauxiliaires": "Light Auxiliary Equipment",
+      "enginslegerseteauxiliairesDesc": "Small tools and auxiliary equipment"
     },
     "features": {
       "title": "Why Choose Our Platform?",

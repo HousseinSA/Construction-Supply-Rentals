@@ -38,6 +38,7 @@ export default function LanguageSwitcher() {
             src={`/flags/${locale}.png`}
             alt={currentLanguage?.name || ""}
             fill
+            sizes="(max-width: 768px) 24px, 32px"
             className="object-cover rounded-sm"
           />
         </div>
@@ -67,6 +68,7 @@ export default function LanguageSwitcher() {
                   src={`/flags/${lang.code}.png`}
                   alt={lang.name}
                   fill
+                  sizes="24px"
                   className="object-cover rounded-sm"
                 />
               </div>

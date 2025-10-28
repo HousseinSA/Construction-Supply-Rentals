@@ -2,24 +2,14 @@
 
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
-import CalendarDatePicker from '@/components/ui/CalendarDatePicker'
 import CitySelector from '@/components/ui/CitySelector'
 
 export default function HeroSection() {
   const t = useTranslations('landing')
   const [location, setLocation] = useState('')
-  const [startDate, setStartDate] = useState('')
-  const [endDate, setEndDate] = useState('')
 
-  const handleSearch = () => {
-    console.log('Search:', { location, startDate, endDate })
-  }
-
-
-
-  const handleDateChange = (start: string, end: string) => {
-    setStartDate(start)
-    setEndDate(end)
+  const handleBrowseAll = () => {
+    console.log('Browse all equipment in:', location)
   }
 
   return (
@@ -43,29 +33,19 @@ export default function HeroSection() {
         <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-6 md:mb-8 text-gray-100 drop-shadow-lg px-2">
           {t('hero.subtitle')}
         </p>
-        <div className="bg-white rounded-xl p-2 sm:p-3 flex flex-col md:flex-row gap-2 sm:gap-3 max-w-4xl mx-auto shadow-2xl">
+        <div className="bg-white rounded-xl p-2 sm:p-3 flex flex-col md:flex-row gap-2 sm:gap-3 max-w-2xl mx-auto shadow-2xl">
           <CitySelector
             selectedCity={location}
             onCityChange={setLocation}
             placeholder={t('hero.searchPlaceholder')}
           />
           
-          {/* Date Range Picker */}
-          <div className="flex-1">
-            <CalendarDatePicker
-              startDate={startDate}
-              endDate={endDate}
-              onDateChange={handleDateChange}
-              placeholder={t('hero.datesPlaceholder')}
-            />
-          </div>
-          
-          {/* Search Button */}
+          {/* Browse All Button */}
           <button
-            onClick={handleSearch}
+            onClick={handleBrowseAll}
             className="bg-primary hover:bg-primary-dark text-white px-8 py-3 rounded-lg transition-colors font-semibold whitespace-nowrap cursor-pointer"
           >
-            {t('hero.searchButton')}
+            {t('hero.browseAllButton')}
           </button>
         </div>
       </div>

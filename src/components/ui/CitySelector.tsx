@@ -79,9 +79,21 @@ export default function CitySelector({
       <button
         type="button"
         onClick={() => setShowCities(true)}
-        className="w-full px-4 py-3 text-left text-gray-900 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary focus:outline-none focus:border-transparent cursor-pointer"
+        className={`w-full px-4 py-3 text-gray-900 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary focus:outline-none focus:border-transparent cursor-pointer flex items-center justify-between ${
+          locale === 'ar' ? 'text-right' : 'text-left'
+        }`}
       >
-        {displayValue}
+        <span>{displayValue}</span>
+        <svg 
+          className={`w-5 h-5 text-gray-400 transition-transform ${
+            showCities ? 'rotate-180' : ''
+          }`} 
+          fill="none" 
+          stroke="currentColor" 
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
       </button>
       {showCities && (
         <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg mt-1 shadow-lg z-50 max-h-48 overflow-y-auto">
@@ -89,7 +101,9 @@ export default function CitySelector({
               <button
                 key={city}
                 onClick={() => selectCity(city)}
-                className={`w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-900 first:rounded-t-lg last:rounded-b-lg cursor-pointer ${
+                className={`w-full px-4 py-2 hover:bg-gray-100 text-gray-900 first:rounded-t-lg last:rounded-b-lg cursor-pointer ${
+                  locale === 'ar' ? 'text-right' : 'text-left'
+                } ${
                   displayValue === city
                     ? "bg-gray-100 text-primary font-semibold"
                     : ""
