@@ -13,7 +13,18 @@ export async function GET(request: NextRequest) {
     const availableOnly = searchParams.get('available') === 'true'
 
     const db = await connectDB()
-    const query: any = { status: 'approved' } // Only show approved equipment
+    
+    // Get excluded category IDs
+    const excludedCategories = ['Engins spécialisés', 'Engins légers et auxiliaires']
+    const excludedCategoryIds = await db.collection('categories')
+      .find({ name: { $in: excludedCategories } })
+      .project({ _id: 1 })
+      .toArray()
+    
+    const query: any = { 
+      status: 'approved', // Only show approved equipment
+      categoryId: { $nin: excludedCategoryIds.map(cat => cat._id) }
+    }
     
     if (status) query.status = status
     if (categoryId) query.categoryId = new ObjectId(categoryId)
