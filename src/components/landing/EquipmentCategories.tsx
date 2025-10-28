@@ -2,22 +2,27 @@
 
 import { useCategories } from "@/src/hooks/useCategories"
 import { useTranslations } from "next-intl"
+import Image from "next/image"
 
 const categoryMapping: {
-  [key: string]: { icon: string; translationKey: string }
+  [key: string]: { image: string; translationKey: string }
 } = {
-  "engins-spcialiss": { icon: "⚙️", translationKey: "enginsspecialises" },
-  "engins-lgers-et-auxiliaires": {
-    icon: "🛠️",
-    translationKey: "enginslegerseteauxiliaires",
+  terrassement: {
+    image: "/equipement-images/Pelle hydraulique.jpg",
+    translationKey: "terrassement",
   },
-  terrassement: { icon: "🚜", translationKey: "terrassement" },
   "nivellement-et-compactage": {
-    icon: "📏",
+    image: "/equipement-images/Niveuleuse.jpg",
     translationKey: "nivellementcompactage",
   },
-  transport: { icon: "🚛", translationKey: "transport" },
-  "levage-et-manutention": { icon: "🏗️", translationKey: "levageemanutention" },
+  transport: {
+    image: "/equipement-images/Camion-benne.jpg",
+    translationKey: "transport",
+  },
+  "levage-et-manutention": {
+    image: "/equipement-images/Grue mobile.jpg",
+    translationKey: "levageemanutention",
+  },
 }
 
 export default function EquipmentCategories() {
@@ -32,16 +37,18 @@ export default function EquipmentCategories() {
             {t("categories.title")}
           </h2>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-            {Array.from({ length: 6 }).map((_, index) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+            {Array.from({ length: categories?.length || 4 }).map((_, index) => (
               <div
                 key={index}
-                className="bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-6 text-center"
+                className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden"
               >
-                <div className="w-12 h-12 bg-gray-200 rounded-lg mx-auto mb-2 sm:mb-3 animate-pulse" />
-                <div className="h-4 bg-gray-200 rounded w-20 mx-auto mb-1 animate-pulse" />
-                <div className="h-3 bg-gray-100 rounded w-16 mx-auto mb-2 animate-pulse" />
-                <div className="h-5 bg-gray-100 rounded-full w-14 mx-auto animate-pulse" />
+                <div className="w-full h-32 bg-gray-200 animate-pulse" />
+                <div className="p-6 text-center">
+                  <div className="h-5 bg-gray-200 rounded w-24 mx-auto mb-3 animate-pulse" />
+                  <div className="h-4 bg-gray-100 rounded w-32 mx-auto mb-3 animate-pulse" />
+                  <div className="h-4 bg-gray-100 rounded-full w-16 mx-auto animate-pulse" />
+                </div>
               </div>
             ))}
           </div>
@@ -85,7 +92,7 @@ export default function EquipmentCategories() {
           {t("categories.title")}
         </h2>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
           {categories.map((category) => {
             const categoryKey = category.name
               .toLowerCase()
@@ -93,24 +100,37 @@ export default function EquipmentCategories() {
               .replace(/[^a-z-]/g, "")
 
             const mapping = categoryMapping[categoryKey]
-            const icon = mapping?.icon || "🏗️"
+            const image = mapping?.image || ""
             const translationKey = mapping?.translationKey || categoryKey
 
             return (
               <div
                 key={category._id}
-                className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group border border-gray-100 hover:border-primary p-4 sm:p-6 text-center transform hover:scale-105"
+                className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group border border-gray-100 hover:border-primary overflow-hidden transform hover:scale-105"
               >
-                <div className="text-3xl sm:text-4xl mb-2 sm:mb-3">{icon}</div>
-                <h3 className="font-bold text-xs sm:text-sm text-gray-900 mb-1 group-hover:text-primary transition-colors leading-tight">
-                  {t(`categories.${translationKey}`)}
-                </h3>
-                <p className="text-xs text-gray-500 mb-2 leading-tight">
-                  {t(`categories.${translationKey}Desc`)}
-                </p>
-                <p className="text-xs text-primary font-semibold bg-gray-50 px-2 py-1 rounded-full inline-block">
-                  {category.equipmentTypeCount} {t("categories.type")}
-                </p>
+                <div className="w-full h-32 relative overflow-hidden">
+                  {image ? (
+                    <Image
+                      src={image}
+                      alt={t(`categories.${translationKey}`)}
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-200 animate-pulse" />
+                  )}
+                </div>
+                <div className="p-6 text-center">
+                  <h3 className="font-bold text-base text-gray-900 mb-2 group-hover:text-primary transition-colors">
+                    {t(`categories.${translationKey}`)}
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-3">
+                    {t(`categories.${translationKey}Desc`)}
+                  </p>
+                  <p className="text-sm text-primary font-semibold bg-primary/10 px-4 py-2 rounded-full inline-block">
+                    {category.equipmentTypeCount} {t("categories.type")}
+                  </p>
+                </div>
               </div>
             )
           })}

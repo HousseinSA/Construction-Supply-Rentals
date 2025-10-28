@@ -1,10 +1,9 @@
-import { useState, useEffect, useCallback } from 'react'
-import { Category as CategoryModel } from '@/lib/models/category'
+import { useState, useEffect, useCallback } from "react"
+import { Category as CategoryModel } from "@/lib/models/category"
 
-// Frontend category response with additional fields from API
-export interface Category extends Omit<CategoryModel, '_id' | 'categoryId' | 'createdBy'> {
+export interface Category
+  extends Omit<CategoryModel, "_id" | "categoryId" | "createdBy"> {
   _id: string
-  slug?: string
   nameAr: string
   nameFr: string
   equipmentTypeCount: number
@@ -19,17 +18,17 @@ export function useCategories() {
     try {
       setLoading(true)
       setError(null)
-      const response = await fetch('/api/categories')
-      
+      const response = await fetch("/api/categories")
+
       if (!response.ok) {
-        throw new Error('Failed to fetch categories')
+        throw new Error("Failed to fetch categories")
       }
-      
+
       const data = await response.json()
       setCategories(data)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error')
-      console.error('Failed to fetch categories:', err)
+      setError(err instanceof Error ? err.message : "Unknown error")
+      console.error("Failed to fetch categories:", err)
     } finally {
       setLoading(false)
     }
@@ -43,6 +42,6 @@ export function useCategories() {
     categories,
     loading,
     error,
-    refetch: fetchCategories
+    refetch: fetchCategories,
   }
 }
