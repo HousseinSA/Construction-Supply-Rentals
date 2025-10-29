@@ -3,6 +3,7 @@
 import { useCategories } from "@/src/hooks/useCategories"
 import { useTranslations } from "next-intl"
 import Image from "next/image"
+import { Link } from "@/src/i18n/navigation"
 
 const categoryMapping: {
   [key: string]: { image: string; translationKey: string }
@@ -104,9 +105,10 @@ export default function EquipmentCategories() {
             const translationKey = mapping?.translationKey || categoryKey
 
             return (
-              <div
+              <Link
                 key={category._id}
-                className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group border border-gray-100 hover:border-primary overflow-hidden transform hover:scale-105"
+                href={`/categories/${categoryKey}`}
+                className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group border border-gray-100 hover:border-primary overflow-hidden transform hover:scale-105 block"
               >
                 <div className="w-full h-32 relative overflow-hidden">
                   {image ? (
@@ -131,7 +133,7 @@ export default function EquipmentCategories() {
                     {category.equipmentTypeCount} {t("categories.type")}
                   </p>
                 </div>
-              </div>
+              </Link>
             )
           })}
         </div>

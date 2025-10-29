@@ -13,6 +13,7 @@ export type Equipment = Omit<EquipmentModel, '_id' | 'supplierId' | 'categoryId'
 
 interface UseEquipmentParams {
   categoryId?: string
+  category?: string
   city?: string
   availableOnly?: boolean
 }
@@ -29,6 +30,7 @@ export function useEquipment(params: UseEquipmentParams = {}) {
       
       const searchParams = new URLSearchParams()
       if (params.categoryId) searchParams.set('categoryId', params.categoryId)
+      if (params.category) searchParams.set('category', params.category)
       if (params.city) searchParams.set('city', params.city)
       if (params.availableOnly) searchParams.set('available', 'true')
       
@@ -46,7 +48,7 @@ export function useEquipment(params: UseEquipmentParams = {}) {
     } finally {
       setLoading(false)
     }
-  }, [params.categoryId, params.city, params.availableOnly])
+  }, [params.categoryId, params.category, params.city, params.availableOnly])
 
   useEffect(() => {
     fetchEquipment()

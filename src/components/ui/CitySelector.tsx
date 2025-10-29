@@ -43,6 +43,20 @@ const mauritaniaCities = {
   ],
 }
 
+// Map display names to Latin names for API calls
+const cityToLatinMap: { [key: string]: string } = {
+  "نواكشوط": "Nouakchott",
+  "نواذيبو": "Nouadhibou", 
+  "روصو": "Rosso",
+  "كيهيدي": "Kaédi",
+  "الزويرات": "Zouérat",
+  "كيفة": "Kiffa",
+  "أطار": "Atar",
+  "سيليبابي": "Sélibaby",
+  "أكجوجت": "Akjoujt",
+  "تيجيكجة": "Tidjikja"
+}
+
 interface CitySelectorProps {
   selectedCity: string
   onCityChange: (city: string) => void
@@ -70,7 +84,9 @@ export default function CitySelector({
   const displayValue = selectedCity || getDefaultCity()
 
   const selectCity = (city: string) => {
-    onCityChange(city)
+    // Convert to Latin name for API consistency
+    const latinCity = cityToLatinMap[city] || city
+    onCityChange(latinCity)
     setShowCities(false)
   }
 
@@ -96,7 +112,7 @@ export default function CitySelector({
         </svg>
       </button>
       {showCities && (
-        <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg mt-1 shadow-lg z-50 max-h-48 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg mt-1 shadow-lg z-[9999] max-h-48 overflow-y-auto">
           {mauritaniaCities[locale].map((city) => (
               <button
                 key={city}
