@@ -3,10 +3,10 @@
 import { useSearchParams } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { useRouter } from "@/i18n/navigation"
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import Image from "next/image"
 
-export default function EquipmentPage() {
+function EquipmentContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const t = useTranslations("equipment")
@@ -142,5 +142,13 @@ export default function EquipmentPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function EquipmentPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="text-lg">Loading...</div></div>}>
+      <EquipmentContent />
+    </Suspense>
   )
 }
