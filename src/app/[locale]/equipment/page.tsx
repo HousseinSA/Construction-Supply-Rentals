@@ -9,9 +9,7 @@ import { useEquipment } from "@/src/hooks/useEquipment"
 import PageHeader from "@/src/components/equipment/PageHeader"
 import EquipmentGrid from "@/src/components/equipment/EquipmentGrid"
 
-function EquipmentContent() {
-  const searchParams = useSearchParams()
-  const selectedCity = searchParams.get("city")
+function EquipmentContent({ selectedCity }: { selectedCity: string | null }) {
   const { equipment, loading } = useEquipment(selectedCity)
 
   return (
@@ -28,10 +26,16 @@ function EquipmentContent() {
   )
 }
 
+function EquipmentWrapper() {
+  const searchParams = useSearchParams()
+  const selectedCity = searchParams.get("city")
+  return <EquipmentContent selectedCity={selectedCity} />
+}
+
 export default function EquipmentPage() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="text-lg">Loading...</div></div>}>
-      <EquipmentContent />
+      <EquipmentWrapper />
     </Suspense>
   )
 }
