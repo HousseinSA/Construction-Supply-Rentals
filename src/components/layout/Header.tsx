@@ -1,18 +1,26 @@
 "use client"
 
 import { useState } from "react"
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
 import { Menu, X, Phone } from "lucide-react"
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher"
 import AuthButtons from "@/components/ui/AuthButtons"
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-
+  const locale = useLocale()
   const t = useTranslations("common")
+  
+  const getFontClass = () => {
+    switch (locale) {
+      case 'ar': return 'font-arabic'
+      case 'fr': return 'font-french'
+      default: return 'font-english'
+    }
+  }
 
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
+    <header className={`bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm ${getFontClass()}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -35,7 +43,6 @@ export default function Header() {
               <AuthButtons />
             </div>
 
-            {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="md:hidden p-2 rounded-lg hover:bg-gray-100"
