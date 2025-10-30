@@ -1,9 +1,14 @@
 import EquipmentTypeCard from "./EquipmentTypeCard"
 import LoadingSkeleton from "@/src/components/equipment/LoadingSkeleton"
-import EmptyState from "./EmptyState"
+import EmptyState from "@/components/ui/EmptyState"
+import { EquipmentType } from "@/src/lib/models"
+
+interface EquipmentTypeWithCount extends EquipmentType {
+  equipmentCount?: number
+}
 
 interface EquipmentTypesGridProps {
-  equipmentTypes: any[]
+  equipmentTypes: EquipmentTypeWithCount[]
   loading: boolean
   categoryImage: string
   getEquipmentTypeName: (name: string) => string
@@ -18,16 +23,17 @@ export default function EquipmentTypesGrid({
   getEquipmentTypeDesc,
 }: EquipmentTypesGridProps) {
   if (loading) {
-    return <LoadingSkeleton count={6} type="card" />
+    const skeletonCount = equipmentTypes.length || 6
+    return <LoadingSkeleton count={skeletonCount} type="card" />
   }
 
   if (equipmentTypes.length === 0) {
-    return <EmptyState />
+    return <EmptyState type="category" />
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {equipmentTypes.map((type: any) => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
+      {equipmentTypes.map((type) => (
         <EquipmentTypeCard
           key={type._id}
           type={type}

@@ -84,6 +84,10 @@ body {
   border-color: var(--primary);
 }
 
+button {
+  cursor: pointer;
+}
+
 /* Video performance optimizations */
 video {
   transform: translateZ(0);
@@ -112,7 +116,7 @@ body {
     transform: translate3d(0, 0, 0);
     -webkit-transform: translate3d(0, 0, 0);
   }
-  
+
   body {
     -webkit-overflow-scrolling: touch;
   }

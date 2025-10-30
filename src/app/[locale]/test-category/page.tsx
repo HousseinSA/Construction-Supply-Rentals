@@ -1,7 +1,0 @@
-export default function TestCategoryPage() {
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <h1 className="text-2xl font-bold">Test Category Page Works!</h1>
-    </div>
-  )
-}

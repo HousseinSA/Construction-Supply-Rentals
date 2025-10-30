@@ -1,61 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { useTranslations, useLocale } from "next-intl"
+import { useTranslations } from "next-intl"
 import { useClickOutside } from "@/src/hooks/useClickOutside"
-
-const mauritaniaCities = {
-  en: [
-    "Nouakchott",
-    "Nouadhibou",
-    "Rosso",
-    "Kaédi",
-    "Zouérat",
-    "Kiffa",
-    "Atar",
-    "Sélibaby",
-    "Akjoujt",
-    "Tidjikja",
-  ],
-  ar: [
-    "نواكشوط",
-    "نواذيبو",
-    "روصو",
-    "كيهيدي",
-    "الزويرات",
-    "كيفة",
-    "أطار",
-    "سيليبابي",
-    "أكجوجت",
-    "تيجيكجة",
-  ],
-  fr: [
-    "Nouakchott",
-    "Nouadhibou",
-    "Rosso",
-    "Kaédi",
-    "Zouérat",
-    "Kiffa",
-    "Atar",
-    "Sélibaby",
-    "Akjoujt",
-    "Tidjikja",
-  ],
-}
-
-// Map display names to Latin names for API calls
-const cityToLatinMap: { [key: string]: string } = {
-  "نواكشوط": "Nouakchott",
-  "نواذيبو": "Nouadhibou", 
-  "روصو": "Rosso",
-  "كيهيدي": "Kaédi",
-  "الزويرات": "Zouérat",
-  "كيفة": "Kiffa",
-  "أطار": "Atar",
-  "سيليبابي": "Sélibaby",
-  "أكجوجت": "Akjoujt",
-  "تيجيكجة": "Tidjikja"
-}
+import { useCityData } from "@/src/hooks/useCityData"
 
 interface CitySelectorProps {
   selectedCity: string
@@ -69,23 +17,17 @@ export default function CitySelector({
   placeholder,
 }: CitySelectorProps) {
   const t = useTranslations("landing")
-  const locale = useLocale() as "en" | "ar" | "fr"
   const [showCities, setShowCities] = useState(false)
+  const { cities, convertToLatin, getDisplayValue, locale } = useCityData()
+  
   const cityDropdownRef = useClickOutside<HTMLDivElement>(() =>
     setShowCities(false)
   )
 
-  // Get default city in current language
-  const getDefaultCity = () => {
-    return mauritaniaCities[locale][0] // First city is always Nouakchott
-  }
-
-  // Display selected city or default
-  const displayValue = selectedCity || getDefaultCity()
+  const displayValue = getDisplayValue(selectedCity)
 
   const selectCity = (city: string) => {
-    // Convert to Latin name for API consistency
-    const latinCity = cityToLatinMap[city] || city
+    const latinCity = convertToLatin(city)
     onCityChange(latinCity)
     setShowCities(false)
   }
@@ -113,7 +55,7 @@ export default function CitySelector({
       </button>
       {showCities && (
         <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg mt-1 shadow-lg z-[9999] max-h-48 overflow-y-auto">
-          {mauritaniaCities[locale].map((city) => (
+          {cities.map((city) => (
               <button
                 key={city}
                 onClick={() => selectCity(city)}
