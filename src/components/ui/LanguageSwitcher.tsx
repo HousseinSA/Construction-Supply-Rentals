@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { useRouter, usePathname } from "@/i18n/navigation"
 import { useLocale } from "next-intl"
-import { useSearchParams } from "next/navigation"
 import { ChevronDown } from "lucide-react"
 import Image from "next/image"
 import { useClickOutside } from "@/src/hooks/useClickOutside"
@@ -18,15 +17,14 @@ export default function LanguageSwitcher() {
   const [isOpen, setIsOpen] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
-  const searchParams = useSearchParams()
   const locale = useLocale()
   const dropdownRef = useClickOutside<HTMLDivElement>(() => setIsOpen(false))
 
   const currentLanguage = languages.find((lang) => lang.code === locale)
 
   const handleLanguageChange = (langCode: string) => {
-    const params = searchParams.toString()
-    const url = params ? `${pathname}?${params}` : pathname
+    const params = typeof window !== 'undefined' ? window.location.search : ''
+    const url = params ? `${pathname}${params}` : pathname
     router.replace(url, { locale: langCode })
     setIsOpen(false)
   }
