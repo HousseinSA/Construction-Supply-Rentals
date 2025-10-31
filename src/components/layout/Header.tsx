@@ -38,7 +38,7 @@ export default function Header() {
               </span>
               <span className="font-medium">{t("phone")}</span>
             </div>
-            <LanguageSwitcher />
+            {/* <LanguageSwitcher /> */}
             <div className="hidden md:block">
               <AuthButtons />
             </div>
