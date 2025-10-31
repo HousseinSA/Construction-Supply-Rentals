@@ -10,17 +10,22 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const locale = useLocale()
   const t = useTranslations("common")
-  
+
   const getFontClass = () => {
     switch (locale) {
-      case 'ar': return 'font-arabic'
-      case 'fr': return 'font-french'
-      default: return 'font-english'
+      case "ar":
+        return "font-arabic"
+      case "fr":
+        return "font-french"
+      default:
+        return "font-english"
     }
   }
 
   return (
-    <header className={`bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm ${getFontClass()}`}>
+    <header
+      className={`bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm ${getFontClass()}`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -30,7 +35,6 @@ export default function Header() {
             </div>
           </div>
 
-          {/* Right Side */}
           <div className="flex items-center gap-4">
             <div className="hidden md:flex items-center gap-2 text-gray-700">
               <span>
@@ -38,7 +42,7 @@ export default function Header() {
               </span>
               <span className="font-medium">{t("phone")}</span>
             </div>
-            {/* <LanguageSwitcher /> */}
+            <LanguageSwitcher />
             <div className="hidden md:block">
               <AuthButtons />
             </div>
