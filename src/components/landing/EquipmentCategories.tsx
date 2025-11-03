@@ -23,7 +23,7 @@ export default function EquipmentCategories() {
   }
 
   if (loading) return <CategoriesLoading count={categories?.length || 4} />
-  if (error) return <CategoriesEmpty onRetry={refetch} />
+  if (error) return <CategoriesEmpty />
 
   return (
     <section id="equipment" className={`py-8 sm:py-12 md:py-16 bg-gray-50 ${getFontClass()}`}>

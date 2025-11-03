@@ -4,8 +4,7 @@ import { routing, Locale } from "@/i18n/routing"
 
 export default async function middleware(request: NextRequest) {
   const { pathname, origin } = request.nextUrl
-  
-  
+
   const savedLocale = request.cookies.get("NEXT_LOCALE")?.value
 
   const pathSegments = pathname.split("/")
@@ -14,12 +13,10 @@ export default async function middleware(request: NextRequest) {
     ? (firstSegment as Locale)
     : undefined
 
-  if (savedLocale && savedLocale !== urlLocale) {
-    const newPathname = `/${savedLocale}${pathname.replace(/^\/[^\/]+/, "")}`
+  if (savedLocale && urlLocale && savedLocale !== urlLocale) {
+    const newPathname = pathname.replace(`/${urlLocale}`, `/${savedLocale}`)
     return NextResponse.redirect(new URL(newPathname, origin))
   }
-
-  const finalLocale = savedLocale || urlLocale || routing.defaultLocale
 
   const response = createMiddleware({
     locales: routing.locales,
@@ -28,7 +25,7 @@ export default async function middleware(request: NextRequest) {
     localeDetection: false,
   })(request)
 
-  if (!savedLocale && urlLocale) {
+  if (urlLocale) {
     response.cookies.set("NEXT_LOCALE", urlLocale, {
       maxAge: 60 * 60 * 24 * 365,
       path: "/",

@@ -23,9 +23,8 @@ export default function LanguageSwitcher() {
   const currentLanguage = languages.find((lang) => lang.code === locale)
 
   const handleLanguageChange = (langCode: string) => {
-    const params = typeof window !== 'undefined' ? window.location.search : ''
-    const url = params ? `${pathname}${params}` : pathname
-    router.replace(url, { locale: langCode })
+    router.replace(pathname, { locale: langCode })
+    window.location.reload()
     setIsOpen(false)
   }
 

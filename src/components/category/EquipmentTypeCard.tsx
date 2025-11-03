@@ -25,16 +25,16 @@ export default function EquipmentTypeCard({
   const fontClass = useFontClass()
 
   return (
-    <Link 
+    <Link
       href={`/equipment?type=${encodeURIComponent(type.name)}`}
-      className={`bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full border border-gray-100 hover:border-primary/20 group cursor-pointer block ${fontClass}`}
+      className={`bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full border border-gray-100 hover:border-primary/20 group cursor-pointer ${fontClass}`}
     >
-      <div className="h-48 relative overflow-hidden">
+      <div className="h-36 relative overflow-hidden">
         <Image
           src={categoryImage}
           alt={type.name}
           fill
-          className="object-cover group-hover:scale-105 transition-transform duration-300"
+          className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
@@ -50,7 +50,7 @@ export default function EquipmentTypeCard({
           </p>
         </div>
         <div className="flex justify-between items-center mt-auto pt-3 border-t border-gray-50">
-          <div className="flex items-center space-x-1 rtl:space-x-reverse">
+          <div className="flex items-center space-x-1">
             <span className="text-base font-medium text-primary">
               {type.equipmentCount || 0}
             </span>

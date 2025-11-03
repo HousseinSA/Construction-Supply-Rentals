@@ -1,10 +1,6 @@
 import { useTranslations } from "next-intl"
 
-interface CategoriesEmptyProps {
-  onRetry?: () => void
-}
-
-export default function CategoriesEmpty({ onRetry }: CategoriesEmptyProps) {
+export default function CategoriesEmpty() {
   const t = useTranslations("landing")
 
   return (
@@ -14,15 +10,7 @@ export default function CategoriesEmpty({ onRetry }: CategoriesEmptyProps) {
           {t("categories.title")}
         </h2>
         <div className="text-center py-12">
-          <p className="text-gray-600 mb-4">{t("categories.errorMessage")}</p>
-          {onRetry && (
-            <button
-              onClick={onRetry}
-              className="bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-lg transition-colors"
-            >
-              {t("categories.retryButton")}
-            </button>
-          )}
+          <p className="text-gray-600">{t("categories.errorMessage")}</p>
         </div>
       </div>
     </section>

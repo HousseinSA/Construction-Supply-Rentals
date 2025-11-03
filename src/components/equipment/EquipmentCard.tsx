@@ -37,14 +37,13 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
   return (
     <div className={`bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full border border-gray-100 hover:border-primary/20 group cursor-pointer ${fontClass}`}
          onClick={() => router.push(`/equipment/${equipment._id}`)}>
-      <div className="h-48 relative overflow-hidden">
+      <div className="h-52 relative overflow-hidden">
         <Image
           src="/equipement-images/Pelle hydraulique.jpg"
           alt={equipment.name}
           fill
-          className="object-cover group-hover:scale-105 transition-transform duration-300"
+          className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
       <div className="p-5 flex flex-col flex-1">
         <div className="flex-1">

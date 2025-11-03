@@ -39,7 +39,7 @@
       "type": "نوع",
       "errorTitle": "خطأ في تحميل الفئات",
       "errorMessage": "حدث خطأ أثناء تحميل فئات المعدات. يرجى المحاولة مرة أخرى.",
-      "retryButton": "إعادة المحاولة",
+
       "terrassement": "حفريات",
       "terrassementDesc": "حفر وتحريك التربة",
       "nivellementcompactage": "تسوية وضغط",
