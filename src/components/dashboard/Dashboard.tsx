@@ -1,8 +1,8 @@
 "use client"
 
 import { useTranslations } from "next-intl"
+import { useSession } from "next-auth/react"
 import { Link } from "@/src/i18n/navigation"
-import { useAuthStore } from "@/src/stores"
 import {
   Plus,
   Settings,
@@ -17,11 +17,20 @@ import {
 } from "lucide-react"
 
 export default function Dashboard() {
-  const { user } = useAuthStore()
+  const { data: session, status } = useSession()
   const t = useTranslations("dashboard")
+  console.log("logged in user info ", session?.user)
+  console.log("session status", status)
 
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-600">Loading...</div>
+      </div>
+    )
+  }
   const getDashboardCards = () => {
-    if (user?.role !== "admin") {
+    if (session?.user?.role !== "admin") {
       return [
         {
           title: t("admin.createEquipment"),
@@ -68,7 +77,7 @@ export default function Dashboard() {
       ]
     }
 
-    if (user?.userType === "supplier") {
+    if (session?.user?.userType === "supplier") {
       return [
         {
           title: t("supplier.myEquipment"),
@@ -133,7 +142,10 @@ export default function Dashboard() {
   }
 
   const dashboardCards = getDashboardCards()
-  const userRole = user?.role === "admin" ? "admin" : user?.userType || "renter"
+  const userRole =
+    session?.user?.role === "admin"
+      ? "admin"
+      : session?.user?.userType || "renter"
 
   return (
     <div className="min-h-screen bg-gray-50">

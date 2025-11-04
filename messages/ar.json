@@ -7,7 +7,10 @@
     "day": "يوم",
     "hour": "ساعة",
     "km": "KM",
-    "phone": "+222 45 111111"
+    "phone": "+222 45 111111",
+    "logoutConfirm": "تأكيد تسجيل الخروج",
+    "logoutMessage": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
+    "cancel": "إلغاء"
   },
   "equipment": {
     "allEquipment": "جميع المعدات",
@@ -115,6 +118,7 @@
       "password": "كلمة المرور",
       "confirmPassword": "تأكيد كلمة المرور",
       "createAccount": "إنشاء حساب",
+      "creating": "جاري إنشاء الحساب...",
       "alreadyHaveAccount": "هل لديك حساب بالفعل؟",
       "loginLink": "سجل الدخول هنا"
     },
@@ -123,6 +127,7 @@
       "emailOrPhone": "البريد الإلكتروني أو رقم الهاتف",
       "password": "كلمة المرور",
       "loginButton": "تسجيل الدخول",
+      "loggingIn": "جاري تسجيل الدخول...",
       "forgotPassword": "نسيت كلمة المرور؟",
       "noAccount": "ليس لديك حساب؟",
       "registerLink": "إنشاء حساب"
@@ -350,7 +355,9 @@
   },
   "toast": {
     "loginSuccess": "تم تسجيل الدخول بنجاح!",
+    "loginFailed": "بريد إلكتروني/هاتف أو كلمة مرور غير صحيحة",
     "registerSuccess": "تم إنشاء الحساب بنجاح!",
+    "registerFailed": "خطأ في إنشاء الحساب",
     "loginError": "بريد إلكتروني/هاتف أو كلمة مرور غير صحيحة",
     "registerError": "خطأ في إنشاء الحساب",
     "networkError": "خطأ في الاتصال. يرجى المحاولة مرة أخرى.",

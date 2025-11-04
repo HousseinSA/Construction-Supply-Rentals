@@ -7,6 +7,7 @@ import {
 } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import { Toaster } from "sonner";
+import SessionProvider from "@/src/components/providers/SessionProvider";
 
 import { routing } from "@/i18n/routing";
 import { inter, cairo, poppins } from "@/lib/fonts";
@@ -62,11 +63,13 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} dir={direction} className={fontClasses}>
       <body className={`${baseFont} antialiased`}>
-        <NextIntlClientProvider messages={messages} locale={locale}>
-          <Header />
-          {children}
-          <Toaster position="top-right" richColors />
-        </NextIntlClientProvider>
+        <SessionProvider>
+          <NextIntlClientProvider messages={messages} locale={locale}>
+            <Header />
+            {children}
+            <Toaster position="top-right" richColors />
+          </NextIntlClientProvider>
+        </SessionProvider>
       </body>
     </html>
   );

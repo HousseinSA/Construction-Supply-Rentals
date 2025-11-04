@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useTranslations } from "next-intl"
-import { Link } from "@/src/i18n/navigation"
+import { Link, useRouter } from "@/src/i18n/navigation"
 import AuthCard from "./AuthCard"
 import RoleSelector from "./RoleSelector"
 import Input from "../ui/Input"
@@ -16,6 +16,7 @@ type UserRole = "renter" | "supplier"
 export default function RegisterForm() {
   const t = useTranslations("auth")
   const tToast = useTranslations("toast")
+  const router = useRouter()
   const [selectedRole, setSelectedRole] = useState<UserRole>("renter")
   const [formData, setFormData] = useState({
     firstName: "",
@@ -32,7 +33,9 @@ export default function RegisterForm() {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
     if (!formData.firstName || !formData.lastName) {
@@ -50,7 +53,7 @@ export default function RegisterForm() {
       return
     }
     
-    if (!formData.password) {
+    if (!formData.password || formData.password.length < 6) {
       showToast.error(tToast("passwordRequired"))
       return
     }
@@ -65,7 +68,41 @@ export default function RegisterForm() {
       return
     }
     
-    showToast.success(tToast("registerSuccess"))
+    setIsLoading(true)
+    
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          password: formData.password,
+          phone: formData.phone,
+          userType: selectedRole,
+          ...(selectedRole === "supplier" && {
+            companyName: formData.companyName,
+            location: formData.location,
+          }),
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        showToast.error(data.error || tToast("registerFailed"))
+        return
+      }
+
+      showToast.success(tToast("registerSuccess"))
+      setTimeout(() => router.push("/auth/login"), 1500)
+      
+    } catch (error) {
+      showToast.error(tToast("registerFailed"))
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -152,8 +189,8 @@ export default function RegisterForm() {
         </div>
 
         <div className="mt-8">
-          <Button type="submit" variant="primary" className="w-full">
-            {t("register.createAccount")}
+          <Button type="submit" variant="primary" className="w-full" disabled={isLoading}>
+            {isLoading ? t("register.creating") : t("register.createAccount")}
           </Button>
         </div>
 

@@ -7,7 +7,10 @@
     "day": "day",
     "hour": "hour",
     "km": "km",
-    "phone": "+222 11 11 11 11"
+    "phone": "+222 11 11 11 11",
+    "logoutConfirm": "Confirm Logout",
+    "logoutMessage": "Are you sure you want to logout?",
+    "cancel": "Cancel"
   },
   "equipment": {
     "allEquipment": "All Equipment",
@@ -115,6 +118,7 @@
       "password": "Password",
       "confirmPassword": "Confirm Password",
       "createAccount": "Create Account",
+      "creating": "Creating account...",
       "alreadyHaveAccount": "Already have an account?",
       "loginLink": "Sign in here"
     },
@@ -123,6 +127,7 @@
       "emailOrPhone": "Email or Phone Number",
       "password": "Password",
       "loginButton": "Sign In",
+      "loggingIn": "Signing in...",
       "forgotPassword": "Forgot password?",
       "noAccount": "Don't have an account?",
       "registerLink": "Create account"
@@ -350,7 +355,9 @@
   },
   "toast": {
     "loginSuccess": "Login successful!",
+    "loginFailed": "Invalid email/phone or password",
     "registerSuccess": "Account created successfully!",
+    "registerFailed": "Error creating account",
     "loginError": "Invalid email/phone or password",
     "registerError": "Error creating account",
     "networkError": "Connection error. Please try again.",
