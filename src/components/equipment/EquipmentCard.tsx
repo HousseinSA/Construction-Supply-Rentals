@@ -4,6 +4,7 @@ import { useRouter } from "@/i18n/navigation"
 import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
 import { useFontClass } from "@/src/hooks/useFontClass"
 import { useCityData } from "@/src/hooks/useCityData"
+import Button from "../ui/Button"
 
 interface Pricing {
   dailyRate?: number
@@ -66,21 +67,25 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
             <div className="text-xs text-gray-400 font-medium">{displayUnit}</div>
           </div>
           <div className="flex gap-2">
-            <button
+            <Button
+              variant="card-secondary"
+              size="card"
+              className="flex-1"
               onClick={(e) => {
                 e.stopPropagation()
                 router.push(`/equipment/${equipment._id}`)
               }}
-              className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-600 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200"
             >
               {t("viewDetails")}
-            </button>
-            <button 
+            </Button>
+            <Button 
+              variant="card-primary"
+              size="card"
+              className="flex-1"
               onClick={(e) => e.stopPropagation()}
-              className="flex-1 bg-primary hover:bg-primary-dark text-white px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 shadow-sm"
             >
               {t("rentNow")}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

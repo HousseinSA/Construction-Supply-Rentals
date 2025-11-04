@@ -32,6 +32,7 @@ export async function GET() {
           name: 1,
           nameAr: 1,
           nameFr: 1,
+          slug: 1,
           equipmentTypeCount: 1
         }
       },
@@ -40,6 +41,7 @@ export async function GET() {
       }
     ]).toArray()
 
+    console.log("[Categories API] Returning categories:", categories.map(c => ({ name: c.name, slug: c.slug })))
     return NextResponse.json(categories)
   } catch (error) {
     console.error('Failed to fetch categories:', error)

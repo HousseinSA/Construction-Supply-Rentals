@@ -6,6 +6,7 @@ export interface Category
   _id: string
   nameAr: string
   nameFr: string
+  slug: string
   equipmentTypeCount: number
 }
 

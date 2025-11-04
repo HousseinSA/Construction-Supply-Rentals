@@ -23,8 +23,11 @@ export default function LanguageSwitcher() {
   const currentLanguage = languages.find((lang) => lang.code === locale)
 
   const handleLanguageChange = (langCode: string) => {
-    router.replace(pathname, { locale: langCode })
-    window.location.reload()
+    // Strip the current locale from pathname
+    const pathWithoutLocale = pathname.replace(/^\/(fr|en|ar)/, "")
+
+    // Replace route with new locale
+    router.replace(pathWithoutLocale || "/", { locale: langCode })
     setIsOpen(false)
   }
 

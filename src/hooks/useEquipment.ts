@@ -14,7 +14,7 @@ interface Equipment {
   pricing: Pricing
 }
 
-export function useEquipment(selectedCity?: string | null) {
+export function useEquipment(selectedCity?: string | null, selectedType?: string | null) {
   const [equipment, setEquipment] = useState<Equipment[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -29,6 +29,9 @@ export function useEquipment(selectedCity?: string | null) {
         if (selectedCity) {
           params.set("city", selectedCity)
         }
+        if (selectedType) {
+          params.set("type", selectedType)
+        }
         const response = await fetch(`/api/equipment?${params.toString()}`)
         const data = await response.json()
         setEquipment(data.data || [])
@@ -40,7 +43,7 @@ export function useEquipment(selectedCity?: string | null) {
       }
     }
     fetchEquipment()
-  }, [selectedCity])
+  }, [selectedCity, selectedType])
 
   return { equipment, loading, error }
 }

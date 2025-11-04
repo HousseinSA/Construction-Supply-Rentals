@@ -3,6 +3,7 @@ import { useTranslations } from "next-intl"
 import { EquipmentType } from "@/src/lib/models"
 import { Link } from "@/src/i18n/navigation"
 import { useFontClass } from "@/src/hooks/useFontClass"
+import Button from "../ui/Button"
 
 interface EquipmentTypeWithCount extends EquipmentType {
   equipmentCount?: number
@@ -56,9 +57,9 @@ export default function EquipmentTypeCard({
             </span>
             <span className="text-sm text-gray-400">{t("available")}</span>
           </div>
-          <span className="bg-primary text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-primary-dark transition-all duration-200 shadow-sm">
+          <Button variant="card-primary" size="card">
             {t("viewEquipment")}
-          </span>
+          </Button>
         </div>
       </div>
     </Link>

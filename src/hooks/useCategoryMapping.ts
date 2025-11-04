@@ -80,6 +80,8 @@ export function useCategoryMapping() {
   const getCategoryKey = (categoryName: string) => {
     return categoryName
       .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
       .replace(/\s+/g, "-")
       .replace(/[^a-z-]/g, "")
   }

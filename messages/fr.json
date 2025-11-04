@@ -88,6 +88,53 @@
       "support": "Support et Contact"
     }
   },
+  "auth": {
+    "register": {
+      "title": "Créer Votre Compte",
+      "subtitle": "Rejoignez notre plateforme de location d'équipement de construction",
+      "selectRole": "Choisir le Type de Compte",
+      "renter": {
+        "title": "Locataire",
+        "description": "Louer des équipements de construction",
+        "submitButton": "Créer un Compte Locataire"
+      },
+      "supplier": {
+        "title": "Partenaire",
+        "description": "Fournir des équipements de construction",
+        "submitButton": "Soumettre la Candidature",
+        "companyName": "Nom de l'Entreprise",
+        "location": "Localisation de l'Entreprise"
+      },
+      "firstName": "Prénom",
+      "lastName": "Nom de Famille",
+      "email": "Adresse Email",
+      "phone": "Numéro de Téléphone",
+      "password": "Mot de Passe",
+      "confirmPassword": "Confirmer le Mot de Passe",
+      "createAccount": "Créer un Compte",
+      "alreadyHaveAccount": "Vous avez déjà un compte ?",
+      "loginLink": "Connectez-vous ici"
+    },
+    "login": {
+      "title": "Connexion",
+      "emailOrPhone": "Email ou Téléphone",
+      "password": "Mot de Passe",
+      "loginButton": "Se Connecter",
+      "forgotPassword": "Mot de passe oublié ?",
+      "noAccount": "Vous n'avez pas de compte ?",
+      "registerLink": "Créer un compte"
+    },
+    "resetPassword": {
+      "title": "Réinitialiser le Mot de Passe",
+      "subtitle": "Entrez votre email pour recevoir un lien de réinitialisation",
+      "emailPlaceholder": "Adresse Email",
+      "sendResetLink": "Envoyer le Lien",
+      "sending": "Envoi en cours...",
+      "successTitle": "Vérifiez Votre Email",
+      "successMessage": "Nous avons envoyé un lien de réinitialisation à votre adresse email",
+      "backToLogin": "Retour à la Connexion"
+    }
+  },
   "categories": {
     "terrassement": "Terrassement",
     "terrassementDesc": "Équipement  d'excavation et de terrassement pour projets de construction",
@@ -158,5 +205,125 @@
       "camionplateau": "Camion Plateau",
       "camionplateauDesc": "Transport polyvalent"
     }
+  },
+  "dashboard": {
+    "admin": {
+      "title": "Tableau de Bord Admin",
+      "subtitle": "Gérez votre plateforme de location d'équipement de construction",
+      "createEquipment": "Créer Équipement",
+      "createEquipmentDesc": "Ajouter un nouvel équipement à la plateforme",
+      "manageEquipment": "Gérer Équipements",
+      "manageEquipmentDesc": "Voir et modifier les équipements existants",
+      "bookings": "Réservations",
+      "bookingsDesc": "Gérer les réservations et demandes de location",
+      "users": "Utilisateurs",
+      "usersDesc": "Gérer les locataires et fournisseurs",
+      "analytics": "Analyses",
+      "analyticsDesc": "Voir les statistiques et rapports de la plateforme",
+      "settings": "Paramètres",
+      "settingsDesc": "Configurer les paramètres de la plateforme"
+    },
+    "supplier": {
+      "title": "Tableau de Bord Partenaire",
+      "subtitle": "Gérez vos équipements et votre activité de location",
+      "myEquipment": "Mes Équipements",
+      "myEquipmentDesc": "Voir et gérer vos équipements listés",
+      "addEquipment": "Ajouter Équipement",
+      "addEquipmentDesc": "Lister un nouvel équipement pour location",
+      "bookings": "Mes Réservations",
+      "bookingsDesc": "Suivre les demandes de location d'équipement",
+      "profile": "Profil",
+      "profileDesc": "Gérer votre profil d'entreprise"
+    },
+    "renter": {
+      "title": "Tableau de Bord Locataire",
+      "subtitle": "Trouvez et louez des équipements de construction",
+      "browseEquipment": "Parcourir Équipements",
+      "browseEquipmentDesc": "Trouvez des équipements pour vos projets",
+      "myBookings": "Mes Réservations",
+      "myBookingsDesc": "Voir vos locations actuelles et passées",
+      "requests": "Demandes de Location",
+      "requestsDesc": "Suivre le statut de vos demandes de location",
+      "profile": "Profil",
+      "profileDesc": "Gérer les paramètres de votre compte"
+    },
+    "equipment": {
+      "createTitle": "Créer Nouvel Équipement",
+      "createSubtitle": "Ajouter un équipement pour le rendre disponible à la location",
+      "backToDashboard": "Retour au Tableau de Bord",
+      "equipmentName": "Nom de l'Équipement",
+      "category": "Catégorie",
+      "selectCategory": "Sélectionner Catégorie",
+      "equipmentType": "Type d'Équipement",
+      "selectEquipmentType": "Sélectionner Type d'Équipement",
+      "city": "Ville",
+      "selectCity": "Sélectionner Ville",
+      "priceType": "Type de Tarification",
+      "selectPriceType": "Sélectionner Type de Prix",
+      "hourly": "Par Heure",
+      "daily": "Par Jour",
+      "perKm": "Par Kilomètre",
+      "price": "Prix (UM)",
+      "description": "Description",
+      "descriptionPlaceholder": "Décrivez les caractéristiques et capacités de l'équipement",
+      "specifications": "Spécifications",
+      "specificationsPlaceholder": "Spécifications techniques (poids, puissance, etc.)",
+      "images": "Images de l'Équipement",
+      "uploadImages": "Télécharger des photos de l'équipement",
+      "selectImages": "Sélectionner Images",
+      "cancel": "Annuler",
+      "createEquipment": "Créer Équipement",
+      "categoryTerrassement": "Terrassement",
+      "categoryNivellement": "Nivellement & Compactage",
+      "categoryTransport": "Transport",
+      "categoryLevage": "Levage & Manutention"
+    }
+  },
+  "admin": {
+    "equipment": {
+      "createTitle": "Créer Nouvel Équipement",
+      "createSubtitle": "Ajouter un équipement pour le rendre disponible à la location",
+      "backToDashboard": "Retour au Tableau de Bord",
+      "equipmentName": "Nom de l'Équipement",
+      "category": "Catégorie",
+      "selectCategory": "Sélectionner Catégorie",
+      "equipmentType": "Type d'Équipement",
+      "typePlaceholder": "ex: Pelle Hydraulique",
+      "location": "Localisation",
+      "priceType": "Type de Tarification",
+      "hourly": "Par Heure",
+      "daily": "Par Jour",
+      "perKm": "Par Kilomètre",
+      "price": "Prix (UM)",
+      "description": "Description",
+      "descriptionPlaceholder": "Décrivez les caractéristiques et capacités de l'équipement",
+      "specifications": "Spécifications",
+      "specificationsPlaceholder": "Spécifications techniques (poids, puissance, etc.)",
+      "images": "Images de l'Équipement",
+      "uploadImages": "Télécharger des photos de l'équipement",
+      "selectImages": "Sélectionner Images",
+      "cancel": "Annuler",
+      "createEquipment": "Créer Équipement",
+      "categories": {
+        "terrassement": "Terrassement",
+        "nivellementcompactage": "Nivellement & Compactage",
+        "transport": "Transport",
+        "levageemanutention": "Levage & Manutention"
+      }
+    }
+  },
+  "toast": {
+    "loginSuccess": "Connexion réussie !",
+    "registerSuccess": "Compte créé avec succès !",
+    "loginError": "Email/téléphone ou mot de passe incorrect",
+    "registerError": "Erreur lors de la création du compte",
+    "networkError": "Erreur de connexion. Veuillez réessayer.",
+    "emailOrPhoneRequired": "Email ou téléphone requis",
+    "passwordRequired": "Mot de passe requis",
+    "invalidEmail": "Email incorrect. Veuillez entrer une adresse email valide",
+    "invalidPhone": "Numéro de téléphone incorrect. Doit commencer par 2, 3 ou 4 et contenir 8 chiffres",
+    "nameRequired": "Prénom et nom de famille requis",
+    "passwordsNotMatch": "Les mots de passe ne correspondent pas",
+    "supplierFieldsRequired": "Nom de l'entreprise et localisation requis pour les fournisseurs"
   }
 }

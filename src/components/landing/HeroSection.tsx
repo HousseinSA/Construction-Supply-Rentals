@@ -1,35 +1,35 @@
 "use client"
 
-import { useState } from "react"
-import { useTranslations, useLocale } from "next-intl"
+import { useTranslations } from "next-intl"
 import { useRouter } from "@/i18n/navigation"
 import { useCityData } from "@/src/hooks/useCityData"
+import { useFontClass } from "@/src/hooks/useFontClass"
+import { useSearchStore } from "@/src/stores"
 import CitySelector from "@/components/ui/CitySelector"
 
 export default function HeroSection() {
   const t = useTranslations("landing")
-  const locale = useLocale()
+  const fontClass = useFontClass()
   const router = useRouter()
-  const [location, setLocation] = useState("")
+  const { selectedCity, setSelectedCity } = useSearchStore()
   const { defaultCity, convertToLatin } = useCityData()
-  
-  const getFontClass = () => {
-    switch (locale) {
-      case 'ar': return 'font-arabic'
-      case 'fr': return 'font-french'
-      default: return 'font-english'
-    }
-  }
 
   const handleBrowseAll = () => {
     const searchParams = new URLSearchParams()
-    const cityForAPI = location || convertToLatin(defaultCity)
-    searchParams.set("city", cityForAPI)
+    const cityForAPI = selectedCity || convertToLatin(defaultCity)
+
+    // Ensure city is stored in Latin format
+    const latinCity = convertToLatin(cityForAPI)
+    setSelectedCity(latinCity)
+
+    searchParams.set("city", latinCity)
     router.push(`/equipment?${searchParams.toString()}`)
   }
 
   return (
-    <section className={`relative h-[50vh] md:h-[70vh] flex items-center justify-center will-change-transform ${getFontClass()}`}>
+    <section
+      className={`relative h-[50vh] md:h-[70vh] flex items-center justify-center will-change-transform ${fontClass}`}
+    >
       <video
         autoPlay
         muted
@@ -59,12 +59,11 @@ export default function HeroSection() {
         </p>
         <div className="bg-white rounded-xl p-2 sm:p-3 flex flex-col md:flex-row gap-2 sm:gap-3 max-w-2xl mx-auto shadow-2xl">
           <CitySelector
-            selectedCity={location}
-            onCityChange={setLocation}
+            selectedCity={selectedCity || ""}
+            onCityChange={(city) => setSelectedCity(convertToLatin(city))}
             placeholder={t("hero.searchPlaceholder")}
           />
 
-          {/* Browse All Button */}
           <button
             onClick={handleBrowseAll}
             className="bg-primary hover:bg-primary-dark text-white px-8 py-3 rounded-lg transition-colors font-semibold whitespace-nowrap cursor-pointer"

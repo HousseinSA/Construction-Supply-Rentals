@@ -6,6 +6,7 @@ import {
   getMessages,
 } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
+import { Toaster } from "sonner";
 
 import { routing } from "@/i18n/routing";
 import { inter, cairo, poppins } from "@/lib/fonts";
@@ -64,6 +65,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages} locale={locale}>
           <Header />
           {children}
+          <Toaster position="top-right" richColors />
         </NextIntlClientProvider>
       </body>
     </html>

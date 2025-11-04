@@ -91,6 +91,53 @@
       "support": "الدعم والتواصل"
     }
   },
+  "auth": {
+    "register": {
+      "title": "إنشاء حسابك",
+      "subtitle": "انضم إلى منصة تأجير معدات البناء",
+      "selectRole": "اختر نوع الحساب",
+      "renter": {
+        "title": "مستأجر",
+        "description": "استئجار معدات البناء",
+        "submitButton": "إنشاء حساب مستأجر"
+      },
+      "supplier": {
+        "title": "شريك",
+        "description": "تأجير معدات البناء",
+        "submitButton": "تقديم الطلب",
+        "companyName": "اسم الشركة",
+        "location": "موقع الشركة"
+      },
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "email": " البريد الإلكتروني",
+      "phone": "رقم الهاتف",
+      "password": "كلمة المرور",
+      "confirmPassword": "تأكيد كلمة المرور",
+      "createAccount": "إنشاء حساب",
+      "alreadyHaveAccount": "هل لديك حساب بالفعل؟",
+      "loginLink": "سجل الدخول هنا"
+    },
+    "login": {
+      "title": "تسجيل الدخول",
+      "emailOrPhone": "البريد الإلكتروني أو رقم الهاتف",
+      "password": "كلمة المرور",
+      "loginButton": "تسجيل الدخول",
+      "forgotPassword": "نسيت كلمة المرور؟",
+      "noAccount": "ليس لديك حساب؟",
+      "registerLink": "إنشاء حساب"
+    },
+    "resetPassword": {
+      "title": "إعادة تعيين كلمة المرور",
+      "subtitle": "أدخل بريدك الإلكتروني لتلقي رابط إعادة التعيين",
+      "emailPlaceholder": " البريد الإلكتروني",
+      "sendResetLink": "إرسال رابط الإعادة",
+      "sending": "جاري الإرسال...",
+      "successTitle": "تحقق من بريدك الإلكتروني",
+      "successMessage": "لقد أرسلنا رابط إعادة تعيين كلمة المرور إلى  بريدك الإلكتروني",
+      "backToLogin": "العودة لتسجيل الدخول"
+    }
+  },
   "categories": {
     "terrassement": "حفريات",
     "terrassementDesc": "معدات حفر وتحريك التربة  لمشاريع البناء",
@@ -161,5 +208,158 @@
       "camionplateau": "شاحنة منصة",
       "camionplateauDesc": "شاحنة بسطح تحميل مسطح لنقل البضائع المتنوعة"
     }
+  },
+  "dashboard": {
+    "admin": {
+      "title": "لوحة تحكم الإدارة",
+      "subtitle": "إدارة منصة تأجير معدات البناء الخاصة بك",
+      "createEquipment": "إنشاء معدة",
+      "createEquipmentDesc": "إضافة معدة جديدة إلى المنصة",
+      "manageEquipment": "إدارة المعدات",
+      "manageEquipmentDesc": "عرض وتعديل المعدات الموجودة",
+      "bookings": "الحجوزات",
+      "bookingsDesc": "إدارة حجوزات وطلبات الإيجار",
+      "users": "المستخدمون",
+      "usersDesc": "إدارة المستأجرين والموردين",
+      "analytics": "التحليلات",
+      "analyticsDesc": "عرض إحصائيات وتقارير المنصة",
+      "settings": "الإعدادات",
+      "settingsDesc": "تكوين إعدادات المنصة"
+    },
+    "supplier": {
+      "title": "لوحة تحكم الشريك",
+      "subtitle": "إدارة معداتك وعملك في الإيجار",
+      "myEquipment": "معداتي",
+      "myEquipmentDesc": "عرض وإدارة معداتك المدرجة",
+      "addEquipment": "إضافة معدة",
+      "addEquipmentDesc": "إدراج معدة جديدة للإيجار",
+      "bookings": "حجوزاتي",
+      "bookingsDesc": "تتبع طلبات استئجار المعدات",
+      "profile": "الملف الشخصي",
+      "profileDesc": "إدارة ملف شركتك"
+    },
+    "renter": {
+      "title": "لوحة تحكم المستأجر",
+      "subtitle": "ابحث واستأجر معدات البناء",
+      "browseEquipment": "تصفح المعدات",
+      "browseEquipmentDesc": "ابحث عن معدات لمشاريعك",
+      "myBookings": "حجوزاتي",
+      "myBookingsDesc": "عرض إيجاراتك الحالية والسابقة",
+      "requests": "طلبات الإيجار",
+      "requestsDesc": "تتبع حالة طلبات الإيجار",
+      "profile": "الملف الشخصي",
+      "profileDesc": "إدارة إعدادات حسابك"
+    },
+    "equipment": {
+      "createTitle": "إنشاء معدة جديدة",
+      "createSubtitle": "إضافة معدة لجعلها متاحة للإيجار",
+      "backToDashboard": "العودة إلى لوحة التحكم",
+      "equipmentName": "اسم المعدة",
+      "category": "الفئة",
+      "selectCategory": "اختر الفئة",
+      "equipmentType": "نوع المعدة",
+      "selectEquipmentType": "اختر نوع المعدة",
+      "city": "المدينة",
+      "selectCity": "اختر المدينة",
+      "priceType": "نوع التسعير",
+      "selectPriceType": "اختر نوع التسعير",
+      "hourly": "بالساعة",
+      "daily": "باليوم",
+      "perKm": "بالكيلومتر",
+      "price": "السعر (أوقية)",
+      "description": "الوصف",
+      "descriptionPlaceholder": "وصف ميزات وقدرات المعدة",
+      "specifications": "المواصفات",
+      "specificationsPlaceholder": "المواصفات التقنية (الوزن، القوة، إلخ)",
+      "images": "صور المعدة",
+      "uploadImages": "رفع صور المعدة",
+      "selectImages": "اختيار الصور",
+      "cancel": "إلغاء",
+      "createEquipment": "إنشاء المعدة",
+      "categoryTerrassement": "حفريات",
+      "categoryNivellement": "تسوية وضغط",
+      "categoryTransport": "نقل",
+      "categoryLevage": "رفع ومناولة"
+    }
+  },
+  "admin": {
+    "equipment": {
+      "createTitle": "إنشاء معدة جديدة",
+      "createSubtitle": "إضافة معدة لجعلها متاحة للإيجار",
+      "backToDashboard": "العودة إلى لوحة التحكم",
+      "equipmentName": "اسم المعدة",
+      "category": "الفئة",
+      "selectCategory": "اختر الفئة",
+      "equipmentType": "نوع المعدة",
+      "typePlaceholder": "مثال: حفارة هيدروليكية",
+      "location": "الموقع",
+      "priceType": "نوع التسعير",
+      "hourly": "بالساعة",
+      "daily": "باليوم",
+      "perKm": "بالكيلومتر",
+      "price": "السعر (أوقية)",
+      "description": "الوصف",
+      "descriptionPlaceholder": "وصف ميزات وقدرات المعدة",
+      "specifications": "المواصفات",
+      "specificationsPlaceholder": "المواصفات التقنية (الوزن، القوة، إلخ)",
+      "images": "صور المعدة",
+      "uploadImages": "رفع صور المعدة",
+      "selectImages": "اختيار الصور",
+      "cancel": "إلغاء",
+      "createEquipment": "إنشاء المعدة",
+      "categories": {
+        "terrassement": "حفريات",
+        "nivellementcompactage": "تسوية وضغط",
+        "transport": "نقل",
+        "levageemanutention": "رفع ومناولة"
+      }
+    }
+  },
+  "admin": {
+    "equipment": {
+      "createTitle": "إنشاء معدة جديدة",
+      "createSubtitle": "إضافة معدة لجعلها متاحة للإيجار",
+      "backToDashboard": "العودة إلى لوحة التحكم",
+      "equipmentName": "اسم المعدة",
+      "category": "الفئة",
+      "selectCategory": "اختر الفئة",
+      "equipmentType": "نوع المعدة",
+      "typePlaceholder": "مثال: حفارة هيدروليكية",
+      "location": "الموقع",
+      "priceType": "نوع التسعير",
+      "hourly": "بالساعة",
+      "daily": "باليوم",
+      "perKm": "بالكيلومتر",
+      "price": "السعر (أوقية)",
+      "description": "الوصف",
+      "descriptionPlaceholder": "صف ميزات وقدرات المعدة",
+      "specifications": "المواصفات",
+      "specificationsPlaceholder": "المواصفات التقنية (الوزن، القوة، إلخ)",
+      "images": "صور المعدة",
+      "uploadImages": "رفع صور المعدة",
+      "selectImages": "اختر الصور",
+      "cancel": "إلغاء",
+      "createEquipment": "إنشاء المعدة",
+      "categories": {
+        "terrassement": "حفريات",
+        "nivellementcompactage": "تسوية وضغط",
+        "transport": "نقل",
+        "levageemanutention": "رفع ومناولة"
+      }
+    }
+  },
+  "toast": {
+    "loginSuccess": "تم تسجيل الدخول بنجاح!",
+    "registerSuccess": "تم إنشاء الحساب بنجاح!",
+    "loginError": "بريد إلكتروني/هاتف أو كلمة مرور غير صحيحة",
+    "registerError": "خطأ في إنشاء الحساب",
+    "networkError": "خطأ في الاتصال. يرجى المحاولة مرة أخرى.",
+    "emailOrPhoneRequired": "البريد الإلكتروني أو رقم الهاتف مطلوب",
+    "passwordRequired": "كلمة المرور مطلوبة",
+    "invalidEmail": "البريد الإلكتروني غير صحيح. يرجى إدخال عنوان بريد إلكتروني صالح",
+    "invalidPhone": "رقم الهاتف غير صحيح. يجب أن يبدأ بـ 2 أو 3 أو 4 ويكون 8 أرقام",
+    "nameRequired": "الاسم الأول واسم العائلة مطلوبان",
+    "passwordsNotMatch": "كلمات المرور غير متطابقة",
+    "supplierFieldsRequired": "اسم الشركة والموقع مطلوبان للموردين"
   }
 }

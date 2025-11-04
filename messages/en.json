@@ -91,6 +91,53 @@
       "support": "Support & Contact"
     }
   },
+  "auth": {
+    "register": {
+      "title": "Create Your Account",
+      "subtitle": "Join our construction equipment rental platform",
+      "selectRole": "Choose Account Type",
+      "renter": {
+        "title": "Renter",
+        "description": "Rent construction equipment",
+        "submitButton": "Create Renter Account"
+      },
+      "supplier": {
+        "title": "Partner",
+        "description": "Rent out construction equipment",
+        "submitButton": "Submit Application",
+        "companyName": "Company Name",
+        "location": "Company Location"
+      },
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "createAccount": "Create Account",
+      "alreadyHaveAccount": "Already have an account?",
+      "loginLink": "Sign in here"
+    },
+    "login": {
+      "title": "Sign In",
+      "emailOrPhone": "Email or Phone Number",
+      "password": "Password",
+      "loginButton": "Sign In",
+      "forgotPassword": "Forgot password?",
+      "noAccount": "Don't have an account?",
+      "registerLink": "Create account"
+    },
+    "resetPassword": {
+      "title": "Reset Password",
+      "subtitle": "Enter your email to receive a password reset link",
+      "emailPlaceholder": "Email Address",
+      "sendResetLink": "Send Reset Link",
+      "sending": "Sending...",
+      "successTitle": "Check Your Email",
+      "successMessage": "We've sent a password reset link to your email address",
+      "backToLogin": "Back to Login"
+    }
+  },
   "categories": {
     "terrassement": "Excavation",
     "terrassementDesc": " excavation and earthmoving equipment for construction projects",
@@ -161,5 +208,158 @@
       "camionplateau": "Flatbed Truck",
       "camionplateauDesc": "Truck with flat loading surface for versatile cargo transport"
     }
+  },
+  "dashboard": {
+    "admin": {
+      "title": "Admin Dashboard",
+      "subtitle": "Manage your construction equipment rental platform",
+      "createEquipment": "Create Equipment",
+      "createEquipmentDesc": "Add new equipment to the platform",
+      "manageEquipment": "Manage Equipment",
+      "manageEquipmentDesc": "View and edit existing equipment",
+      "bookings": "Bookings",
+      "bookingsDesc": "Manage rental bookings and requests",
+      "users": "Users",
+      "usersDesc": "Manage renters and suppliers",
+      "analytics": "Analytics",
+      "analyticsDesc": "View platform statistics and reports",
+      "settings": "Settings",
+      "settingsDesc": "Configure platform settings"
+    },
+    "supplier": {
+      "title": "Partner Dashboard",
+      "subtitle": "Manage your equipment and rental business",
+      "myEquipment": "My Equipment",
+      "myEquipmentDesc": "View and manage your listed equipment",
+      "addEquipment": "Add Equipment",
+      "addEquipmentDesc": "List new equipment for rental",
+      "bookings": "My Bookings",
+      "bookingsDesc": "Track equipment rental requests",
+      "profile": "Profile",
+      "profileDesc": "Manage your business profile"
+    },
+    "renter": {
+      "title": "Renter Dashboard",
+      "subtitle": "Find and rent construction equipment",
+      "browseEquipment": "Browse Equipment",
+      "browseEquipmentDesc": "Find equipment for your projects",
+      "myBookings": "My Bookings",
+      "myBookingsDesc": "View your current and past rentals",
+      "requests": "Rental Requests",
+      "requestsDesc": "Track your rental requests status",
+      "profile": "Profile",
+      "profileDesc": "Manage your account settings"
+    },
+    "equipment": {
+      "createTitle": "Create New Equipment",
+      "createSubtitle": "Add equipment to make it available for rental",
+      "backToDashboard": "Back to Dashboard",
+      "equipmentName": "Equipment Name",
+      "category": "Category",
+      "selectCategory": "Select Category",
+      "equipmentType": "Equipment Type",
+      "selectEquipmentType": "Select Equipment Type",
+      "city": "City",
+      "selectCity": "Select City",
+      "priceType": "Pricing Type",
+      "selectPriceType": "Select Pricing Type",
+      "hourly": "Per Hour",
+      "daily": "Per Day",
+      "perKm": "Per Kilometer",
+      "price": "Price (UM)",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe the equipment features and capabilities",
+      "specifications": "Specifications",
+      "specificationsPlaceholder": "Technical specifications (weight, power, etc.)",
+      "images": "Equipment Images",
+      "uploadImages": "Upload equipment photos",
+      "selectImages": "Select Images",
+      "cancel": "Cancel",
+      "createEquipment": "Create Equipment",
+      "categoryTerrassement": "Excavation",
+      "categoryNivellement": "Leveling & Compaction",
+      "categoryTransport": "Transport",
+      "categoryLevage": "Lifting & Handling"
+    }
+  },
+  "admin": {
+    "equipment": {
+      "createTitle": "Create New Equipment",
+      "createSubtitle": "Add equipment to make it available for rental",
+      "backToDashboard": "Back to Dashboard",
+      "equipmentName": "Equipment Name",
+      "category": "Category",
+      "selectCategory": "Select Category",
+      "equipmentType": "Equipment Type",
+      "typePlaceholder": "e.g., Hydraulic Excavator",
+      "location": "Location",
+      "priceType": "Pricing Type",
+      "hourly": "Per Hour",
+      "daily": "Per Day",
+      "perKm": "Per Kilometer",
+      "price": "Price (UM)",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe the equipment features and capabilities",
+      "specifications": "Specifications",
+      "specificationsPlaceholder": "Technical specifications (weight, power, etc.)",
+      "images": "Equipment Images",
+      "uploadImages": "Upload equipment photos",
+      "selectImages": "Select Images",
+      "cancel": "Cancel",
+      "createEquipment": "Create Equipment",
+      "categories": {
+        "terrassement": "Excavation",
+        "nivellementcompactage": "Leveling & Compaction",
+        "transport": "Transport",
+        "levageemanutention": "Lifting & Handling"
+      }
+    }
+  },
+  "admin": {
+    "equipment": {
+      "createTitle": "Create New Equipment",
+      "createSubtitle": "Add equipment to make it available for rental",
+      "backToDashboard": "Back to Dashboard",
+      "equipmentName": "Equipment Name",
+      "category": "Category",
+      "selectCategory": "Select Category",
+      "equipmentType": "Equipment Type",
+      "typePlaceholder": "e.g. Hydraulic Excavator",
+      "location": "Location",
+      "priceType": "Pricing Type",
+      "hourly": "Per Hour",
+      "daily": "Per Day",
+      "perKm": "Per Kilometer",
+      "price": "Price (UM)",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe the equipment features and capabilities",
+      "specifications": "Specifications",
+      "specificationsPlaceholder": "Technical specifications (weight, power, etc.)",
+      "images": "Equipment Images",
+      "uploadImages": "Upload equipment photos",
+      "selectImages": "Select Images",
+      "cancel": "Cancel",
+      "createEquipment": "Create Equipment",
+      "categories": {
+        "terrassement": "Excavation",
+        "nivellementcompactage": "Leveling & Compaction",
+        "transport": "Transport",
+        "levageemanutention": "Lifting & Handling"
+      }
+    }
+  },
+  "toast": {
+    "loginSuccess": "Login successful!",
+    "registerSuccess": "Account created successfully!",
+    "loginError": "Invalid email/phone or password",
+    "registerError": "Error creating account",
+    "networkError": "Connection error. Please try again.",
+    "emailOrPhoneRequired": "Email or phone is required",
+    "passwordRequired": "Password is required",
+    "invalidEmail": "Email is not correct. Please enter a valid email address",
+    "invalidPhone": "Phone number is not correct. Must start with 2, 3, or 4 and be 8 digits long",
+    "nameRequired": "First name and last name are required",
+    "passwordsNotMatch": "Passwords do not match",
+    "supplierFieldsRequired": "Company name and location are required for suppliers"
   }
 }

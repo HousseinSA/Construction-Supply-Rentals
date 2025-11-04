@@ -1,11 +1,9 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextRequest } from "next/server"
 import createMiddleware from "next-intl/middleware"
 import { routing, Locale } from "@/i18n/routing"
 
 export default async function middleware(request: NextRequest) {
-  const { pathname, origin } = request.nextUrl
-
-  const savedLocale = request.cookies.get("NEXT_LOCALE")?.value
+  const { pathname } = request.nextUrl
 
   const pathSegments = pathname.split("/")
   const firstSegment = pathSegments[1]
@@ -13,16 +11,11 @@ export default async function middleware(request: NextRequest) {
     ? (firstSegment as Locale)
     : undefined
 
-  if (savedLocale && urlLocale && savedLocale !== urlLocale) {
-    const newPathname = pathname.replace(`/${urlLocale}`, `/${savedLocale}`)
-    return NextResponse.redirect(new URL(newPathname, origin))
-  }
-
   const response = createMiddleware({
     locales: routing.locales,
     defaultLocale: routing.defaultLocale,
     localePrefix: "always",
-    localeDetection: false,
+    localeDetection: true,
   })(request)
 
   if (urlLocale) {
