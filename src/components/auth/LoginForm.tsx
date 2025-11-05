@@ -27,7 +27,6 @@ export default function LoginForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
     if (!formData.emailOrPhone) {
       showToast.error(tToast("emailOrPhoneRequired"))
       return
@@ -63,10 +62,13 @@ export default function LoginForm() {
         return
       }
 
-      showToast.success(tToast("loginSuccess"))
-      await fetch("/api/auth/session") // force fetch session
-
-      router.push("/dashboard")
+      if (result?.ok) {
+        showToast.success(tToast("loginSuccess"))
+        router.push("/dashboard")
+      } else {
+        showToast.error(tToast("loginFailed"))
+        setLoading(false)
+      }
     } catch (error) {
       showToast.error(tToast("loginFailed"))
       setLoading(false)

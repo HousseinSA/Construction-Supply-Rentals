@@ -4,6 +4,7 @@
     "login": "تسجيل الدخول",
     "logout": "تسجيل الخروج",
     "signup": "إنشاء حساب",
+    "dashboard": "لوحة التحكم",
     "day": "يوم",
     "hour": "ساعة",
     "km": "KM",
@@ -256,7 +257,7 @@
       "profileDesc": "إدارة إعدادات حسابك"
     },
     "equipment": {
-      "createTitle": "إنشاء معدة جديدة",
+      "createTitle": "إضافة معدة جديد",
       "createSubtitle": "إضافة معدة لجعلها متاحة للإيجار",
       "backToDashboard": "العودة إلى لوحة التحكم",
       "equipmentName": "اسم المعدة",

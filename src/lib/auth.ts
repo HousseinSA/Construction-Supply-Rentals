@@ -1,4 +1,4 @@
-import NextAuth, { AuthOptions } from "next-auth"
+import  { AuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { connectDB } from "./mongodb"
 import { COLLECTIONS } from "./types"
@@ -12,24 +12,32 @@ export const authOptions: AuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.emailOrPhone || !credentials?.password) return null
+        if (!credentials?.emailOrPhone || !credentials?.password) {
+          return null
+        }
 
         const db = await connectDB()
-        const isEmail = (credentials.emailOrPhone as string).includes('@')
-        const query = isEmail ? { email: credentials.emailOrPhone } : { phone: credentials.emailOrPhone }
+        const isEmail = (credentials.emailOrPhone as string).includes("@")
+        const query = isEmail
+          ? { email: credentials.emailOrPhone }
+          : { phone: credentials.emailOrPhone }
 
         const user = await db.collection(COLLECTIONS.USERS).findOne(query)
-        if (!user || !user.password) return null
-        if (user.password !== credentials.password) return null
 
-        console.log("Authorize - user found:", { id: user._id.toString(), role: user.role, userType: user.userType })
+        if (!user || !user.password) {
+          return null
+        }
+        if (user.password !== credentials.password) {
+          return null
+        }
+
         return {
           id: user._id.toString(),
           email: user.email,
           name: `${user.firstName} ${user.lastName}`,
           role: user.role,
           userType: user.userType,
-        } as any
+        }
       },
     }),
   ],
@@ -42,16 +50,17 @@ export const authOptions: AuthOptions = {
         token.role = user.role
         token.userType = user.userType
       }
-      console.log("JWT callback - token:", token)
       return token
     },
     async session({ session, token }) {
-      if (session.user) {
+      if (token && session) {
+        session.user = session.user || {}
         session.user.id = token.id as string
+        session.user.email = token.email as string
+        session.user.name = token.name as string
         session.user.role = token.role as string
         session.user.userType = token.userType as string
       }
-      console.log("Session callback - session:", session)
       return session
     },
   },

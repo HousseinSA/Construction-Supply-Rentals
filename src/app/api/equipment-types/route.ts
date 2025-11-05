@@ -8,8 +8,6 @@ export async function GET(request: Request) {
     const categoryId = searchParams.get("categoryId")
     const category = searchParams.get("category")
 
-    console.log("[Equipment Types API] Received category param:", category)
-
     const db = await connectDB()
 
     // Get excluded category IDs
@@ -36,18 +34,13 @@ export async function GET(request: Request) {
           { name: { $regex: new RegExp(category, "i") } },
         ],
       })
-      console.log("[Equipment Types API] Found category doc:", categoryDoc)
       if (categoryDoc) {
         query.categoryId = categoryDoc._id
       } else {
-        console.log("[Equipment Types API] No category found for:", category)
       }
     } else {
       query.categoryId = { $nin: excludedCategoryIds.map((cat) => cat._id) }
     }
-
-    console.log("[Equipment Types API] Query:", query)
-    console.log("[Equipment Types API] Query categoryId type:", typeof query.categoryId, query.categoryId)
 
     const equipmentTypes = await db
       .collection("equipmentTypes")
@@ -77,13 +70,15 @@ export async function GET(request: Request) {
         { $sort: { name: 1 } },
       ])
       .toArray()
-
-    console.log("[Equipment Types API] Found equipment types:", equipmentTypes.length)
     return NextResponse.json({ success: true, data: equipmentTypes })
   } catch (error) {
     console.error("[Equipment Types API] Error:", error)
     return NextResponse.json(
-      { success: false, error: "Failed to fetch equipment types", details: error instanceof Error ? error.message : String(error) },
+      {
+        success: false,
+        error: "Failed to fetch equipment types",
+        details: error instanceof Error ? error.message : String(error),
+      },
       { status: 500 }
     )
   }

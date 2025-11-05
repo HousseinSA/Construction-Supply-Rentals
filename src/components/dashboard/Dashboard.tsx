@@ -15,22 +15,16 @@ import {
   FileText,
   User,
 } from "lucide-react"
+import DashboardSkeleton from "./DashboardSkeleton"
 
 export default function Dashboard() {
   const { data: session, status } = useSession()
   const t = useTranslations("dashboard")
-  console.log("logged in user info ", session?.user)
-  console.log("session status", status)
-
   if (status === "loading") {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-gray-600">Loading...</div>
-      </div>
-    )
+    return <DashboardSkeleton />
   }
   const getDashboardCards = () => {
-    if (session?.user?.role !== "admin") {
+    if (session?.user?.role === "admin") {
       return [
         {
           title: t("admin.createEquipment"),

@@ -41,7 +41,6 @@ export async function GET() {
       }
     ]).toArray()
 
-    console.log("[Categories API] Returning categories:", categories.map(c => ({ name: c.name, slug: c.slug })))
     return NextResponse.json(categories)
   } catch (error) {
     console.error('Failed to fetch categories:', error)

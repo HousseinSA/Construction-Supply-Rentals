@@ -1,17 +1,41 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useTranslations } from "next-intl"
-import { User, LogIn, LogOut } from "lucide-react"
+import { User, LogIn, LogOut, LayoutDashboard } from "lucide-react"
 import { Link } from "@/i18n/navigation"
 import { useSession, signOut } from "next-auth/react"
+import { useLocale } from "next-intl"
+import ConfirmModal from "./ConfirmModal"
 
 export default function AuthButtons() {
   const t = useTranslations("common")
+  const locale = useLocale()
   const { data: session } = useSession()
+  const [showDropdown, setShowDropdown] = useState(false)
   const [showLogoutModal, setShowLogoutModal] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+  const isRTL = locale === "ar"
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowDropdown(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
 
   const handleLogout = () => {
+    setShowLogoutModal(true)
+    setShowDropdown(false)
+  }
+
+  const confirmLogout = () => {
     signOut({ callbackUrl: "/" })
     setShowLogoutModal(false)
   }
@@ -19,41 +43,60 @@ export default function AuthButtons() {
   if (session?.user) {
     return (
       <>
-        <div className="relative">
+        <div className="relative" ref={dropdownRef}>
           <button
-            onClick={() => setShowLogoutModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary-dark transition-colors"
+            onClick={() => setShowDropdown(!showDropdown)}
+            className="w-10 h-10 rounded-full text-primary border border-primary font-semibold flex items-center justify-center hover:shadow-sm transition-all duration-200  border- shadow-md"
           >
             <User size={16} />
-            <span className="hidden sm:inline">{session.user.name}</span>
           </button>
-        </div>
 
-        {showLogoutModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                {t("logoutConfirm")}
-              </h3>
-              <p className="text-gray-600 mb-6">{t("logoutMessage")}</p>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setShowLogoutModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+          {showDropdown && (
+            <div
+              className={`absolute ${
+                isRTL ? "left-0" : "right-0"
+              } mt-2 w-56 bg-white/95 backdrop-blur-md rounded-xl shadow-xl border border-gray-200 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50`}
+            >
+              <div className="px-4 py-3 border-b border-gray-100">
+                <p className="text-sm font-semibold text-gray-900">
+                  {session.user.name}
+                </p>
+                <p className="text-xs text-gray-500 truncate">
+                  {session.user.email}
+                </p>
+              </div>
+              <div className="py-1">
+                <Link
+                  href="/dashboard"
+                  onClick={() => setShowDropdown(false)}
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                 >
-                  {t("cancel")}
-                </button>
+                  <LayoutDashboard size={16} />
+                  {t("dashboard")}
+                </Link>
                 <button
                   onClick={handleLogout}
-                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
                 >
                   <LogOut size={16} />
                   {t("logout")}
                 </button>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
+
+        <ConfirmModal
+          isOpen={showLogoutModal}
+          onClose={() => setShowLogoutModal(false)}
+          onConfirm={confirmLogout}
+          title={t("logout")}
+          message={t("logoutConfirm") || "Are you sure you want to logout?"}
+          confirmText={t("logout")}
+          cancelText={t("cancel") || "Cancel"}
+          icon={<LogOut className="text-red-600" size={24} />}
+          confirmVariant="danger"
+        />
       </>
     )
   }

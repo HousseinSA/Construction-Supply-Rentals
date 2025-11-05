@@ -9,13 +9,11 @@ import EquipmentTypesGrid from "@/src/components/category/EquipmentTypesGrid"
 export default function CategoryPage() {
   const params = useParams()
   const category = params.category as string
-  console.log("[CategoryPage] Category param from URL:", category)
   const { equipmentTypes, loading } = useEquipmentTypes(category)
   const { getCategoryInfo, getEquipmentTypeName, getEquipmentTypeDesc } =
     useCategoryMapping()
 
   const categoryInfo = getCategoryInfo(category)
-  console.log("[CategoryPage] Equipment types:", equipmentTypes)
   return (
     <div className="min-h-screen bg-gray-50">
       <CategoryHeader categoryInfo={categoryInfo} />

@@ -1,36 +1,179 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏗️ Construction Equipment Rental Platform
 
-## Getting Started
+> Multilingual platform connecting construction equipment suppliers with renters across Mauritania.
 
-First, run the development server:
+## ✨ Features
+
+### 🌍 Multilingual Support
+- **3 Languages**: Arabic (RTL), French, English
+- Seamless language switching
+- Fully localized content and UI
+
+### 👥 Multi-Role System
+- **Admin**: Full platform management and oversight
+- **Supplier**: List and manage equipment inventory
+- **Renter**: Browse and rent construction equipment
+
+### 🔐 Authentication & Security
+- NextAuth.js integration
+- Login with email or phone number
+- Role-based access control
+- Secure JWT sessions (30 days)
+- Password and phone validation
+
+### 📱 User Experience
+- Mobile-first responsive design
+- Optimized for all screen sizes
+- Smooth animations and transitions
+- Toast notifications
+- Loading states
+
+### 🔍 Search & Discovery
+- Filter equipment by city
+- Browse by equipment categories
+- Search by equipment type
+- Real-time availability status
+
+### 🏷️ Equipment Categories
+- **Excavation** (Terrassement)
+- **Leveling & Compaction** (Nivellement et Compactage)
+- **Transport**
+- **Lifting & Handling** (Levage et Manutention)
+
+## 🚀 Tech Stack
+
+| Technology | Purpose |
+|------------|----------|
+| **Next.js 15** | React framework with App Router |
+| **TypeScript** | Type-safe development |
+| **MongoDB** | NoSQL database |
+| **NextAuth.js** | Authentication solution |
+| **Tailwind CSS** | Utility-first styling |
+| **next-intl** | Internationalization |
+| **Zustand** | State management |
+| **Lucide React** | Icon library |
+
+## 🚀 Quick Start
 
 ```bash
+npm install
+cp .env.example .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Environment Variables:**
+```env
+MONGODB_URI=your_mongodb_uri
+NEXTAUTH_SECRET=your_secret
+NEXTAUTH_URL=http://localhost:3000
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 👤 User Roles & Dashboards
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 🔴 Admin Dashboard
+- ➕ Create new equipment
+- 📋 Manage all equipment listings
+- 👥 Manage users (suppliers & renters)
+- 📅 Handle booking requests
+- 📊 View platform analytics
+- ⚙️ Configure platform settings
 
-## Learn More
+### 🟢 Supplier Dashboard
+- ➕ Add equipment to platform
+- 📦 Manage equipment inventory
+- 📅 Track rental bookings
+- 👤 Update business profile
+- 💰 View earnings
 
-To learn more about Next.js, take a look at the following resources:
+### 🔵 Renter Dashboard
+- 🔍 Browse available equipment
+- 📅 View current and past bookings
+- 📝 Submit rental requests
+- 👤 Manage account settings
+- ⭐ Rate equipment (coming soon)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🏙️ Supported Cities
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Nouakchott • Nouadhibou • Rosso • Kaédi • Zouérat • Kiffa • Atar • Sélibaby • Akjoujt • Tidjikja
 
-## Deploy on Vercel
+## 🔑 Admin Access
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+Email: admin@gmail.com
+Phone: 22345678
+Password: 12345678
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🗂️ Project Structure
+
+```
+src/
+├── app/
+│   ├── [locale]/          # Localized routes
+│   │   ├── auth/          # Login, register, reset password
+│   │   ├── dashboard/     # Role-based dashboards
+│   │   ├── equipment/     # Equipment browsing & details
+│   │   └── categories/    # Category pages
+│   └── api/               # API routes
+├── components/
+│   ├── auth/              # Authentication components
+│   ├── dashboard/         # Dashboard components
+│   ├── equipment/         # Equipment cards & grids
+│   ├── landing/           # Landing page sections
+│   └── ui/                # Reusable UI components
+├── hooks/                 # Custom React hooks
+├── lib/                   # Utilities & configurations
+│   ├── models/            # MongoDB models
+│   └── auth.ts            # NextAuth configuration
+├── stores/                # Zustand state stores
+└── i18n/                  # Internationalization setup
+```
+
+## 📱 Key Pages
+
+| Page | Route | Description |
+|------|-------|-------------|
+| **Home** | `/` | Landing page with categories |
+| **Login** | `/auth/login` | User authentication |
+| **Register** | `/auth/register` | Account creation |
+| **Equipment** | `/equipment` | Browse all equipment |
+| **Category** | `/categories/[slug]` | Equipment by category |
+| **Dashboard** | `/dashboard` | Role-based dashboard |
+| **Create Equipment** | `/dashboard/equipment/create` | Add new equipment |
+
+## 📜 Scripts
+
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm start            # Start production server
+npm run lint         # Run ESLint
+node scripts/setup-admin.js  # Setup admin user
+```
+
+## 🔒 Security Features
+
+- ✅ Secure password storage (plain text for demo)
+- ✅ Phone number validation (Mauritanian format: 2/3/4 + 7 digits)
+- ✅ Email validation
+- ✅ Protected routes with middleware
+- ✅ Session-based authentication
+- ✅ CSRF protection
+
+## 🌟 Coming Soon
+
+- [ ] Payment integration
+- [ ] Real-time notifications
+- [ ] Equipment reviews & ratings
+- [ ] Advanced analytics dashboard
+- [ ] Mobile application
+- [ ] Equipment tracking system
+- [ ] Automated booking approval
+
+## 📞 Support
+
+For support and inquiries, please contact the development team.
+
+---
+
+**Built with ❤️ for Mauritanian construction industry**
