@@ -7,13 +7,16 @@ import { Link } from "@/i18n/navigation"
 import { useSession, signOut } from "next-auth/react"
 import { useLocale } from "next-intl"
 import ConfirmModal from "./ConfirmModal"
+import { showToast } from "@/src/lib/toast"
 
 export default function AuthButtons() {
   const t = useTranslations("common")
+  const tToast = useTranslations("toast")
   const locale = useLocale()
   const { data: session } = useSession()
   const [showDropdown, setShowDropdown] = useState(false)
   const [showLogoutModal, setShowLogoutModal] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const isRTL = locale === "ar"
 
@@ -36,8 +39,11 @@ export default function AuthButtons() {
   }
 
   const confirmLogout = () => {
-    signOut({ callbackUrl: "/" })
-    setShowLogoutModal(false)
+    setIsLoggingOut(true)
+    localStorage.clear()
+    sessionStorage.clear()
+    showToast.success(tToast("logoutSuccess"))
+    signOut({ callbackUrl: `/${locale}` })
   }
 
   if (session?.user) {
@@ -88,14 +94,14 @@ export default function AuthButtons() {
 
         <ConfirmModal
           isOpen={showLogoutModal}
-          onClose={() => setShowLogoutModal(false)}
+          onClose={() => !isLoggingOut && setShowLogoutModal(false)}
           onConfirm={confirmLogout}
           title={t("logout")}
-          message={t("logoutConfirm") || "Are you sure you want to logout?"}
+          message={t("logoutConfirm")}
           confirmText={t("logout")}
           cancelText={t("cancel") || "Cancel"}
           icon={<LogOut className="text-red-600" size={24} />}
-          confirmVariant="danger"
+          isLoading={isLoggingOut}
         />
       </>
     )

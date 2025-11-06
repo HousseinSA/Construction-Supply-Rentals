@@ -1,4 +1,4 @@
-import { Phone } from "lucide-react"
+import { Phone, MailIcon } from "lucide-react"
 import { useTranslations } from "next-intl"
 
 export default function Footer() {
@@ -11,13 +11,19 @@ export default function Footer() {
           <h3 className="text-lg font-semibold mb-2">{t("footer.support")}</h3>
           <div className="space-y-2">
             <div className="flex items-center justify-center gap-2">
-              <span>📧</span>
-              <span>support@constructionrental.mr</span>
+              <span>
+                <MailIcon className="text-primary" size={16} />
+              </span>
+              <a
+                href="mailto:Kriliyengin@gmail.com"
+                className="hover:underline"
+              >
+                Kriliyengin@gmail.com
+              </a>
             </div>
             <div className="flex items-center justify-center gap-2">
               <span>
-                {" "}
-                <Phone size={16} />
+                <Phone className="text-primary" size={16} />
               </span>
               <span>+222 11 11 11 11</span>
             </div>

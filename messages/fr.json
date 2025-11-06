@@ -1,6 +1,6 @@
 {
   "common": {
-    "title": "Plateforme de Location d'Équipement de Construction",
+    "title": "Kriliy engin",
     "login": "Connexion",
     "logout": "Déconnexion",
     "signup": "S'inscrire",
@@ -10,7 +10,6 @@
     "km": "km",
     "phone": "+222 11 11 11 11",
     "logoutConfirm": "Confirmer la Déconnexion",
-    "logoutMessage": "Êtes-vous sûr de vouloir vous déconnecter ?",
     "cancel": "Annuler"
   },
   "equipment": {
@@ -213,6 +212,7 @@
     }
   },
   "dashboard": {
+    "goToHome": "Aller à l'Accueil",
     "admin": {
       "title": "Tableau de Bord Admin",
       "subtitle": "Gérez votre plateforme de location d'équipement de construction",
@@ -285,39 +285,6 @@
       "categoryLevage": "Levage & Manutention"
     }
   },
-  "admin": {
-    "equipment": {
-      "createTitle": "Créer Nouvel Équipement",
-      "createSubtitle": "Ajouter un équipement pour le rendre disponible à la location",
-      "backToDashboard": "Retour au Tableau de Bord",
-      "equipmentName": "Nom de l'Équipement",
-      "category": "Catégorie",
-      "selectCategory": "Sélectionner Catégorie",
-      "equipmentType": "Type d'Équipement",
-      "typePlaceholder": "ex: Pelle Hydraulique",
-      "location": "Localisation",
-      "priceType": "Type de Tarification",
-      "hourly": "Par Heure",
-      "daily": "Par Jour",
-      "perKm": "Par Kilomètre",
-      "price": "Prix (UM)",
-      "description": "Description",
-      "descriptionPlaceholder": "Décrivez les caractéristiques et capacités de l'équipement",
-      "specifications": "Spécifications",
-      "specificationsPlaceholder": "Spécifications techniques (poids, puissance, etc.)",
-      "images": "Images de l'Équipement",
-      "uploadImages": "Télécharger des photos de l'équipement",
-      "selectImages": "Sélectionner Images",
-      "cancel": "Annuler",
-      "createEquipment": "Créer Équipement",
-      "categories": {
-        "terrassement": "Terrassement",
-        "nivellementcompactage": "Nivellement & Compactage",
-        "transport": "Transport",
-        "levageemanutention": "Levage & Manutention"
-      }
-    }
-  },
   "toast": {
     "loginSuccess": "Connexion réussie !",
     "loginFailed": "Email/téléphone ou mot de passe incorrect",
@@ -332,6 +299,7 @@
     "invalidPhone": "Numéro de téléphone incorrect. Doit commencer par 2, 3 ou 4 et contenir 8 chiffres",
     "nameRequired": "Prénom et nom de famille requis",
     "passwordsNotMatch": "Les mots de passe ne correspondent pas",
-    "supplierFieldsRequired": "Nom de l'entreprise et localisation requis pour les fournisseurs"
+    "supplierFieldsRequired": "Nom de l'entreprise et localisation requis pour les fournisseurs",  "logoutSuccess": "D�connexion r�ussie!",   "logoutError": "Erreur lors de la d�connexion"
   }
 }
+

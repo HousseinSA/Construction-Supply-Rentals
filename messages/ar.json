@@ -1,6 +1,6 @@
 {
   "common": {
-    "title": "منصة تأجير معدات البناء",
+    "title": "كريلي إنجين",
     "login": "تسجيل الدخول",
     "logout": "تسجيل الخروج",
     "signup": "إنشاء حساب",
@@ -10,7 +10,6 @@
     "km": "KM",
     "phone": "+222 45 111111",
     "logoutConfirm": "تأكيد تسجيل الخروج",
-    "logoutMessage": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
     "cancel": "إلغاء"
   },
   "equipment": {
@@ -43,7 +42,6 @@
       "type": "نوع",
       "errorTitle": "خطأ في تحميل الفئات",
       "errorMessage": "حدث خطأ أثناء تحميل فئات المعدات. يرجى المحاولة مرة أخرى.",
-
       "terrassement": "حفريات",
       "terrassementDesc": "حفر وتحريك التربة",
       "nivellementcompactage": "تسوية وضغط",
@@ -216,6 +214,7 @@
     }
   },
   "dashboard": {
+    "goToHome": "الصفحة الرئيسية",
     "admin": {
       "title": "لوحة تحكم الإدارة",
       "subtitle": "إدارة منصة تأجير معدات البناء الخاصة بك",
@@ -288,74 +287,8 @@
       "categoryLevage": "رفع ومناولة"
     }
   },
-  "admin": {
-    "equipment": {
-      "createTitle": "إنشاء معدة جديدة",
-      "createSubtitle": "إضافة معدة لجعلها متاحة للإيجار",
-      "backToDashboard": "العودة إلى لوحة التحكم",
-      "equipmentName": "اسم المعدة",
-      "category": "الفئة",
-      "selectCategory": "اختر الفئة",
-      "equipmentType": "نوع المعدة",
-      "typePlaceholder": "مثال: حفارة هيدروليكية",
-      "location": "الموقع",
-      "priceType": "نوع التسعير",
-      "hourly": "بالساعة",
-      "daily": "باليوم",
-      "perKm": "بالكيلومتر",
-      "price": "السعر (أوقية)",
-      "description": "الوصف",
-      "descriptionPlaceholder": "وصف ميزات وقدرات المعدة",
-      "specifications": "المواصفات",
-      "specificationsPlaceholder": "المواصفات التقنية (الوزن، القوة، إلخ)",
-      "images": "صور المعدة",
-      "uploadImages": "رفع صور المعدة",
-      "selectImages": "اختيار الصور",
-      "cancel": "إلغاء",
-      "createEquipment": "إنشاء المعدة",
-      "categories": {
-        "terrassement": "حفريات",
-        "nivellementcompactage": "تسوية وضغط",
-        "transport": "نقل",
-        "levageemanutention": "رفع ومناولة"
-      }
-    }
-  },
-  "admin": {
-    "equipment": {
-      "createTitle": "إنشاء معدة جديدة",
-      "createSubtitle": "إضافة معدة لجعلها متاحة للإيجار",
-      "backToDashboard": "العودة إلى لوحة التحكم",
-      "equipmentName": "اسم المعدة",
-      "category": "الفئة",
-      "selectCategory": "اختر الفئة",
-      "equipmentType": "نوع المعدة",
-      "typePlaceholder": "مثال: حفارة هيدروليكية",
-      "location": "الموقع",
-      "priceType": "نوع التسعير",
-      "hourly": "بالساعة",
-      "daily": "باليوم",
-      "perKm": "بالكيلومتر",
-      "price": "السعر (أوقية)",
-      "description": "الوصف",
-      "descriptionPlaceholder": "صف ميزات وقدرات المعدة",
-      "specifications": "المواصفات",
-      "specificationsPlaceholder": "المواصفات التقنية (الوزن، القوة، إلخ)",
-      "images": "صور المعدة",
-      "uploadImages": "رفع صور المعدة",
-      "selectImages": "اختر الصور",
-      "cancel": "إلغاء",
-      "createEquipment": "إنشاء المعدة",
-      "categories": {
-        "terrassement": "حفريات",
-        "nivellementcompactage": "تسوية وضغط",
-        "transport": "نقل",
-        "levageemanutention": "رفع ومناولة"
-      }
-    }
-  },
   "toast": {
-    "loginSuccess": "تم تسجيل الدخول بنجاح!",
+    "loginSuccess": "تم تسجيل الدخول !",
     "loginFailed": "بريد إلكتروني/هاتف أو كلمة مرور غير صحيحة",
     "registerSuccess": "تم إنشاء الحساب بنجاح!",
     "registerFailed": "خطأ في إنشاء الحساب",
@@ -368,6 +301,8 @@
     "invalidPhone": "رقم الهاتف غير صحيح. يجب أن يبدأ بـ 2 أو 3 أو 4 ويكون 8 أرقام",
     "nameRequired": "الاسم الأول واسم العائلة مطلوبان",
     "passwordsNotMatch": "كلمات المرور غير متطابقة",
-    "supplierFieldsRequired": "اسم الشركة والموقع مطلوبان للموردين"
+    "supplierFieldsRequired": "اسم الشركة والموقع مطلوبان للموردين",
+    "logoutSuccess": "تم تسجيل الخروج بنجاح!",
+    "logoutError": "خطأ في تسجيل الخروج"
   }
 }

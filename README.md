@@ -5,16 +5,19 @@
 ## ✨ Features
 
 ### 🌍 Multilingual Support
+
 - **3 Languages**: Arabic (RTL), French, English
 - Seamless language switching
 - Fully localized content and UI
 
 ### 👥 Multi-Role System
+
 - **Admin**: Full platform management and oversight
 - **Supplier**: List and manage equipment inventory
 - **Renter**: Browse and rent construction equipment
 
 ### 🔐 Authentication & Security
+
 - NextAuth.js integration
 - Login with email or phone number
 - Role-based access control
@@ -22,6 +25,7 @@
 - Password and phone validation
 
 ### 📱 User Experience
+
 - Mobile-first responsive design
 - Optimized for all screen sizes
 - Smooth animations and transitions
@@ -29,12 +33,14 @@
 - Loading states
 
 ### 🔍 Search & Discovery
+
 - Filter equipment by city
 - Browse by equipment categories
 - Search by equipment type
 - Real-time availability status
 
 ### 🏷️ Equipment Categories
+
 - **Excavation** (Terrassement)
 - **Leveling & Compaction** (Nivellement et Compactage)
 - **Transport**
@@ -42,16 +48,16 @@
 
 ## 🚀 Tech Stack
 
-| Technology | Purpose |
-|------------|----------|
-| **Next.js 15** | React framework with App Router |
-| **TypeScript** | Type-safe development |
-| **MongoDB** | NoSQL database |
-| **NextAuth.js** | Authentication solution |
-| **Tailwind CSS** | Utility-first styling |
-| **next-intl** | Internationalization |
-| **Zustand** | State management |
-| **Lucide React** | Icon library |
+| Technology       | Purpose                         |
+| ---------------- | ------------------------------- |
+| **Next.js 15**   | React framework with App Router |
+| **TypeScript**   | Type-safe development           |
+| **MongoDB**      | NoSQL database                  |
+| **NextAuth.js**  | Authentication solution         |
+| **Tailwind CSS** | Utility-first styling           |
+| **next-intl**    | Internationalization            |
+| **Zustand**      | State management                |
+| **Lucide React** | Icon library                    |
 
 ## 🚀 Quick Start
 
@@ -62,6 +68,7 @@ npm run dev
 ```
 
 **Environment Variables:**
+
 ```env
 MONGODB_URI=your_mongodb_uri
 NEXTAUTH_SECRET=your_secret
@@ -71,6 +78,7 @@ NEXTAUTH_URL=http://localhost:3000
 ## 👤 User Roles & Dashboards
 
 ### 🔴 Admin Dashboard
+
 - ➕ Create new equipment
 - 📋 Manage all equipment listings
 - 👥 Manage users (suppliers & renters)
@@ -79,6 +87,7 @@ NEXTAUTH_URL=http://localhost:3000
 - ⚙️ Configure platform settings
 
 ### 🟢 Supplier Dashboard
+
 - ➕ Add equipment to platform
 - 📦 Manage equipment inventory
 - 📅 Track rental bookings
@@ -86,6 +95,7 @@ NEXTAUTH_URL=http://localhost:3000
 - 💰 View earnings
 
 ### 🔵 Renter Dashboard
+
 - 🔍 Browse available equipment
 - 📅 View current and past bookings
 - 📝 Submit rental requests
@@ -131,15 +141,15 @@ src/
 
 ## 📱 Key Pages
 
-| Page | Route | Description |
-|------|-------|-------------|
-| **Home** | `/` | Landing page with categories |
-| **Login** | `/auth/login` | User authentication |
-| **Register** | `/auth/register` | Account creation |
-| **Equipment** | `/equipment` | Browse all equipment |
-| **Category** | `/categories/[slug]` | Equipment by category |
-| **Dashboard** | `/dashboard` | Role-based dashboard |
-| **Create Equipment** | `/dashboard/equipment/create` | Add new equipment |
+| Page                 | Route                         | Description                  |
+| -------------------- | ----------------------------- | ---------------------------- |
+| **Home**             | `/`                           | Landing page with categories |
+| **Login**            | `/auth/login`                 | User authentication          |
+| **Register**         | `/auth/register`              | Account creation             |
+| **Equipment**        | `/equipment`                  | Browse all equipment         |
+| **Category**         | `/categories/[slug]`          | Equipment by category        |
+| **Dashboard**        | `/dashboard`                  | Role-based dashboard         |
+| **Create Equipment** | `/dashboard/equipment/create` | Add new equipment            |
 
 ## 📜 Scripts
 
@@ -159,16 +169,6 @@ node scripts/setup-admin.js  # Setup admin user
 - ✅ Protected routes with middleware
 - ✅ Session-based authentication
 - ✅ CSRF protection
-
-## 🌟 Coming Soon
-
-- [ ] Payment integration
-- [ ] Real-time notifications
-- [ ] Equipment reviews & ratings
-- [ ] Advanced analytics dashboard
-- [ ] Mobile application
-- [ ] Equipment tracking system
-- [ ] Automated booking approval
 
 ## 📞 Support
 

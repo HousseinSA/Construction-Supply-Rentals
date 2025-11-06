@@ -64,7 +64,7 @@ export default function LoginForm() {
 
       if (result?.ok) {
         showToast.success(tToast("loginSuccess"))
-        router.push("/dashboard")
+        router.replace("/dashboard")
       } else {
         showToast.error(tToast("loginFailed"))
         setLoading(false)

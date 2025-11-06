@@ -1,6 +1,7 @@
-import { NextRequest } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import createMiddleware from "next-intl/middleware"
 import { routing, Locale } from "@/i18n/routing"
+import { getToken } from "next-auth/jwt"
 
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -11,6 +12,38 @@ export default async function middleware(request: NextRequest) {
     ? (firstSegment as Locale)
     : undefined
 
+  const cookieLocale = request.cookies.get("NEXT_LOCALE")?.value as
+    | Locale
+    | undefined
+
+  if (
+    urlLocale &&
+    cookieLocale &&
+    urlLocale !== cookieLocale &&
+    routing.locales.includes(cookieLocale)
+  ) {
+    const pathWithoutLocale = pathname.replace(/^\/(ar|fr|en)/, "")
+    const newUrl = new URL(`/${cookieLocale}${pathWithoutLocale}`, request.url)
+    const response = NextResponse.redirect(newUrl)
+    response.headers.set("Cache-Control", "no-store, must-revalidate")
+    return response
+  }
+
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET,
+  })
+  const locale = cookieLocale || urlLocale || routing.defaultLocale
+
+  if (
+    token &&
+    pathname.match(/\/(ar|fr|en)\/auth\/(login|register|reset-password)/)
+  ) {
+    const response = NextResponse.redirect(new URL(`/${locale}`, request.url))
+    response.headers.set("Cache-Control", "no-store, must-revalidate")
+    return response
+  }
+
   const response = createMiddleware({
     locales: routing.locales,
     defaultLocale: routing.defaultLocale,
@@ -18,14 +51,7 @@ export default async function middleware(request: NextRequest) {
     localeDetection: true,
   })(request)
 
-  if (urlLocale) {
-    response.cookies.set("NEXT_LOCALE", urlLocale, {
-      maxAge: 60 * 60 * 24 * 365,
-      path: "/",
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-    })
-  }
+  response.headers.set("Cache-Control", "no-store, must-revalidate")
 
   return response
 }

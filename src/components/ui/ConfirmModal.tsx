@@ -10,6 +10,7 @@ interface ConfirmModalProps {
   confirmText: string
   cancelText: string
   icon?: ReactNode
+  isLoading?: boolean
 }
 
 export default function ConfirmModal({
@@ -21,6 +22,7 @@ export default function ConfirmModal({
   confirmText,
   cancelText,
   icon,
+  isLoading = false,
 }: ConfirmModalProps) {
   if (!isOpen) return null
 
@@ -44,11 +46,21 @@ export default function ConfirmModal({
           </div>
           <p className="text-gray-600 mb-6">{message}</p>
           <div className="flex gap-3">
-            <Button variant="secondary" onClick={onClose} className="flex-1">
+            <Button
+              variant="secondary"
+              onClick={onClose}
+              className="flex-1"
+              disabled={isLoading}
+            >
               {cancelText}
             </Button>
-            <Button onClick={onConfirm} variant="warning" className={`flex-1`}>
-              {confirmText}
+            <Button
+              onClick={onConfirm}
+              variant="warning"
+              className={`flex-1`}
+              disabled={isLoading}
+            >
+              {isLoading ? `${confirmText}...` : confirmText}
             </Button>
           </div>
         </div>

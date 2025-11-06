@@ -1,6 +1,6 @@
 {
   "common": {
-    "title": "Construction Rental Platform",
+    "title": "Kriliy engin",
     "login": "Login",
     "logout": "Logout",
     "signup": "Sign Up",
@@ -10,7 +10,6 @@
     "km": "km",
     "phone": "+222 11 11 11 11",
     "logoutConfirm": "Confirm Logout",
-    "logoutMessage": "Are you sure you want to logout?",
     "cancel": "Cancel"
   },
   "equipment": {
@@ -216,6 +215,7 @@
     }
   },
   "dashboard": {
+    "goToHome": "Go to Home",
     "admin": {
       "title": "Admin Dashboard",
       "subtitle": "Manage your construction equipment rental platform",
@@ -288,72 +288,6 @@
       "categoryLevage": "Lifting & Handling"
     }
   },
-  "admin": {
-    "equipment": {
-      "createTitle": "Create New Equipment",
-      "createSubtitle": "Add equipment to make it available for rental",
-      "backToDashboard": "Back to Dashboard",
-      "equipmentName": "Equipment Name",
-      "category": "Category",
-      "selectCategory": "Select Category",
-      "equipmentType": "Equipment Type",
-      "typePlaceholder": "e.g., Hydraulic Excavator",
-      "location": "Location",
-      "priceType": "Pricing Type",
-      "hourly": "Per Hour",
-      "daily": "Per Day",
-      "perKm": "Per Kilometer",
-      "price": "Price (UM)",
-      "description": "Description",
-      "descriptionPlaceholder": "Describe the equipment features and capabilities",
-      "specifications": "Specifications",
-      "specificationsPlaceholder": "Technical specifications (weight, power, etc.)",
-      "images": "Equipment Images",
-      "uploadImages": "Upload equipment photos",
-      "selectImages": "Select Images",
-      "cancel": "Cancel",
-      "createEquipment": "Create Equipment",
-      "categories": {
-        "terrassement": "Excavation",
-        "nivellementcompactage": "Leveling & Compaction",
-        "transport": "Transport",
-        "levageemanutention": "Lifting & Handling"
-      }
-    }
-  },
-  "admin": {
-    "equipment": {
-      "createTitle": "Create New Equipment",
-      "createSubtitle": "Add equipment to make it available for rental",
-      "backToDashboard": "Back to Dashboard",
-      "equipmentName": "Equipment Name",
-      "category": "Category",
-      "selectCategory": "Select Category",
-      "equipmentType": "Equipment Type",
-      "typePlaceholder": "e.g. Hydraulic Excavator",
-      "location": "Location",
-      "priceType": "Pricing Type",
-      "hourly": "Per Hour",
-      "daily": "Per Day",
-      "perKm": "Per Kilometer",
-      "price": "Price (UM)",
-      "description": "Description",
-      "descriptionPlaceholder": "Describe the equipment features and capabilities",
-      "specifications": "Specifications",
-      "specificationsPlaceholder": "Technical specifications (weight, power, etc.)",
-      "images": "Equipment Images",
-      "uploadImages": "Upload equipment photos",
-      "selectImages": "Select Images",
-      "cancel": "Cancel",
-      "createEquipment": "Create Equipment",
-      "categories": {
-        "terrassement": "Excavation",
-        "nivellementcompactage": "Leveling & Compaction",
-        "transport": "Transport",
-        "levageemanutention": "Lifting & Handling"
-      }
-    }
-  },
   "toast": {
     "loginSuccess": "Login successful!",
     "loginFailed": "Invalid email/phone or password",
@@ -368,6 +302,8 @@
     "invalidPhone": "Phone number is not correct. Must start with 2, 3, or 4 and be 8 digits long",
     "nameRequired": "First name and last name are required",
     "passwordsNotMatch": "Passwords do not match",
-    "supplierFieldsRequired": "Company name and location are required for suppliers"
+    "supplierFieldsRequired": "Company name and location are required for suppliers",
+    "logoutSuccess": "Logged out successfully!",
+    "logoutError": "Error logging out"
   }
 }
