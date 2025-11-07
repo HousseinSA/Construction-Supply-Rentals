@@ -32,7 +32,15 @@ export default function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
+    const { name, value } = e.target
+    if (name === "phone") {
+      const digits = value.replace(/\D/g, '')
+      if (digits.length <= 8) {
+        setFormData({ ...formData, phone: digits })
+      }
+      return
+    }
+    setFormData({ ...formData, [name]: value })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

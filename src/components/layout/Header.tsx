@@ -1,13 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useTranslations, useLocale } from "next-intl"
 import { Menu, X, Phone } from "lucide-react"
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher"
 import AuthButtons from "@/components/ui/AuthButtons"
+import Image from "next/image"
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [logoWidth, setLogoWidth] = useState(155)
   const locale = useLocale()
   const t = useTranslations("common")
 
@@ -22,16 +24,36 @@ export default function Header() {
     }
   }
 
+  useEffect(() => {
+    const updateWidth = () => {
+      if (window.innerWidth < 640) {
+        setLogoWidth(100)
+      } else if (window.innerWidth < 1024) {
+        setLogoWidth(130)
+      } else {
+        setLogoWidth(155)
+      }
+    }
+
+    updateWidth()
+    window.addEventListener("resize", updateWidth)
+    return () => window.removeEventListener("resize", updateWidth)
+  }, [])
+
   return (
     <header
       className={`bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm ${getFontClass()}`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
+        <div className="flex items-center justify-between h-16  ">
           <div className="flex items-center gap-2">
             <div className="flex items-center justify-center rounded-lg">
-              LOGO
+              <Image
+                width={logoWidth}
+                height={100}
+                src={"/Kriliy-engin-logo.png"}
+                alt="krilly engin logo"
+              />
             </div>
           </div>
 

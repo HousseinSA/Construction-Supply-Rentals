@@ -44,6 +44,12 @@ export default async function middleware(request: NextRequest) {
     return response
   }
 
+  if (!token && pathname.match(/\/(ar|fr|en)\/dashboard/)) {
+    const response = NextResponse.redirect(new URL(`/${locale}/auth/login`, request.url))
+    response.headers.set("Cache-Control", "no-store, must-revalidate")
+    return response
+  }
+
   const response = createMiddleware({
     locales: routing.locales,
     defaultLocale: routing.defaultLocale,

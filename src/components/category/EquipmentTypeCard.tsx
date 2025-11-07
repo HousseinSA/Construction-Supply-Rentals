@@ -30,7 +30,7 @@ export default function EquipmentTypeCard({
       href={`/equipment?type=${encodeURIComponent(type.name)}`}
       className={`bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full border border-gray-100 hover:border-primary/20 group cursor-pointer ${fontClass}`}
     >
-      <div className="h-36 relative overflow-hidden">
+      <div className="h-48 relative overflow-hidden">
         <Image
           src={categoryImage}
           alt={type.name}
@@ -39,18 +39,18 @@ export default function EquipmentTypeCard({
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
-      <div className="p-5 flex flex-col flex-1">
+      <div className="p-4 flex flex-col flex-1">
         <div className="flex-1">
-          <h3 className="text-lg font-medium text-gray-800 mb-2 leading-snug">
+          <h3 className="text-base font-medium text-gray-800 mb-1.5 leading-tight">
             {getEquipmentTypeName(type.name)}
           </h3>
-          <p className="text-sm text-gray-500 mb-4 leading-relaxed">
+          <p className="text-sm text-gray-500 mb-3 leading-snug line-clamp-2">
             {getEquipmentTypeDesc(type.name) ||
               type.description ||
               t("defaultEquipmentDesc")}
           </p>
         </div>
-        <div className="flex justify-between items-center mt-auto pt-3 border-t border-gray-50">
+        <div className="flex justify-between items-center mt-auto pt-2.5 border-t border-gray-50">
           <div className="flex items-center space-x-1">
             <span className="text-base font-medium text-primary">
               {type.equipmentCount || 0}

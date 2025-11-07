@@ -299,7 +299,8 @@
     "invalidPhone": "Numéro de téléphone incorrect. Doit commencer par 2, 3 ou 4 et contenir 8 chiffres",
     "nameRequired": "Prénom et nom de famille requis",
     "passwordsNotMatch": "Les mots de passe ne correspondent pas",
-    "supplierFieldsRequired": "Nom de l'entreprise et localisation requis pour les fournisseurs",  "logoutSuccess": "D�connexion r�ussie!",   "logoutError": "Erreur lors de la d�connexion"
+    "supplierFieldsRequired": "Nom de l'entreprise et localisation requis pour les fournisseurs",
+    " logoutSuccess": "Déconnexion réussie!",
+    "logoutError": "Erreur lors de la connexion"
   }
 }
-
