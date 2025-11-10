@@ -3,6 +3,7 @@ import { useTranslations } from "next-intl"
 import { EquipmentType } from "@/src/lib/models"
 import { Link } from "@/src/i18n/navigation"
 import { useFontClass } from "@/src/hooks/useFontClass"
+import { getEquipmentImage } from "@/src/lib/equipment-images"
 import Button from "../ui/Button"
 
 interface EquipmentTypeWithCount extends EquipmentType {
@@ -30,14 +31,13 @@ export default function EquipmentTypeCard({
       href={`/equipment?type=${encodeURIComponent(type.name)}`}
       className={`bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full border border-gray-100 hover:border-primary/20 group cursor-pointer ${fontClass}`}
     >
-      <div className="h-48 relative overflow-hidden">
+      <div className="relative w-full aspect-[3/2] bg-gray-50 rounded-t-2xl overflow-hidden">
         <Image
-          src={categoryImage}
+          src={getEquipmentImage(type.name)}
           alt={type.name}
           fill
-          className="object-cover"
+          className="object-contain scale-120"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
       <div className="p-4 flex flex-col flex-1">
         <div className="flex-1">

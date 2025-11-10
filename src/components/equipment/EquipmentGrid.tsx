@@ -20,16 +20,17 @@ interface EquipmentGridProps {
   equipment: Equipment[]
   loading: boolean
   selectedCity?: string | null
+  listingType?: string | null
 }
 
-export default function EquipmentGrid({ equipment, loading, selectedCity }: EquipmentGridProps) {
+export default function EquipmentGrid({ equipment, loading, selectedCity, listingType }: EquipmentGridProps) {
   if (loading) {
     const skeletonCount = equipment.length || 6
     return <LoadingSkeleton count={skeletonCount} type="card" />
   }
 
   if (equipment.length === 0) {
-    return <EmptyState type="equipment" selectedCity={selectedCity} />
+    return <EmptyState type="equipment" selectedCity={selectedCity} listingType={listingType} />
   }
 
   return (

@@ -1,8 +1,10 @@
-import { Phone, MailIcon } from "lucide-react"
-import { useTranslations } from "next-intl"
+import { MailIcon } from "lucide-react"
+import { useTranslations, useLocale } from "next-intl"
+import WhatsAppLink from "@/components/ui/WhatsAppLink"
 
 export default function Footer() {
   const t = useTranslations("landing")
+  const locale = useLocale()
 
   return (
     <footer className="bg-gray-900 text-white py-8">
@@ -22,10 +24,12 @@ export default function Footer() {
               </a>
             </div>
             <div className="flex items-center justify-center gap-2">
-              <span>
-                <Phone className="text-primary" size={16} />
-              </span>
-              <span>+222 11 11 11 11</span>
+              <WhatsAppLink
+                className={`text-white hover:text-green-300 [&>svg]:text-green-400 ${locale === 'ar' ? 'flex-row-reverse' : ''}`}
+                iconSize={16}
+                phoneNumber="22245111111"
+                displayText="+222 45 11 11 11"
+              />
             </div>
           </div>
         </div>

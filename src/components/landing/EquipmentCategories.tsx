@@ -35,25 +35,25 @@ export default function EquipmentCategories() {
               <Link
                 key={category._id}
                 href={`/categories/${categorySlug}`}
-                className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group border border-gray-100 hover:border-primary overflow-hidden transform hover:scale-105 block"
+                className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group border border-gray-100 hover:border-primary overflow-hidden transform hover:scale-105 flex flex-col"
               >
-                <div className="w-full h-32 relative overflow-hidden">
+                <div className="w-full h-40 relative overflow-hidden">
                   {image ? (
                     <Image
                       src={image}
                       alt={t(`categories.${translationKey}`)}
                       fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-300"
+                      className="object-cover ken-burns-effect"
                     />
                   ) : (
                     <div className="w-full h-full bg-gray-200 animate-pulse" />
                   )}
                 </div>
-                <div className="p-6 text-center">
+                <div className="p-4 text-center flex flex-col flex-1">
                   <h3 className="font-bold text-base text-gray-900 mb-2 group-hover:text-primary transition-colors">
                     {t(`categories.${translationKey}`)}
                   </h3>
-                  <p className="text-sm text-gray-600 mb-3">
+                  <p className="text-sm text-gray-600 mb-4 flex-1">
                     {t(`categories.${translationKey}Desc`)}
                   </p>
                   <p className="text-sm text-primary font-semibold bg-primary/10 px-4 py-2 rounded-full inline-block">

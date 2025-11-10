@@ -9,7 +9,11 @@ import { useLocale } from "next-intl"
 import ConfirmModal from "./ConfirmModal"
 import { showToast } from "@/src/lib/toast"
 
-export default function AuthButtons() {
+interface AuthButtonsProps {
+  onActionClick?: () => void
+}
+
+export default function AuthButtons({ onActionClick }: AuthButtonsProps) {
   const t = useTranslations("common")
   const tToast = useTranslations("toast")
   const locale = useLocale()
@@ -52,19 +56,19 @@ export default function AuthButtons() {
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setShowDropdown(!showDropdown)}
-            className="w-10 h-10 rounded-full text-primary border border-primary font-semibold flex items-center justify-center hover:shadow-sm transition-all duration-200  border- shadow-md"
+            className="w-10 h-10 rounded-full text-primary border border-primary font-semibold flex items-center justify-center "
           >
-            <User size={16} />
+            <User size={20} />
           </button>
 
           {showDropdown && (
             <div
               className={`absolute ${
                 isRTL ? "left-0" : "right-0"
-              } mt-2 w-56 bg-white/95 backdrop-blur-md rounded-xl shadow-xl border border-gray-200 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50`}
+              } top-full mt-1 w-64 sm:w-56 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50`}
             >
               <div className="px-4 py-3 border-b border-gray-100">
-                <p className="text-sm font-semibold text-gray-900">
+                <p className="text-sm font-semibold text-gray-900 truncate">
                   {session.user.name}
                 </p>
                 <p className="text-xs text-gray-500 truncate">
@@ -74,15 +78,18 @@ export default function AuthButtons() {
               <div className="py-1">
                 <Link
                   href="/dashboard"
-                  onClick={() => setShowDropdown(false)}
-                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  onClick={() => {
+                    setShowDropdown(false)
+                    onActionClick?.()
+                  }}
+                  className={`flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors ${isRTL ? 'flex-row-reverse text-right' : ''}`}
                 >
                   <LayoutDashboard size={16} />
                   {t("dashboard")}
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                  className={`w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors ${isRTL ? 'flex-row-reverse text-right' : ''}`}
                 >
                   <LogOut size={16} />
                   {t("logout")}
@@ -108,10 +115,11 @@ export default function AuthButtons() {
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-2">
       <Link
         href="/auth/login"
-        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary transition-colors"
+        onClick={onActionClick}
+        className="flex items-center justify-center gap-2 px-4 py-3 sm:py-2 text-sm font-medium text-gray-700 hover:text-primary transition-colors border border-gray-200 rounded-lg hover:border-primary/30"
       >
         <LogIn size={16} />
         <span>{t("login")}</span>
@@ -119,7 +127,8 @@ export default function AuthButtons() {
 
       <Link
         href="/auth/register"
-        className="flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary-dark transition-colors"
+        onClick={onActionClick}
+        className="flex items-center justify-center gap-2 px-4 py-3 sm:py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary-dark transition-colors"
       >
         <User size={16} />
         <span>{t("signup")}</span>

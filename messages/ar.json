@@ -9,6 +9,8 @@
     "hour": "ساعة",
     "km": "KM",
     "phone": "+222 45 111111",
+    "equipment": "المعدات",
+    "equipmentForSale": "معدات للبيع",
     "logoutConfirm": "تأكيد تسجيل الخروج",
     "cancel": "إلغاء"
   },
@@ -17,10 +19,15 @@
     "equipmentInCity": "المعدات في {city}",
     "rentNow": "استأجر الآن",
     "viewDetails": "عرض التفاصيل",
+    "forSale": "للبيع",
     "noEquipmentFound": "لم يتم العثور على معدات",
     "noEquipmentFoundDesc": "لا توجد معدات متاحة حالياً. يرجى المحاولة مرة أخرى لاحقاً.",
     "noEquipmentInCity": "لا توجد معدات متاحة ",
     "noEquipmentInCityDesc": "لا توجد معدات متاحة حالياً في",
+    "noEquipmentForSaleFound": "لم يتم العثور على معدات للبيع",
+    "noEquipmentForSaleFoundDesc": "لا توجد حالياً معدات متاحة للبيع.",
+    "noEquipmentForSaleInCity": "لا توجد معدات للبيع في هذه المدينة",
+    "noEquipmentForSaleInCityDesc": "لا توجد معدات متاحة حالياً للشراء في",
     "loading": "جاري التحميل...",
     "equipmentNotFound": "لم يتم العثور على المعدة",
     "equipmentNotFoundDesc": "المعدة التي تبحث عنها غير موجودة أو تم حذفها.",
@@ -77,6 +84,46 @@
       "step4": {
         "title": "احصل على المعدات",
         "description": "استلم معداتك وابدأ مشروع البناء الخاص بك."
+      }
+    },
+    "services": {
+      "title": "خدماتنا",
+      "subtitle": "اكتشف مجموعتنا الشاملة من خدمات تأجير معدات البناء، المصممة لتلبية جميع احتياجات مشروعك.",
+      "equipmentRental": {
+        "title": "تأجير المعدات",
+        "description": "مجموعة واسعة من معدات البناء الحديثة والمصانة جيداً متاحة للإيجار.",
+        "feature1": "30+ نوع معدات متخصصة",
+        "feature2": "4 فئات رئيسية مغطاة",
+        "feature3": "نظام حجز إلكتروني"
+      },
+      "qualityAssurance": {
+        "title": "ضمان الجودة",
+        "description": "منصة آمنة مع تحقق الشركاء وعملية موافقة الإدارة.",
+        "feature1": "شركاء موردين متحقق منهم",
+        "feature2": "عملية موافقة إدارية",
+        "feature3": "نظام طلبات آمن"
+      },
+      "flexibleRental": {
+        "title": "إيجار مرن",
+        "description": "خيارات تسعير مصممة حسب احتياجاتك: بالساعة، اليوم أو بالكيلومتر.",
+        "feature1": "تسعير بالساعة، اليوم أو بالكيلومتر",
+        "feature2": "خيارات إيجار وبيع",
+        "feature3": "طلبات مخصصة"
+      },
+      "expertSupport": {
+        "title": "دعم العملاء",
+        "description": "مساعدة شاملة لمساعدتك في اختيار المعدات المناسبة والإجابة على جميع أسئلتك.",
+        "feature1": "إرشاد حول مواصفات المعدات",
+        "feature2": "مساعدة في اختيار الآلات المناسبة",
+        "feature3": "الإجابة على الأسئلة التقنية"
+      },
+
+      "nationwide": {
+        "title": "تغطية وطنية",
+        "description": "متواجدون في جميع المدن الرئيسية لخدمتك عن قرب.",
+        "feature1": "8 مدن مغطاة",
+        "feature2": "خدمة التوصيل والاستلام",
+        "feature3": "خدمة محلية شخصية"
       }
     },
     "datePicker": {
@@ -206,7 +253,7 @@
       "palanelectrique": "رافعة كهربائية",
       "palanelectriqueDesc": "جهاز رفع كهربائي للمناولة العمودية",
       "nacelleelevratrice": "منصة عمل هوائية",
-      "nacelleelevatriceDesc": "منصة مرتفعة للعمل في الارتفاع بأمان",
+      "nacelleelevratriceDesc": "منصة عمل مرتفعة للوصول الآمن للأعمال في الارتفاعات العالية",
       "tracteurroutier": "جرار طريق",
       "tracteurroutierDesc": "شاحنة ثقيلة مع مقطورة للنقل بعيد المدى",
       "camionplateau": "شاحنة منصة",
@@ -266,6 +313,9 @@
       "selectEquipmentType": "اختر نوع المعدة",
       "city": "المدينة",
       "selectCity": "اختر المدينة",
+      "listingType": "نوع الإعلان",
+      "forRent": "للإيجار",
+      "forSale": "للبيع",
       "priceType": "نوع التسعير",
       "selectPriceType": "اختر نوع التسعير",
       "hourly": "بالساعة",

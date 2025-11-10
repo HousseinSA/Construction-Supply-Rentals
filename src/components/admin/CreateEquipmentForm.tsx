@@ -23,6 +23,7 @@ export default function CreateEquipmentForm() {
     category: "",
     type: "",
     location: "",
+    listingType: "forRent" as "forSale" | "forRent",
     priceType: "hourly",
     price: "",
     description: "",
@@ -38,7 +39,7 @@ export default function CreateEquipmentForm() {
   }
 
   const handleTypeChange = (value: string) => {
-    setFormData({ ...formData, type: value, priceType: "" })
+    setFormData({ ...formData, type: value, priceType: formData.listingType === "forSale" ? "" : "" })
   }
 
   const handlePriceTypeChange = (value: string) => {
@@ -72,6 +73,60 @@ export default function CreateEquipmentForm() {
 
         <AuthCard>
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Listing Type Selection */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-4">
+                  {t("listingType")}
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, listingType: "forRent" })}
+                    className={`p-4 border-2 rounded-xl transition-all duration-200 ${
+                      formData.listingType === "forRent"
+                        ? "border-primary bg-primary/5"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                        formData.listingType === "forRent" ? "border-primary" : "border-gray-300"
+                      }`}>
+                        {formData.listingType === "forRent" && (
+                          <div className="w-3 h-3 rounded-full bg-primary" />
+                        )}
+                      </div>
+                      <div className="text-left">
+                        <h3 className="font-semibold text-gray-900">{t("forRent")}</h3>
+                      </div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, listingType: "forSale" })}
+                    className={`p-4 border-2 rounded-xl transition-all duration-200 ${
+                      formData.listingType === "forSale"
+                        ? "border-primary bg-primary/5"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                        formData.listingType === "forSale" ? "border-primary" : "border-gray-300"
+                      }`}>
+                        {formData.listingType === "forSale" && (
+                          <div className="w-3 h-3 rounded-full bg-primary" />
+                        )}
+                      </div>
+                      <div className="text-left">
+                        <h3 className="font-semibold text-gray-900">{t("forSale")}</h3>
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Input
                   label={t("equipmentName")}
@@ -97,11 +152,13 @@ export default function CreateEquipmentForm() {
                   onChange={handleLocationChange}
                 />
 
-                <PricingTypeDropdown
-                  equipmentType={formData.type}
-                  value={formData.priceType}
-                  onChange={handlePriceTypeChange}
-                />
+                {formData.listingType === "forRent" && formData.type && (
+                  <PricingTypeDropdown
+                    equipmentType={formData.type}
+                    value={formData.priceType}
+                    onChange={handlePriceTypeChange}
+                  />
+                )}
 
                 <Input
                   label={t("price")}

@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter, usePathname } from "@/i18n/navigation"
 import { useLocale } from "next-intl"
+import { useSearchParams } from "next/navigation"
 import { ChevronDown } from "lucide-react"
 import Image from "next/image"
 import { useClickOutside } from "@/src/hooks/useClickOutside"
@@ -13,10 +14,15 @@ const languages = [
   { code: "ar", name: "العربية" },
 ]
 
-export default function LanguageSwitcher() {
+interface LanguageSwitcherProps {
+  onLanguageChange?: () => void
+}
+
+export default function LanguageSwitcher({ onLanguageChange }: LanguageSwitcherProps) {
   const [isOpen, setIsOpen] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
+  const searchParams = useSearchParams()
   const locale = useLocale()
   const dropdownRef = useClickOutside<HTMLDivElement>(() => setIsOpen(false))
 
@@ -24,9 +30,13 @@ export default function LanguageSwitcher() {
 
   const handleLanguageChange = (langCode: string) => {
     document.cookie = `NEXT_LOCALE=${langCode}; path=/; max-age=${60 * 60 * 24}`
-    router.replace(pathname, { locale: langCode })
+    // Preserve query parameters
+    const queryString = searchParams.toString()
+    const fullPath = queryString ? `${pathname}?${queryString}` : pathname
+    router.replace(fullPath, { locale: langCode })
     router.refresh()
     setIsOpen(false)
+    onLanguageChange?.()
   }
 
   return (
@@ -54,12 +64,12 @@ export default function LanguageSwitcher() {
       </button>
 
       {isOpen && (
-        <div className="absolute top-full mt-1 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[140px]">
+        <div className="absolute top-full mt-1 right-0 bg-white border border-gray-200 rounded-xl shadow-xl z-50 min-w-[140px] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
           {languages.map((lang) => (
             <button
               key={lang.code}
               onClick={() => handleLanguageChange(lang.code)}
-              className={`w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg cursor-pointer ${
+              className={`w-full flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-50 transition-colors cursor-pointer ${
                 locale === lang.code
                   ? "bg-gray-50 text-primary"
                   : "text-gray-700"

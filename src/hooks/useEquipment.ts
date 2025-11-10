@@ -14,7 +14,7 @@ interface Equipment {
   pricing: Pricing
 }
 
-export function useEquipment(selectedCity?: string | null, selectedType?: string | null) {
+export function useEquipment(selectedCity?: string | null, selectedType?: string | null, listingType?: string | null) {
   const [equipment, setEquipment] = useState<Equipment[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -26,11 +26,15 @@ export function useEquipment(selectedCity?: string | null, selectedType?: string
         setError(null)
         const params = new URLSearchParams()
         params.set("available", "true")
-        if (selectedCity) {
+        // Only filter by city if not showing equipment for sale
+        if (selectedCity && listingType !== 'forSale') {
           params.set("city", selectedCity)
         }
         if (selectedType) {
           params.set("type", selectedType)
+        }
+        if (listingType) {
+          params.set("listingType", listingType)
         }
         const response = await fetch(`/api/equipment?${params.toString()}`)
         const data = await response.json()
@@ -43,7 +47,7 @@ export function useEquipment(selectedCity?: string | null, selectedType?: string
       }
     }
     fetchEquipment()
-  }, [selectedCity, selectedType])
+  }, [selectedCity, selectedType, listingType])
 
   return { equipment, loading, error }
 }

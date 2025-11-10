@@ -9,6 +9,8 @@
     "hour": "hour",
     "km": "km",
     "phone": "+222 11 11 11 11",
+    "equipment": "Equipment",
+    "equipmentForSale": "Equipment For Sale",
     "logoutConfirm": "Confirm Logout",
     "cancel": "Cancel"
   },
@@ -21,6 +23,10 @@
     "noEquipmentFoundDesc": "No equipment is currently available. Please try again later.",
     "noEquipmentInCity": "No Equipment Available",
     "noEquipmentInCityDesc": "No equipment is currently available in",
+    "noEquipmentForSaleFound": "No Equipment For Sale Found",
+    "noEquipmentForSaleFoundDesc": "There are currently no equipment items available for purchase.",
+    "noEquipmentForSaleInCity": "No Equipment For Sale In This City",
+    "noEquipmentForSaleInCityDesc": "No equipment is currently available for purchase in",
     "loading": "Loading...",
     "equipmentNotFound": "Equipment Not Found",
     "equipmentNotFoundDesc": "The equipment you're looking for doesn't exist or has been removed.",
@@ -78,6 +84,46 @@
       "step4": {
         "title": "Get Equipment",
         "description": "Receive your equipment and start your construction project."
+      }
+    },
+    "services": {
+      "title": "Our Services",
+      "subtitle": "Discover our comprehensive range of construction equipment rental services, designed to meet all your project needs.",
+      "equipmentRental": {
+        "title": "Equipment Rental",
+        "description": "Wide range of modern, well-maintained construction equipment available for rent.",
+        "feature1": "30+ specialized equipment types",
+        "feature2": "4 main categories covered",
+        "feature3": "Online booking system"
+      },
+      "qualityAssurance": {
+        "title": "Quality Assurance",
+        "description": "Secure platform with partner verification and admin approval process.",
+        "feature1": "Verified partner suppliers",
+        "feature2": "Admin approval process",
+        "feature3": "Secure request system"
+      },
+      "flexibleRental": {
+        "title": "Flexible Rental",
+        "description": "Pricing options tailored to your needs: hourly, daily, or per kilometer rates.",
+        "feature1": "Hourly, daily, or per km pricing",
+        "feature2": "Rental and sale options",
+        "feature3": "Custom requests"
+      },
+      "expertSupport": {
+        "title": "Customer Support",
+        "description": "Complete assistance to help you choose the right equipment and answer all your questions.",
+        "feature1": "Equipment specifications guidance",
+        "feature2": "Help choosing suitable machinery",
+        "feature3": "Technical questions answered"
+      },
+
+      "nationwide": {
+        "title": "Nationwide Coverage",
+        "description": "Present in all major cities to serve you closer to home.",
+        "feature1": "8 cities covered",
+        "feature2": "Delivery and pickup service",
+        "feature3": "Personalized local service"
       }
     },
     "datePicker": {
@@ -145,13 +191,13 @@
   },
   "categories": {
     "terrassement": "Excavation",
-    "terrassementDesc": " excavation and earthmoving equipment for construction projects",
+    "terrassementDesc": " excavation and earthmoving equipment ",
     "nivellementcompactage": "Leveling & Compaction",
     "nivellementcompactageDesc": "Ground leveling and soil compaction equipment for site preparation",
     "transport": "Transport",
-    "transportDesc": "Material and equipment transport vehicles for construction sites",
+    "transportDesc": "Material and equipment transport vehicles ",
     "levageemanutention": "Lifting & Handling",
-    "levageemanutentionDesc": "Heavy lifting and material handling equipment for construction work",
+    "levageemanutentionDesc": "Heavy lifting and material handling equipment ",
     "available": "available",
     "viewEquipment": "View Equipment",
     "noEquipmentTitle": "No Equipment Available",
@@ -267,6 +313,9 @@
       "selectEquipmentType": "Select Equipment Type",
       "city": "City",
       "selectCity": "Select City",
+      "listingType": "Listing Type",
+      "forRent": "For Rent",
+      "forSale": "For Sale",
       "priceType": "Pricing Type",
       "selectPriceType": "Select Pricing Type",
       "hourly": "Per Hour",

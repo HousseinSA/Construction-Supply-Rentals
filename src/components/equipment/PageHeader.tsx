@@ -4,11 +4,22 @@ import BackButton from "@/components/ui/BackButton"
 
 interface PageHeaderProps {
   selectedCity?: string | null
+  listingType?: string | null
 }
 
-export default function PageHeader({ selectedCity }: PageHeaderProps) {
+export default function PageHeader({ selectedCity, listingType }: PageHeaderProps) {
   const t = useTranslations("equipment")
+  const commonT = useTranslations("common")
   const { getDisplayValue } = useCityData()
+
+  const getTitle = () => {
+    const baseTitle = listingType === 'forSale' ? commonT("equipmentForSale") : t("allEquipment")
+    // For equipment for sale, don't show city - show all equipment for sale regardless of city
+    if (listingType === 'forSale') {
+      return baseTitle
+    }
+    return selectedCity ? `${baseTitle} - ${getDisplayValue(selectedCity)}` : baseTitle
+  }
 
   return (
     <div className="relative h-32 bg-gradient-to-r from-primary to-primary-dark">
@@ -18,9 +29,7 @@ export default function PageHeader({ selectedCity }: PageHeaderProps) {
         
         <div className="text-center flex-1">
           <h1 className="text-2xl sm:text-3xl font-bold">
-            {selectedCity
-              ? `${t("allEquipment")} - ${getDisplayValue(selectedCity)}`
-              : t("allEquipment")}
+            {getTitle()}
           </h1>
         </div>
         

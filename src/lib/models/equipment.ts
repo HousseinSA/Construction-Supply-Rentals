@@ -14,6 +14,7 @@ export interface Equipment {
     dailyRate?: number
     kmRate?: number
     tonRate?: number           // Price per ton for Camion benne
+    salePrice?: number         // Price if equipment is for sale
   }
   location: string
   images: string[]
@@ -32,6 +33,7 @@ export interface Equipment {
   usageCategory: UsageCategory // Auto-determined by equipment category
   status: EquipmentStatus
   isAvailable: boolean
+  listingType: 'forSale' | 'forRent' // Type of listing
   createdBy: ObjectId          // Who created this equipment (admin or supplier)
   approvedBy?: ObjectId        // Admin who approved (if created by supplier)
   approvedAt?: Date            // When it was approved

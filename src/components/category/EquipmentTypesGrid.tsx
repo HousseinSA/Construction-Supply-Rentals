@@ -24,7 +24,7 @@ export default function EquipmentTypesGrid({
 }: EquipmentTypesGridProps) {
   if (loading) {
     const skeletonCount = equipmentTypes.length || 6
-    return <LoadingSkeleton count={skeletonCount} type="card" />
+    return <LoadingSkeleton count={skeletonCount} type="equipmentType" />
   }
 
   if (equipmentTypes.length === 0) {

@@ -33,7 +33,7 @@ export default function ConfirmModal({
         onClick={onClose}
       />
       <div className="relative h-full flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in fade-in zoom-in-95 duration-200">
+        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-4 sm:p-6 animate-in fade-in zoom-in-95 duration-200">
           <div className="flex items-center gap-3 mb-4">
             {icon && (
               <div
@@ -42,14 +42,14 @@ export default function ConfirmModal({
                 {icon}
               </div>
             )}
-            <h3 className="text-xl font-bold text-gray-900">{title}</h3>
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900">{title}</h3>
           </div>
-          <p className="text-gray-600 mb-6">{message}</p>
-          <div className="flex gap-3">
+          <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">{message}</p>
+          <div className="flex gap-2 sm:gap-3">
             <Button
               variant="secondary"
               onClick={onClose}
-              className="flex-1"
+              className="flex-1 !py-2 !px-4 sm:!py-3 sm:!px-8 !text-sm sm:!text-base"
               disabled={isLoading}
             >
               {cancelText}
@@ -57,7 +57,7 @@ export default function ConfirmModal({
             <Button
               onClick={onConfirm}
               variant="warning"
-              className={`flex-1`}
+              className="flex-1 !py-2 !px-4 sm:!py-3 sm:!px-8 !text-sm sm:!text-base"
               disabled={isLoading}
             >
               {isLoading ? `${confirmText}...` : confirmText}

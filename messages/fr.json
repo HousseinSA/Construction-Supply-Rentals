@@ -9,21 +9,28 @@
     "hour": "heure",
     "km": "km",
     "phone": "+222 11 11 11 11",
+    "equipment": "Matériel",
+    "equipmentForSale": "Matériel À Vendre",
     "logoutConfirm": "Confirmer la Déconnexion",
     "cancel": "Annuler"
   },
   "equipment": {
-    "allEquipment": "Tous les Équipements",
-    "equipmentInCity": "Équipements à {city}",
+    "allEquipment": "Tout le Matériel",
+    "equipmentInCity": "Matériel à {city}",
     "rentNow": "Louer Maintenant",
     "viewDetails": "Voir Détails",
-    "noEquipmentFound": "Aucun Équipement Trouvé",
-    "noEquipmentFoundDesc": "Aucun équipement n'est actuellement disponible. Veuillez réessayer plus tard.",
-    "noEquipmentInCity": "Aucun Équipement Disponible",
-    "noEquipmentInCityDesc": "Aucun équipement n'est actuellement disponible à",
+    "forSale": "À Vendre",
+    "noEquipmentFound": "Aucun Matériel Trouvé",
+    "noEquipmentFoundDesc": "Aucun matériel n'est actuellement disponible. Veuillez réessayer plus tard.",
+    "noEquipmentInCity": "Aucun Matériel Disponible",
+    "noEquipmentInCityDesc": "Aucun matériel n'est actuellement disponible à",
+    "noEquipmentForSaleFound": "Aucun Matériel À Vendre Trouvé",
+    "noEquipmentForSaleFoundDesc": "Il n'y a actuellement aucun matériel disponible à l'achat.",
+    "noEquipmentForSaleInCity": "Aucun Matériel À Vendre Dans Cette Ville",
+    "noEquipmentForSaleInCityDesc": "Aucun matériel n'est actuellement disponible à l'achat à",
     "loading": "Chargement...",
-    "equipmentNotFound": "Équipement Introuvable",
-    "equipmentNotFoundDesc": "L'équipement que vous recherchez n'existe pas ou a été supprimé.",
+    "equipmentNotFound": "Matériel Introuvable",
+    "equipmentNotFoundDesc": "Le matériel que vous recherchez n'existe pas ou a été supprimé.",
     "pricing": "Tarification",
     "specifications": "Spécifications",
     "goBack": "Retour"
@@ -35,7 +42,7 @@
       "searchPlaceholder": "Sélectionnez une ville",
       "datesPlaceholder": "Sélectionnez les dates",
       "searchButton": "Rechercher",
-      "browseAllButton": "Parcourir Tous les Équipements"
+      "browseAllButton": "Parcourir Tout le Matériel"
     },
     "categories": {
       "title": "Catégories Populaires",
@@ -49,9 +56,9 @@
       "levageemanutention": "Levage & Manutention",
       "levageemanutentionDesc": "Levage lourd et manutention",
       "enginsspecialises": "Engins Spécialisés",
-      "enginsspecialisesDesc": "Équipements pour tâches spécialisées",
+      "enginsspecialisesDesc": "Matériel pour tâches spécialisées",
       "enginslegerseteauxiliaires": "Engins Légers Auxiliaires",
-      "enginslegerseteauxiliairesDesc": "Petits outils et équipements auxiliaires"
+      "enginslegerseteauxiliairesDesc": "Petits outils et matériel auxiliaires"
     },
     "features": {
       "title": "Pourquoi Choisir Notre Plateforme?",
@@ -62,7 +69,7 @@
       "subtitle": "Louez de l'équipement en quatre étapes simples",
       "step1": {
         "title": "Soumettre une Demande",
-        "description": "Sélectionnez l'équipement et soumettez une demande de location avec vos détails."
+        "description": "Sélectionnez le matériel et soumettez une demande de location avec vos détails."
       },
       "step2": {
         "title": "Approbation Admin",
@@ -74,7 +81,47 @@
       },
       "step4": {
         "title": "Obtenir l'Équipement",
-        "description": "Recevez votre équipement et commencez votre projet de construction."
+        "description": "Recevez votre matériel et commencez votre projet de construction."
+      }
+    },
+    "services": {
+      "title": "Nos Services",
+      "subtitle": "Découvrez notre gamme complète de services de location d'équipements de construction, conçus pour répondre à tous vos besoins de projet.",
+      "equipmentRental": {
+        "title": "Location d'Équipements",
+        "description": "Large gamme d'équipements de construction modernes et bien entretenus disponibles à la location.",
+        "feature1": "30+ types d'équipements spécialisés",
+        "feature2": "4 catégories principales couvertes",
+        "feature3": "Système de réservation en ligne"
+      },
+      "qualityAssurance": {
+        "title": "Assurance Qualité",
+        "description": "Plateforme sécurisée avec vérification des partenaires et processus d'approbation admin.",
+        "feature1": "Vérification des fournisseurs partenaires",
+        "feature2": "Processus d'approbation administrateur",
+        "feature3": "Système de demandes sécurisé"
+      },
+      "flexibleRental": {
+        "title": "Location Flexible",
+        "description": "Options de tarification adaptées : location à l'heure, au jour ou au kilomètre selon vos besoins.",
+        "feature1": "Tarification horaire, journalière ou au km",
+        "feature2": "Options location et vente",
+        "feature3": "Demandes personnalisées"
+      },
+      "expertSupport": {
+        "title": "Support Client",
+        "description": "Assistance complète pour vous aider à choisir le bon équipement et répondre à toutes vos questions.",
+        "feature1": "Conseils sur les spécifications d'équipements",
+        "feature2": "Aide au choix du matériel adapté",
+        "feature3": "Réponses aux questions techniques"
+      },
+
+      "nationwide": {
+        "title": "Couverture Nationale",
+        "description": "Présents dans toutes les principales villes pour vous servir au plus près.",
+        "feature1": "8 villes couvertes",
+        "feature2": "Livraison et récupération",
+        "feature3": "Service local personnalisé"
       }
     },
     "datePicker": {
@@ -98,12 +145,12 @@
       "selectRole": "Choisir le Type de Compte",
       "renter": {
         "title": "Locataire",
-        "description": "Louer des équipements de construction",
+        "description": "Louer du matériel de construction",
         "submitButton": "Créer un Compte Locataire"
       },
       "supplier": {
         "title": "Partenaire",
-        "description": "Fournir des équipements de construction",
+        "description": "Fournir du matériel de construction",
         "submitButton": "Soumettre la Candidature",
         "companyName": "Nom de l'Entreprise",
         "location": "Localisation de l'Entreprise"
@@ -142,18 +189,18 @@
   },
   "categories": {
     "terrassement": "Terrassement",
-    "terrassementDesc": "Équipement  d'excavation et de terrassement pour projets de construction",
+    "terrassementDesc": "Matériel d'excavation et de terrassement pour projets de construction",
     "nivellementcompactage": "Nivellement & Compactage",
-    "nivellementcompactageDesc": "Équipement de nivellement du sol et de compactage pour préparation de site",
+    "nivellementcompactageDesc": "Matériel de nivellement du sol et de compactage pour préparation de site",
     "transport": "Transport",
-    "transportDesc": "Véhicules de transport de matériaux et équipements pour chantiers",
+    "transportDesc": "Véhicules de transport de matériaux et matériel pour chantiers",
     "levageemanutention": "Levage & Manutention",
-    "levageemanutentionDesc": "Équipement de levage lourd et de manutention pour travaux de construction",
+    "levageemanutentionDesc": "Matériel de levage lourd et de manutention pour travaux de construction",
     "available": "disponible",
-    "viewEquipment": "Voir Équipement",
-    "noEquipmentTitle": "Aucun Équipement Disponible",
-    "noEquipmentMessage": "Aucun équipement trouvé dans cette catégorie pour le moment.",
-    "defaultEquipmentDesc": "Équipement de construction professionnel",
+    "viewEquipment": "Voir Matériel",
+    "noEquipmentTitle": "Aucun Matériel Disponible",
+    "noEquipmentMessage": "Aucun matériel trouvé dans cette catégorie pour le moment.",
+    "defaultEquipmentDesc": "Matériel de construction professionnel",
     "equipmentTypes": {
       "pellehydraulique": "Pelle Hydraulique",
       "pellehydrauliqueDesc": "Excavation et terrassement",
@@ -172,7 +219,7 @@
       "camionciterne": "Camion Citerne",
       "camionciterneDesc": "Transport et distribution d'eau",
       "portechar": "Porte-char",
-      "portecharDesc": "Transport d'équipement lourd",
+      "portecharDesc": "Transport de matériel lourd",
       "gruemobile": "Grue Mobile",
       "gruemobileDesc": "Levage de matériaux lourds",
       "manitou": "Manitou",
@@ -204,7 +251,7 @@
       "palanelectrique": "Palan Électrique",
       "palanelectriqueDesc": "Levage électrique vertical",
       "nacelleelevratrice": "Nacelle Élévatrice",
-      "nacelleelevatriceDesc": "Travail en hauteur sécurisé",
+      "nacelleelevratriceDesc": "Plateforme élévatrice pour travail en hauteur sécurisé",
       "tracteurroutier": "Tracteur Routier",
       "tracteurroutierDesc": "Transport longue distance",
       "camionplateau": "Camion Plateau",
@@ -216,10 +263,10 @@
     "admin": {
       "title": "Tableau de Bord Admin",
       "subtitle": "Gérez votre plateforme de location d'équipement de construction",
-      "createEquipment": "Créer Équipement",
-      "createEquipmentDesc": "Ajouter un nouvel équipement à la plateforme",
-      "manageEquipment": "Gérer Équipements",
-      "manageEquipmentDesc": "Voir et modifier les équipements existants",
+      "createEquipment": "Créer Matériel",
+      "createEquipmentDesc": "Ajouter un nouveau matériel à la plateforme",
+      "manageEquipment": "Gérer Matériel",
+      "manageEquipmentDesc": "Voir et modifier le matériel existant",
       "bookings": "Réservations",
       "bookingsDesc": "Gérer les réservations et demandes de location",
       "users": "Utilisateurs",
@@ -232,20 +279,20 @@
     "supplier": {
       "title": "Tableau de Bord Partenaire",
       "subtitle": "Gérez vos équipements et votre activité de location",
-      "myEquipment": "Mes Équipements",
-      "myEquipmentDesc": "Voir et gérer vos équipements listés",
-      "addEquipment": "Ajouter Équipement",
-      "addEquipmentDesc": "Lister un nouvel équipement pour location",
+      "myEquipment": "Mon Matériel",
+      "myEquipmentDesc": "Voir et gérer votre matériel listé",
+      "addEquipment": "Ajouter Matériel",
+      "addEquipmentDesc": "Lister un nouveau matériel pour location",
       "bookings": "Mes Réservations",
-      "bookingsDesc": "Suivre les demandes de location d'équipement",
+      "bookingsDesc": "Suivre les demandes de location de matériel",
       "profile": "Profil",
       "profileDesc": "Gérer votre profil d'entreprise"
     },
     "renter": {
       "title": "Tableau de Bord Locataire",
       "subtitle": "Trouvez et louez des équipements de construction",
-      "browseEquipment": "Parcourir Équipements",
-      "browseEquipmentDesc": "Trouvez des équipements pour vos projets",
+      "browseEquipment": "Parcourir Matériel",
+      "browseEquipmentDesc": "Trouvez du matériel pour vos projets",
       "myBookings": "Mes Réservations",
       "myBookingsDesc": "Voir vos locations actuelles et passées",
       "requests": "Demandes de Location",
@@ -254,16 +301,19 @@
       "profileDesc": "Gérer les paramètres de votre compte"
     },
     "equipment": {
-      "createTitle": "Créer Nouvel Équipement",
-      "createSubtitle": "Ajouter un équipement pour le rendre disponible à la location",
+      "createTitle": "Créer Nouveau Matériel",
+      "createSubtitle": "Ajouter du matériel pour le rendre disponible à la location",
       "backToDashboard": "Retour au Tableau de Bord",
-      "equipmentName": "Nom de l'Équipement",
+      "equipmentName": "Nom du Matériel",
       "category": "Catégorie",
       "selectCategory": "Sélectionner Catégorie",
-      "equipmentType": "Type d'Équipement",
-      "selectEquipmentType": "Sélectionner Type d'Équipement",
+      "equipmentType": "Type de Matériel",
+      "selectEquipmentType": "Sélectionner Type de Matériel",
       "city": "Ville",
       "selectCity": "Sélectionner Ville",
+      "listingType": "Type d'Annonce",
+      "forRent": "À Louer",
+      "forSale": "À Vendre",
       "priceType": "Type de Tarification",
       "selectPriceType": "Sélectionner Type de Prix",
       "hourly": "Par Heure",
@@ -271,14 +321,14 @@
       "perKm": "Par Kilomètre",
       "price": "Prix (UM)",
       "description": "Description",
-      "descriptionPlaceholder": "Décrivez les caractéristiques et capacités de l'équipement",
+      "descriptionPlaceholder": "Décrivez les caractéristiques et capacités du matériel",
       "specifications": "Spécifications",
       "specificationsPlaceholder": "Spécifications techniques (poids, puissance, etc.)",
-      "images": "Images de l'Équipement",
-      "uploadImages": "Télécharger des photos de l'équipement",
+      "images": "Images du Matériel",
+      "uploadImages": "Télécharger des photos du matériel",
       "selectImages": "Sélectionner Images",
       "cancel": "Annuler",
-      "createEquipment": "Créer Équipement",
+      "createEquipment": "Créer Matériel",
       "categoryTerrassement": "Terrassement",
       "categoryNivellement": "Nivellement & Compactage",
       "categoryTransport": "Transport",
@@ -300,7 +350,7 @@
     "nameRequired": "Prénom et nom de famille requis",
     "passwordsNotMatch": "Les mots de passe ne correspondent pas",
     "supplierFieldsRequired": "Nom de l'entreprise et localisation requis pour les fournisseurs",
-    " logoutSuccess": "Déconnexion réussie!",
+    "logoutSuccess": "Déconnexion réussie!",
     "logoutError": "Erreur lors de la connexion"
   }
 }

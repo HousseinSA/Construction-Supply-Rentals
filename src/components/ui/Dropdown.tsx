@@ -91,9 +91,10 @@ export default function Dropdown({
                 type="button"
                 onClick={() => handleSelect(option.value)}
                 className={`
-                  w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-150
+                  w-full px-4 py-3 hover:bg-gray-50 transition-colors duration-150
                   first:rounded-t-xl last:rounded-b-xl
                   ${value === option.value ? 'bg-primary/5 text-primary font-medium' : 'text-gray-900'}
+                  ${fontClass.includes('arabic') ? 'text-right' : 'text-left'}
                 `}
               >
                 {option.label}

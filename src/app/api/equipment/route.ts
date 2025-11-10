@@ -12,6 +12,7 @@ export async function GET(request: NextRequest) {
     const categoryId = searchParams.get('categoryId')
     const category = searchParams.get('category')
     const city = searchParams.get('city')
+    const listingType = searchParams.get('listingType')
     const availableOnly = searchParams.get('available') === 'true'
 
     const db = await connectDB()
@@ -30,7 +31,9 @@ export async function GET(request: NextRequest) {
     
     if (status) query.status = status
     if (categoryId) query.categoryId = new ObjectId(categoryId)
-    if (city) query.location = { $regex: new RegExp(city, 'i') }
+    // Only filter by city if not showing equipment for sale
+    if (city && listingType !== 'forSale') query.location = { $regex: new RegExp(city, 'i') }
+    if (listingType) query.listingType = listingType
     
     // Handle category name parameter
     if (category) {
@@ -110,6 +113,7 @@ export async function POST(request: NextRequest) {
       usageCategory,
       status,
       isAvailable: true,
+      listingType: body.listingType || 'forRent',
       createdBy: new ObjectId(supplierId),
       ...(status === 'approved' && { approvedAt: new Date() }),
       createdAt: new Date(),

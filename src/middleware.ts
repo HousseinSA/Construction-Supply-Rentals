@@ -24,6 +24,8 @@ export default async function middleware(request: NextRequest) {
   ) {
     const pathWithoutLocale = pathname.replace(/^\/(ar|fr|en)/, "")
     const newUrl = new URL(`/${cookieLocale}${pathWithoutLocale}`, request.url)
+    // Preserve query parameters
+    newUrl.search = request.nextUrl.search
     const response = NextResponse.redirect(newUrl)
     response.headers.set("Cache-Control", "no-store, must-revalidate")
     return response

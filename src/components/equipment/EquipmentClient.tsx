@@ -10,9 +10,10 @@ import EquipmentGrid from "./EquipmentGrid"
 interface EquipmentClientProps {
   selectedCity: string | null
   selectedType?: string | null
+  listingType?: string | null
 }
 
-export default function EquipmentClient({ selectedCity: urlCity, selectedType }: EquipmentClientProps) {
+export default function EquipmentClient({ selectedCity: urlCity, selectedType, listingType }: EquipmentClientProps) {
   const { selectedCity, setSelectedCity } = useSearchStore()
   const { convertToLatin } = useCityData()
   
@@ -26,16 +27,17 @@ export default function EquipmentClient({ selectedCity: urlCity, selectedType }:
   }, [urlCity, selectedCity, setSelectedCity, convertToLatin])
 
   const currentCity = selectedCity || urlCity
-  const { equipment, loading } = useEquipment(currentCity, selectedType)
+  const { equipment, loading } = useEquipment(currentCity, selectedType, listingType)
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <PageHeader selectedCity={currentCity} />
+      <PageHeader selectedCity={currentCity} listingType={listingType} />
       <div className="max-w-7xl mx-auto px-4 py-8">
         <EquipmentGrid
           equipment={equipment}
           loading={loading}
           selectedCity={currentCity}
+          listingType={listingType}
         />
       </div>
     </div>
