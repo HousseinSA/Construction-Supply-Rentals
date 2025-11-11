@@ -18,7 +18,6 @@ export default function HeroSection() {
     const searchParams = new URLSearchParams()
     const cityForAPI = selectedCity || convertToLatin(defaultCity)
 
-    // Ensure city is stored in Latin format
     const latinCity = convertToLatin(cityForAPI)
     setSelectedCity(latinCity)
 
@@ -40,15 +39,16 @@ export default function HeroSection() {
         crossOrigin="anonymous"
       >
         <source
-          src="https://res.cloudinary.com/dqgozilsf/video/upload/f_auto,q_50,w_720,h_480,br_500k,so_0/2073129-hd_1920_1080_30fps_c4dh2u.mp4"
+          src="https://res.cloudinary.com/dqgozilsf/video/upload/f_auto,q_50,w_720,h_480,br_500k,so_0/2073129-hd_1920_1080_30fps_rvuqn2.mp4"
           type="video/mp4"
           media="(max-width: 768px)"
         />
         <source
-          src="https://res.cloudinary.com/dqgozilsf/video/upload/f_auto,q_70,w_1280,h_720,br_1000k,so_0/2073129-hd_1920_1080_30fps_c4dh2u.mp4"
+          src="https://res.cloudinary.com/dqgozilsf/video/upload/f_auto,q_70,w_1280,h_720,br_1000k,so_0/2073129-hd_1920_1080_30fps_rvuqn2.mp4"
           type="video/mp4"
         />
       </video>
+
       <div className="absolute inset-0 bg-black/35 will-change-transform" />
       <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-4">
         <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4 leading-tight drop-shadow-2xl">

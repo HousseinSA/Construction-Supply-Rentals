@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from "react"
+import { useEffect, useCallback } from "react"
 import { Category as CategoryModel } from "@/lib/models/category"
+import { useCategoriesStore } from "@/src/stores"
 
 export interface Category
   extends Omit<CategoryModel, "_id" | "categoryId" | "createdBy"> {
@@ -11,11 +12,11 @@ export interface Category
 }
 
 export function useCategories() {
-  const [categories, setCategories] = useState<Category[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const { categories, loading, error, setCategories, setLoading, setError } = useCategoriesStore()
 
   const fetchCategories = useCallback(async () => {
+    if (categories.length > 0) return
+
     try {
       setLoading(true)
       setError(null)
@@ -30,10 +31,8 @@ export function useCategories() {
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error")
       console.error("Failed to fetch categories:", err)
-    } finally {
-      setLoading(false)
     }
-  }, [])
+  }, [categories.length, setCategories, setLoading, setError])
 
   useEffect(() => {
     fetchCategories()

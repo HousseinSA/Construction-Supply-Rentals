@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Camera, X, Upload } from "lucide-react"
+import { Camera, X } from "lucide-react"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { useFontClass } from "@/src/hooks/useFontClass"
