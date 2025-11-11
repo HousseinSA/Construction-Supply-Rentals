@@ -25,18 +25,16 @@ export default function EquipmentTypeCard({
 }: EquipmentTypeCardProps) {
   const t = useTranslations("categories")
   const fontClass = useFontClass()
+  const hasEquipment = (type.equipmentCount || 0) > 0
 
-  return (
-    <Link
-      href={`/equipment?type=${encodeURIComponent(type.name)}`}
-      className={`bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full border border-gray-100 hover:border-primary/20 group cursor-pointer ${fontClass}`}
-    >
+  const cardContent = (
+    <div className={`bg-white rounded-2xl shadow-sm transition-all duration-300 overflow-hidden flex flex-col h-full border border-gray-100 group hover:shadow-md hover:border-primary/20 cursor-pointer ${fontClass}`}>
       <div className="relative w-full aspect-[3/2] bg-gray-50 rounded-t-2xl overflow-hidden">
         <Image
           src={getEquipmentImage(type.name)}
           alt={type.name}
           fill
-          className="object-contain scale-120"
+          className="object-contain scale-120 transition-transform duration-500 ease-out group-hover:scale-125"
         />
       </div>
       <div className="p-4 flex flex-col flex-1">
@@ -62,6 +60,16 @@ export default function EquipmentTypeCard({
           </Button>
         </div>
       </div>
+    </div>
+  )
+
+  if (!hasEquipment) {
+    return cardContent
+  }
+
+  return (
+    <Link href={`/equipment?type=${type._id}`}>
+      {cardContent}
     </Link>
   )
 }

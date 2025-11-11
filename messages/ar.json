@@ -16,6 +16,7 @@
   },
   "equipment": {
     "allEquipment": "جميع المعدات",
+    "equipmentByType": "معدات حسب النوع",
     "equipmentInCity": "المعدات في {city}",
     "rentNow": "استأجر الآن",
     "viewDetails": "عرض التفاصيل",
@@ -262,6 +263,7 @@
   },
   "dashboard": {
     "goToHome": "الصفحة الرئيسية",
+    "underDevelopment": "هذه الصفحة قيد التطوير",
     "admin": {
       "title": "لوحة تحكم الإدارة",
       "subtitle": "إدارة منصة تأجير معدات البناء الخاصة بك",
@@ -329,12 +331,46 @@
       "images": "صور المعدة",
       "uploadImages": "رفع صور المعدة",
       "selectImages": "اختيار الصور",
+      "imageConstraints": "(الحد الأدنى: 1، الحد الأقصى: 5)",
+      "imagesUploaded": "{count} من {max} صور تم رفعها",
+      "uploading": "جاري الرفع...",
+      "creatingEquipment": "جاري إنشاء المعدة...",
       "cancel": "إلغاء",
       "createEquipment": "إنشاء المعدة",
       "categoryTerrassement": "حفريات",
       "categoryNivellement": "تسوية وضغط",
       "categoryTransport": "نقل",
       "categoryLevage": "رفع ومناولة"
+    },
+    "pages": {
+      "equipment": {
+        "title": "إدارة المعدات",
+        "subtitle": "عرض وإدارة جميع قوائم المعدات"
+      },
+      "analytics": {
+        "title": "التحليلات",
+        "subtitle": "عرض إحصائيات ومقاييس أداء المنصة"
+      },
+      "bookings": {
+        "title": "الحجوزات",
+        "subtitle": "إدارة حجوزات وطلبات الإيجار"
+      },
+      "users": {
+        "title": "المستخدمون",
+        "subtitle": "إدارة مستخدمي وموردي المنصة"
+      },
+      "profile": {
+        "title": "الملف الشخصي",
+        "subtitle": "إدارة إعدادات ومعلومات حسابك"
+      },
+      "requests": {
+        "title": "طلبات الإيجار",
+        "subtitle": "تتبع طلبات الإيجار وحالتها"
+      },
+      "settings": {
+        "title": "الإعدادات",
+        "subtitle": "تكوين إعدادات وتفضيلات المنصة"
+      }
     }
   },
   "toast": {
@@ -353,6 +389,20 @@
     "passwordsNotMatch": "كلمات المرور غير متطابقة",
     "supplierFieldsRequired": "اسم الشركة والموقع مطلوبان للموردين",
     "logoutSuccess": "تم تسجيل الخروج بنجاح!",
-    "logoutError": "خطأ في تسجيل الخروج"
+    "logoutError": "خطأ في تسجيل الخروج",
+    "equipmentNameRequired": "يرجى إدخال اسم المعدة",
+    "categoryRequired": "يرجى اختيار فئة",
+    "equipmentTypeRequired": "يرجى اختيار نوع المعدة",
+    "locationRequired": "يرجى اختيار موقع",
+    "priceTypeRequired": "يرجى اختيار نوع التسعير",
+    "priceRequired": "يرجى إدخال سعر صحيح",
+    "imagesRequired": "يرجى رفع صورة واحدة على الأقل",
+    "equipmentCreated": "تم إنشاء المعدة بنجاح!",
+    "equipmentCreateFailed": "فشل في إنشاء المعدة. يرجى المحاولة مرة أخرى.",
+    "imageUploadSuccess": "تم رفع {count} صورة بنجاح!",
+    "imageUploadFailed": "فشل في رفع الصور. يرجى المحاولة مرة أخرى.",
+    "imageRemoved": "تم حذف الصورة بنجاح",
+    "maxImagesReached": "الحد الأقصى {max} صور",
+    "maxImagesExceeded": "يمكنك رفع {allowed} صورة إضافية فقط. الحد الأقصى {max} صور."
   }
 }

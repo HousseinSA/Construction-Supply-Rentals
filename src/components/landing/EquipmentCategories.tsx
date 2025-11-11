@@ -35,15 +35,16 @@ export default function EquipmentCategories() {
               <Link
                 key={category._id}
                 href={`/categories/${categorySlug}`}
-                className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group border border-gray-100 hover:border-primary overflow-hidden transform hover:scale-105 flex flex-col"
+                className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group border border-gray-100 hover:border-primary overflow-hidden transform hover:scale-105 flex flex-col animate-smooth contain-layout"
               >
-                <div className="w-full h-40 relative overflow-hidden">
+                <div className="w-full h-40 relative overflow-hidden rounded-t-2xl">
                   {image ? (
                     <Image
                       src={image}
                       alt={t(`categories.${translationKey}`)}
                       fill
                       className="object-cover ken-burns-effect"
+                      priority={categories.indexOf(category) < 4}
                     />
                   ) : (
                     <div className="w-full h-full bg-gray-200 animate-pulse" />

@@ -16,6 +16,7 @@
   },
   "equipment": {
     "allEquipment": "All Equipment",
+    "equipmentByType": "Equipment by Type",
     "equipmentInCity": "Equipment in {city}",
     "rentNow": "Rent Now",
     "viewDetails": "View Details",
@@ -262,6 +263,7 @@
   },
   "dashboard": {
     "goToHome": "Go to Home",
+    "underDevelopment": "This page is under development",
     "admin": {
       "title": "Admin Dashboard",
       "subtitle": "Manage your construction equipment rental platform",
@@ -329,12 +331,46 @@
       "images": "Equipment Images",
       "uploadImages": "Upload equipment photos",
       "selectImages": "Select Images",
+      "imageConstraints": "(Min: 1, Max: 5)",
+      "imagesUploaded": "{count} of {max} images uploaded",
+      "uploading": "Uploading...",
+      "creatingEquipment": "Creating Equipment...",
       "cancel": "Cancel",
       "createEquipment": "Create Equipment",
       "categoryTerrassement": "Excavation",
       "categoryNivellement": "Leveling & Compaction",
       "categoryTransport": "Transport",
       "categoryLevage": "Lifting & Handling"
+    },
+    "pages": {
+      "equipment": {
+        "title": "Manage Equipment",
+        "subtitle": "View and manage all equipment listings"
+      },
+      "analytics": {
+        "title": "Analytics",
+        "subtitle": "View platform statistics and performance metrics"
+      },
+      "bookings": {
+        "title": "Bookings",
+        "subtitle": "Manage rental bookings and requests"
+      },
+      "users": {
+        "title": "Users",
+        "subtitle": "Manage platform users and suppliers"
+      },
+      "profile": {
+        "title": "Profile",
+        "subtitle": "Manage your account settings and information"
+      },
+      "requests": {
+        "title": "Rental Requests",
+        "subtitle": "Track your rental requests and status"
+      },
+      "settings": {
+        "title": "Settings",
+        "subtitle": "Configure platform settings and preferences"
+      }
     }
   },
   "toast": {
@@ -353,6 +389,20 @@
     "passwordsNotMatch": "Passwords do not match",
     "supplierFieldsRequired": "Company name and location are required for suppliers",
     "logoutSuccess": "Logged out successfully!",
-    "logoutError": "Error logging out"
+    "logoutError": "Error logging out",
+    "equipmentNameRequired": "Please enter equipment name",
+    "categoryRequired": "Please select a category",
+    "equipmentTypeRequired": "Please select equipment type",
+    "locationRequired": "Please select a location",
+    "priceTypeRequired": "Please select a pricing type",
+    "priceRequired": "Please enter a valid price",
+    "imagesRequired": "Please upload at least one image",
+    "equipmentCreated": "Equipment created successfully!",
+    "equipmentCreateFailed": "Failed to create equipment. Please try again.",
+    "imageUploadSuccess": "{count} image{plural} uploaded successfully!",
+    "imageUploadFailed": "Failed to upload images. Please try again.",
+    "imageRemoved": "Image removed successfully",
+    "maxImagesReached": "Maximum {max} images allowed",
+    "maxImagesExceeded": "You can only upload {allowed} more image{plural}. Maximum {max} images allowed."
   }
 }

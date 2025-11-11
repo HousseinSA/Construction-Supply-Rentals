@@ -16,6 +16,7 @@
   },
   "equipment": {
     "allEquipment": "Tout le Matériel",
+    "equipmentByType": "Matériel par Type",
     "equipmentInCity": "Matériel à {city}",
     "rentNow": "Louer Maintenant",
     "viewDetails": "Voir Détails",
@@ -86,10 +87,10 @@
     },
     "services": {
       "title": "Nos Services",
-      "subtitle": "Découvrez notre gamme complète de services de location d'équipements de construction, conçus pour répondre à tous vos besoins de projet.",
+      "subtitle": "Découvrez notre offre complète de services de location d’équipements de construction, conçus pour répondre à tous vos besoins de projet.",
       "equipmentRental": {
         "title": "Location d'Équipements",
-        "description": "Large gamme d'équipements de construction modernes et bien entretenus disponibles à la location.",
+        "description": "Un vaste choix d’équipements de construction modernes et bien entretenus disponibles à la location.",
         "feature1": "30+ types d'équipements spécialisés",
         "feature2": "4 catégories principales couvertes",
         "feature3": "Système de réservation en ligne"
@@ -260,6 +261,7 @@
   },
   "dashboard": {
     "goToHome": "Aller à l'Accueil",
+    "underDevelopment": "Cette page est en cours de développement",
     "admin": {
       "title": "Tableau de Bord Admin",
       "subtitle": "Gérez votre plateforme de location d'équipement de construction",
@@ -327,12 +329,46 @@
       "images": "Images du Matériel",
       "uploadImages": "Télécharger des photos du matériel",
       "selectImages": "Sélectionner Images",
+      "imageConstraints": "(Min: 1, Max: 5)",
+      "imagesUploaded": "{count} sur {max} images téléchargées",
+      "uploading": "Téléchargement...",
+      "creatingEquipment": "Création du matériel...",
       "cancel": "Annuler",
       "createEquipment": "Créer Matériel",
       "categoryTerrassement": "Terrassement",
       "categoryNivellement": "Nivellement & Compactage",
       "categoryTransport": "Transport",
       "categoryLevage": "Levage & Manutention"
+    },
+    "pages": {
+      "equipment": {
+        "title": "Gérer le Matériel",
+        "subtitle": "Voir et gérer toutes les annonces de matériel"
+      },
+      "analytics": {
+        "title": "Analyses",
+        "subtitle": "Voir les statistiques et métriques de performance de la plateforme"
+      },
+      "bookings": {
+        "title": "Réservations",
+        "subtitle": "Gérer les réservations et demandes de location"
+      },
+      "users": {
+        "title": "Utilisateurs",
+        "subtitle": "Gérer les utilisateurs et fournisseurs de la plateforme"
+      },
+      "profile": {
+        "title": "Profil",
+        "subtitle": "Gérer les paramètres et informations de votre compte"
+      },
+      "requests": {
+        "title": "Demandes de Location",
+        "subtitle": "Suivre vos demandes de location et leur statut"
+      },
+      "settings": {
+        "title": "Paramètres",
+        "subtitle": "Configurer les paramètres et préférences de la plateforme"
+      }
     }
   },
   "toast": {
@@ -351,6 +387,20 @@
     "passwordsNotMatch": "Les mots de passe ne correspondent pas",
     "supplierFieldsRequired": "Nom de l'entreprise et localisation requis pour les fournisseurs",
     "logoutSuccess": "Déconnexion réussie!",
-    "logoutError": "Erreur lors de la connexion"
+    "logoutError": "Erreur lors de la connexion",
+    "equipmentNameRequired": "Veuillez entrer le nom du matériel",
+    "categoryRequired": "Veuillez sélectionner une catégorie",
+    "equipmentTypeRequired": "Veuillez sélectionner le type de matériel",
+    "locationRequired": "Veuillez sélectionner un emplacement",
+    "priceTypeRequired": "Veuillez sélectionner un type de prix",
+    "priceRequired": "Veuillez entrer un prix valide",
+    "imagesRequired": "Veuillez télécharger au moins une image",
+    "equipmentCreated": "Matériel créé avec succès!",
+    "equipmentCreateFailed": "Échec de la création du matériel. Veuillez réessayer.",
+    "imageUploadSuccess": "{count} image{plural} téléchargée{plural} avec succès!",
+    "imageUploadFailed": "Échec du téléchargement des images. Veuillez réessayer.",
+    "imageRemoved": "Image supprimée avec succès",
+    "maxImagesReached": "Maximum {max} images autorisées",
+    "maxImagesExceeded": "Vous ne pouvez télécharger que {allowed} image{plural} de plus. Maximum {max} images autorisées."
   }
 }

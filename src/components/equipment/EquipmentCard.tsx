@@ -20,6 +20,7 @@ interface Equipment {
   location: string
   pricing: Pricing
   forSale?: boolean
+  images: string[]
 }
 
 interface EquipmentCardProps {
@@ -42,7 +43,7 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
          onClick={() => router.push(`/equipment/${equipment._id}`)}>
       <div className="h-48 relative overflow-hidden">
         <Image
-          src={getEquipmentImage(equipment.name)}
+          src={equipment.images?.length > 0 ? equipment.images[0] : getEquipmentImage(equipment.name)}
           alt={equipment.name}
           fill
           className="object-cover bg-gray-50"

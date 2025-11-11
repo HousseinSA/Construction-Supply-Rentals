@@ -2,9 +2,10 @@
 
 import { useState } from "react"
 import { useTranslations } from "next-intl"
-import { Link } from "@/src/i18n/navigation"
-import { ArrowLeft, Camera } from "lucide-react"
+import { Link, useRouter } from "@/src/i18n/navigation"
+import { ArrowLeft, Camera, X, Upload } from "lucide-react"
 import { useFontClass } from "@/src/hooks/useFontClass"
+import { toast } from "sonner"
 import AuthCard from "../auth/AuthCard"
 import Input from "../ui/Input"
 import Button from "../ui/Button"
@@ -12,12 +13,17 @@ import CategoryDropdown from "../ui/CategoryDropdown"
 import EquipmentTypeDropdown from "../ui/EquipmentTypeDropdown"
 import CityDropdown from "../ui/CityDropdown"
 import PricingTypeDropdown from "../ui/PricingTypeDropdown"
+import ImageUpload from "../ui/ImageUpload"
 
 export default function CreateEquipmentForm() {
   const t = useTranslations("dashboard.equipment")
   const tCategories = useTranslations("categories")
   const tCommon = useTranslations("common")
+  const tToast = useTranslations("toast")
   const fontClass = useFontClass()
+  const router = useRouter()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [images, setImages] = useState<string[]>([])
   const [formData, setFormData] = useState({
     name: "",
     category: "",
@@ -52,8 +58,102 @@ export default function CreateEquipmentForm() {
 
 
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const validateForm = () => {
+    if (!formData.name.trim()) {
+      toast.error(tToast('equipmentNameRequired'))
+      return false
+    }
+    if (!formData.category) {
+      toast.error(tToast('categoryRequired'))
+      return false
+    }
+    if (!formData.type) {
+      toast.error(tToast('equipmentTypeRequired'))
+      return false
+    }
+    if (!formData.location) {
+      toast.error(tToast('locationRequired'))
+      return false
+    }
+    if (formData.listingType === 'forRent' && !formData.priceType) {
+      toast.error(tToast('priceTypeRequired'))
+      return false
+    }
+    if (!formData.price || parseFloat(formData.price) <= 0) {
+      toast.error(tToast('priceRequired'))
+      return false
+    }
+    if (images.length === 0) {
+      toast.error(tToast('imagesRequired'))
+      return false
+    }
+    return true
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!validateForm()) return
+    
+    setIsSubmitting(true)
+    
+    try {
+      const pricing: any = {}
+      
+      if (formData.listingType === 'forSale') {
+        pricing.salePrice = parseFloat(formData.price)
+      } else {
+        switch (formData.priceType) {
+          case 'hourly':
+            pricing.hourlyRate = parseFloat(formData.price)
+            break
+          case 'daily':
+            pricing.dailyRate = parseFloat(formData.price)
+            break
+          case 'per_km':
+            pricing.kmRate = parseFloat(formData.price)
+            break
+          case 'per_ton':
+            pricing.tonRate = parseFloat(formData.price)
+            break
+        }
+        pricing.type = formData.priceType
+      }
+
+      const equipmentData = {
+        name: formData.name.trim(),
+        description: formData.description.trim(),
+        categoryId: formData.category,
+        equipmentTypeId: formData.type,
+        pricing,
+        location: formData.location,
+        images,
+        specifications: formData.specifications ? { notes: formData.specifications.trim() } : {},
+        listingType: formData.listingType
+      }
+
+      const response = await fetch('/api/equipment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(equipmentData)
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to create equipment')
+      }
+
+      toast.success(tToast('equipmentCreated'))
+      router.push('/dashboard')
+    } catch (error) {
+      console.error('Equipment creation error:', error)
+      toast.error(error instanceof Error ? error.message : tToast('equipmentCreateFailed'))
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -201,16 +301,15 @@ export default function CreateEquipmentForm() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t("images")}
+                  {t("images")} <span className="text-red-500">*</span>
+                  <span className="text-sm text-gray-500 ml-2">{t("imageConstraints")}</span>
                 </label>
-                <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-primary transition-colors">
-                  <Camera className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600 mb-4">{t("uploadImages")}</p>
-                  <input type="file" multiple accept="image/*" className="hidden" />
-                  <Button type="button" variant="secondary">
-                    {t("selectImages")}
-                  </Button>
-                </div>
+                <ImageUpload 
+                  images={images}
+                  onImagesChange={setImages}
+                  maxImages={5}
+                  disabled={isSubmitting}
+                />
               </div>
 
               <div className="flex flex-col sm:flex-row justify-end gap-4">
@@ -219,8 +318,13 @@ export default function CreateEquipmentForm() {
                     {t("cancel")}
                   </Button>
                 </Link>
-                <Button type="submit" variant="primary" className="w-full sm:w-auto">
-                  {t("createEquipment")}
+                <Button 
+                  type="submit" 
+                  variant="primary" 
+                  className="w-full sm:w-auto"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? t("creatingEquipment") : t("createEquipment")}
                 </Button>
               </div>
             </form>

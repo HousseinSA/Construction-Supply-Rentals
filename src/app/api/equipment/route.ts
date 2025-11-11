@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { connectDB } from '@/lib/mongodb'
-import { createNotification } from '@/lib/notifications'
+import { connectDB } from '@/src/lib/mongodb'
+import { createNotification } from '@/src/lib/notifications'
 import { ObjectId } from 'mongodb'
-import { getInitialEquipmentStatus, getUsageCategoryFromEquipmentType } from '@/lib/models/equipment'
+import { getInitialEquipmentStatus, getUsageCategoryFromEquipmentType } from '@/src/lib/models/equipment'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/src/lib/auth'
 
 // GET /api/equipment
 export async function GET(request: NextRequest) {
@@ -11,6 +13,7 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status')
     const categoryId = searchParams.get('categoryId')
     const category = searchParams.get('category')
+    const type = searchParams.get('type')
     const city = searchParams.get('city')
     const listingType = searchParams.get('listingType')
     const availableOnly = searchParams.get('available') === 'true'
@@ -31,6 +34,7 @@ export async function GET(request: NextRequest) {
     
     if (status) query.status = status
     if (categoryId) query.categoryId = new ObjectId(categoryId)
+    if (type) query.equipmentTypeId = new ObjectId(type)
     // Only filter by city if not showing equipment for sale
     if (city && listingType !== 'forSale') query.location = { $regex: new RegExp(city, 'i') }
     if (listingType) query.listingType = listingType
@@ -73,15 +77,26 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
+    console.log('Equipment creation request body:', JSON.stringify(body, null, 2))
+    
     const { 
-      supplierId, name, description, categoryId, equipmentTypeId, 
-      pricing, location, images, specifications, usage, creatorRole 
+      name, description, categoryId, equipmentTypeId, 
+      pricing, location, images, specifications, usage, listingType 
     } = body
 
-    if (!supplierId || !name || !categoryId || !equipmentTypeId || !pricing) {
+    // Validate required fields
+    if (!name || !categoryId || !equipmentTypeId || !pricing || !location) {
       return NextResponse.json({ 
         success: false, 
-        error: 'Missing required fields: supplierId, name, categoryId, equipmentTypeId, pricing' 
+        error: 'Missing required fields: name, categoryId, equipmentTypeId, pricing, location' 
+      }, { status: 400 })
+    }
+
+    // Validate ObjectId format
+    if (!ObjectId.isValid(categoryId) || !ObjectId.isValid(equipmentTypeId)) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Invalid category or equipment type ID' 
       }, { status: 400 })
     }
 
@@ -96,38 +111,80 @@ export async function POST(request: NextRequest) {
       }, { status: 404 })
     }
 
+    // Validate images (minimum 1, maximum 5)
+    if (!images || !Array.isArray(images) || images.length === 0) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'At least one image is required' 
+      }, { status: 400 })
+    }
+
+    if (images.length > 5) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Maximum 5 images allowed' 
+      }, { status: 400 })
+    }
+
+    // Get session to determine user role and ID
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Authentication required' 
+      }, { status: 401 })
+    }
+
+    const userId = session.user.id
+    const userRole = session.user.role || 'supplier'
+
+    // Validate user ID format
+    if (!ObjectId.isValid(userId)) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Invalid user session' 
+      }, { status: 401 })
+    }
+
+
+
     const usageCategory = getUsageCategoryFromEquipmentType(equipmentType.name)
-    const status = getInitialEquipmentStatus(creatorRole)
+    const status = getInitialEquipmentStatus(userRole)
 
     const result = await db.collection('equipment').insertOne({
-      supplierId: new ObjectId(supplierId),
+      supplierId: new ObjectId(userId),
       name,
       description: description || '',
       categoryId: new ObjectId(categoryId),
       equipmentTypeId: new ObjectId(equipmentTypeId),
       pricing,
-      location: location || '',
-      images: images || [],
+      location,
+      images,
       specifications: specifications || {},
       usage: usage || {},
       usageCategory,
       status,
       isAvailable: true,
-      listingType: body.listingType || 'forRent',
-      createdBy: new ObjectId(supplierId),
+      listingType: listingType || 'forRent',
+      createdBy: new ObjectId(userId),
       ...(status === 'approved' && { approvedAt: new Date() }),
       createdAt: new Date(),
       updatedAt: new Date()
     })
 
     // Create notification if supplier created equipment
-    if (creatorRole === 'supplier') {
-      await createNotification(
-        'new_equipment',
-        'New Equipment Pending Approval',
-        `New equipment "${name}" added by supplier - requires approval`,
-        result.insertedId
-      )
+    if (userRole === 'supplier') {
+      try {
+        await createNotification(
+          'new_equipment',
+          'New Equipment Pending Approval',
+          `New equipment "${name}" added by supplier - requires approval`,
+          result.insertedId
+        )
+      } catch (notificationError) {
+        console.error('Notification creation failed:', notificationError)
+        // Continue without failing the equipment creation
+      }
     }
 
     return NextResponse.json({ 
@@ -141,9 +198,10 @@ export async function POST(request: NextRequest) {
       }
     }, { status: 201 })
   } catch (error) {
+    console.error('Equipment creation error:', error)
     return NextResponse.json({ 
       success: false, 
-      error: 'Failed to create equipment' 
+      error: error instanceof Error ? error.message : 'Failed to create equipment' 
     }, { status: 500 })
   }
 }

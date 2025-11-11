@@ -1,3 +1,13 @@
-export default function UsersPage() {
-  return <div><h1>Users</h1></div>
+import { setRequestLocale } from "next-intl/server"
+import DashboardPageHeader from "@/src/components/dashboard/DashboardPageHeader"
+
+export default async function UsersPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  setRequestLocale(locale)
+
+  return <DashboardPageHeader pageKey="users" />
 }

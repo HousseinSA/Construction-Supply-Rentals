@@ -26,12 +26,12 @@ export default function EquipmentClient({ selectedCity: urlCity, selectedType, l
     }
   }, [urlCity, selectedCity, setSelectedCity, convertToLatin])
 
-  const currentCity = selectedCity || urlCity
+  const currentCity = selectedType ? null : (selectedCity || urlCity)
   const { equipment, loading } = useEquipment(currentCity, selectedType, listingType)
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <PageHeader selectedCity={currentCity} listingType={listingType} />
+      <PageHeader selectedCity={currentCity} selectedType={selectedType} listingType={listingType} />
       <div className="max-w-7xl mx-auto px-4 py-8">
         <EquipmentGrid
           equipment={equipment}

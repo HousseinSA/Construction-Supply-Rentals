@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useTranslations } from "next-intl"
 import Dropdown from "./Dropdown"
 
@@ -13,6 +13,14 @@ interface EquipmentTypeDropdownProps {
   className?: string
 }
 
+interface EquipmentType {
+  _id: string
+  name: string
+  nameAr?: string
+  nameFr?: string
+  categoryId: string
+}
+
 export default function EquipmentTypeDropdown({
   category,
   value,
@@ -22,48 +30,45 @@ export default function EquipmentTypeDropdown({
   className = ""
 }: EquipmentTypeDropdownProps) {
   const t = useTranslations("dashboard.equipment")
-  const tCategories = useTranslations("categories")
+  const [equipmentTypes, setEquipmentTypes] = useState<EquipmentType[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const equipmentTypesByCategory = {
-    terrassement: [
-      { value: "pellehydraulique", label: tCategories("equipmentTypes.pellehydraulique") },
-      { value: "bulldozer", label: tCategories("equipmentTypes.bulldozer") },
-      { value: "chargeuse", label: tCategories("equipmentTypes.chargeuse") },
-      { value: "tractopelle", label: tCategories("equipmentTypes.tractopelle") },
-      { value: "minipelle", label: tCategories("equipmentTypes.minipelle") }
-    ],
-    nivellementcompactage: [
-      { value: "niveuleuse", label: tCategories("equipmentTypes.niveuleuse") },
-      { value: "compacteur", label: tCategories("equipmentTypes.compacteur") },
-      { value: "plaquevibrante", label: tCategories("equipmentTypes.plaquevibrante") },
-      { value: "pilonneuse", label: tCategories("equipmentTypes.pilonneuse") }
-    ],
-    transport: [
-      { value: "camionbenne", label: tCategories("equipmentTypes.camionbenne") },
-      { value: "camionciterne", label: tCategories("equipmentTypes.camionciterne") },
-      { value: "portechar", label: tCategories("equipmentTypes.portechar") },
-      { value: "bennearticulee", label: tCategories("equipmentTypes.bennearticulee") }
-    ],
-    levageemanutention: [
-      { value: "gruemobile", label: tCategories("equipmentTypes.gruemobile") },
-      { value: "manitou", label: tCategories("equipmentTypes.manitou") },
-      { value: "chariotelevateur", label: tCategories("equipmentTypes.chariotelevateur") },
-      { value: "nacelleelevratrice", label: tCategories("equipmentTypes.nacelleelevratrice") }
-    ]
-  }
+  useEffect(() => {
+    const fetchEquipmentTypes = async () => {
+      try {
+        const response = await fetch('/api/equipment-types')
+        const data = await response.json()
+        if (data.success) {
+          setEquipmentTypes(data.data || [])
+        }
+      } catch (error) {
+        console.error('Failed to fetch equipment types:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
 
-  const availableTypes = useMemo(() => {
-    return category ? equipmentTypesByCategory[category as keyof typeof equipmentTypesByCategory] || [] : []
-  }, [category, tCategories])
+    fetchEquipmentTypes()
+  }, [])
+
+  const filteredTypes = useMemo(() => {
+    if (!category || !equipmentTypes.length) return []
+    return equipmentTypes.filter(type => type.categoryId === category)
+  }, [category, equipmentTypes])
+
+  const equipmentTypeOptions = filteredTypes.map(type => ({
+    value: type._id,
+    label: type.name
+  }))
 
   return (
     <Dropdown
       label={t("equipmentType")}
-      options={availableTypes}
+      options={equipmentTypeOptions}
       value={value}
       onChange={onChange}
       placeholder={placeholder || t("selectEquipmentType")}
-      disabled={disabled || !category}
+      disabled={disabled || !category || loading}
       className={className}
     />
   )
