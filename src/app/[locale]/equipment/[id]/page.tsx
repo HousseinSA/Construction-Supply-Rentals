@@ -1,31 +1,40 @@
 "use client"
 
 import { useParams } from "next/navigation"
-import { useTranslations, useLocale } from "next-intl"
+import { useTranslations } from "next-intl"
 import { useState, useEffect } from "react"
-import Image from "next/image"
 import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
 import { useFontClass } from "@/src/hooks/useFontClass"
 import { useCityData } from "@/src/hooks/useCityData"
+import ImageModal from "@/src/components/ui/ImageModal"
+import ImageGallery from "@/src/components/equipment-details/ImageGallery"
+import EquipmentHeader from "@/src/components/equipment-details/EquipmentHeader"
+import LocationInfo from "@/src/components/equipment-details/LocationInfo"
+import PricingCard from "@/src/components/equipment-details/PricingCard"
+import SpecificationsGrid from "@/src/components/equipment-details/SpecificationsGrid"
+import ActionButtons from "@/src/components/equipment-details/ActionButtons"
+import LoadingState from "@/src/components/equipment-details/LoadingState"
+import NotFoundState from "@/src/components/equipment-details/NotFoundState"
 
 export default function EquipmentDetailsPage() {
   const params = useParams()
-  const locale = useLocale()
-  const t = useTranslations("equipment")
-  const tCommon = useTranslations("common")
+  const t = useTranslations("equipmentDetails")
   const [equipment, setEquipment] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [selectedImage, setSelectedImage] = useState(0)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const equipmentId = params.id as string
   const fontClass = useFontClass()
   const { convertToLocalized } = useCityData()
-
   const { getPriceData, formatPrice } = usePriceFormatter()
 
-  const getFormattedPrice = (pricing: any) => {
-    const { rate, unit } = getPriceData(pricing)
+  const getFormattedPrice = (pricing: any, isForSale: boolean) => {
+    const { rate, unit } = getPriceData(pricing, isForSale)
     const { displayPrice, displayUnit } = formatPrice(rate, unit)
-    return `${displayPrice} ${displayUnit}`
+    return { displayPrice, displayUnit }
   }
+
+  const isForSale = equipment?.listingType === "forSale"
 
   useEffect(() => {
     const fetchEquipment = async () => {
@@ -44,98 +53,50 @@ export default function EquipmentDetailsPage() {
     fetchEquipment()
   }, [equipmentId])
 
-  if (loading) {
-    return (
-      <div className={`min-h-screen bg-gray-50 flex items-center justify-center ${fontClass}`}>
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-600">{t("loading")}</p>
-        </div>
-      </div>
-    )
-  }
+  if (loading) return <LoadingState />
+  if (!equipment) return <NotFoundState />
 
-  if (!equipment) {
-    return (
-      <div className={`min-h-screen bg-gray-50 flex items-center justify-center ${fontClass}`}>
-        <div className="text-center">
-          <div className="text-6xl mb-4">❌</div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">{t("equipmentNotFound")}</h3>
-          <p className="text-gray-600">{t("equipmentNotFoundDesc")}</p>
-        </div>
-      </div>
-    )
-  }
+  const { displayPrice, displayUnit } = equipment
+    ? getFormattedPrice(equipment.pricing, isForSale)
+    : { displayPrice: "", displayUnit: "" }
 
   return (
     <div className={`min-h-screen bg-gray-50 ${fontClass}`}>
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
-          <div className="md:flex">
-            {/* Image Section */}
-            <div className="md:w-1/2">
-              <div className="h-96 relative">
-                <Image
-                  src="/equipement-images/Pelle hydraulique.jpg"
-                  alt={equipment.name}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            </div>
-            
-            {/* Details Section */}
-            <div className="md:w-1/2 p-6">
-              <div className="space-y-4">
-                <div>
-                  <h1 className="text-3xl font-bold text-gray-900 mb-2">{equipment.name}</h1>
-                  <p className="text-gray-600">{equipment.description}</p>
-                </div>
-                
-                <div className="flex items-center text-sm text-gray-500">
-                  <svg className="w-4 h-4 mr-1 rtl:mr-0 rtl:ml-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                  </svg>
-                  {convertToLocalized(equipment.location)}
-                </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+        <div className="bg-white rounded-lg sm:rounded-xl lg:rounded-2xl shadow-lg overflow-hidden">
+          <div className="grid lg:grid-cols-2 gap-0">
+            <ImageGallery
+              images={equipment.images || []}
+              name={equipment.name}
+              selectedImage={selectedImage}
+              isForSale={isForSale}
+              onImageSelect={setSelectedImage}
+              onImageClick={() => equipment.images?.length > 0 && setIsModalOpen(true)}
+            />
 
-                <div className="border-t pt-4">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{t("pricing")}</h3>
-                  <div className="text-2xl font-bold text-primary" dir="ltr">
-                    {getFormattedPrice(equipment.pricing)}
-                  </div>
-                </div>
-
-                {equipment.specifications && Object.keys(equipment.specifications).length > 0 && (
-                  <div className="border-t pt-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{t("specifications")}</h3>
-                    <div className="grid grid-cols-2 gap-2 text-sm">
-                      {Object.entries(equipment.specifications).map(([key, value]) => (
-                        <div key={key} className="flex justify-between">
-                          <span className="text-gray-600">{key}:</span>
-                          <span className="font-medium">{value as string}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="border-t border-gray-50 pt-4 space-y-3">
-                  <button className="w-full bg-primary hover:bg-primary-dark text-white py-3 px-6 rounded-xl transition-all duration-200 font-medium shadow-sm">
-                    {t("rentNow")}
-                  </button>
-                  <button 
-                    onClick={() => window.history.back()}
-                    className="w-full bg-gray-50 hover:bg-gray-100 text-gray-600 py-3 px-6 rounded-xl transition-all duration-200 font-medium"
-                  >
-                    {t("goBack")}
-                  </button>
-                </div>
-              </div>
+            <div className="p-4 sm:p-6 lg:p-8 flex flex-col">
+              <EquipmentHeader name={equipment.name} description={equipment.description} />
+              <LocationInfo location={convertToLocalized(equipment.location)} />
+              <PricingCard
+                displayPrice={displayPrice}
+                displayUnit={displayUnit}
+                isForSale={isForSale}
+              />
+              <SpecificationsGrid specifications={equipment.specifications} />
+              <ActionButtons isForSale={isForSale} />
             </div>
           </div>
         </div>
       </div>
+
+      {equipment.images && equipment.images.length > 0 && (
+        <ImageModal
+          images={equipment.images}
+          initialIndex={selectedImage}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
     </div>
   )
 }

@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb"
 
 export interface Category {
   _id?: ObjectId
-  name: string // Translation key like "categories.earthworks"
+  name: string 
   slug: string
   isActive: boolean
   createdAt: Date

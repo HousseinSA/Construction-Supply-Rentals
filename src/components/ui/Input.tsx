@@ -6,11 +6,11 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, className = "", ...props }, ref) => {
+  ({ label, error, className = "", required, ...props }, ref) => {
     return (
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          {label}
+          {label} {required && <span className="text-red-500">*</span>}
         </label>
         <input
           ref={ref}

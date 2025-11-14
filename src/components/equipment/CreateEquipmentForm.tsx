@@ -1,0 +1,80 @@
+"use client"
+
+import { useTranslations } from "next-intl"
+import { Link } from "@/src/i18n/navigation"
+import { ArrowLeft } from "lucide-react"
+import { useFontClass } from "@/src/hooks/useFontClass"
+import { useEquipmentForm } from "@/src/hooks/useEquipmentForm"
+import AuthCard from "../auth/AuthCard"
+import ListingTypeSelector from "../equipment/ListingTypeSelector"
+import EquipmentFormFields from "../equipment/EquipmentFormFields"
+import FormActions from "../equipment/FormActions"
+
+export default function CreateEquipmentForm() {
+  const t = useTranslations("dashboard.equipment")
+  const fontClass = useFontClass()
+  const {
+    formData,
+    images,
+    isSubmitting,
+    setImages,
+    handleInputChange,
+    handleCategoryChange,
+    handleTypeChange,
+    handlePriceTypeChange,
+    handleLocationChange,
+    handleListingTypeChange,
+
+    handleWeightUnitChange,
+
+    handleSubmit,
+  } = useEquipmentForm()
+
+  return (
+    <div
+      className={`min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 ${fontClass}`}
+    >
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-8">
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center text-gray-600 hover:text-primary transition-colors mb-4"
+          >
+            <ArrowLeft className="h-5 w-5 mr-2 rtl:mr-0 rtl:ml-2" />
+            {t("backToDashboard")}
+          </Link>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            {t("createTitle")}
+          </h1>
+          <p className="text-gray-600">{t("createSubtitle")}</p>
+        </div>
+
+        <AuthCard>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <ListingTypeSelector
+              value={formData.listingType}
+              onChange={handleListingTypeChange}
+            />
+
+            <EquipmentFormFields
+              formData={formData}
+              images={images}
+              isSubmitting={isSubmitting}
+              onInputChange={handleInputChange}
+              onCategoryChange={handleCategoryChange}
+              onTypeChange={handleTypeChange}
+              onLocationChange={handleLocationChange}
+              onPriceTypeChange={handlePriceTypeChange}
+
+              onWeightUnitChange={handleWeightUnitChange}
+
+              onImagesChange={setImages}
+            />
+
+            <FormActions isSubmitting={isSubmitting} />
+          </form>
+        </AuthCard>
+      </div>
+    </div>
+  )
+}

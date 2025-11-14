@@ -4,6 +4,7 @@ interface Pricing {
   dailyRate?: number
   hourlyRate?: number
   kmRate?: number
+  salePrice?: number
 }
 
 interface PriceData {
@@ -14,9 +15,13 @@ interface PriceData {
 export function usePriceFormatter() {
   const tCommon = useTranslations("common")
 
-  const getPriceData = (pricing: Pricing): PriceData => {
+  const getPriceData = (pricing: Pricing, isForSale?: boolean): PriceData => {
     if (!pricing) {
       return { rate: 0, unit: tCommon("day") }
+    }
+
+    if (isForSale && pricing.salePrice) {
+      return { rate: pricing.salePrice, unit: "" }
     }
 
     const rate = pricing.dailyRate || pricing.hourlyRate || pricing.kmRate || 0
@@ -35,7 +40,7 @@ export function usePriceFormatter() {
     return {
       formattedRate: rate.toLocaleString(),
       displayPrice: `${rate.toLocaleString()} MRU`,
-      displayUnit: `/ ${unit}`
+      displayUnit: unit ? `/ ${unit}` : ""
     }
   }
 

@@ -19,6 +19,8 @@
     "equipmentByType": "Equipment by Type",
     "equipmentInCity": "Equipment in {city}",
     "rentNow": "Rent Now",
+    "buyNow": "Buy Now",
+    "salePrice": "Sale Price",
     "viewDetails": "View Details",
     "noEquipmentFound": "No Equipment Found",
     "noEquipmentFoundDesc": "No equipment is currently available. Please try again later.",
@@ -34,6 +36,32 @@
     "pricing": "Pricing",
     "specifications": "Specifications",
     "goBack": "Go Back"
+  },
+  "equipmentDetails": {
+    "forSale": "For Sale",
+    "rentalPrice": "Rental Price",
+    "salePrice": "Sale Price",
+    "specifications": "Specifications",
+    "brand": "Brand",
+    "model": "Model",
+    "condition": "Condition",
+    "hoursUsed": "Hours Used",
+    "weight": "Weight",
+    "requestRental": "Request Rental",
+    "contactForPurchase": "Contact to Purchase",
+    "sendBookingRequest": "Send Booking Request",
+    "sendSaleRequest": "Send Sale Request",
+    "goBack": "Go Back",
+    "loading": "Loading...",
+    "equipmentNotFound": "Equipment Not Found",
+    "equipmentNotFoundDesc": "The equipment you're looking for doesn't exist or has been removed.",
+    "clickToViewFullSize": "Click to view full size",
+    "imageModal": {
+      "close": "Close",
+      "previous": "Previous",
+      "next": "Next",
+      "imageCounter": "{current} of {total}"
+    }
   },
   "landing": {
     "hero": {
@@ -118,11 +146,10 @@
         "feature2": "Help choosing suitable machinery",
         "feature3": "Technical questions answered"
       },
-
       "nationwide": {
         "title": "Nationwide Coverage",
         "description": "Present in all major cities to serve you closer to home.",
-        "feature1": "8 cities covered",
+        "feature1": "10 cities covered",
         "feature2": "Delivery and pickup service",
         "feature3": "Personalized local service"
       }
@@ -308,7 +335,6 @@
       "createTitle": "Create New Equipment",
       "createSubtitle": "Add equipment to make it available for rental",
       "backToDashboard": "Back to Dashboard",
-      "equipmentName": "Equipment Name",
       "category": "Category",
       "selectCategory": "Select Category",
       "equipmentType": "Equipment Type",
@@ -330,6 +356,8 @@
       "specificationsPlaceholder": "Technical specifications (weight, power, etc.)",
       "images": "Equipment Images",
       "uploadImages": "Upload equipment photos",
+      "dropHere": "Drop images here",
+      "uploadHint": "Or drag & drop / paste",
       "selectImages": "Select Images",
       "imageConstraints": "(Min: 1, Max: 5)",
       "imagesUploaded": "{count} of {max} images uploaded",
@@ -340,7 +368,66 @@
       "categoryTerrassement": "Excavation",
       "categoryNivellement": "Leveling & Compaction",
       "categoryTransport": "Transport",
-      "categoryLevage": "Lifting & Handling"
+      "categoryLevage": "Lifting & Handling",
+      "condition": "Condition",
+      "selectCondition": "Select Condition",
+      "conditions": {
+        "new": "New",
+        "excellent": "Excellent",
+        "good": "Good",
+        "fair": "Fair",
+        "used": "Used"
+      },
+      "brand": "Brand",
+      "brandPlaceholder": "e.g., Caterpillar, Komatsu, Volvo",
+      "model": "Model",
+      "modelPlaceholder": "e.g., 320D, PC200",
+      "hoursUsed": "Hours Used",
+      "weight": "Weight",
+      "weightPlaceholder": "e.g., 20",
+      "weightUnits": {
+        "kg": "kg",
+        "tons": "tons"
+      },
+
+      "view": "View",
+      "manageTitle": "Manage Equipment",
+      "manageSubtitle": "View and manage all equipment listings",
+      "createdByAdmin": "Created by Admin",
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "status": "Status",
+      "actions": "Actions",
+      "createdAt": "Created Date",
+      "loading": "Loading...",
+      "editTitle": "Edit Equipment",
+      "editSubtitle": "Update equipment details",
+      "updateEquipment": "Update Equipment",
+      "updatingEquipment": "Updating Equipment...",
+      "supplierInfo": "Supplier Information",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "company": "Company",
+      "location": "Location",
+      "availability": "Availability",
+      "available": "Available",
+      "unavailable": "Unavailable",
+      "approve": "Approve",
+      "reject": "Reject",
+      "editEquipment": "Edit Equipment",
+      "viewDetails": "View Details",
+      "confirmAction": "Confirm Action",
+      "confirmAvailability": "Are you sure you want to mark this equipment as {status}?",
+      "confirmStatus": "Are you sure you want to {action} this equipment?",
+      "processing": "Processing...",
+      "confirm": "Confirm",
+      "equipmentUpdated": "Equipment updated successfully",
+      "equipmentUpdateFailed": "Failed to update equipment",
+      "equipmentApproved": "Equipment approved successfully",
+      "equipmentRejected": "Equipment rejected successfully",
+      "availabilityUpdated": "Availability updated successfully"
     },
     "pages": {
       "equipment": {
@@ -390,7 +477,6 @@
     "supplierFieldsRequired": "Company name and location are required for suppliers",
     "logoutSuccess": "Logged out successfully!",
     "logoutError": "Error logging out",
-    "equipmentNameRequired": "Please enter equipment name",
     "categoryRequired": "Please select a category",
     "equipmentTypeRequired": "Please select equipment type",
     "locationRequired": "Please select a location",
@@ -398,11 +484,18 @@
     "priceRequired": "Please enter a valid price",
     "imagesRequired": "Please upload at least one image",
     "equipmentCreated": "Equipment created successfully!",
+    "equipmentUpdated": "Equipment updated successfully!",
     "equipmentCreateFailed": "Failed to create equipment. Please try again.",
     "imageUploadSuccess": "{count} image{plural} uploaded successfully!",
     "imageUploadFailed": "Failed to upload images. Please try again.",
     "imageRemoved": "Image removed successfully",
+    "imageDeleteFailed": "Failed to delete image. Please try again.",
     "maxImagesReached": "Maximum {max} images allowed",
-    "maxImagesExceeded": "You can only upload {allowed} more image{plural}. Maximum {max} images allowed."
+    "maxImagesExceeded": "You can only upload {allowed} more image{plural}. Maximum {max} images allowed.",
+    "imageTooLarge": "Image size must be less than 10MB",
+    "conditionRequired": "Please select equipment condition",
+    "brandRequired": "Please enter equipment brand",
+    "emailAlreadyExists": "An account with this email already exists. Please use a different email or login.",
+    "phoneAlreadyExists": "An account with this phone number already exists. Please use a different phone number or login."
   }
 }

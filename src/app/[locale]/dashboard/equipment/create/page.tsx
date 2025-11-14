@@ -1,5 +1,5 @@
 import { setRequestLocale } from "next-intl/server"
-import CreateEquipmentForm from "@/src/components/admin/CreateEquipmentForm"
+import CreateEquipmentForm from "@/src/components/equipment/CreateEquipmentForm"
 
 export default async function CreateEquipmentPage({
   params,

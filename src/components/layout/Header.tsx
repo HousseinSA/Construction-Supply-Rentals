@@ -89,7 +89,9 @@ export default function Header() {
               }`}
               displayText={t("phone")}
             />
-            <LanguageSwitcher onLanguageChange={() => setIsMobileMenuOpen(false)} />
+            <LanguageSwitcher
+              onLanguageChange={() => setIsMobileMenuOpen(false)}
+            />
             <div className="hidden md:block">
               <AuthButtons />
             </div>

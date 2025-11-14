@@ -17,6 +17,7 @@ interface DropdownProps {
   placeholder?: string
   disabled?: boolean
   className?: string
+  required?: boolean
 }
 
 export default function Dropdown({
@@ -26,7 +27,8 @@ export default function Dropdown({
   onChange,
   placeholder = "Select option",
   disabled = false,
-  className = ""
+  className = "",
+  required = false
 }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -54,7 +56,7 @@ export default function Dropdown({
     <div className={`relative ${className} ${fontClass}`} ref={dropdownRef}>
       {label && (
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          {label}
+          {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}
       

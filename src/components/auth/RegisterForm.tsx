@@ -99,7 +99,12 @@ export default function RegisterForm() {
       const data = await response.json()
 
       if (!response.ok) {
-        showToast.error(data.error || tToast("registerFailed"))
+        const errorKey = data.error
+        if (errorKey === "emailAlreadyExists" || errorKey === "phoneAlreadyExists") {
+          showToast.error(tToast(errorKey))
+        } else {
+          showToast.error(data.error || tToast("registerFailed"))
+        }
         return
       }
 

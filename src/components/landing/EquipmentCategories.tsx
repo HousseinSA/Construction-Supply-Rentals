@@ -15,7 +15,7 @@ export default function EquipmentCategories() {
   const { categories, loading, error } = useCategories()
   const { getCategoryInfo, getCategoryKey } = useCategoryMapping()
 
-  if (loading) return <CategoriesLoading count={categories?.length || 4} />
+  if (loading || categories.length === 0) return <CategoriesLoading count={4} />
   if (error) return <CategoriesEmpty />
 
   return (

@@ -1,5 +1,6 @@
-import  { AuthOptions } from "next-auth"
+import { AuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
+import bcrypt from "bcryptjs"
 import { connectDB } from "./mongodb"
 import { COLLECTIONS } from "./types"
 
@@ -43,6 +44,7 @@ export const authOptions: AuthOptions = {
   ],
   session: { strategy: "jwt" as const, maxAge: 24 * 60 * 60 },
   pages: { signIn: "/auth/login" },
+  basePath: "/api/auth",
   callbacks: {
     async jwt({ token, user }) {
       if (user) {

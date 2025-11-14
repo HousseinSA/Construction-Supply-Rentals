@@ -50,6 +50,7 @@ export default function CityDropdown({
       placeholder={placeholder || t("selectCity")}
       disabled={disabled}
       className={className}
+      required
     />
   )
 }

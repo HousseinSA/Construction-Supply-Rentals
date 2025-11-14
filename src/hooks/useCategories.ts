@@ -15,7 +15,10 @@ export function useCategories() {
   const { categories, loading, error, setCategories, setLoading, setError } = useCategoriesStore()
 
   const fetchCategories = useCallback(async () => {
-    if (categories.length > 0) return
+    if (categories.length > 0) {
+      setLoading(false)
+      return
+    }
 
     try {
       setLoading(true)

@@ -8,7 +8,17 @@
 
 - **3 Languages**: Arabic (RTL), French, English
 - Seamless language switching
-- Fully localized content and UI
+- Fully localized content **and** UI
+
+<!-- commition roles -->
+****
+standard 10%
+500 / 9%
+1000 / 8% min
+for sale / 5% fixed
+this is for camion
+for renter for more then 1 month is 9% if more than 2 months 8%
+for engine when say it's rented for 1000h is 10% don' fixed for this and descresed by 1% when we go done for example 900h is 9% and so one meaning 100H has 1%
 
 ### 👥 Multi-Role System
 

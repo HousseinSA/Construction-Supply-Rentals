@@ -6,7 +6,7 @@ import { validateEmail, validateMauritanianPhone } from "@/src/lib/validators"
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { 
+    let { 
       firstName, 
       lastName, 
       email, 
@@ -16,6 +16,9 @@ export async function POST(req: NextRequest) {
       companyName, 
       location 
     } = body
+
+    // Normalize email
+    email = email?.trim().toLowerCase()
 
     // Required fields validation
     if (!firstName?.trim()) {
@@ -55,14 +58,20 @@ export async function POST(req: NextRequest) {
     const db = await connectDB()
     
     // Check if email already exists
-    const existingUser = await db.collection(COLLECTIONS.USERS).findOne({ email: email.toLowerCase() })
-    if (existingUser) {
-      return NextResponse.json({ error: "Email already registered" }, { status: 409 })
+    const existingUserByEmail = await db.collection(COLLECTIONS.USERS).findOne({ email })
+    if (existingUserByEmail) {
+      return NextResponse.json({ error: "emailAlreadyExists" }, { status: 409 })
+    }
+
+    // Check if phone already exists
+    const existingUserByPhone = await db.collection(COLLECTIONS.USERS).findOne({ phone: phone.replace(/\s+/g, '') })
+    if (existingUserByPhone) {
+      return NextResponse.json({ error: "phoneAlreadyExists" }, { status: 409 })
     }
 
     // Create user document
     const userData = {
-      email: email.toLowerCase(),
+      email,
       username: email.split("@")[0],
       password,
       firstName: firstName.trim(),

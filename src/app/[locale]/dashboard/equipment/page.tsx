@@ -1,5 +1,5 @@
 import { setRequestLocale } from "next-intl/server"
-import DashboardPageHeader from "@/src/components/dashboard/DashboardPageHeader"
+import ManageEquipmentClient from "@/src/components/dashboard/ManageEquipmentClient"
 
 export default async function ManageEquipmentPage({
   params,
@@ -9,5 +9,5 @@ export default async function ManageEquipmentPage({
   const { locale } = await params
   setRequestLocale(locale)
 
-  return <DashboardPageHeader pageKey="equipment" />
+  return <ManageEquipmentClient />
 }

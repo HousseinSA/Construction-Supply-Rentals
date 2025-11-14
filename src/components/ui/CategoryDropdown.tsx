@@ -69,6 +69,7 @@ export default function CategoryDropdown({
       placeholder={placeholder || t("selectCategory")}
       disabled={disabled || loading}
       className={className}
+      required
     />
   )
 }

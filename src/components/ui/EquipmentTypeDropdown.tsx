@@ -70,6 +70,7 @@ export default function EquipmentTypeDropdown({
       placeholder={placeholder || t("selectEquipmentType")}
       disabled={disabled || !category || loading}
       className={className}
+      required
     />
   )
 }
