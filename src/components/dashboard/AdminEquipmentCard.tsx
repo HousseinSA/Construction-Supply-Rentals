@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl"
 import { useRouter } from "@/src/i18n/navigation"
 import Button from "../ui/Button"
 import { showToast } from "@/src/lib/toast"
+import Image from "next/image"
 
 interface EquipmentCardProps {
   equipment: {
@@ -93,7 +94,9 @@ export default function AdminEquipmentCard({ equipment }: EquipmentCardProps) {
       } else {
         setStatus(showConfirm.value as "approved" | "rejected")
         showToast.success(
-          showConfirm.value === "approved" ? t("equipmentApproved") : t("equipmentRejected")
+          showConfirm.value === "approved"
+            ? t("equipmentApproved")
+            : t("equipmentRejected")
         )
       }
     } catch (error) {
@@ -107,20 +110,27 @@ export default function AdminEquipmentCard({ equipment }: EquipmentCardProps) {
   const getPriceDisplay = () => {
     const { pricing } = equipment
     if (equipment.listingType === "forSale" && pricing.salePrice) {
-      return `${pricing.salePrice.toLocaleString()} UM`
+      return `${pricing.salePrice.toLocaleString()} ${tCommon("currency")}`
     }
-    if (pricing.hourlyRate) return `${pricing.hourlyRate} UM/${tCommon("hour")}`
-    if (pricing.dailyRate) return `${pricing.dailyRate} UM/${tCommon("day")}`
-    if (pricing.kmRate) return `${pricing.kmRate} UM/${tCommon("km")}`
+    if (pricing.hourlyRate)
+      return `${pricing.hourlyRate} ${tCommon("currency")}/${tCommon("hour")}`
+    if (pricing.dailyRate)
+      return `${pricing.dailyRate} ${tCommon("currency")}/${tCommon("day")}`
+    if (pricing.kmRate)
+      return `${pricing.kmRate} ${tCommon("currency")}/${tCommon("km")}`
     return "N/A"
   }
 
   return (
     <>
       <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-        <div className="relative h-48 bg-gray-200">
-          <img
-            src={equipment.images[0] || "/equipement-images/default-fallback-image.png"}
+        <div className="relative h-56 bg-gray-200">
+          <Image
+            src={
+              equipment.images[0] ||
+              "/equipement-images/default-fallback-image.png"
+            }
+            fill
             alt={equipment.name}
             className="w-full h-full object-cover"
           />
@@ -144,7 +154,9 @@ export default function AdminEquipmentCard({ equipment }: EquipmentCardProps) {
 
         {/* Content */}
         <div className="p-4">
-          <h3 className="font-semibold text-lg mb-2 line-clamp-1">{equipment.name}</h3>
+          <h3 className="font-semibold text-lg mb-2 line-clamp-1">
+            {equipment.name}
+          </h3>
           <p className="text-sm text-gray-600 mb-2 line-clamp-2">
             {equipment.description}
           </p>
@@ -162,7 +174,9 @@ export default function AdminEquipmentCard({ equipment }: EquipmentCardProps) {
             {equipment.specifications?.brand && (
               <div className="flex justify-between">
                 <span className="text-gray-600">{t("brand")}:</span>
-                <span className="font-medium">{equipment.specifications.brand}</span>
+                <span className="font-medium">
+                  {equipment.specifications.brand}
+                </span>
               </div>
             )}
             {equipment.specifications?.condition && (
@@ -187,10 +201,12 @@ export default function AdminEquipmentCard({ equipment }: EquipmentCardProps) {
                   {equipment.supplier.firstName} {equipment.supplier.lastName}
                 </p>
                 <p>
-                  <span className="font-medium">{t("email")}:</span> {equipment.supplier.email}
+                  <span className="font-medium">{t("email")}:</span>{" "}
+                  {equipment.supplier.email}
                 </p>
                 <p>
-                  <span className="font-medium">{t("phone")}:</span> {equipment.supplier.phone}
+                  <span className="font-medium">{t("phone")}:</span>{" "}
+                  {equipment.supplier.phone}
                 </p>
                 {equipment.supplier.companyName && (
                   <p>
@@ -222,7 +238,9 @@ export default function AdminEquipmentCard({ equipment }: EquipmentCardProps) {
                   {t("editEquipment")}
                 </Button>
                 <div className="flex items-center justify-between bg-gray-50 p-2 rounded">
-                  <span className="text-sm text-gray-700">{t("availability")}:</span>
+                  <span className="text-sm text-gray-700">
+                    {t("availability")}:
+                  </span>
                   <select
                     value={isAvailable ? "available" : "unavailable"}
                     onChange={(e) =>
@@ -265,7 +283,9 @@ export default function AdminEquipmentCard({ equipment }: EquipmentCardProps) {
                 )}
                 {status === "approved" && (
                   <div className="flex items-center justify-between bg-gray-50 p-2 rounded">
-                    <span className="text-sm text-gray-700">{t("availability")}:</span>
+                    <span className="text-sm text-gray-700">
+                      {t("availability")}:
+                    </span>
                     <select
                       value={isAvailable ? "available" : "unavailable"}
                       onChange={(e) =>
@@ -302,7 +322,9 @@ export default function AdminEquipmentCard({ equipment }: EquipmentCardProps) {
             <p className="text-gray-600 mb-6">
               {showConfirm.type === "availability"
                 ? t("confirmAvailability", {
-                    status: showConfirm.value ? t("available") : t("unavailable")
+                    status: showConfirm.value
+                      ? t("available")
+                      : t("unavailable"),
                   })
                 : t("confirmStatus", { action: showConfirm.value })}
             </p>

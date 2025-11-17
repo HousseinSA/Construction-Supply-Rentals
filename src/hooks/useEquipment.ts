@@ -26,7 +26,7 @@ export function useEquipment(selectedCity?: string | null, selectedType?: string
         setError(null)
         const params = new URLSearchParams()
         params.set("available", "true")
-        // Only filter by city if not showing equipment for sale
+        // Only filter by city if showing equipment for rent
         if (selectedCity && listingType !== 'forSale') {
           params.set("city", selectedCity)
         }

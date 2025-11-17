@@ -6,7 +6,7 @@ import { useFontClass } from "@/src/hooks/useFontClass"
 import { useCityData } from "@/src/hooks/useCityData"
 import { getEquipmentImage } from "@/src/lib/equipment-images"
 import Button from "../ui/Button"
-import { MapPin } from "lucide-react"
+import { MapPin, Tag } from "lucide-react"
 
 interface Pricing {
   dailyRate?: number
@@ -63,7 +63,7 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
         />
         {isForSale && (
           <div className="absolute top-2 right-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg flex items-center gap-1">
-            <span className="w-2 h-2 bg-white rounded-full"></span>
+            <Tag className="w-3 h-3" />
             {t("forSale")}
           </div>
         )}

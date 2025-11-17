@@ -56,7 +56,14 @@ export async function GET(request: Request) {
         },
         {
           $addFields: {
-            equipmentCount: { $size: "$equipment" },
+            equipmentCount: {
+              $size: {
+                $filter: {
+                  input: "$equipment",
+                  cond: { $ne: ["$$this.listingType", "forSale"] }
+                }
+              }
+            },
           },
         },
         {

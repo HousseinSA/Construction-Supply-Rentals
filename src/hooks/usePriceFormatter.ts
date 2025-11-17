@@ -39,7 +39,7 @@ export function usePriceFormatter() {
   const formatPrice = (rate: number, unit: string) => {
     return {
       formattedRate: rate.toLocaleString(),
-      displayPrice: `${rate.toLocaleString()} MRU`,
+      displayPrice: `${rate.toLocaleString()} ${tCommon("currency")}`,
       displayUnit: unit ? `/ ${unit}` : ""
     }
   }

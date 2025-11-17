@@ -4,7 +4,7 @@ import { EquipmentStatus, UsageCategory, PricingType } from "../types"
 export interface Equipment {
   _id?: ObjectId
   supplierId?: ObjectId
-  name: string // Auto-generated from equipment type
+  name: string 
   description: string
   categoryId: ObjectId
   equipmentTypeId: ObjectId
@@ -19,14 +19,14 @@ export interface Equipment {
   location: string
   images: string[]
   specifications?: {
-    condition?: string // new, excellent, good, fair, used
+    condition?: string
     brand?: string
     model?: string
     hoursUsed?: number
     weight?: number
-    weightUnit?: string // kg or tons
+    weightUnit?: string 
   }
-  usageCategory: UsageCategory // Auto-determined by equipment category
+  usageCategory: UsageCategory
   status: EquipmentStatus
   isAvailable: boolean
   listingType: "forSale" | "forRent"

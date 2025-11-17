@@ -47,10 +47,15 @@ export async function GET(request: NextRequest) {
     if (status) query.status = status
     if (categoryId) query.categoryId = new ObjectId(categoryId)
     if (type) query.equipmentTypeId = new ObjectId(type)
-    // Only filter by city if not showing equipment for sale
+    // Only filter by city if showing equipment for rent
     if (city && listingType !== "forSale")
       query.location = { $regex: new RegExp(city, "i") }
-    if (listingType) query.listingType = listingType
+
+    if ((city || type) && !listingType) {
+      query.listingType = "forRent"
+    } else if (listingType) {
+      query.listingType = listingType
+    }
 
     // Handle category name parameter
     if (category) {
@@ -65,7 +70,11 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    let equipment = await db.collection("equipment").find(query).sort({ createdAt: -1 }).toArray()
+    let equipment = await db
+      .collection("equipment")
+      .find(query)
+      .sort({ createdAt: -1 })
+      .toArray()
 
     // Filter out equipment with pending/active bookings if availableOnly requested
     if (availableOnly) {
