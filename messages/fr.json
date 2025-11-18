@@ -13,7 +13,8 @@
     "equipment": "Matériel",
     "equipmentForSale": "Matériel À Vendre",
     "logoutConfirm": "Confirmer la Déconnexion",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "showingResults": "Affichage de {start} à {end} sur {total} résultats"
   },
   "equipment": {
     "allEquipment": "Tout le Matériel",
@@ -53,11 +54,15 @@
     "contactForPurchase": "Contacter pour Achat",
     "sendBookingRequest": "Envoyer Demande de Réservation",
     "sendSaleRequest": "Envoyer Demande d'Achat",
+    "waitingApproval": "En Attente d'Approbation",
+    "currentlyUnavailable": "Actuellement Indisponible",
+    "bookingPending": "Vous avez déjà une demande de réservation en attente pour cet équipement",
+    "equipmentUnavailable": "Cet équipement est actuellement indisponible en raison de réservations en attente",
     "goBack": "Retour",
     "loading": "Chargement...",
     "equipmentNotFound": "Matériel Introuvable",
     "equipmentNotFoundDesc": "Le matériel que vous recherchez n'existe pas ou a été supprimé.",
-    "clickToViewFullSize": "Cliquez pour voir en taille réelle",
+    "clickToViewFullSize": " voir en taille réelle",
     "imageModal": {
       "close": "Fermer",
       "previous": "Précédent",
@@ -215,6 +220,18 @@
       "successTitle": "Vérifiez Votre Email",
       "successMessage": "Nous avons envoyé un lien de réinitialisation à votre adresse email",
       "backToLogin": "Retour à la Connexion"
+    },
+    "commission": {
+      "title": "Structure de Commission",
+      "subtitle": "Taux de commission transparents pour tous les équipements",
+      "standardEquipment": "Matériel standard: 10% de commission",
+      "highUsage500": "Usage élevé (500+ heures): 9% de commission",
+      "extendedUsage1000": "Usage prolongé (1000+ heures): 8% de commission",
+      "vehiclesStandard": "Véhicules (moins d'1 mois): 10% de commission",
+      "vehicles1Month": "Véhicules (1+ mois de location): 9% de commission",
+      "vehicles2Months": "Véhicules (2+ mois de location): 8% de commission",
+      "forSale": "À vendre: 5% de commission fixe",
+      "note": "Commission basée sur le type d'équipement et la durée d'usage"
     }
   },
   "categories": {
@@ -291,6 +308,20 @@
   "dashboard": {
     "goToHome": "Aller à l'Accueil",
     "underDevelopment": "Cette page est en cours de développement",
+    "dashboard": {
+      "users": {
+        "roles": {
+          "renter": "Locataire",
+          "supplier": "Fournisseur"
+        }
+      },
+      "analytics": {
+        "metrics": {
+          "activeEquipment": "Matériel Actif",
+          "newUsersThisMonth": "Nouveaux Utilisateurs Ce Mois"
+        }
+      }
+    },
     "admin": {
       "title": "Tableau de Bord Admin",
       "subtitle": "Gérez votre plateforme de location d'équipement de construction",
@@ -420,14 +451,19 @@
       "viewDetails": "Voir Détails",
       "confirmAction": "Confirmer l'Action",
       "confirmAvailability": "Êtes-vous sûr de vouloir marquer ce matériel comme {status}?",
-      "confirmStatus": "Êtes-vous sûr de vouloir {action} ce matériel?",
+      "confirmApprove": "Êtes-vous sûr de vouloir approuver ce matériel?",
+      "confirmReject": "Êtes-vous sûr de vouloir rejeter ce matériel?",
       "processing": "Traitement...",
       "confirm": "Confirmer",
       "equipmentUpdated": "Matériel mis à jour avec succès",
       "equipmentUpdateFailed": "Échec de la mise à jour du matériel",
       "equipmentApproved": "Matériel approuvé avec succès",
       "equipmentRejected": "Matériel rejeté avec succès",
-      "availabilityUpdated": "Disponibilité mise à jour avec succès"
+      "availabilityUpdated": "Disponibilité mise à jour avec succès",
+      "confirmApproveTitle": "Approuver le Matériel",
+      "confirmApproveMessage": "Êtes-vous sûr de vouloir approuver ce matériel?",
+      "confirmRejectTitle": "Rejeter le Matériel",
+      "confirmRejectMessage": "Êtes-vous sûr de vouloir rejeter ce matériel?"
     },
     "pages": {
       "equipment": {
@@ -436,7 +472,7 @@
       },
       "analytics": {
         "title": "Analyses",
-        "subtitle": "Voir les statistiques et métriques de performance de la plateforme"
+        "subtitle": "Voir les statistiques et métriques"
       },
       "bookings": {
         "title": "Réservations",
@@ -458,14 +494,204 @@
         "title": "Paramètres",
         "subtitle": "Configurer les paramètres et préférences de la plateforme"
       }
+    },
+    "users": {
+      "searchPlaceholder": "Rechercher par nom, email ou téléphone...",
+      "allRoles": "Tous les Rôles",
+      "roles": {
+        "admin": "Admin",
+        "supplier": "Partenaire",
+        "renter": "Locataire"
+      },
+      "noUsers": "Aucun Utilisateur Trouvé",
+      "noUsersDesc": "Aucun utilisateur trouvé correspondant à vos critères de recherche",
+      "totalUsers": "Total Utilisateurs",
+      "suppliers": "Partenaires",
+      "renters": "Locataires",
+      "blockUser": "Bloquer Utilisateur",
+      "unblockUser": "Débloquer Utilisateur",
+      "actions": "Actions",
+      "copyEmail": "Copier Email",
+      "copyPhone": "Copier Téléphone",
+      "emailCopied": "Email copié dans le presse-papiers",
+      "phoneCopied": "Téléphone copié dans le presse-papiers",
+      "status": "Statut",
+      "active": "Actif",
+      "blocked": "Bloqué",
+      "confirmBlockTitle": "Bloquer Utilisateur",
+      "confirmBlockMessage": "Êtes-vous sûr de vouloir bloquer cet utilisateur ? Il ne pourra plus se connecter.",
+      "confirmUnblockTitle": "Débloquer Utilisateur",
+      "confirmUnblockMessage": "Êtes-vous sûr de vouloir débloquer cet utilisateur ? Il pourra se connecter à nouveau.",
+      "userBlocked": "Utilisateur bloqué avec succès",
+      "userUnblocked": "Utilisateur débloqué avec succès"
+    },
+    "settings": {
+      "general": {
+        "title": "Paramètres Généraux",
+        "siteName": "Nom du Site",
+        "supportPhone": "Téléphone Support",
+        "supportEmail": "Email Support",
+        "defaultLanguage": "Langue par Défaut",
+        "languages": {
+          "ar": "العربية",
+          "fr": "Français",
+          "en": "English"
+        }
+      },
+      "commission": {
+        "title": "Taux de Commission",
+        "standard": "Commission Standard (%)",
+        "volume500": "Commission 500+ Heures (%)",
+        "volume1000": "Commission 1000+ Heures (%)",
+        "structure": {
+          "title": "Structure de Commission",
+          "subtitle": "Taux de commission transparents pour tous les équipements",
+          "standardEquipment": "Matériel standard: 10% de commission",
+          "highUsage500": "Usage élevé (500+ heures): 9% de commission",
+          "extendedUsage1000": "Usage prolongé (1000+ heures): 8% de commission",
+          "vehiclesStandard": "Véhicules (moins d'1 mois): 10% de commission",
+          "vehicles1Month": "Véhicules (1+ mois de location): 9% de commission",
+          "vehicles2Months": "Véhicules (2+ mois de location): 8% de commission",
+          "forSale": "À vendre: 5% de commission fixe",
+          "note": "Commission basée sur le type d'équipement et la durée d'usage"
+        }
+      },
+      "users": {
+        "title": "Paramètres Utilisateurs",
+        "enableRegistration": "Autoriser Nouvelles Inscriptions",
+        "enableRegistrationDesc": "Permettre aux nouveaux utilisateurs de créer des comptes"
+      },
+      "saveSettings": "Sauvegarder Paramètres",
+      "contactInfo": {
+        "title": "Informations de Contact",
+        "supportEmail": "Email de Support",
+        "supportPhone": "Téléphone de Support"
+      },
+      "adminInfo": {
+        "title": "Informations Administrateur",
+        "adminPhone": "Numéro de Téléphone Admin",
+        "adminPassword": "Mot de Passe Admin"
+      }
+    },
+    "analytics": {
+      "title": "Statistiques",
+      "timeRanges": {
+        "last7Days": "7 Derniers Jours",
+        "last30Days": "30 Derniers Jours",
+        "last3Months": "3 Derniers Mois",
+        "lastYear": "Dernière Année"
+      },
+      "metrics": {
+        "totalUsers": "Total Utilisateurs",
+        "totalEquipment": "Total Matériel",
+        "totalBookings": "Total Réservations",
+        "totalRevenue": "Revenus Totaux",
+        "activeEquipment": "Matériel Actif",
+        "newUsersThisMonth": "Nouveaux Utilisateurs Ce Mois"
+      },
+      "growth": {
+        "fromLastMonth": "{percent} du mois dernier"
+      },
+      "currency": "MRU",
+      "monthlyStats": "Statistiques Mensuelles",
+      "bookings": "réservations",
+      "users": "utilisateurs",
+      "topCities": "Principales Villes",
+      "equipmentByCategory": "Matériel par Catégorie",
+      "recentActivity": "Activité Récente",
+      "months": {
+        "january": "Janvier",
+        "february": "Février",
+        "march": "Mars",
+        "april": "Avril"
+      },
+      "cities": {
+        "nouakchott": "Nouakchott",
+        "nouadhibou": "Nouadhibou",
+        "rosso": "Rosso",
+        "kaedi": "Kaédi"
+      },
+      "categories": {
+        "excavation": "Terrassement",
+        "transport": "Transport",
+        "lifting": "Levage",
+        "leveling": "Nivellement"
+      },
+      "activities": {
+        "newUser": "Nouvel utilisateur a rejoint la plateforme",
+        "newEquipment": "Nouveau matériel a été ajouté",
+        "newBooking": "Nouvelle réservation confirmée"
+      },
+      "timeAgo": {
+        "minutes": "il y a {count} minutes"
+      },
+      "equipmentByCity": "Matériel par Ville",
+      "userRoles": "Rôles Utilisateurs",
+      "topPartners": "Meilleurs Partenaires",
+      "equipmentCount": "matériel",
+      "noPartners": "Aucun partenaire trouvé"
+    },
+    "bookings": {
+      "table": {
+        "booking": "Réservation",
+        "renter": "Locataire",
+        "supplier": "Fournisseur",
+        "equipment": "Matériel",
+        "total": "Total",
+        "status": "Statut",
+        "date": "Date",
+        "actions": "Actions"
+      },
+      "status": {
+        "pending": "En attente",
+        "paid": "Payé",
+        "completed": "Terminé",
+        "cancelled": "Annulé"
+      },
+      "actions": {
+        "view": "Voir",
+        "cancel": "Annuler",
+        "save": "Sauvegarder",
+        "saving": "Sauvegarde..."
+      },
+      "details": {
+        "title": "Détails de la Réservation",
+        "bookingInfo": "Informations de Réservation",
+        "bookingId": "ID Réservation",
+        "totalAmount": "Montant Total",
+        "commission": "Commission",
+        "createdAt": "Date de Création",
+        "renterInfo": "Informations Locataire",
+        "supplierInfo": "Informations Fournisseur",
+        "equipmentItems": "Articles de Matériel",
+        "name": "Nom",
+        "email": "Email",
+        "phone": "Téléphone",
+        "location": "Localisation",
+        "company": "Entreprise",
+        "rate": "Tarif",
+        "usage": "Usage",
+        "subtotal": "Sous-total",
+        "status": "Statut",
+        "renterMessage": "Message du Locataire",
+        "adminNotes": "Notes Admin",
+        "adminNotesPlaceholder": "Ajouter des notes sur les arrangements, détails de paiement, etc...",
+        "call": "Appeler"
+      },
+      "items": "articles",
+      "more": "de plus",
+      "noBookings": "Aucune Réservation Trouvée",
+      "noBookingsDesc": "Aucune demande de réservation n'a encore été soumise"
     }
   },
   "toast": {
     "loginSuccess": "Connexion réussie !",
     "loginFailed": "Email/téléphone ou mot de passe incorrect",
+    "accountBlocked": "Votre compte a été bloqué. Veuillez contacter le support pour obtenir de l'aide.",
     "registerSuccess": "Compte créé avec succès !",
     "registerFailed": "Erreur lors de la création du compte",
     "loginError": "Email/téléphone ou mot de passe incorrect",
+    "accountBlockedError": "Votre compte a été bloqué. Veuillez contacter le support.",
     "registerError": "Erreur lors de la création du compte",
     "networkError": "Erreur de connexion. Veuillez réessayer.",
     "emailOrPhoneRequired": "Email ou téléphone requis",
@@ -497,5 +723,22 @@
     "brandRequired": "Veuillez entrer la marque du matériel",
     "emailAlreadyExists": "Un compte avec cet email existe déjà. Veuillez utiliser un autre email ou vous connecter.",
     "phoneAlreadyExists": "Un compte avec ce numéro de téléphone existe déjà. Veuillez utiliser un autre numéro ou vous connecter."
+  },
+  "booking": {
+    "title": "Réserver Matériel",
+    "usage": "Usage Requis",
+    "calculation": "Calcul du Prix",
+    "rate": "Tarif",
+    "total": "Total",
+    "message": "Message",
+    "optional": "optionnel",
+    "messagePlaceholder": "Exigences spéciales ou notes...",
+    "sendRequest": "Envoyer Demande de Réservation",
+    "sending": "Envoi...",
+    "success": "Demande de réservation envoyée avec succès! L'admin vous contactera bientôt.",
+    "error": "Échec de l'envoi de la demande de réservation. Veuillez réessayer.",
+    "hours": "heures",
+    "km": "km",
+    "tons": "tonnes"
   }
 }

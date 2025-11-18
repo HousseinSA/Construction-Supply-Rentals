@@ -1,6 +1,7 @@
 "use client"
 
 import { useTranslations } from "next-intl"
+import { useSession } from "next-auth/react"
 import { Link } from "@/src/i18n/navigation"
 import { ArrowLeft } from "lucide-react"
 import { useFontClass } from "@/src/hooks/useFontClass"
@@ -9,8 +10,10 @@ import AuthCard from "../auth/AuthCard"
 import ListingTypeSelector from "../equipment/ListingTypeSelector"
 import EquipmentFormFields from "../equipment/EquipmentFormFields"
 import FormActions from "../equipment/FormActions"
+import CommissionStructure from "../ui/CommissionStructure"
 
 export default function CreateEquipmentForm() {
+  const { data: session } = useSession()
   const t = useTranslations("dashboard.equipment")
   const fontClass = useFontClass()
   const {
@@ -49,31 +52,38 @@ export default function CreateEquipmentForm() {
           <p className="text-gray-600">{t("createSubtitle")}</p>
         </div>
 
-        <AuthCard>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <ListingTypeSelector
-              value={formData.listingType}
-              onChange={handleListingTypeChange}
-            />
+        <div className="space-y-6">
+          {/* Commission Structure Info - Only for suppliers */}
+          {session?.user?.userType === "supplier" && (
+            <CommissionStructure variant="compact" />
+          )}
+          
+          <AuthCard>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <ListingTypeSelector
+                value={formData.listingType}
+                onChange={handleListingTypeChange}
+              />
 
-            <EquipmentFormFields
-              formData={formData}
-              images={images}
-              isSubmitting={isSubmitting}
-              onInputChange={handleInputChange}
-              onCategoryChange={handleCategoryChange}
-              onTypeChange={handleTypeChange}
-              onLocationChange={handleLocationChange}
-              onPriceTypeChange={handlePriceTypeChange}
+              <EquipmentFormFields
+                formData={formData}
+                images={images}
+                isSubmitting={isSubmitting}
+                onInputChange={handleInputChange}
+                onCategoryChange={handleCategoryChange}
+                onTypeChange={handleTypeChange}
+                onLocationChange={handleLocationChange}
+                onPriceTypeChange={handlePriceTypeChange}
 
-              onWeightUnitChange={handleWeightUnitChange}
+                onWeightUnitChange={handleWeightUnitChange}
 
-              onImagesChange={setImages}
-            />
+                onImagesChange={setImages}
+              />
 
-            <FormActions isSubmitting={isSubmitting} />
-          </form>
-        </AuthCard>
+              <FormActions isSubmitting={isSubmitting} />
+            </form>
+          </AuthCard>
+        </div>
       </div>
     </div>
   )

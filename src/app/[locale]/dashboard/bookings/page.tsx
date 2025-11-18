@@ -1,5 +1,5 @@
 import { setRequestLocale } from "next-intl/server"
-import DashboardPageHeader from "@/src/components/dashboard/DashboardPageHeader"
+import BookingTable from "@/src/components/dashboard/bookings/BookingTable"
 
 export default async function BookingsPage({
   params,
@@ -9,5 +9,5 @@ export default async function BookingsPage({
   const { locale } = await params
   setRequestLocale(locale)
 
-  return <DashboardPageHeader pageKey="bookings" />
+  return <BookingTable />
 }

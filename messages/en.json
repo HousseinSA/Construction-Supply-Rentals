@@ -13,7 +13,8 @@
     "equipment": "Equipment",
     "equipmentForSale": "Equipment For Sale",
     "logoutConfirm": "Confirm Logout",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "showingResults": "Showing {start} to {end} of {total} results"
   },
   "equipment": {
     "allEquipment": "All Equipment",
@@ -53,11 +54,15 @@
     "contactForPurchase": "Contact to Purchase",
     "sendBookingRequest": "Send Booking Request",
     "sendSaleRequest": "Send Sale Request",
+    "waitingApproval": "Waiting for Approval",
+    "currentlyUnavailable": "Currently Unavailable",
+    "bookingPending": "You already have a pending booking for this equipment",
+    "equipmentUnavailable": "This equipment is currently unavailable due to pending bookings",
     "goBack": "Go Back",
     "loading": "Loading...",
     "equipmentNotFound": "Equipment Not Found",
     "equipmentNotFoundDesc": "The equipment you're looking for doesn't exist or has been removed.",
-    "clickToViewFullSize": "Click to view full size",
+    "clickToViewFullSize": " view full size",
     "imageModal": {
       "close": "Close",
       "previous": "Previous",
@@ -217,6 +222,18 @@
       "successTitle": "Check Your Email",
       "successMessage": "We've sent a password reset link to your email address",
       "backToLogin": "Back to Login"
+    },
+    "commission": {
+      "title": "Commission Structure",
+      "subtitle": "Transparent commission rates for all equipment",
+      "standardEquipment": "Standard equipment: 10% commission",
+      "highUsage500": "High usage (500+ hours): 9% commission",
+      "extendedUsage1000": "Extended usage (1000+ hours): 8% commission",
+      "vehiclesStandard": "Vehicles (less than 1 month): 10% commission",
+      "vehicles1Month": "Vehicles (1+ month rental): 9% commission",
+      "vehicles2Months": "Vehicles (2+ months rental): 8% commission",
+      "forSale": "For sale: 5% fixed commission",
+      "note": "Commission based on equipment type and usage duration"
     }
   },
   "categories": {
@@ -293,6 +310,20 @@
   "dashboard": {
     "goToHome": "Go to Home",
     "underDevelopment": "This page is under development",
+    "dashboard": {
+      "users": {
+        "roles": {
+          "renter": "Renter",
+          "supplier": "Supplier"
+        }
+      },
+      "analytics": {
+        "metrics": {
+          "activeEquipment": "Active Equipment",
+          "newUsersThisMonth": "New Users This Month"
+        }
+      }
+    },
     "admin": {
       "title": "Admin Dashboard",
       "subtitle": "Manage your construction equipment rental platform",
@@ -422,14 +453,19 @@
       "viewDetails": "View Details",
       "confirmAction": "Confirm Action",
       "confirmAvailability": "Are you sure you want to mark this equipment as {status}?",
-      "confirmStatus": "Are you sure you want to {action} this equipment?",
+      "confirmApprove": "Are you sure you want to approve this equipment?",
+      "confirmReject": "Are you sure you want to reject this equipment?",
       "processing": "Processing...",
       "confirm": "Confirm",
       "equipmentUpdated": "Equipment updated successfully",
       "equipmentUpdateFailed": "Failed to update equipment",
       "equipmentApproved": "Equipment approved successfully",
       "equipmentRejected": "Equipment rejected successfully",
-      "availabilityUpdated": "Availability updated successfully"
+      "availabilityUpdated": "Availability updated successfully",
+      "confirmApproveTitle": "Approve Equipment",
+      "confirmApproveMessage": "Are you sure you want to approve this equipment?",
+      "confirmRejectTitle": "Reject Equipment",
+      "confirmRejectMessage": "Are you sure you want to reject this equipment?"
     },
     "pages": {
       "equipment": {
@@ -438,7 +474,7 @@
       },
       "analytics": {
         "title": "Analytics",
-        "subtitle": "View platform statistics and performance metrics"
+        "subtitle": "View platform statistics "
       },
       "bookings": {
         "title": "Bookings",
@@ -460,14 +496,204 @@
         "title": "Settings",
         "subtitle": "Configure platform settings and preferences"
       }
+    },
+    "users": {
+      "searchPlaceholder": "Search by name, email, or phone...",
+      "allRoles": "All Roles",
+      "roles": {
+        "admin": "Admin",
+        "supplier": "Partner",
+        "renter": "Renter"
+      },
+      "noUsers": "No Users Found",
+      "noUsersDesc": "No users found matching your search criteria",
+      "totalUsers": "Total Users",
+      "suppliers": "Partners",
+      "renters": "Renters",
+      "blockUser": "Block User",
+      "unblockUser": "Unblock User",
+      "actions": "Actions",
+      "copyEmail": "Copy Email",
+      "copyPhone": "Copy Phone",
+      "emailCopied": "Email copied to clipboard",
+      "phoneCopied": "Phone copied to clipboard",
+      "status": "Status",
+      "active": "Active",
+      "blocked": "Blocked",
+      "confirmBlockTitle": "Block User",
+      "confirmBlockMessage": "Are you sure you want to block this user? They will not be able to login.",
+      "confirmUnblockTitle": "Unblock User",
+      "confirmUnblockMessage": "Are you sure you want to unblock this user? They will be able to login again.",
+      "userBlocked": "User blocked successfully",
+      "userUnblocked": "User unblocked successfully"
+    },
+    "settings": {
+      "general": {
+        "title": "General Settings",
+        "siteName": "Site Name",
+        "supportPhone": "Support Phone",
+        "supportEmail": "Support Email",
+        "defaultLanguage": "Default Language",
+        "languages": {
+          "ar": "العربية",
+          "fr": "Français",
+          "en": "English"
+        }
+      },
+      "commission": {
+        "title": "Commission Rates",
+        "standard": "Standard Commission (%)",
+        "volume500": "500+ Hours Commission (%)",
+        "volume1000": "1000+ Hours Commission (%)",
+        "structure": {
+          "title": "Commission Structure",
+          "subtitle": "Transparent commission rates for all equipment",
+          "standardEquipment": "Standard equipment: 10% commission",
+          "highUsage500": "High usage (500+ hours): 9% commission",
+          "extendedUsage1000": "Extended usage (1000+ hours): 8% commission",
+          "vehiclesStandard": "Vehicles (less than 1 month): 10% commission",
+          "vehicles1Month": "Vehicles (1+ month rental): 9% commission",
+          "vehicles2Months": "Vehicles (2+ months rental): 8% commission",
+          "forSale": "For sale: 5% fixed commission",
+          "note": "Commission based on equipment type and usage duration"
+        }
+      },
+      "users": {
+        "title": "User Settings",
+        "enableRegistration": "Allow New Registration",
+        "enableRegistrationDesc": "Allow new users to create accounts"
+      },
+      "saveSettings": "Save Settings",
+      "contactInfo": {
+        "title": "Contact Information",
+        "supportEmail": "Support Email",
+        "supportPhone": "Support Phone"
+      },
+      "adminInfo": {
+        "title": "Admin Information",
+        "adminPhone": "Admin Phone Number",
+        "adminPassword": "Admin Password"
+      }
+    },
+    "analytics": {
+      "title": " Statistics",
+      "timeRanges": {
+        "last7Days": "Last 7 Days",
+        "last30Days": "Last 30 Days",
+        "last3Months": "Last 3 Months",
+        "lastYear": "Last Year"
+      },
+      "metrics": {
+        "totalUsers": "Total Users",
+        "totalEquipment": "Total Equipment",
+        "totalBookings": "Total Bookings",
+        "totalRevenue": "Total Revenue",
+        "activeEquipment": "Active Equipment",
+        "newUsersThisMonth": "New Users This Month"
+      },
+      "growth": {
+        "fromLastMonth": "{percent} from last month"
+      },
+      "currency": "MRU",
+      "monthlyStats": "Monthly Statistics",
+      "bookings": "bookings",
+      "users": "users",
+      "topCities": "Top Cities",
+      "equipmentByCategory": "Equipment by Category",
+      "recentActivity": "Recent Activity",
+      "months": {
+        "january": "January",
+        "february": "February",
+        "march": "March",
+        "april": "April"
+      },
+      "cities": {
+        "nouakchott": "Nouakchott",
+        "nouadhibou": "Nouadhibou",
+        "rosso": "Rosso",
+        "kaedi": "Kaédi"
+      },
+      "categories": {
+        "excavation": "Excavation",
+        "transport": "Transport",
+        "lifting": "Lifting",
+        "leveling": "Leveling"
+      },
+      "activities": {
+        "newUser": "New user joined the platform",
+        "newEquipment": "New equipment was added",
+        "newBooking": "New booking was confirmed"
+      },
+      "timeAgo": {
+        "minutes": "{count} minutes ago"
+      },
+      "equipmentByCity": "Equipment by City",
+      "userRoles": "User Roles",
+      "topPartners": "Top Partners",
+      "equipmentCount": "equipment",
+      "noPartners": "No partners found"
+    },
+    "bookings": {
+      "table": {
+        "booking": "Booking",
+        "renter": "Renter",
+        "supplier": "Supplier",
+        "equipment": "Equipment",
+        "total": "Total",
+        "status": "Status",
+        "date": "Date",
+        "actions": "Actions"
+      },
+      "status": {
+        "pending": "Pending",
+        "paid": "Paid",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      },
+      "actions": {
+        "view": "View",
+        "cancel": "Cancel",
+        "save": "Save Changes",
+        "saving": "Saving..."
+      },
+      "details": {
+        "title": "Booking Details",
+        "bookingInfo": "Booking Information",
+        "bookingId": "Booking ID",
+        "totalAmount": "Total Amount",
+        "commission": "Commission",
+        "createdAt": "Created Date",
+        "renterInfo": "Renter Information",
+        "supplierInfo": "Supplier Information",
+        "equipmentItems": "Equipment Items",
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "location": "Location",
+        "company": "Company",
+        "rate": "Rate",
+        "usage": "Usage",
+        "subtotal": "Subtotal",
+        "status": "Status",
+        "renterMessage": "Renter Message",
+        "adminNotes": "Admin Notes",
+        "adminNotesPlaceholder": "Add notes about arrangements, payment details, etc...",
+        "call": "Call"
+      },
+      "items": "items",
+      "more": "more",
+      "noBookings": "No Bookings Found",
+      "noBookingsDesc": "No booking requests have been submitted yet"
     }
   },
   "toast": {
     "loginSuccess": "Login successful!",
     "loginFailed": "Invalid email/phone or password",
+    "accountBlocked": "Your account has been blocked. Please contact support for assistance.",
     "registerSuccess": "Account created successfully!",
     "registerFailed": "Error creating account",
     "loginError": "Invalid email/phone or password",
+    "accountBlockedError": "Your account has been blocked. Please contact support.",
     "registerError": "Error creating account",
     "networkError": "Connection error. Please try again.",
     "emailOrPhoneRequired": "Email or phone is required",
@@ -499,5 +725,22 @@
     "brandRequired": "Please enter equipment brand",
     "emailAlreadyExists": "An account with this email already exists. Please use a different email or login.",
     "phoneAlreadyExists": "An account with this phone number already exists. Please use a different phone number or login."
+  },
+  "booking": {
+    "title": "Book Equipment",
+    "usage": "Usage Required",
+    "calculation": "Price Calculation",
+    "rate": "Rate",
+    "total": "Total",
+    "message": "Message",
+    "optional": "optional",
+    "messagePlaceholder": "Any special requirements or notes...",
+    "sendRequest": "Send Booking Request",
+    "sending": "Sending...",
+    "success": "Booking request sent successfully! Admin will contact you soon.",
+    "error": "Failed to send booking request. Please try again.",
+    "hours": "hours",
+    "km": "km",
+    "tons": "tons"
   }
 }

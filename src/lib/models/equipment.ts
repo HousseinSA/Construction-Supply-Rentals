@@ -64,7 +64,7 @@ export function getUsageCategoryFromEquipmentType(
 }
 
 export function getInitialEquipmentStatus(
-  creatorRole: "admin" | "supplier"
+  creatorRole: "admin" | "user"
 ): EquipmentStatus {
   return creatorRole === "admin" ? "approved" : "pending"
 }

@@ -1,5 +1,5 @@
 import { setRequestLocale } from "next-intl/server"
-import DashboardPageHeader from "@/src/components/dashboard/DashboardPageHeader"
+import UsersPageClient from "./UsersPageClient"
 
 export default async function UsersPage({
   params,
@@ -9,5 +9,5 @@ export default async function UsersPage({
   const { locale } = await params
   setRequestLocale(locale)
 
-  return <DashboardPageHeader pageKey="users" />
+  return <UsersPageClient />
 }

@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from "next/server"
-import { connectDB } from "@/lib/mongodb"
+import { connectDB } from "@/src/lib/mongodb"
 import { ObjectId } from "mongodb"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/src/lib/auth"
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
     const { searchParams } = new URL(request.url)
     const isAdmin = searchParams.get("admin") === "true"
 
@@ -33,7 +35,36 @@ export async function GET(
       )
     }
 
-    return NextResponse.json({ success: true, data: equipment })
+    // Check for pending bookings for this equipment
+    const session = await getServerSession(authOptions)
+    let userBookingStatus = null
+    
+    if (session?.user?.id) {
+      const pendingBooking = await db.collection("bookings").findOne({
+        renterId: new ObjectId(session.user.id),
+        "bookingItems.equipmentId": new ObjectId(id),
+        status: "pending"
+      })
+      
+      if (pendingBooking) {
+        userBookingStatus = "pending"
+      }
+    }
+    
+    // Check if equipment has any pending bookings (to make it unavailable for others)
+    const hasPendingBookings = await db.collection("bookings").findOne({
+      "bookingItems.equipmentId": new ObjectId(id),
+      status: "pending"
+    })
+
+    return NextResponse.json({ 
+      success: true, 
+      data: {
+        ...equipment,
+        userBookingStatus,
+        hasPendingBookings: !!hasPendingBookings
+      }
+    })
   } catch (error) {
     console.error("Error fetching equipment:", error)
     return NextResponse.json(
@@ -45,10 +76,10 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
     const body = await request.json()
 
     if (!ObjectId.isValid(id)) {
@@ -85,10 +116,10 @@ export async function PATCH(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
     const body = await request.json()
 
     if (!ObjectId.isValid(id)) {

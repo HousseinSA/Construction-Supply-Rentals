@@ -10,6 +10,7 @@ import PasswordInput from "../ui/PasswordInput"
 import Button from "../ui/Button"
 import { showToast } from "@/src/lib/toast"
 import { validateEmail, validateMauritanianPhone } from "@/src/lib/validators"
+import CommissionStructure from "../ui/CommissionStructure"
 
 type UserRole = "renter" | "supplier"
 
@@ -197,6 +198,14 @@ export default function RegisterForm() {
                 className="md:col-span-2"
                 required
               />
+              
+              {/* Commission Structure for Suppliers */}
+              <div className="md:col-span-2">
+                <CommissionStructure 
+                  variant="compact" 
+                  translationNamespace="auth.commission"
+                />
+              </div>
             </>
           )}
         </div>

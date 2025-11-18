@@ -8,18 +8,17 @@
     "day": "يوم",
     "hour": "ساعة",
     "km": "KM",
-    "currency": "UM",
     "phone": "+222 45 111111",
     "equipment": "المعدات",
     "equipmentForSale": "معدات للبيع",
     "logoutConfirm": "تأكيد تسجيل الخروج",
-    "cancel": "إلغاء"
+    "cancel": "إلغاء",
+    "showingResults": "عرض {start} إلى {end} من {total} نتيجة"
   },
   "equipment": {
     "allEquipment": "جميع المعدات",
     "equipmentByType": "معدات حسب النوع",
     "equipmentInCity": "المعدات في {city}",
-    "forSale": "للبيع",
     "rentNow": "استأجر الآن",
     "buyNow": "اشتري الآن",
     "salePrice": "سعر البيع",
@@ -54,11 +53,15 @@
     "contactForPurchase": "تواصل للشراء",
     "sendBookingRequest": "إرسال طلب حجز",
     "sendSaleRequest": "إرسال طلب شراء",
+    "waitingApproval": "في انتظار الموافقة",
+    "currentlyUnavailable": "غير متاح حالياً",
+    "bookingPending": "لديك بالفعل طلب حجز في انتظار الموافقة لهذه المعدة",
+    "equipmentUnavailable": "هذه المعدة غير متاحة حالياً بسبب وجود حجوزات في الانتظار",
     "goBack": "عودة",
     "loading": "جاري التحميل...",
     "equipmentNotFound": "لم يتم العثور على المعدة",
     "equipmentNotFoundDesc": "المعدة التي تبحث عنها غير موجودة أو تم حذفها.",
-    "clickToViewFullSize": "انقر لعرض بالحجم الكامل",
+    "clickToViewFullSize": "عرض بالحجم الكامل",
     "imageModal": {
       "close": "إغلاق",
       "previous": "السابق",
@@ -218,6 +221,18 @@
       "successTitle": "تحقق من بريدك الإلكتروني",
       "successMessage": "لقد أرسلنا رابط إعادة تعيين كلمة المرور إلى  بريدك الإلكتروني",
       "backToLogin": "العودة لتسجيل الدخول"
+    },
+    "commission": {
+      "title": "هيكل العمولة",
+      "subtitle": "معدلات العمولة الشفافة لجميع المعدات",
+      "standardEquipment": "المعدات القياسية: 10% عمولة",
+      "highUsage500": "الاستخدام العالي (500+ ساعة): 9% عمولة",
+      "extendedUsage1000": "الاستخدام الممتد (1000+ ساعة): 8% عمولة",
+      "vehiclesStandard": "المركبات (أقل من شهر): 10% عمولة",
+      "vehicles1Month": "المركبات (شهر واحد+): 9% عمولة",
+      "vehicles2Months": "المركبات (شهرين+): 8% عمولة",
+      "forSale": "للبيع: 5% عمولة ثابتة",
+      "note": "العمولة تعتمد على نوع المعدة ومدة الاستخدام"
     }
   },
   "categories": {
@@ -294,6 +309,20 @@
   "dashboard": {
     "goToHome": "الصفحة الرئيسية",
     "underDevelopment": "هذه الصفحة قيد التطوير",
+    "dashboard": {
+      "users": {
+        "roles": {
+          "renter": "مستأجر",
+          "supplier": "مورد"
+        }
+      },
+      "analytics": {
+        "metrics": {
+          "activeEquipment": "المعدات النشطة",
+          "newUsersThisMonth": "مستخدمون جدد هذا الشهر"
+        }
+      }
+    },
     "admin": {
       "title": "لوحة تحكم الإدارة",
       "subtitle": "إدارة منصة تأجير معدات البناء الخاصة بك",
@@ -305,7 +334,7 @@
       "bookingsDesc": "إدارة حجوزات وطلبات الإيجار",
       "users": "المستخدمون",
       "usersDesc": "إدارة المستأجرين والموردين",
-      "analytics": "التحليلات",
+      "analytics": "الإحصائيات",
       "analyticsDesc": "عرض إحصائيات وتقارير المنصة",
       "settings": "الإعدادات",
       "settingsDesc": "تكوين إعدادات المنصة"
@@ -422,14 +451,19 @@
       "viewDetails": "عرض التفاصيل",
       "confirmAction": "تأكيد الإجراء",
       "confirmAvailability": "هل أنت متأكد من تحديد هذه المعدة كـ {status}؟",
-      "confirmStatus": "هل أنت متأكد من {action} هذه المعدة؟",
+      "confirmApprove": "هل أنت متأكد من الموافقة على هذه المعدة؟",
+      "confirmReject": "هل أنت متأكد من رفض هذه المعدة؟",
       "processing": "جاري المعالجة...",
       "confirm": "تأكيد",
       "equipmentUpdated": "تم تحديث المعدة بنجاح",
       "equipmentUpdateFailed": "فشل تحديث المعدة",
       "equipmentApproved": "تمت الموافقة على المعدة بنجاح",
       "equipmentRejected": "تم رفض المعدة بنجاح",
-      "availabilityUpdated": "تم تحديث التوفر بنجاح"
+      "availabilityUpdated": "تم تحديث التوفر بنجاح",
+      "confirmApproveTitle": "الموافقة على المعدة",
+      "confirmApproveMessage": "هل أنت متأكد من الموافقة على هذه المعدة؟",
+      "confirmRejectTitle": "رفض المعدة",
+      "confirmRejectMessage": "هل أنت متأكد من رفض هذه المعدة؟ ."
     },
     "pages": {
       "equipment": {
@@ -437,8 +471,8 @@
         "subtitle": "عرض وإدارة جميع قوائم المعدات"
       },
       "analytics": {
-        "title": "التحليلات",
-        "subtitle": "عرض إحصائيات ومقاييس أداء المنصة"
+        "title": "الإحصائيات",
+        "subtitle": "عرض إحصائيات "
       },
       "bookings": {
         "title": "الحجوزات",
@@ -460,14 +494,204 @@
         "title": "الإعدادات",
         "subtitle": "تكوين إعدادات وتفضيلات المنصة"
       }
+    },
+    "users": {
+      "searchPlaceholder": "البحث بالاسم، البريد الإلكتروني، أو الهاتف...",
+      "allRoles": "جميع الأدوار",
+      "roles": {
+        "admin": "إدارة",
+        "supplier": "شريك",
+        "renter": "مستأجر"
+      },
+      "noUsers": "لا يوجد مستخدمون",
+      "noUsersDesc": "لم يتم العثور على مستخدمين مطابقين للبحث",
+      "totalUsers": "إجمالي المستخدمين",
+      "suppliers": "الشركاء",
+      "renters": "المستأجرين",
+      "blockUser": "حظر المستخدم",
+      "unblockUser": "إلغاء حظر المستخدم",
+      "actions": "الإجراءات",
+      "copyEmail": "نسخ البريد الإلكتروني",
+      "copyPhone": "نسخ رقم الهاتف",
+      "emailCopied": "تم نسخ البريد الإلكتروني",
+      "phoneCopied": "تم نسخ رقم الهاتف",
+      "status": "الحالة",
+      "active": "نشط",
+      "blocked": "محظور",
+      "confirmBlockTitle": "حظر المستخدم",
+      "confirmBlockMessage": "هل أنت متأكد من حظر هذا المستخدم؟ لن يتمكن من تسجيل الدخول.",
+      "confirmUnblockTitle": "إلغاء حظر المستخدم",
+      "confirmUnblockMessage": "هل أنت متأكد من إلغاء حظر هذا المستخدم؟ سيتمكن من تسجيل الدخول مرة أخرى.",
+      "userBlocked": "تم حظر المستخدم بنجاح",
+      "userUnblocked": "تم إلغاء حظر المستخدم بنجاح"
+    },
+    "settings": {
+      "general": {
+        "title": "الإعدادات العامة",
+        "siteName": "اسم الموقع",
+        "supportPhone": "رقم الدعم",
+        "supportEmail": "بريد الدعم",
+        "defaultLanguage": "اللغة الافتراضية",
+        "languages": {
+          "ar": "العربية",
+          "fr": "Français",
+          "en": "English"
+        }
+      },
+      "commission": {
+        "title": "معدلات العمولة",
+        "standard": "العمولة القياسية (%)",
+        "volume500": "عمولة 500+ ساعة (%)",
+        "volume1000": "عمولة 1000+ ساعة (%)",
+        "structure": {
+          "title": "هيكل العمولة",
+          "subtitle": "معدلات العمولة الشفافة لجميع المعدات",
+          "standardEquipment": "المعدات القياسية: 10% عمولة",
+          "highUsage500": "الاستخدام العالي (500+ ساعة): 9% عمولة",
+          "extendedUsage1000": "الاستخدام الممتد (1000+ ساعة): 8% عمولة",
+          "vehiclesStandard": "المركبات (أقل من شهر): 10% عمولة",
+          "vehicles1Month": "المركبات (شهر واحد+): 9% عمولة",
+          "vehicles2Months": "المركبات (شهرين+): 8% عمولة",
+          "forSale": "للبيع: 5% عمولة ثابتة",
+          "note": "العمولة تعتمد على نوع المعدة ومدة الاستخدام"
+        }
+      },
+      "users": {
+        "title": "إعدادات المستخدمين",
+        "enableRegistration": "السماح بالتسجيل الجديد",
+        "enableRegistrationDesc": "السماح للمستخدمين الجدد بإنشاء حسابات"
+      },
+      "saveSettings": "حفظ الإعدادات",
+      "contactInfo": {
+        "title": "معلومات التواصل",
+        "supportEmail": "بريد الدعم",
+        "supportPhone": "رقم الدعم"
+      },
+      "adminInfo": {
+        "title": "معلومات الإدارة",
+        "adminPhone": "رقم هاتف الإدارة",
+        "adminPassword": "كلمة مرور الإدارة"
+      }
+    },
+    "analytics": {
+      "title": "الإحصائيات",
+      "timeRanges": {
+        "last7Days": "آخر 7 أيام",
+        "last30Days": "آخر 30 يوم",
+        "last3Months": "آخر 3 أشهر",
+        "lastYear": "آخر سنة"
+      },
+      "metrics": {
+        "totalUsers": "إجمالي المستخدمين",
+        "totalEquipment": "إجمالي المعدات",
+        "totalBookings": "إجمالي الحجوزات",
+        "totalRevenue": "إجمالي الإيرادات",
+        "activeEquipment": "المعدات النشطة",
+        "newUsersThisMonth": "مستخدمون جدد هذا الشهر"
+      },
+      "growth": {
+        "fromLastMonth": "{percent} من الشهر الماضي"
+      },
+      "currency": "أوقية",
+      "monthlyStats": "الإحصائيات الشهرية",
+      "bookings": "حجز",
+      "users": "مستخدم",
+      "topCities": "أهم المدن",
+      "equipmentByCategory": "المعدات حسب الفئة",
+      "recentActivity": "النشاط الأخير",
+      "months": {
+        "january": "يناير",
+        "february": "فبراير",
+        "march": "مارس",
+        "april": "أبريل"
+      },
+      "cities": {
+        "nouakchott": "نواكشوط",
+        "nouadhibou": "نواذيبو",
+        "rosso": "روصو",
+        "kaedi": "كيهيدي"
+      },
+      "categories": {
+        "excavation": "حفريات",
+        "transport": "نقل",
+        "lifting": "رفع",
+        "leveling": "تسوية"
+      },
+      "activities": {
+        "newUser": "مستخدم جديد انضم للمنصة",
+        "newEquipment": "تم إضافة معدة جديدة",
+        "newBooking": "حجز جديد تم تأكيده"
+      },
+      "timeAgo": {
+        "minutes": "منذ {count} دقائق"
+      },
+      "equipmentByCity": "المعدات حسب المدينة",
+      "userRoles": "المستخدمون",
+      "topPartners": "أفضل الشركاء",
+      "equipmentCount": "معدة",
+      "noPartners": "لا يوجد شركاء"
+    },
+    "bookings": {
+      "table": {
+        "booking": "الحجز",
+        "renter": "المستأجر",
+        "supplier": "المورد",
+        "equipment": "المعدات",
+        "total": "المجموع",
+        "status": "الحالة",
+        "date": "التاريخ",
+        "actions": "الإجراءات"
+      },
+      "status": {
+        "pending": "في الانتظار",
+        "paid": "مدفوع",
+        "completed": "مكتمل",
+        "cancelled": "ملغى"
+      },
+      "actions": {
+        "view": "عرض",
+        "cancel": "إلغاء",
+        "save": "حفظ التغييرات",
+        "saving": "جاري الحفظ..."
+      },
+      "details": {
+        "title": "تفاصيل الحجز",
+        "bookingInfo": "معلومات الحجز",
+        "bookingId": "رقم الحجز",
+        "totalAmount": "المبلغ الإجمالي",
+        "commission": "العمولة",
+        "createdAt": "تاريخ الإنشاء",
+        "renterInfo": "معلومات المستأجر",
+        "supplierInfo": "معلومات المورد",
+        "equipmentItems": "عناصر المعدات",
+        "name": "الاسم",
+        "email": "البريد الإلكتروني",
+        "phone": "الهاتف",
+        "location": "الموقع",
+        "company": "الشركة",
+        "rate": "السعر",
+        "usage": "الاستخدام",
+        "subtotal": "المجموع الفرعي",
+        "status": "الحالة",
+        "renterMessage": "رسالة المستأجر",
+        "adminNotes": "ملاحظات الإدارة",
+        "adminNotesPlaceholder": "إضافة ملاحظات حول الترتيبات، تفاصيل الدفع، إلخ...",
+        "call": "اتصال"
+      },
+      "items": "عناصر",
+      "more": "أكثر",
+      "noBookings": "لم يتم العثور على حجوزات",
+      "noBookingsDesc": "لم يتم تقديم أي طلبات حجز بعد"
     }
   },
   "toast": {
     "loginSuccess": "تم تسجيل الدخول !",
     "loginFailed": "بريد إلكتروني/هاتف أو كلمة مرور غير صحيحة",
+    "accountBlocked": "تم حظر حسابك. يرجى التواصل مع الدعم للحصول على المساعدة.",
     "registerSuccess": "تم إنشاء الحساب بنجاح!",
     "registerFailed": "خطأ في إنشاء الحساب",
     "loginError": "بريد إلكتروني/هاتف أو كلمة مرور غير صحيحة",
+    "accountBlockedError": "تم حظر حسابك. يرجى التواصل مع الدعم.",
     "registerError": "خطأ في إنشاء الحساب",
     "networkError": "خطأ في الاتصال. يرجى المحاولة مرة أخرى.",
     "emailOrPhoneRequired": "البريد الإلكتروني أو رقم الهاتف مطلوب",
@@ -499,5 +723,22 @@
     "brandRequired": "يرجى إدخال ماركة المعدة",
     "emailAlreadyExists": "يوجد حساب بهذا البريد الإلكتروني بالفعل. يرجى استخدام بريد إلكتروني آخر أو تسجيل الدخول.",
     "phoneAlreadyExists": "يوجد حساب بهذا رقم الهاتف بالفعل. يرجى استخدام رقم هاتف آخر أو تسجيل الدخول."
+  },
+  "booking": {
+    "title": "حجز المعدة",
+    "usage": "الاستخدام المطلوب",
+    "calculation": "حساب السعر",
+    "rate": "السعر",
+    "total": "المجموع",
+    "message": "رسالة",
+    "optional": "اختياري",
+    "messagePlaceholder": "أي متطلبات خاصة أو ملاحظات...",
+    "sendRequest": "إرسال طلب الحجز",
+    "sending": "جاري الإرسال...",
+    "success": "تم إرسال طلب الحجز بنجاح! سيتواصل معك المدير قريباً.",
+    "error": "فشل في إرسال طلب الحجز. يرجى المحاولة مرة أخرى.",
+    "hours": "ساعات",
+    "km": "كم",
+    "tons": "أطنان"
   }
 }

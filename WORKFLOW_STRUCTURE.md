@@ -305,6 +305,15 @@ When user clicks "تصفح جميع المعدات":
 Page Layout: /equipment?city=nouakchott
 Equipment in Nouakchott (45 items found)
 
+
+les 500h / 9% 1000h 8%
+
+for sale 5% 
+****
+for cammion  plus 1  month 9% plus de 2 month 8% 
+for engine each 100h is  1% increae by each 100h increment and it stop commitin fix at 10% when it reach 1000h    
+
+
 🚜 Terrassement (12 items)
 ├── Pelle hydraulique - 5000 UM/hour
 ├── Mini-pelle - 3000 UM/hour  

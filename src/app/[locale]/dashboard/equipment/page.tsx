@@ -1,5 +1,5 @@
 import { setRequestLocale } from "next-intl/server"
-import ManageEquipmentClient from "@/src/components/dashboard/ManageEquipmentClient"
+import ManageEquipment from "@/src/components/dashboard/equipment/ManageEquipment"
 
 export default async function ManageEquipmentPage({
   params,
@@ -9,5 +9,5 @@ export default async function ManageEquipmentPage({
   const { locale } = await params
   setRequestLocale(locale)
 
-  return <ManageEquipmentClient />
+  return <ManageEquipment />
 }

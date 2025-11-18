@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { connectDB } from '@/lib/mongodb'
+import { connectDB } from '@/src/lib/mongodb'
 import { ObjectId } from 'mongodb'
-import { createNotification } from '@/lib/notifications'
-import { validateBooking } from '@/lib/validation'
-import { calculateSubtotal, validateReferences, checkEquipmentAvailability } from '@/lib/booking-utils'
-import { BookingItem } from '@/lib/models/booking'
+import { createNotification } from '@/src/lib/notifications'
+import { validateBooking } from '@/src/lib/validation'
+import { calculateSubtotal, validateReferences, checkEquipmentAvailability } from '@/src/lib/booking-utils'
+import { BookingItem } from '@/src/lib/models/booking'
 
 // GET /api/bookings - Get bookings with renter/supplier details
 export async function GET() {
@@ -22,9 +22,20 @@ export async function GET() {
         }
       },
       {
+        $addFields: {
+          supplierIds: {
+            $map: {
+              input: '$bookingItems',
+              as: 'item',
+              in: '$$item.supplierId'
+            }
+          }
+        }
+      },
+      {
         $lookup: {
           from: 'users',
-          localField: 'bookingItems.supplierId',
+          localField: 'supplierIds',
           foreignField: '_id',
           as: 'supplierInfo'
         }
@@ -159,7 +170,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const db = await connectDB()
-    const { updateBookingStatus } = await import('@/lib/booking-service')
+    const { updateBookingStatus } = await import('@/src/lib/booking-service')
     
     await updateBookingStatus(
       db,

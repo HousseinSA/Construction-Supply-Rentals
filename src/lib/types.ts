@@ -3,6 +3,9 @@ export type UserRole = "admin" | "user"
 export type UserType = "renter" | "supplier"
 export type UserStatus = "approved" | "blocked"
 
+// Re-export User interface from models
+export type { User } from "./models/user"
+
 // Equipment Types
 export type EquipmentStatus = "pending" | "approved" | "rejected"
 export type UsageCategory = "hours" | "kilometers" | "tonnage"

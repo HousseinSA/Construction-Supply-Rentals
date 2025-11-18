@@ -19,3 +19,14 @@ export interface UserSettings {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface PlatformSettings {
+  _id?: ObjectId;
+  type: 'platform';
+  supportPhone: string;
+  supportEmail: string;
+  adminPhone: string;
+  adminPassword: string;
+  createdAt: Date;
+  updatedAt: Date;
+}

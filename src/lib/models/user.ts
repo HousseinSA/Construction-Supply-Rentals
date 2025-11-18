@@ -13,7 +13,7 @@ export interface User {
   userType?: UserType
   role: UserRole
   status: UserStatus
-  companyName?: string // For suppliers only
+  companyName?: string
   createdAt: Date
   updatedAt: Date
 }

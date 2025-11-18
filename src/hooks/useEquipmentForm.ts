@@ -209,7 +209,7 @@ export function useEquipmentForm(equipmentId?: string) {
       }
 
       toast.success(tToast(equipmentId ? "equipmentUpdated" : "equipmentCreated"))
-      router.push("/dashboard/equipment")
+      router.push(equipmentId ? "/dashboard/equipment" : "/dashboard")
     } catch (error) {
       console.error("Equipment creation error:", error)
       toast.error(

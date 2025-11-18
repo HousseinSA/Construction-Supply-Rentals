@@ -1,4 +1,4 @@
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
 
 interface Pricing {
   dailyRate?: number
@@ -14,6 +14,7 @@ interface PriceData {
 
 export function usePriceFormatter() {
   const tCommon = useTranslations("common")
+  const locale = useLocale()
 
   const getPriceData = (pricing: Pricing, isForSale?: boolean): PriceData => {
     if (!pricing) {
@@ -37,9 +38,19 @@ export function usePriceFormatter() {
   }
 
   const formatPrice = (rate: number, unit: string) => {
+    const isArabic = locale === "ar"
+    
+    if (isArabic) {
+      return {
+        formattedRate: rate.toLocaleString(),
+        displayPrice: `${rate.toLocaleString()} MRU`,
+        displayUnit: unit ? `/ ${unit}` : ""
+      }
+    }
+    
     return {
       formattedRate: rate.toLocaleString(),
-      displayPrice: `${rate.toLocaleString()} ${tCommon("currency")}`,
+      displayPrice: `${rate.toLocaleString()} MRU `,
       displayUnit: unit ? `/ ${unit}` : ""
     }
   }

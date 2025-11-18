@@ -17,6 +17,7 @@ import {
 } from "lucide-react"
 import DashboardSkeleton from "./DashboardSkeleton"
 import HomeButton from "../ui/HomeButton"
+import CommissionStructure from "../ui/CommissionStructure"
 
 export default function Dashboard() {
   const { data: session } = useSession()
@@ -160,29 +161,36 @@ export default function Dashboard() {
             <HomeButton />
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-          {dashboardCards.map((card) => {
-            const IconComponent = card.icon
-            return (
-              <Link
-                key={card.href}
-                href={card.href}
-                className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 hover:shadow-md transition-all duration-200 hover:scale-105"
-              >
-                <div className="flex items-center mb-3 sm:mb-4">
-                  <div className={`${card.color} p-2 sm:p-3 rounded-lg`}>
-                    <IconComponent className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+        <div className="space-y-6">
+          {/* Show commission structure for suppliers only */}
+          {session?.user?.userType === "supplier" && (
+            <CommissionStructure variant="compact" />
+          )}
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            {dashboardCards.map((card) => {
+              const IconComponent = card.icon
+              return (
+                <Link
+                  key={card.href}
+                  href={card.href}
+                  className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 hover:shadow-md transition-all duration-200 hover:scale-105"
+                >
+                  <div className="flex items-center mb-3 sm:mb-4">
+                    <div className={`${card.color} p-2 sm:p-3 rounded-lg`}>
+                      <IconComponent className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                    </div>
                   </div>
-                </div>
-                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1 sm:mb-2">
-                  {card.title}
-                </h3>
-                <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">
-                  {card.description}
-                </p>
-              </Link>
-            )
-          })}
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1 sm:mb-2">
+                    {card.title}
+                  </h3>
+                  <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">
+                    {card.description}
+                  </p>
+                </Link>
+              )
+            })}
+          </div>
         </div>
       </div>
     </div>

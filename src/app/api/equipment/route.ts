@@ -188,7 +188,8 @@ export async function POST(request: NextRequest) {
     }
 
     const userId = session.user.id
-    const userRole = session.user.role || "supplier"
+    const userRole = session.user.role || "user"
+    const userType = session.user.userType || "supplier"
 
     // Validate user ID format
     if (!ObjectId.isValid(userId)) {
@@ -202,13 +203,12 @@ export async function POST(request: NextRequest) {
     }
 
     const usageCategory = getUsageCategoryFromEquipmentType(equipmentType.name)
-    const status = getInitialEquipmentStatus(userRole as "admin" | "supplier")
+    const status = getInitialEquipmentStatus(userRole as "admin" | "user")
 
-    // Use equipment type name as the equipment name
     const equipmentName = equipmentType.name
 
     const result = await db.collection("equipment").insertOne({
-      ...(userRole === "supplier" && { supplierId: new ObjectId(userId) }),
+      supplierId: new ObjectId(userId),
       name: equipmentName,
       description: description || "",
       categoryId: new ObjectId(categoryId),
@@ -222,7 +222,7 @@ export async function POST(request: NextRequest) {
       status,
       isAvailable: true,
       listingType: listingType || "forRent",
-      createdBy: userRole as "admin" | "supplier",
+      createdBy: userRole === "admin" ? "admin" : "supplier",
       createdById: new ObjectId(userId),
       ...(status === "approved" && { approvedAt: new Date() }),
       createdAt: new Date(),
@@ -230,7 +230,7 @@ export async function POST(request: NextRequest) {
     })
 
     // Create notification if supplier created equipment
-    if (userRole === "supplier") {
+    if (userType === "supplier") {
       try {
         await createNotification(
           "new_equipment",

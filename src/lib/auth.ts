@@ -31,6 +31,11 @@ export const authOptions: AuthOptions = {
         if (user.password !== credentials.password) {
           return null
         }
+        
+        // Check if user is blocked
+        if (user.status === "blocked") {
+          return null
+        }
 
         return {
           id: user._id.toString(),

@@ -36,22 +36,30 @@ export default function EquipmentDetailsPage() {
 
   const isForSale = equipment?.listingType === "forSale"
 
-  useEffect(() => {
-    const fetchEquipment = async () => {
-      try {
-        const response = await fetch(`/api/equipment/${equipmentId}`)
-        const data = await response.json()
-        if (data.success) {
-          setEquipment(data.data)
-        }
-      } catch (error) {
-        console.error("Failed to fetch equipment:", error)
-      } finally {
-        setLoading(false)
+  const fetchEquipment = async () => {
+    try {
+      const urlParams = new URLSearchParams(window.location.search)
+      const isAdmin = urlParams.get('admin') === 'true'
+      const apiUrl = `/api/equipment/${equipmentId}${isAdmin ? '?admin=true' : ''}`
+      const response = await fetch(apiUrl)
+      const data = await response.json()
+      if (data.success) {
+        setEquipment(data.data)
       }
+    } catch (error) {
+      console.error("Failed to fetch equipment:", error)
+    } finally {
+      setLoading(false)
     }
+  }
+
+  useEffect(() => {
     fetchEquipment()
   }, [equipmentId])
+  
+  const handleBookingSuccess = () => {
+    fetchEquipment()
+  }
 
   if (loading) return <LoadingState />
   if (!equipment) return <NotFoundState />
@@ -83,7 +91,11 @@ export default function EquipmentDetailsPage() {
                 isForSale={isForSale}
               />
               <SpecificationsGrid specifications={equipment.specifications} />
-              <ActionButtons isForSale={isForSale} />
+              <ActionButtons 
+                isForSale={isForSale} 
+                equipment={equipment} 
+                onBookingSuccess={handleBookingSuccess}
+              />
             </div>
           </div>
         </div>

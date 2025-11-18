@@ -10,6 +10,7 @@ interface ConfirmModalProps {
   confirmText: string
   cancelText: string
   icon?: ReactNode
+  iconBgColor?: string
   isLoading?: boolean
 }
 
@@ -22,6 +23,7 @@ export default function ConfirmModal({
   confirmText,
   cancelText,
   icon,
+  iconBgColor = "bg-gray-100",
   isLoading = false,
 }: ConfirmModalProps) {
   if (!isOpen) return null
@@ -37,7 +39,7 @@ export default function ConfirmModal({
           <div className="flex items-center gap-3 mb-4">
             {icon && (
               <div
-                className={`w-12 h-12 rounded-full flex items-center justify-center bg-red-100`}
+                className={`w-12 h-12 rounded-full flex items-center justify-center ${iconBgColor}`}
               >
                 {icon}
               </div>
@@ -49,7 +51,7 @@ export default function ConfirmModal({
             <Button
               variant="secondary"
               onClick={onClose}
-              className="flex-1 !py-2 !px-4 sm:!py-3 sm:!px-8 !text-sm sm:!text-base"
+              className="flex-1 !py-2 !px-4 sm:!py-3 sm:!px-8 !text-sm sm:!text-base whitespace-nowrap"
               disabled={isLoading}
             >
               {cancelText}
@@ -57,7 +59,7 @@ export default function ConfirmModal({
             <Button
               onClick={onConfirm}
               variant="warning"
-              className="flex-1 !py-2 !px-4 sm:!py-3 sm:!px-8 !text-sm sm:!text-base"
+              className="flex-1 !py-2 !px-4 sm:!py-3 sm:!px-8 !text-sm sm:!text-base whitespace-nowrap"
               disabled={isLoading}
             >
               {isLoading ? `${confirmText}...` : confirmText}

@@ -50,6 +50,30 @@ export default function LoginForm() {
 
     setLoading(true)
     try {
+      // First check if user is blocked
+      const checkResponse = await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          action: 'checkStatus',
+          emailOrPhone: formData.emailOrPhone,
+          password: formData.password
+        })
+      })
+      
+      const checkResult = await checkResponse.json()
+      
+      if (!checkResponse.ok) {
+        if (checkResult.error === 'ACCOUNT_BLOCKED') {
+          showToast.error(tToast("accountBlockedError"))
+        } else {
+          showToast.error(tToast("loginFailed"))
+        }
+        setLoading(false)
+        return
+      }
+      
+      // If not blocked, proceed with normal login
       const result = await signIn("credentials", {
         emailOrPhone: formData.emailOrPhone,
         password: formData.password,

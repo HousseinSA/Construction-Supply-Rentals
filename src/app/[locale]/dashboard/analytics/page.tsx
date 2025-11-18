@@ -1,5 +1,5 @@
 import { setRequestLocale } from "next-intl/server"
-import DashboardPageHeader from "@/src/components/dashboard/DashboardPageHeader"
+import AnalyticsPageClient from "./AnalyticsPageClient"
 
 export default async function AnalyticsPage({
   params,
@@ -9,5 +9,5 @@ export default async function AnalyticsPage({
   const { locale } = await params
   setRequestLocale(locale)
 
-  return <DashboardPageHeader pageKey="analytics" />
+  return <AnalyticsPageClient />
 }
