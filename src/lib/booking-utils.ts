@@ -4,7 +4,7 @@ export async function calculateSubtotal(
   db: Db,
   equipmentId: ObjectId,
   usage: number
-): Promise<{ rate: number; subtotal: number; equipmentName: string; supplierId: ObjectId }> {
+): Promise<{ rate: number; subtotal: number; equipmentName: string; supplierId: ObjectId; usageUnit: string }> {
   const equipment = await db.collection('equipment').findOne({ _id: equipmentId });
   
   if (!equipment) {
@@ -12,18 +12,32 @@ export async function calculateSubtotal(
   }
 
   let rate = 0;
+  let usageUnit = 'hours';
   switch (equipment.pricing.type) {
-    case 'hourly': rate = equipment.pricing.hourlyRate || 0; break;
-    case 'daily': rate = equipment.pricing.dailyRate || 0; break;
-    case 'per_km': rate = equipment.pricing.kmRate || 0; break;
-    case 'per_ton': rate = equipment.pricing.tonRate || 0; break;
+    case 'hourly': 
+      rate = equipment.pricing.hourlyRate || 0;
+      usageUnit = 'hours';
+      break;
+    case 'daily': 
+      rate = equipment.pricing.dailyRate || 0;
+      usageUnit = 'days';
+      break;
+    case 'per_km': 
+      rate = equipment.pricing.kmRate || 0;
+      usageUnit = 'km';
+      break;
+    case 'per_ton': 
+      rate = equipment.pricing.tonRate || 0;
+      usageUnit = 'tons';
+      break;
   }
 
   return {
     rate,
     subtotal: rate * usage,
     equipmentName: equipment.name,
-    supplierId: equipment.supplierId
+    supplierId: equipment.createdById,
+    usageUnit
   };
 }
 

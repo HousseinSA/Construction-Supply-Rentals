@@ -9,7 +9,6 @@ import {
   Phone,
   MapPin,
   Calendar,
-  Copy,
   Shield,
   ShieldOff,
   AlertTriangle,
@@ -20,6 +19,8 @@ import { usePagination } from "@/src/hooks/usePagination"
 import Pagination from "@/src/components/ui/Pagination"
 import ConfirmModal from "@/src/components/ui/ConfirmModal"
 import { showToast } from "@/src/lib/toast"
+import CopyButton from "@/src/components/ui/CopyButton"
+import { formatPhoneNumber } from "@/src/lib/format"
 
 export default function UsersManagement() {
   const t = useTranslations("dashboard")
@@ -97,14 +98,7 @@ export default function UsersManagement() {
     })
   }
 
-  const copyToClipboard = async (text: string, type: "email" | "phone") => {
-    try {
-      await navigator.clipboard.writeText(text)
-      showToast.success(t(`users.${type}Copied`))
-    } catch (err) {
-      console.error("Failed to copy:", err)
-    }
-  }
+
 
   const openConfirmModal = (
     userId: string,
@@ -290,33 +284,17 @@ export default function UsersManagement() {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center text-sm text-gray-900 group">
+                          <div className="flex items-center text-sm text-gray-900">
                             <Mail className="h-4 w-4 text-gray-400 mr-2" />
                             <span className="mr-2">{user.email}</span>
-                            <button
-                              onClick={() =>
-                                copyToClipboard(user.email, "email")
-                              }
-                              className="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-100 rounded transition-all"
-                              title={t("users.copyEmail")}
-                            >
-                              <Copy className="h-3 w-3 text-gray-500" />
-                            </button>
+                            <CopyButton text={user.email} size="sm" />
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center text-sm text-gray-900 group">
+                          <div className="flex items-center text-sm text-gray-900">
                             <Phone className="h-4 w-4 text-gray-400 mr-2" />
-                            <span className="mr-2">{user.phone}</span>
-                            <button
-                              onClick={() =>
-                                copyToClipboard(user.phone, "phone")
-                              }
-                              className="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-100 rounded transition-all"
-                              title={t("users.copyPhone")}
-                            >
-                              <Copy className="h-3 w-3 text-gray-500" />
-                            </button>
+                            <span className="mr-2" dir="ltr">{formatPhoneNumber(user.phone)}</span>
+                            <CopyButton text={user.phone} size="sm" />
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -420,29 +398,19 @@ export default function UsersManagement() {
                   </div>
 
                   <div className="space-y-2 text-sm text-gray-600 mb-3">
-                    <div className="flex items-center justify-between group">
+                    <div className="flex items-center justify-between">
                       <div className="flex items-center">
                         <Mail className="h-4 w-4 mr-2" />
                         <span>{user.email}</span>
                       </div>
-                      <button
-                        onClick={() => copyToClipboard(user.email, "email")}
-                        className="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-100 rounded transition-all"
-                      >
-                        <Copy className="h-3 w-3 text-gray-500" />
-                      </button>
+                      <CopyButton text={user.email} size="sm" />
                     </div>
-                    <div className="flex items-center justify-between group">
+                    <div className="flex items-center justify-between">
                       <div className="flex items-center">
                         <Phone className="h-4 w-4 mr-2" />
-                        <span>{user.phone}</span>
+                        <span dir="ltr">{formatPhoneNumber(user.phone)}</span>
                       </div>
-                      <button
-                        onClick={() => copyToClipboard(user.phone, "phone")}
-                        className="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-100 rounded transition-all"
-                      >
-                        <Copy className="h-3 w-3 text-gray-500" />
-                      </button>
+                      <CopyButton text={user.phone} size="sm" />
                     </div>
                     {user.userType === "supplier" && user.companyName && (
                       <div className="flex items-center">

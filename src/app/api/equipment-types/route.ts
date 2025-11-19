@@ -10,7 +10,6 @@ export async function GET(request: Request) {
 
     const db = await connectDB()
 
-    // Get excluded category IDs
     const excludedCategories = [
       "Engins spécialisés",
       "Engins légers et auxiliaires",

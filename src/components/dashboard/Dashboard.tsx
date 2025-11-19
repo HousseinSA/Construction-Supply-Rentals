@@ -12,12 +12,10 @@ import {
   ClipboardList,
   Package,
   ShoppingCart,
-  FileText,
   User,
 } from "lucide-react"
 import DashboardSkeleton from "./DashboardSkeleton"
 import HomeButton from "../ui/HomeButton"
-import CommissionStructure from "../ui/CommissionStructure"
 
 export default function Dashboard() {
   const { data: session } = useSession()
@@ -92,9 +90,9 @@ export default function Dashboard() {
           color: "bg-blue-500",
         },
         {
-          title: t("supplier.bookings"),
-          description: t("supplier.bookingsDesc"),
-          icon: ClipboardList,
+          title: t("renter.myBookings"),
+          description: t("renter.myBookingsDesc"),
+          icon: ShoppingCart,
           href: "/dashboard/bookings",
           color: "bg-orange-500",
         },
@@ -121,13 +119,6 @@ export default function Dashboard() {
         icon: ShoppingCart,
         href: "/dashboard/bookings",
         color: "bg-green-500",
-      },
-      {
-        title: t("renter.requests"),
-        description: t("renter.requestsDesc"),
-        icon: FileText,
-        href: "/dashboard/requests",
-        color: "bg-orange-500",
       },
       {
         title: t("renter.profile"),
@@ -162,11 +153,6 @@ export default function Dashboard() {
           </div>
         </div>
         <div className="space-y-6">
-          {/* Show commission structure for suppliers only */}
-          {session?.user?.userType === "supplier" && (
-            <CommissionStructure variant="compact" />
-          )}
-          
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {dashboardCards.map((card) => {
               const IconComponent = card.icon

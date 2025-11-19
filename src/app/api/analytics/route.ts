@@ -15,12 +15,12 @@ export async function GET(request: Request) {
       equipmentByCity,
       topSuppliers
     ] = await Promise.all([
-      // Basic counts
-      db.collection('users').countDocuments(),
+      // Basic counts - exclude admins
+      db.collection('users').countDocuments({ userType: { $ne: 'admin' } }),
       db.collection('equipment').countDocuments(),
       
-      // User growth
-      db.collection('users').countDocuments({ createdAt: { $gte: thirtyDaysAgo } }),
+      // User growth - exclude admins
+      db.collection('users').countDocuments({ createdAt: { $gte: thirtyDaysAgo }, userType: { $ne: 'admin' } }),
       
       // Equipment status - using isAvailable field
       db.collection('equipment').countDocuments({ isAvailable: true }),

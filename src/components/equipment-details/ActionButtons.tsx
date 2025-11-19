@@ -26,7 +26,7 @@ export default function ActionButtons({ isForSale, equipment, onBookingSuccess }
     }
     
     if (session.user.role === 'admin') {
-      setToast({ message: 'Admins cannot make bookings', type: 'error' })
+      setToast({ message: t('adminCannotBook'), type: 'error' })
       return
     }
     

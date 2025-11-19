@@ -53,11 +53,6 @@ export default function CreateEquipmentForm() {
         </div>
 
         <div className="space-y-6">
-          {/* Commission Structure Info - Only for suppliers */}
-          {session?.user?.userType === "supplier" && (
-            <CommissionStructure variant="compact" />
-          )}
-          
           <AuthCard>
             <form onSubmit={handleSubmit} className="space-y-6">
               <ListingTypeSelector
@@ -74,15 +69,17 @@ export default function CreateEquipmentForm() {
                 onTypeChange={handleTypeChange}
                 onLocationChange={handleLocationChange}
                 onPriceTypeChange={handlePriceTypeChange}
-
                 onWeightUnitChange={handleWeightUnitChange}
-
                 onImagesChange={setImages}
               />
 
               <FormActions isSubmitting={isSubmitting} />
             </form>
           </AuthCard>
+          {/* Commission Structure Info - Only for suppliers */}
+          {session?.user?.userType === "supplier" && (
+            <CommissionStructure variant="compact" />
+          )}
         </div>
       </div>
     </div>

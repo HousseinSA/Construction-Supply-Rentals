@@ -35,6 +35,15 @@ export async function GET(
       )
     }
 
+    // Fetch supplier info if admin is viewing
+    let supplierInfo = null
+    if (isAdmin && equipment.supplierId) {
+      supplierInfo = await db.collection("users").findOne(
+        { _id: equipment.supplierId },
+        { projection: { password: 0 } }
+      )
+    }
+
     // Check for pending bookings for this equipment
     const session = await getServerSession(authOptions)
     let userBookingStatus = null
@@ -62,7 +71,8 @@ export async function GET(
       data: {
         ...equipment,
         userBookingStatus,
-        hasPendingBookings: !!hasPendingBookings
+        hasPendingBookings: !!hasPendingBookings,
+        ...(isAdmin && { supplierInfo })
       }
     })
   } catch (error) {

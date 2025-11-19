@@ -17,7 +17,6 @@ export function useManageEquipment() {
       setLoading(true)
       const response = await fetch("/api/equipment?admin=true")
       const data = await response.json()
-      console.log("row data", data)
       if (data.success) {
         const usersResponse = await fetch("/api/users")
         const usersData = await usersResponse.json()

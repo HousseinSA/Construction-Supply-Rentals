@@ -19,7 +19,7 @@ export default function PricingCard({ displayPrice, displayUnit, isForSale }: Pr
           {displayPrice}
         </span>
         <span className="text-sm sm:text-base lg:text-lg text-gray-600 font-medium">
-          MRU{displayUnit ? `/${displayUnit}` : ''}
+        {displayUnit ? `${displayUnit}` : ''}
         </span>
       </div>
     </div>

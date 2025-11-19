@@ -222,7 +222,7 @@ export async function POST(request: NextRequest) {
       status,
       isAvailable: true,
       listingType: listingType || "forRent",
-      createdBy: userRole === "admin" ? "admin" : "supplier",
+      createdBy: userRole === "admin" ? "admin" : (userType === "supplier" ? "supplier" : "admin"),
       createdById: new ObjectId(userId),
       ...(status === "approved" && { approvedAt: new Date() }),
       createdAt: new Date(),

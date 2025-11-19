@@ -15,6 +15,7 @@ import SpecificationsGrid from "@/src/components/equipment-details/Specification
 import ActionButtons from "@/src/components/equipment-details/ActionButtons"
 import LoadingState from "@/src/components/equipment-details/LoadingState"
 import NotFoundState from "@/src/components/equipment-details/NotFoundState"
+import SupplierInfo from "@/src/components/equipment-details/SupplierInfo"
 
 export default function EquipmentDetailsPage() {
   const params = useParams()
@@ -23,6 +24,7 @@ export default function EquipmentDetailsPage() {
   const [loading, setLoading] = useState(true)
   const [selectedImage, setSelectedImage] = useState(0)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isAdminView, setIsAdminView] = useState(false)
   const equipmentId = params.id as string
   const fontClass = useFontClass()
   const { convertToLocalized } = useCityData()
@@ -40,6 +42,7 @@ export default function EquipmentDetailsPage() {
     try {
       const urlParams = new URLSearchParams(window.location.search)
       const isAdmin = urlParams.get('admin') === 'true'
+      setIsAdminView(isAdmin)
       const apiUrl = `/api/equipment/${equipmentId}${isAdmin ? '?admin=true' : ''}`
       const response = await fetch(apiUrl)
       const data = await response.json()
@@ -91,11 +94,16 @@ export default function EquipmentDetailsPage() {
                 isForSale={isForSale}
               />
               <SpecificationsGrid specifications={equipment.specifications} />
-              <ActionButtons 
-                isForSale={isForSale} 
-                equipment={equipment} 
-                onBookingSuccess={handleBookingSuccess}
-              />
+              {isAdminView && equipment.supplierInfo && (
+                <SupplierInfo supplier={equipment.supplierInfo} />
+              )}
+              {!isAdminView && (
+                <ActionButtons 
+                  isForSale={isForSale} 
+                  equipment={equipment} 
+                  onBookingSuccess={handleBookingSuccess}
+                />
+              )}
             </div>
           </div>
         </div>

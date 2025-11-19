@@ -5,6 +5,9 @@ import { useTranslations } from 'next-intl'
 import { X, User, Building, Package, MessageSquare, Edit, Save, Phone, MessageCircle } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import Dropdown from '@/src/components/ui/Dropdown'
+import SupplierInfo from '@/src/components/equipment-details/SupplierInfo'
+import CopyButton from '@/src/components/ui/CopyButton'
+import { formatPhoneNumber } from '@/src/lib/format'
 
 interface BookingDetailsModalProps {
   booking: any
@@ -15,12 +18,23 @@ interface BookingDetailsModalProps {
 
 export default function BookingDetailsModal({ booking, isOpen, onClose, onStatusUpdate }: BookingDetailsModalProps) {
   const t = useTranslations('dashboard.bookings')
+  const tBooking = useTranslations('booking')
   const { data: session } = useSession()
   const [status, setStatus] = useState(booking.status)
   const [adminNotes, setAdminNotes] = useState(booking.adminNotes || '')
   const [loading, setLoading] = useState(false)
 
   if (!isOpen) return null
+
+  const getUsageUnitLabel = (unit: string) => {
+    const unitMap: Record<string, string> = {
+      'hours': tBooking('hours'),
+      'days': tBooking('days') || 'days',
+      'km': tBooking('km'),
+      'tons': tBooking('tons')
+    }
+    return unitMap[unit] || unit
+  }
 
   const handleStatusUpdate = async () => {
     setLoading(true)
@@ -77,10 +91,10 @@ export default function BookingDetailsModal({ booking, isOpen, onClose, onStatus
                   <Package className="w-5 h-5 text-primary" />
                   {t('details.bookingInfo')}
                 </h3>
-                <div className="space-y-2 text-sm">
+                <div className="space-y-2 text-sm" dir="rtl">
                   <div className="flex justify-between">
                     <span className="text-gray-600">{t('details.bookingId')}</span>
-                    <span className="font-medium">#{booking._id.slice(-6).toUpperCase()}</span>
+                    <span className="font-medium">{booking._id.slice(-6).toUpperCase().replace(/(.{3})(.{3})/, '$1-$2')}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">{t('details.totalAmount')}</span>
@@ -103,7 +117,7 @@ export default function BookingDetailsModal({ booking, isOpen, onClose, onStatus
                   <User className="w-5 h-5 text-blue-600" />
                   {t('details.renterInfo')}
                 </h3>
-                <div className="space-y-2 text-sm">
+                <div className="space-y-2 text-sm" dir="rtl">
                   <div className="flex justify-between">
                     <span className="text-gray-600">{t('details.name')}</span>
                     <span className="font-medium">
@@ -114,14 +128,36 @@ export default function BookingDetailsModal({ booking, isOpen, onClose, onStatus
                     <span className="text-gray-600">{t('details.email')}</span>
                     <span className="font-medium">{booking.renterInfo[0]?.email}</span>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <span className="text-gray-600">{t('details.phone')}</span>
-                    <span className="font-medium" dir="ltr">{booking.renterInfo[0]?.phone}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium" dir="ltr">{formatPhoneNumber(booking.renterInfo[0]?.phone)}</span>
+                      <CopyButton text={booking.renterInfo[0]?.phone} size="sm" />
+                    </div>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">{t('details.location')}</span>
                     <span className="font-medium">{booking.renterInfo[0]?.location}</span>
                   </div>
+                </div>
+                
+                <div className="mt-4 flex gap-2">
+                  <a
+                    href={`tel:${booking.renterInfo[0]?.phone}`}
+                    className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+                  >
+                    <Phone className="w-4 h-4" />
+                    {t('details.call')}
+                  </a>
+                  <a
+                    href={`https://wa.me/222${booking.renterInfo[0]?.phone}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    WhatsApp
+                  </a>
                 </div>
               </div>
             </div>
@@ -130,7 +166,7 @@ export default function BookingDetailsModal({ booking, isOpen, onClose, onStatus
             <div className="space-y-6">
               {/* Equipment Items */}
               <div className="bg-green-50 rounded-lg p-4">
-                <h3 className="font-semibold mb-3 flex items-center gap-2">
+                <h3 className="font-semibold text-base mb-3 flex items-center gap-2">
                   <Package className="w-5 h-5 text-green-600" />
                   {t('details.equipmentItems')}
                 </h3>
@@ -138,11 +174,11 @@ export default function BookingDetailsModal({ booking, isOpen, onClose, onStatus
                   {booking.bookingItems.map((item: any, index: number) => (
                     <div key={index} className="bg-white rounded p-3 text-sm">
                       <div className="font-medium mb-2">{item.equipmentName}</div>
-                      <div className="grid grid-cols-2 gap-2 text-xs text-gray-600">
-                        <div>{t('details.rate')}: <span dir="ltr">{item.rate.toLocaleString()} MRU</span></div>
-                        <div>{t('details.usage')}: {item.usage}</div>
-                        <div>{t('details.subtotal')}: <span dir="ltr">{item.subtotal.toLocaleString()} MRU</span></div>
-                        <div>{t('details.commission')}: <span className="text-green-600" dir="ltr">{calculateCommission(item.subtotal, item.usage).toLocaleString()} MRU</span></div>
+                      <div className="grid grid-cols-2 gap-2 text-xs text-gray-600" dir="rtl">
+                        <div className="flex justify-between"><span>{t('details.rate')}:</span> <span dir="ltr">{item.rate.toLocaleString()} MRU</span></div>
+                        <div className="flex justify-between"><span>{t('details.usage')}:</span> <span>{item.usage} {getUsageUnitLabel(item.usageUnit || 'hours')}</span></div>
+                        <div className="flex justify-between"><span>{t('details.subtotal')}:</span> <span dir="ltr">{item.subtotal.toLocaleString()} MRU</span></div>
+                        <div className="flex justify-between"><span>{t('details.commission')}:</span> <span className="text-green-600" dir="ltr">{calculateCommission(item.subtotal, item.usage).toLocaleString()} MRU</span></div>
                       </div>
                     </div>
                   ))}
@@ -150,52 +186,15 @@ export default function BookingDetailsModal({ booking, isOpen, onClose, onStatus
               </div>
 
               {/* Supplier Info */}
-              {booking.supplierInfo && booking.supplierInfo.length > 0 && (
-                <div className="bg-purple-50 rounded-lg p-4">
+              {booking.supplierInfo && booking.supplierInfo.length > 0 ? (
+                <SupplierInfo supplier={booking.supplierInfo[0]} variant="modal" />
+              ) : (
+                <div className="bg-gray-50 rounded-lg p-4">
                   <h3 className="font-semibold mb-3 flex items-center gap-2">
-                    <Building className="w-5 h-5 text-purple-600" />
+                    <Building className="w-5 h-5 text-gray-600" />
                     {t('details.supplierInfo')}
                   </h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">{t('details.name')}</span>
-                      <span className="font-medium">
-                        {booking.supplierInfo[0]?.firstName} {booking.supplierInfo[0]?.lastName}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">{t('details.company')}</span>
-                      <span className="font-medium">{booking.supplierInfo[0]?.companyName || '-'}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">{t('details.email')}</span>
-                      <span className="font-medium">{booking.supplierInfo[0]?.email}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">{t('details.phone')}</span>
-                      <span className="font-medium" dir="ltr">{booking.supplierInfo[0]?.phone}</span>
-                    </div>
-                  </div>
-                  
-                  {/* Contact Actions */}
-                  <div className="mt-4 flex gap-2">
-                    <a
-                      href={`tel:${booking.supplierInfo[0]?.phone}`}
-                      className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
-                    >
-                      <Phone className="w-4 h-4" />
-                      {t('details.call')}
-                    </a>
-                    <a
-                      href={`https://wa.me/222${booking.supplierInfo[0]?.phone}?text=${encodeURIComponent(`مرحبا، أنا أدير منصة تأجير المعدات. بخصوص طلب الحجز رقم #${booking._id.slice(-6).toUpperCase()}`)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm"
-                    >
-                      <MessageCircle className="w-4 h-4" />
-                      WhatsApp
-                    </a>
-                  </div>
+                  <p className="text-sm text-gray-600">{t('equipment.createdByAdmin')}</p>
                 </div>
               )}
             </div>
@@ -213,7 +212,7 @@ export default function BookingDetailsModal({ booking, isOpen, onClose, onStatus
           )}
 
           {/* Admin Controls */}
-          <div className="mt-6 border-t pt-6">
+          <div className="mt-6 border-t border-gray-200 pt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Dropdown

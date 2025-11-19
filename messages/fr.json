@@ -58,11 +58,14 @@
     "currentlyUnavailable": "Actuellement Indisponible",
     "bookingPending": "Vous avez déjà une demande de réservation en attente pour cet équipement",
     "equipmentUnavailable": "Cet équipement est actuellement indisponible en raison de réservations en attente",
+    "adminCannotBook": "Les administrateurs ne peuvent pas faire de réservations",
     "goBack": "Retour",
     "loading": "Chargement...",
     "equipmentNotFound": "Matériel Introuvable",
     "equipmentNotFoundDesc": "Le matériel que vous recherchez n'existe pas ou a été supprimé.",
     "clickToViewFullSize": " voir en taille réelle",
+    "supplierInfo": "Informations Fournisseur",
+    "call": "Appeler",
     "imageModal": {
       "close": "Fermer",
       "previous": "Précédent",
@@ -230,7 +233,7 @@
       "vehiclesStandard": "Véhicules (moins d'1 mois): 10% de commission",
       "vehicles1Month": "Véhicules (1+ mois de location): 9% de commission",
       "vehicles2Months": "Véhicules (2+ mois de location): 8% de commission",
-      "forSale": "À vendre: 5% de commission fixe",
+      "forSale": "À vendre: 5% de commission",
       "note": "Commission basée sur le type d'équipement et la durée d'usage"
     }
   },
@@ -313,7 +316,8 @@
         "roles": {
           "renter": "Locataire",
           "supplier": "Fournisseur"
-        }
+        },
+        "noUsers": "Aucun Utilisateur Trouvé"
       },
       "analytics": {
         "metrics": {
@@ -552,7 +556,7 @@
           "vehiclesStandard": "Véhicules (moins d'1 mois): 10% de commission",
           "vehicles1Month": "Véhicules (1+ mois de location): 9% de commission",
           "vehicles2Months": "Véhicules (2+ mois de location): 8% de commission",
-          "forSale": "À vendre: 5% de commission fixe",
+          "forSale": "À vendre: 5% de commission",
           "note": "Commission basée sur le type d'équipement et la durée d'usage"
         }
       },
@@ -738,6 +742,7 @@
     "success": "Demande de réservation envoyée avec succès! L'admin vous contactera bientôt.",
     "error": "Échec de l'envoi de la demande de réservation. Veuillez réessayer.",
     "hours": "heures",
+    "days": "jours",
     "km": "km",
     "tons": "tonnes"
   }

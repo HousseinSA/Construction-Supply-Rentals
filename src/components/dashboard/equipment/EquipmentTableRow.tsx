@@ -6,6 +6,8 @@ import Image from "next/image"
 import Dropdown from "../../ui/Dropdown"
 import { Equipment } from "@/src/lib/models/equipment"
 import { User } from "@/src/lib/models/user"
+import CopyButton from "../../ui/CopyButton"
+import { formatPhoneNumber } from "@/src/lib/format"
 
 interface EquipmentWithSupplier extends Equipment {
   supplier?: User
@@ -96,22 +98,14 @@ export default function EquipmentTableRow({
       </td>
       <td className="px-6 py-4">
         {item.supplier ? (
-          <div className="space-y-1">
-            <div className="font-bold text-gray-900 text-base">
+          <div className="space-y-1.5">
+            <div className="font-medium text-gray-900 text-sm">
               {item.supplier.firstName} {item.supplier.lastName}
             </div>
-            <div className="text-sm text-gray-700">{item.supplier.email}</div>
-            <div className="text-sm text-gray-700">{item.supplier.phone}</div>
-            {item.supplier.companyName && (
-              <div className="text-sm font-semibold text-gray-800 mt-1">
-                {item.supplier.companyName}
-              </div>
-            )}
-            {item.supplier.location && (
-              <div className="text-xs text-gray-600">
-                {item.supplier.location}
-              </div>
-            )}
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-700" dir="ltr">{formatPhoneNumber(item.supplier.phone)}</span>
+              <CopyButton text={item.supplier.phone} size="sm" />
+            </div>
           </div>
         ) : (
           <span className="text-gray-400 text-sm">-</span>

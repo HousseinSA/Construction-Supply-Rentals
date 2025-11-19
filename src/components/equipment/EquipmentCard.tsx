@@ -76,7 +76,7 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
           <p className="text-sm text-gray-500 mb-2 leading-snug line-clamp-1">
             {equipment.description}
           </p>
-          <div className="flex items-center text-sm text-gray-500">
+          <div className="flex items-center capitalize text-sm text-gray-500">
             <MapPin className="w-2 h-2 sm:w-4 sm:h-4 mx-0.5  text-primary" />
             {localizedCity}
           </div>

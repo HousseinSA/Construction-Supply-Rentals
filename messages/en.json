@@ -58,11 +58,14 @@
     "currentlyUnavailable": "Currently Unavailable",
     "bookingPending": "You already have a pending booking for this equipment",
     "equipmentUnavailable": "This equipment is currently unavailable due to pending bookings",
+    "adminCannotBook": "Admins cannot make bookings",
     "goBack": "Go Back",
     "loading": "Loading...",
     "equipmentNotFound": "Equipment Not Found",
     "equipmentNotFoundDesc": "The equipment you're looking for doesn't exist or has been removed.",
     "clickToViewFullSize": " view full size",
+    "supplierInfo": "Supplier Information",
+    "call": "Call",
     "imageModal": {
       "close": "Close",
       "previous": "Previous",
@@ -232,7 +235,7 @@
       "vehiclesStandard": "Vehicles (less than 1 month): 10% commission",
       "vehicles1Month": "Vehicles (1+ month rental): 9% commission",
       "vehicles2Months": "Vehicles (2+ months rental): 8% commission",
-      "forSale": "For sale: 5% fixed commission",
+      "forSale": "For sale: 5% commission",
       "note": "Commission based on equipment type and usage duration"
     }
   },
@@ -554,7 +557,7 @@
           "vehiclesStandard": "Vehicles (less than 1 month): 10% commission",
           "vehicles1Month": "Vehicles (1+ month rental): 9% commission",
           "vehicles2Months": "Vehicles (2+ months rental): 8% commission",
-          "forSale": "For sale: 5% fixed commission",
+          "forSale": "For sale: 5% commission",
           "note": "Commission based on equipment type and usage duration"
         }
       },
@@ -740,6 +743,7 @@
     "success": "Booking request sent successfully! Admin will contact you soon.",
     "error": "Failed to send booking request. Please try again.",
     "hours": "hours",
+    "days": "days",
     "km": "km",
     "tons": "tons"
   }
