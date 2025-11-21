@@ -65,8 +65,9 @@ export default function BookingDetailsModal({
         <div className="p-6">
           <ModalHeader title={t("details.title")} onClose={onClose} />
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="flex flex-col gap-6">
+          {/* Desktop Layout */}
+          <div className="hidden lg:block">
+            <div className="grid grid-cols-2 gap-6 mb-6">
               <BookingInfo
                 bookingId={booking._id}
                 totalPrice={booking.totalPrice}
@@ -93,8 +94,7 @@ export default function BookingDetailsModal({
                 }}
               />
             </div>
-
-            <div className="flex flex-col gap-6">
+            <div className="grid grid-cols-2 gap-6">
               <RenterInfo
                 renter={booking.renterInfo[0]}
                 labels={{
@@ -124,6 +124,63 @@ export default function BookingDetailsModal({
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Mobile Layout */}
+          <div className="lg:hidden flex flex-col gap-6">
+            <BookingInfo
+              bookingId={booking._id}
+              totalPrice={booking.totalPrice}
+              commission={totalCommission}
+              createdAt={booking.createdAt}
+              labels={{
+                title: t("details.bookingInfo"),
+                bookingId: t("details.bookingId"),
+                totalAmount: t("details.totalAmount"),
+                commission: t("details.commission"),
+                createdAt: t("details.createdAt"),
+              }}
+            />
+            <EquipmentItems
+              items={booking.bookingItems}
+              calculateCommission={calculateCommission}
+              getUsageLabel={getUsageUnitLabel}
+              labels={{
+                title: t("details.equipmentItems"),
+                usage: t("details.usage"),
+                rate: t("details.rate"),
+                commission: t("details.commission"),
+                subtotal: t("details.subtotal"),
+              }}
+            />
+            <RenterInfo
+              renter={booking.renterInfo[0]}
+              labels={{
+                title: t("details.renterInfo"),
+                name: t("details.name"),
+                email: t("details.email"),
+                phone: t("details.phone"),
+                call: t("details.call"),
+              }}
+            />
+            {booking.supplierInfo && booking.supplierInfo.length > 0 ? (
+              <div className="h-[280px]">
+                <SupplierInfo
+                  supplier={booking.supplierInfo[0]}
+                  variant="modal"
+                />
+              </div>
+            ) : (
+              <div className="bg-gray-50 rounded-lg p-4 h-[200px] flex flex-col">
+                <h3 className="font-semibold mb-3 flex items-center gap-2">
+                  <Building className="w-5 h-5 text-gray-600" />
+                  {t("details.supplierInfo")}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  {t("equipment.createdByAdmin")}
+                </p>
+              </div>
+            )}
           </div>
 
           {booking.renterMessage && (
