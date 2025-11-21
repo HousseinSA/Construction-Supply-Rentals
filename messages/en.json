@@ -637,12 +637,28 @@
       "noPartners": "No partners found"
     },
     "bookings": {
+      "searchPlaceholder": "Search by renter, supplier, equipment...",
+      "filters": {
+        "status": "Status",
+        "allStatus": "All Status",
+        "supplier": "Supplier",
+        "allSuppliers": "All Suppliers",
+        "amount": "Amount",
+        "allAmounts": "All Amounts",
+        "time": "Date",
+        "allTime": "All Dates",
+        "today": "Today",
+        "last7Days": "Last 7 Days",
+        "last30Days": "Last 30 Days"
+      },
       "table": {
         "booking": "Booking",
         "renter": "Renter",
         "supplier": "Supplier",
         "equipment": "Equipment",
+        "usage": "Usage",
         "total": "Total",
+        "commission": "Commission",
         "status": "Status",
         "date": "Date",
         "actions": "Actions"
@@ -683,10 +699,14 @@
         "adminNotesPlaceholder": "Add notes about arrangements, payment details, etc...",
         "call": "Call"
       },
-      "items": "items",
+      "items": "Equipment",
       "more": "more",
       "noBookings": "No Bookings Found",
-      "noBookingsDesc": "No booking requests have been submitted yet"
+      "noBookingsDesc": "No booking requests have been submitted yet",
+      "noMatchingBookings": "No bookings match your filters",
+      "noPendingBookings": "No pending bookings",
+      "error": "Failed to fetch bookings",
+      "retry": "Retry"
     }
   },
   "toast": {
@@ -746,5 +766,8 @@
     "days": "days",
     "km": "km",
     "tons": "tons"
+  },
+  "filters": {
+    "clearFilters": "Clear Filters"
   }
 }

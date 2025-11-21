@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useTranslations, useLocale } from "next-intl"
 import {
   Users,
@@ -14,6 +14,7 @@ import {
   AlertTriangle,
 } from "lucide-react"
 import { User } from "@/src/lib/types"
+import { useUsers } from "@/src/hooks/useUsers"
 import Dropdown from "@/src/components/ui/Dropdown"
 import { usePagination } from "@/src/hooks/usePagination"
 import Pagination from "@/src/components/ui/Pagination"
@@ -26,8 +27,7 @@ export default function UsersManagement() {
   const t = useTranslations("dashboard")
   const tCommon = useTranslations("common")
   const locale = useLocale()
-  const [users, setUsers] = useState<User[]>([])
-  const [loading, setLoading] = useState(true)
+  const { users, loading, updateUserStatus } = useUsers()
   const [searchTerm, setSearchTerm] = useState("")
   const [filterRole, setFilterRole] = useState<string>("all")
   const [confirmModal, setConfirmModal] = useState<{
@@ -37,24 +37,6 @@ export default function UsersManagement() {
     userName: string
   }>({ isOpen: false, userId: null, action: null, userName: "" })
   const [updating, setUpdating] = useState<string | null>(null)
-
-  useEffect(() => {
-    fetchUsers()
-  }, [])
-
-  const fetchUsers = async () => {
-    try {
-      const response = await fetch("/api/users")
-      if (response.ok) {
-        const result = await response.json()
-        setUsers(result.data || [])
-      }
-    } catch (error) {
-      console.error("Error fetching users:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const filteredUsers = users.filter((user) => {
     if (user.role === "admin") return false
@@ -118,34 +100,19 @@ export default function UsersManagement() {
     setUpdating(confirmModal.userId)
     try {
       const newStatus = confirmModal.action === "block" ? "blocked" : "approved"
+      const success = await updateUserStatus(confirmModal.userId, newStatus)
 
-      const response = await fetch(`/api/users`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: confirmModal.userId,
-          status: newStatus,
-        }),
-      })
-
-      if (!response.ok) throw new Error("Failed to update user")
-
-      // Update user status locally
-      setUsers((prevUsers) =>
-        prevUsers.map((user) =>
-          user._id?.toString() === confirmModal.userId
-            ? { ...user, status: newStatus }
-            : user
+      if (success) {
+        showToast.success(
+          t(
+            `users.user${
+              confirmModal.action === "block" ? "Blocked" : "Unblocked"
+            }`
+          )
         )
-      )
-
-      showToast.success(
-        t(
-          `users.user${
-            confirmModal.action === "block" ? "Blocked" : "Unblocked"
-          }`
-        )
-      )
+      } else {
+        showToast.error("Failed to update user status")
+      }
     } catch (error) {
       showToast.error("Failed to update user status")
     } finally {
@@ -484,26 +451,28 @@ export default function UsersManagement() {
         )}
       </div>
 
-      <ConfirmModal
-        isOpen={confirmModal.isOpen}
-        onClose={closeConfirmModal}
-        onConfirm={handleConfirmAction}
-        title={t(
-          `users.confirm${
-            confirmModal.action === "block" ? "Block" : "Unblock"
-          }Title`
-        )}
-        message={t(
-          `users.confirm${
-            confirmModal.action === "block" ? "Block" : "Unblock"
-          }Message`
-        )}
-        confirmText={t(`users.${confirmModal.action}User`)}
-        cancelText={tCommon("cancel")}
-        icon={<AlertTriangle className="w-6 h-6 text-red-600" />}
-        iconBgColor="bg-red-100"
-        isLoading={updating === confirmModal.userId}
-      />
+      {confirmModal.action && (
+        <ConfirmModal
+          isOpen={confirmModal.isOpen}
+          onClose={closeConfirmModal}
+          onConfirm={handleConfirmAction}
+          title={t(
+            `users.confirm${
+              confirmModal.action === "block" ? "Block" : "Unblock"
+            }Title`
+          )}
+          message={t(
+            `users.confirm${
+              confirmModal.action === "block" ? "Block" : "Unblock"
+            }Message`
+          )}
+          confirmText={t(`users.${confirmModal.action}User`)}
+          cancelText={tCommon("cancel")}
+          icon={<AlertTriangle className="w-6 h-6 text-red-600" />}
+          iconBgColor="bg-red-100"
+          isLoading={updating === confirmModal.userId}
+        />
+      )}
     </div>
   )
 }

@@ -1,4 +1,5 @@
-import { ReactNode } from "react"
+import { ReactNode, useRef } from "react"
+import { useModalClose } from '@/src/hooks/useModalClose'
 import Button from "./Button"
 
 interface ConfirmModalProps {
@@ -26,14 +27,14 @@ export default function ConfirmModal({
   iconBgColor = "bg-gray-100",
   isLoading = false,
 }: ConfirmModalProps) {
+  const modalRef = useRef<HTMLDivElement>(null)
+  useModalClose(isOpen, onClose, modalRef)
+
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50">
-      <div
-        className="absolute inset-0 bg-black/20 backdrop-blur-xs"
-        onClick={onClose}
-      />
+    <div ref={modalRef} className="fixed inset-0 z-50">
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
       <div className="relative h-full flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-4 sm:p-6 animate-in fade-in zoom-in-95 duration-200">
           <div className="flex items-center gap-3 mb-4">

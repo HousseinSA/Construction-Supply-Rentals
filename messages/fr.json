@@ -636,12 +636,28 @@
       "noPartners": "Aucun partenaire trouvé"
     },
     "bookings": {
+      "searchPlaceholder": "Rechercher par locataire, fournisseur, matériel...",
+      "filters": {
+        "status": "Statut",
+        "allStatus": "Tous les Statuts",
+        "supplier": "Fournisseur",
+        "allSuppliers": "Tous les Fournisseurs",
+        "amount": "Montant",
+        "allAmounts": "Tous les Montants",
+        "time": "Date",
+        "allTime": "Toutes les Dates",
+        "today": "Aujourd'hui",
+        "last7Days": "7 Derniers Jours",
+        "last30Days": "30 Derniers Jours"
+      },
       "table": {
         "booking": "Réservation",
         "renter": "Locataire",
         "supplier": "Fournisseur",
         "equipment": "Matériel",
+        "usage": "Usage",
         "total": "Total",
+        "commission": "Commission",
         "status": "Statut",
         "date": "Date",
         "actions": "Actions"
@@ -682,10 +698,14 @@
         "adminNotesPlaceholder": "Ajouter des notes sur les arrangements, détails de paiement, etc...",
         "call": "Appeler"
       },
-      "items": "articles",
+      "items": "Matériel",
       "more": "de plus",
       "noBookings": "Aucune Réservation Trouvée",
-      "noBookingsDesc": "Aucune demande de réservation n'a encore été soumise"
+      "noBookingsDesc": "Aucune demande de réservation n'a encore été soumise",
+      "noMatchingBookings": "Aucune réservation ne correspond à vos filtres",
+      "noPendingBookings": "Aucune réservation en attente",
+      "error": "Échec du chargement des réservations",
+      "retry": "Réessayer"
     }
   },
   "toast": {
@@ -745,5 +765,8 @@
     "days": "jours",
     "km": "km",
     "tons": "tonnes"
+  },
+  "filters": {
+    "clearFilters": "Effacer les Filtres"
   }
 }

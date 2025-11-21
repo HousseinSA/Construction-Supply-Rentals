@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { connectDB } from "@/src/lib/mongodb"
 import { createNotification } from "@/src/lib/notifications"
 import { ObjectId } from "mongodb"
+import { triggerRealtimeUpdate } from "@/src/lib/realtime-trigger"
 import {
   getInitialEquipmentStatus,
   getUsageCategoryFromEquipmentType,
@@ -244,6 +245,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    await triggerRealtimeUpdate('equipment')
+
     return NextResponse.json(
       {
         success: true,
@@ -297,6 +300,8 @@ export async function PUT(request: NextRequest) {
     await db
       .collection("equipment")
       .updateOne({ _id: new ObjectId(equipmentId) }, { $set: updateData })
+
+    await triggerRealtimeUpdate('equipment')
 
     return NextResponse.json({
       success: true,

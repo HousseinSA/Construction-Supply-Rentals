@@ -3,6 +3,7 @@ import { connectDB } from "@/src/lib/mongodb"
 import { ObjectId } from "mongodb"
 import { createNotification } from "@/src/lib/notifications"
 import { validateBooking } from "@/src/lib/validation"
+import { triggerRealtimeUpdate } from "@/src/lib/realtime-trigger"
 import {
   calculateSubtotal,
   validateReferences,
@@ -145,6 +146,8 @@ export async function POST(request: NextRequest) {
       result.insertedId
     )
 
+    await triggerRealtimeUpdate('booking')
+
     return NextResponse.json(
       {
         success: true,
@@ -200,6 +203,8 @@ export async function PUT(request: NextRequest) {
       adminId ? new ObjectId(adminId) : undefined,
       adminNotes
     )
+
+    await triggerRealtimeUpdate('booking')
 
     return NextResponse.json({
       success: true,

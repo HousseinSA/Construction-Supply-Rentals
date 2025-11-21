@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
+import { useRealtime } from './useRealtime'
 
 interface Pricing {
   dailyRate?: number
@@ -19,35 +20,39 @@ export function useEquipment(selectedCity?: string | null, selectedType?: string
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const fetchEquipment = async () => {
-      try {
-        setLoading(true)
-        setError(null)
-        const params = new URLSearchParams()
-        params.set("available", "true")
-        // Only filter by city if showing equipment for rent
-        if (selectedCity && listingType !== 'forSale') {
-          params.set("city", selectedCity)
-        }
-        if (selectedType) {
-          params.set("type", selectedType)
-        }
-        if (listingType) {
-          params.set("listingType", listingType)
-        }
-        const response = await fetch(`/api/equipment?${params.toString()}`)
-        const data = await response.json()
-        setEquipment(data.data || [])
-      } catch (error) {
-        console.error("Failed to fetch equipment:", error)
-        setError("Failed to fetch equipment")
-      } finally {
-        setLoading(false)
+  const fetchEquipment = useCallback(async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const params = new URLSearchParams()
+      params.set("available", "true")
+      if (selectedCity && listingType !== 'forSale') {
+        params.set("city", selectedCity)
       }
+      if (selectedType) {
+        params.set("type", selectedType)
+      }
+      if (listingType) {
+        params.set("listingType", listingType)
+      }
+      const response = await fetch(`/api/equipment?${params.toString()}`)
+      const data = await response.json()
+      setEquipment(data.data || [])
+    } catch (error) {
+      console.error("Failed to fetch equipment:", error)
+      setError("Failed to fetch equipment")
+    } finally {
+      setLoading(false)
     }
-    fetchEquipment()
   }, [selectedCity, selectedType, listingType])
+
+  useRealtime('equipment', useCallback(() => {
+    fetchEquipment()
+  }, [fetchEquipment]))
+
+  useEffect(() => {
+    fetchEquipment()
+  }, [fetchEquipment])
 
   return { equipment, loading, error }
 }

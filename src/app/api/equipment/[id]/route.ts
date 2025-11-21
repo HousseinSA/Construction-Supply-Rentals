@@ -3,6 +3,7 @@ import { connectDB } from "@/src/lib/mongodb"
 import { ObjectId } from "mongodb"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/src/lib/auth"
+import { triggerRealtimeUpdate } from "@/src/lib/realtime-trigger"
 
 export async function GET(
   request: NextRequest,
@@ -114,6 +115,7 @@ export async function PATCH(
     }
 
     await db.collection("equipment").updateOne({ _id: new ObjectId(id) }, { $set: updateData })
+    await triggerRealtimeUpdate('equipment')
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error("Error updating equipment:", error)
@@ -153,6 +155,7 @@ export async function PUT(
     }
 
     await db.collection("equipment").updateOne({ _id: new ObjectId(id) }, { $set: updateData })
+    await triggerRealtimeUpdate('equipment')
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error("Error updating equipment:", error)

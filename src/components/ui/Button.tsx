@@ -31,7 +31,7 @@ export default function Button({
 
   return (
     <button
-      className={`font-medium transition-all duration-200 ${sizeClasses[size]} ${variantClasses[variant]} ${className}`}
+      className={`font-medium transition-all duration-200 ${sizeClasses[size]} ${variantClasses[variant]} disabled:opacity-60 disabled:cursor-not-allowed ${className}`}
       {...props}
     >
       {children}

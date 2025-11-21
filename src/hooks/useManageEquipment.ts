@@ -1,18 +1,15 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { showToast } from "@/src/lib/toast"
 import { Equipment } from "@/src/lib/models/equipment"
 import { User } from "@/src/lib/models/user"
-
-interface EquipmentWithSupplier extends Equipment {
-  supplier?: User
-}
+import { useEquipmentStore, EquipmentWithSupplier } from "@/src/stores/equipmentStore"
+import { useRealtime } from './useRealtime'
 
 export function useManageEquipment() {
-  const [equipment, setEquipment] = useState<EquipmentWithSupplier[]>([])
-  const [loading, setLoading] = useState(true)
+  const { equipment, loading, setEquipment, setLoading, updateEquipment, shouldRefetch } = useEquipmentStore()
   const [updating, setUpdating] = useState<string | null>(null)
 
-  const fetchEquipment = async () => {
+  const fetchEquipment = useCallback(async () => {
     try {
       setLoading(true)
       const response = await fetch("/api/equipment?admin=true")
@@ -22,7 +19,6 @@ export function useManageEquipment() {
         const usersData = await usersResponse.json()
 
         const equipmentWithSuppliers = data.data.map((item: Equipment) => {
-          // Only add supplier info if equipment was created by supplier and has supplierId
           if (
             item.createdBy === "supplier" &&
             item.supplierId &&
@@ -45,7 +41,7 @@ export function useManageEquipment() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [setEquipment, setLoading])
 
   const handleStatusChange = async (id: string, newStatus: string) => {
     setUpdating(id)
@@ -56,11 +52,7 @@ export function useManageEquipment() {
         body: JSON.stringify({ status: newStatus }),
       })
       if (response.ok) {
-        setEquipment((prev) =>
-          prev.map((item) =>
-            item._id?.toString() === id ? { ...item, status: newStatus } : item
-          )
-        )
+        updateEquipment(id, { status: newStatus })
         return true
       }
       return false
@@ -80,11 +72,7 @@ export function useManageEquipment() {
         body: JSON.stringify({ isAvailable }),
       })
       if (response.ok) {
-        setEquipment((prev) =>
-          prev.map((item) =>
-            item._id?.toString() === id ? { ...item, isAvailable } : item
-          )
-        )
+        updateEquipment(id, { isAvailable })
         return true
       }
       return false
@@ -95,9 +83,13 @@ export function useManageEquipment() {
     }
   }
 
+  useRealtime('equipment', useCallback(() => {
+    fetchEquipment()
+  }, [fetchEquipment]))
+
   useEffect(() => {
     fetchEquipment()
-  }, [])
+  }, [fetchEquipment])
 
   return {
     equipment,

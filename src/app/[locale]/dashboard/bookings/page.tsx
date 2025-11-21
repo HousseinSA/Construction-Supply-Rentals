@@ -12,14 +12,16 @@ export default async function BookingsPage({
   const { locale } = await params
   setRequestLocale(locale)
 
-  // Check authentication and authorization
   const session = await getServerSession(authOptions)
   if (!session?.user) {
     redirect(`/${locale}/auth/login`)
   }
 
-  // Only admin, renters, and suppliers can access bookings
-  if (session.user.role !== "admin" && session.user.userType !== "renter" && session.user.userType !== "supplier") {
+  if (
+    session.user.role !== "admin" &&
+    session.user.userType !== "renter" &&
+    session.user.userType !== "supplier"
+  ) {
     redirect(`/${locale}/dashboard`)
   }
 

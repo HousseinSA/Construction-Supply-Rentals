@@ -635,15 +635,32 @@
       "noPartners": "لا يوجد شركاء"
     },
     "bookings": {
+      "searchPlaceholder": "البحث بالمستأجر، المورد، المعدات...",
+      "filters": {
+        "status": "الحالة",
+        "allStatus": "جميع الحالات",
+        "supplier": "المورد",
+        "allSuppliers": "جميع الموردين",
+        "amount": "المبلغ",
+        "allAmounts": "جميع المبالغ",
+        "time": "التاريخ",
+        "allTime": "جميع التواريخ",
+        "today": "اليوم",
+        "last7Days": "آخر 7 أيام",
+        "last30Days": "آخر 30 يوم"
+      },
       "table": {
         "booking": "الحجز",
         "renter": "المستأجر",
         "supplier": "المورد",
         "equipment": "المعدات",
+        "usage": "الاستخدام",
         "total": "المجموع",
+        "commission": "العمولة",
         "status": "الحالة",
         "date": "التاريخ",
-        "actions": "الإجراءات"
+        "actions": "الإجراءات",
+        "summary": "الملخص"
       },
       "status": {
         "pending": "في الانتظار",
@@ -681,10 +698,14 @@
         "adminNotesPlaceholder": "إضافة ملاحظات حول الترتيبات، تفاصيل الدفع، إلخ...",
         "call": "اتصال"
       },
-      "items": "عناصر",
+      "items": "معدات",
       "more": "أكثر",
       "noBookings": "لم يتم العثور على حجوزات",
-      "noBookingsDesc": "لم يتم تقديم أي طلبات حجز بعد"
+      "noBookingsDesc": "لم يتم تقديم أي طلبات حجز بعد",
+      "noMatchingBookings": "لا توجد حجوزات تطابق الفلاتر",
+      "noPendingBookings": "لا توجد حجوزات في الانتظار",
+      "error": "فشل في تحميل الحجوزات",
+      "retry": "إعادة المحاولة"
     }
   },
   "toast": {
@@ -744,5 +765,8 @@
     "days": "أيام",
     "km": "كم",
     "tons": "أطنان"
+  },
+  "filters": {
+    "clearFilters": "مسح الفلاتر"
   }
 }

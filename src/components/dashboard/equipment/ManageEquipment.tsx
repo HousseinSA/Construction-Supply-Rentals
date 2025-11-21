@@ -21,17 +21,12 @@ import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
 import { usePagination } from "@/src/hooks/usePagination"
 import { showToast } from "@/src/lib/toast"
 import EquipmentTableRow from "./EquipmentTableRow"
-import EquipmentTableHeader from "./EquipmentTableHeader"
 import HomeButton from "../../ui/HomeButton"
 import ConfirmModal from "../../ui/ConfirmModal"
 import Dropdown from "../../ui/Dropdown"
 import Pagination from "../../ui/Pagination"
-import { Equipment } from "@/src/lib/models/equipment"
-import { User } from "@/src/lib/models/user"
-
-interface EquipmentWithSupplier extends Equipment {
-  supplier?: User
-}
+import { Table, TableHeader, TableBody, TableHead } from "../../ui/Table"
+import { EquipmentWithSupplier } from "@/src/stores/equipmentStore"
 
 export default function ManageEquipment() {
   const { data: session } = useSession()
@@ -154,10 +149,20 @@ export default function ManageEquipment() {
           ) : (
             <>
               <div className="hidden lg:block">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <EquipmentTableHeader headerAlign={headerAlign} />
-                    <tbody className="divide-y divide-gray-100">
+                <Table>
+                  <TableHeader>
+                    <tr>
+                      <TableHead>{t("name")}</TableHead>
+                      <TableHead>{t("location")}</TableHead>
+                      <TableHead>{t("price")}</TableHead>
+                      <TableHead>{t("supplierInfo")}</TableHead>
+                      <TableHead align="center">{t("createdAt")}</TableHead>
+                      <TableHead align="center">{t("status")}</TableHead>
+                      <TableHead align="center">{t("availability")}</TableHead>
+                      <TableHead align="center">{t("actions")}</TableHead>
+                    </tr>
+                  </TableHeader>
+                  <TableBody>
                       {paginatedEquipment.map((item: EquipmentWithSupplier) => (
                         <EquipmentTableRow
                           key={item._id?.toString()}
@@ -171,9 +176,8 @@ export default function ManageEquipment() {
                           onNavigate={handleNavigation}
                         />
                       ))}
-                    </tbody>
-                  </table>
-                </div>
+                  </TableBody>
+                </Table>
               </div>
 
               <div className="lg:hidden divide-y divide-gray-200">
