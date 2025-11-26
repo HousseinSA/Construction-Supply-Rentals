@@ -5,6 +5,8 @@
     "logout": "تسجيل الخروج",
     "signup": "إنشاء حساب",
     "dashboard": "لوحة التحكم",
+    "myBookings": "الطلبات",
+    "myTransactions": "الطلبات",
     "day": "يوم",
     "hour": "ساعة",
     "km": "KM",
@@ -48,6 +50,8 @@
     "model": "الموديل",
     "condition": "الحالة",
     "hoursUsed": "ساعات الاستخدام",
+    "usage": "الاستخدام",
+    "equipmentUsage": "إجمالي الاستخدام",
     "weight": "الوزن",
     "requestRental": "طلب إيجار",
     "contactForPurchase": "تواصل للشراء",
@@ -65,6 +69,12 @@
     "clickToViewFullSize": "عرض بالحجم الكامل",
     "supplierInfo": "معلومات المورد",
     "call": "اتصال",
+    "saleRequestSuccess": "تم إرسال طلب الشراء بنجاح! سيتواصل معك المدير قريباً.",
+    "saleRequestFailed": "فشل في إرسال طلب الشراء. يرجى المحاولة مرة أخرى.",
+    "message": "رسالة",
+    "optional": "اختياري",
+    "messagePlaceholder": "أي أسئلة أو طلبات خاصة...",
+    "sending": "جاري الإرسال...",
     "imageModal": {
       "close": "إغلاق",
       "previous": "السابق",
@@ -175,6 +185,9 @@
     },
     "footer": {
       "support": "الدعم والتواصل"
+    },
+    "whatsapp": {
+      "tooltip": "تحتاج مساعدة؟ تواصل معنا!"
     }
   },
   "auth": {
@@ -183,14 +196,10 @@
       "subtitle": "انضم إلى منصة تأجير معدات البناء",
       "selectRole": "اختر نوع الحساب",
       "renter": {
-        "title": "مستأجر",
-        "description": "استئجار معدات البناء",
-        "submitButton": "إنشاء حساب مستأجر"
+        "title": "مستأجر"
       },
       "supplier": {
         "title": "شريك",
-        "description": "تأجير معدات البناء",
-        "submitButton": "تقديم الطلب",
         "companyName": "اسم الشركة",
         "location": "موقع الشركة"
       },
@@ -310,6 +319,38 @@
     }
   },
   "dashboard": {
+    "transactions": {
+      "rentals": "الإيجارات",
+      "purchases": "المشتريات"
+    },
+    "purchases": {
+      "loading": "جاري التحميل...",
+      "noPurchases": "لا توجد مشتريات",
+      "noPurchasesDesc": "لم تقم بأي طلبات شراء بعد",
+      "cancelSuccess": "تم إلغاء طلب الشراء بنجاح",
+      "cancelFailed": "فشل إلغاء طلب الشراء",
+      "cancelPurchase": "إلغاء الشراء",
+      "cancelPurchaseTitle": "إلغاء طلب الشراء",
+      "cancelPurchaseMessage": "هل أنت متأكد من إلغاء طلب الشراء هذا؟",
+      "confirmCancel": "نعم، إلغاء",
+      "table": {
+        "equipment": "المعدة",
+        "price": "السعر",
+        "status": "الحالة",
+        "date": "التاريخ",
+        "actions": "الإجراءات"
+      },
+      "status": {
+        "pending": "قيد الانتظار",
+        "paid": "مدفوع",
+        "completed": "مكتمل",
+        "cancelled": "ملغي"
+      },
+      "actions": {
+        "view": "عرض",
+        "cancel": "إلغاء"
+      }
+    },
     "goToHome": "الصفحة الرئيسية",
     "underDevelopment": "هذه الصفحة قيد التطوير",
     "dashboard": {
@@ -335,6 +376,8 @@
       "manageEquipmentDesc": "عرض وتعديل المعدات الموجودة",
       "bookings": "الحجوزات",
       "bookingsDesc": "إدارة حجوزات وطلبات الإيجار",
+      "sales": "طلبات البيع",
+      "salesDesc": "إدارة طلبات المعدات للبيع",
       "users": "المستخدمون",
       "usersDesc": "إدارة المستأجرين والموردين",
       "analytics": "الإحصائيات",
@@ -359,8 +402,9 @@
       "subtitle": "ابحث واستأجر معدات البناء",
       "browseEquipment": "تصفح المعدات",
       "browseEquipmentDesc": "ابحث عن معدات لمشاريعك",
-      "myBookings": "حجوزاتي",
+      "myBookings": "الطلبات",
       "myBookingsDesc": "عرض إيجاراتك الحالية والسابقة",
+      "myTransactionsDesc": "عرض وإدارة جميع معاملاتك من إيجارات ومشتريات",
       "requests": "طلبات الإيجار",
       "requestsDesc": "تتبع حالة طلبات الإيجار",
       "profile": "الملف الشخصي",
@@ -417,12 +461,21 @@
       "brandPlaceholder": "مثال: Caterpillar, Komatsu, Volvo",
       "model": "الموديل",
       "modelPlaceholder": "مثال: 320D, PC200",
+      "usage": "الاستخدام",
+      "equipmentUsage": "إجمالي الاستخدام",
       "hoursUsed": "ساعات الاستخدام",
+      "kilometersUsed": "الكيلومترات المستخدمة",
+      "tonnageUsed": "الحمولة المستخدمة",
       "weight": "الوزن",
       "weightPlaceholder": "مثال: 20",
       "weightUnits": {
         "kg": "كجم",
         "tons": "طن"
+      },
+      "usageUnits": {
+        "hours": "ساعات",
+        "days": "أيام",
+        "miles": "ميل"
       },
       "view": "عرض",
       "manageTitle": "إدارة المعدات",
@@ -466,7 +519,8 @@
       "confirmApproveTitle": "الموافقة على المعدة",
       "confirmApproveMessage": "هل أنت متأكد من الموافقة على هذه المعدة؟",
       "confirmRejectTitle": "رفض المعدة",
-      "confirmRejectMessage": "هل أنت متأكد من رفض هذه المعدة؟ ."
+      "confirmRejectMessage": "هل أنت متأكد من رفض هذه المعدة؟ .",
+      "sold": "مباع"
     },
     "pages": {
       "equipment": {
@@ -480,6 +534,10 @@
       "bookings": {
         "title": "الحجوزات",
         "subtitle": "إدارة حجوزات وطلبات الإيجار"
+      },
+      "sales": {
+        "title": "طلبات البيع",
+        "subtitle": "إدارة مبيعات وشراء المعدات"
       },
       "users": {
         "title": "المستخدمون",
@@ -644,7 +702,7 @@
         "amount": "المبلغ",
         "allAmounts": "جميع المبالغ",
         "time": "التاريخ",
-        "allTime": "جميع التواريخ",
+        "allTime": "الكل",
         "today": "اليوم",
         "last7Days": "آخر 7 أيام",
         "last30Days": "آخر 30 يوم"
@@ -676,14 +734,14 @@
       },
       "details": {
         "title": "تفاصيل الحجز",
-        "bookingInfo": "معلومات الحجز",
+        "bookingInfo": " الحجز",
         "bookingId": "رقم الحجز",
         "totalAmount": "المبلغ الإجمالي",
         "commission": "العمولة",
         "createdAt": "تاريخ الإنشاء",
-        "renterInfo": "معلومات المستأجر",
-        "supplierInfo": "معلومات المورد",
-        "equipmentItems": "عناصر المعدات",
+        "renterInfo": "المستأجر",
+        "supplierInfo": "المورد",
+        "equipmentItems": "المعدات",
         "name": "الاسم",
         "email": "البريد الإلكتروني",
         "phone": "الهاتف",
@@ -702,10 +760,79 @@
       "more": "أكثر",
       "noBookings": "لم يتم العثور على حجوزات",
       "noBookingsDesc": "لم يتم تقديم أي طلبات حجز بعد",
-      "noMatchingBookings": "لا توجد حجوزات تطابق الفلاتر",
+      "noAllBookings": "لم يتم العثور على حجوزات",
       "noPendingBookings": "لا توجد حجوزات في الانتظار",
+      "noPaidBookings": "لا توجد حجوزات مدفوعة",
+      "noCompletedBookings": "لا توجد حجوزات مكتملة",
+      "noCancelledBookings": "لا توجد حجوزات ملغاة",
       "error": "فشل في تحميل الحجوزات",
-      "retry": "إعادة المحاولة"
+      "retry": "إعادة المحاولة",
+      "cancelBooking": "إلغاء الحجز",
+      "cancelBookingTitle": "إلغاء الحجز",
+      "cancelBookingMessage": "هل أنت متأكد من إلغاء هذا الحجز؟ لا يمكن التراجع عن هذا الإجراء.",
+      "confirmCancel": "نعم، إلغاء",
+      "cancelSuccess": "تم إلغاء الحجز بنجاح",
+      "cancelFailed": "فشل في إلغاء الحجز. يرجى المحاولة مرة أخرى.",
+      "loading": "جاري التحميل..."
+    },
+    "sales": {
+      "searchPlaceholder": "البحث بالمشتري، المعدات...",
+      "filters": {
+        "status": "الحالة",
+        "allStatus": "جميع الحالات",
+        "time": "التاريخ",
+        "allTime": "الكل",
+        "today": "اليوم",
+        "last7Days": "آخر 7 أيام",
+        "last30Days": "آخر 30 يوم"
+      },
+      "table": {
+        "sale": "رقم البيع",
+        "buyer": "المشتري",
+        "supplier": "المورد",
+        "equipment": "المعدات",
+        "price": "سعر البيع",
+        "commission": "العمولة (5%)",
+        "status": "الحالة",
+        "date": "التاريخ",
+        "actions": "الإجراءات"
+      },
+      "status": {
+        "pending": "في الانتظار",
+        "paid": "مدفوع",
+        "completed": "مكتمل",
+        "cancelled": "ملغى"
+      },
+      "actions": {
+        "view": "عرض",
+        "cancel": "إلغاء",
+        "save": "حفظ التغييرات",
+        "saving": "جاري الحفظ..."
+      },
+      "details": {
+        "title": "تفاصيل طلب البيع",
+        "saleInfo": "معلومات البيع",
+        "saleId": "رقم البيع",
+        "equipment": "المعدات",
+        "salePrice": "سعر البيع",
+        "commission": "العمولة (5%)",
+        "createdAt": "تاريخ الإنشاء",
+        "buyerInfo": "معلومات المشتري",
+        "supplierInfo": "معلومات المورد",
+        "name": "الاسم",
+        "email": "البريد الإلكتروني",
+        "phone": "الهاتف",
+        "status": "الحالة",
+        "buyerMessage": "رسالة المشتري"
+      },
+      "noSales": "لم يتم العثور على مبيعات",
+      "noResults": "لم يتم العثور على مبيعات مطابقة للبحث",
+      "loading": "جاري التحميل...",
+      "statusUpdated": "تم تحديث حالة البيع بنجاح",
+      "statusUpdateFailed": "فشل في تحديث حالة البيع",
+      "equipment": {
+        "createdByAdmin": "تم الإنشاء بواسطة الإدارة"
+      }
     }
   },
   "toast": {
@@ -760,13 +887,12 @@
     "sendRequest": "إرسال طلب الحجز",
     "sending": "جاري الإرسال...",
     "success": "تم إرسال طلب الحجز بنجاح! سيتواصل معك المدير قريباً.",
+    "successPending": "تم الحجز بنجاح! في انتظار الموافقة. تابع حجوزاتي أو تواصل معنا.",
+    "viewBookings": "عرض حجوزاتي",
     "error": "فشل في إرسال طلب الحجز. يرجى المحاولة مرة أخرى.",
     "hours": "ساعات",
     "days": "أيام",
     "km": "كم",
     "tons": "أطنان"
-  },
-  "filters": {
-    "clearFilters": "مسح الفلاتر"
   }
 }

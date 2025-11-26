@@ -12,21 +12,37 @@ import {
 import { BookingItem } from "@/src/lib/models/booking"
 
 // GET /api/bookings - Get bookings with renter/supplier details
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url)
+    const renterId = searchParams.get('renterId')
+    
     const db = await connectDB()
 
-    const bookings = await db
-      .collection("bookings")
-      .aggregate([
-        {
-          $lookup: {
-            from: "users",
-            localField: "renterId",
-            foreignField: "_id",
-            as: "renterInfo",
-          },
+    const pipeline: any[] = []
+    
+    // Filter by renterId if provided (for renter users)
+    if (renterId) {
+      pipeline.push({
+        $match: { renterId: new ObjectId(renterId) }
+      })
+    }
+
+    // Only add renter lookup for admin/supplier views
+    if (!renterId) {
+      pipeline.push({
+        $lookup: {
+          from: "users",
+          localField: "renterId",
+          foreignField: "_id",
+          as: "renterInfo",
         },
+      })
+    }
+
+    // Only add supplier lookup for admin/supplier views (renters don't see suppliers)
+    if (!renterId) {
+      pipeline.push(
         {
           $addFields: {
             supplierIds: {
@@ -45,11 +61,17 @@ export async function GET() {
             foreignField: "_id",
             as: "supplierInfo",
           },
-        },
-        {
-          $sort: { createdAt: -1 },
-        },
-      ])
+        }
+      )
+    }
+
+    pipeline.push({
+      $sort: { createdAt: -1 },
+    })
+
+    const bookings = await db
+      .collection("bookings")
+      .aggregate(pipeline)
       .toArray()
 
     return NextResponse.json({

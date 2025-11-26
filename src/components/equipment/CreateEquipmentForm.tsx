@@ -27,9 +27,8 @@ export default function CreateEquipmentForm() {
     handlePriceTypeChange,
     handleLocationChange,
     handleListingTypeChange,
-
     handleWeightUnitChange,
-
+    handleUsageUnitChange,
     handleSubmit,
   } = useEquipmentForm()
 
@@ -70,6 +69,7 @@ export default function CreateEquipmentForm() {
                 onLocationChange={handleLocationChange}
                 onPriceTypeChange={handlePriceTypeChange}
                 onWeightUnitChange={handleWeightUnitChange}
+                onUsageUnitChange={handleUsageUnitChange}
                 onImagesChange={setImages}
               />
 

@@ -5,7 +5,7 @@ import CategoryDropdown from "../ui/CategoryDropdown"
 import EquipmentTypeDropdown from "../ui/EquipmentTypeDropdown"
 import CityDropdown from "../ui/CityDropdown"
 import PricingTypeDropdown from "../ui/PricingTypeDropdown"
-
+import UsageInput from "../ui/UsageInput"
 import ImageUpload from "../ui/ImageUpload"
 import { UploadedImage } from "@/src/hooks/useEquipmentForm"
 
@@ -20,7 +20,8 @@ interface EquipmentFormFieldsProps {
     description: string
     brand: string
     model: string
-    hoursUsed: string
+    usageValue: string
+    usageUnit: string
     weight: string
     weightUnit: string
   }
@@ -34,6 +35,7 @@ interface EquipmentFormFieldsProps {
   onLocationChange: (value: string) => void
   onPriceTypeChange: (value: string) => void
   onWeightUnitChange: (value: string) => void
+  onUsageUnitChange: (value: string) => void
   onImagesChange: (images: UploadedImage[]) => void
 }
 
@@ -47,6 +49,7 @@ export default function EquipmentFormFields({
   onLocationChange,
   onPriceTypeChange,
   onWeightUnitChange,
+  onUsageUnitChange,
   onImagesChange,
 }: EquipmentFormFieldsProps) {
   const t = useTranslations("dashboard.equipment")
@@ -80,6 +83,15 @@ export default function EquipmentFormFields({
           value={formData.model}
           onChange={onInputChange}
           placeholder={t("modelPlaceholder")}
+        />
+
+        <UsageInput
+          equipmentTypeId={formData.type}
+          value={formData.usageValue}
+          unitValue={formData.usageUnit}
+          onValueChange={onInputChange}
+          onUnitChange={onUsageUnitChange}
+          disabled={isSubmitting}
         />
 
         <InputWithUnitSelect

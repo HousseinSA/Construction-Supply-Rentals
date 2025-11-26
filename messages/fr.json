@@ -5,6 +5,8 @@
     "logout": "Déconnexion",
     "signup": "S'inscrire",
     "dashboard": "Tableau de Bord",
+    "myBookings": "Mes Réservations",
+    "myTransactions": "Mes Transactions",
     "day": "jour",
     "hour": "heure",
     "km": "km",
@@ -49,6 +51,8 @@
     "model": "Modèle",
     "condition": "État",
     "hoursUsed": "Heures d'Utilisation",
+    "usage": "Utilisation",
+    "equipmentUsage": "Utilisation Totale",
     "weight": "Poids",
     "requestRental": "Demander Location",
     "contactForPurchase": "Contacter pour Achat",
@@ -66,6 +70,12 @@
     "clickToViewFullSize": " voir en taille réelle",
     "supplierInfo": "Informations Fournisseur",
     "call": "Appeler",
+    "saleRequestSuccess": "Demande d'achat envoyée avec succès! L'admin vous contactera bientôt.",
+    "saleRequestFailed": "Échec de l'envoi de la demande d'achat. Veuillez réessayer.",
+    "message": "Message",
+    "optional": "optionnel",
+    "messagePlaceholder": "Des questions ou demandes spéciales...",
+    "sending": "Envoi...",
     "imageModal": {
       "close": "Fermer",
       "previous": "Précédent",
@@ -174,6 +184,9 @@
     },
     "footer": {
       "support": "Support et Contact"
+    },
+    "whatsapp": {
+      "tooltip": "Besoin d'Aide? Contactez-Nous!"
     }
   },
   "auth": {
@@ -182,14 +195,10 @@
       "subtitle": "Rejoignez notre plateforme de location d'équipement de construction",
       "selectRole": "Choisir le Type de Compte",
       "renter": {
-        "title": "Locataire",
-        "description": "Louer du matériel de construction",
-        "submitButton": "Créer un Compte Locataire"
+        "title": "Locataire"
       },
       "supplier": {
         "title": "Partenaire",
-        "description": "Fournir du matériel de construction",
-        "submitButton": "Soumettre la Candidature",
         "companyName": "Nom de l'Entreprise",
         "location": "Localisation de l'Entreprise"
       },
@@ -309,6 +318,46 @@
     }
   },
   "dashboard": {
+    "transactions": {
+      "rentals": "Locations",
+      "purchases": "Achats",
+      "table": {
+        "equipment": "Matériel",
+        "usage": "Usage",
+        "total": "Total",
+        "status": "Statut",
+        "date": "Date",
+        "actions": "Actions"
+      }
+    },
+    "purchases": {
+      "loading": "Chargement...",
+      "noPurchases": "Aucun Achat",
+      "noPurchasesDesc": "Vous n'avez pas encore fait de demande d'achat",
+      "cancelSuccess": "Demande d'achat annulée avec succès",
+      "cancelFailed": "Échec de l'annulation de la demande d'achat",
+      "cancelPurchase": "Annuler l'Achat",
+      "cancelPurchaseTitle": "Annuler la Demande d'Achat",
+      "cancelPurchaseMessage": "Êtes-vous sûr de vouloir annuler cette demande d'achat?",
+      "confirmCancel": "Oui, Annuler",
+      "table": {
+        "equipment": "Matériel",
+        "price": "Prix",
+        "status": "Statut",
+        "date": "Date",
+        "actions": "Actions"
+      },
+      "status": {
+        "pending": "En attente",
+        "paid": "Payé",
+        "completed": "Terminé",
+        "cancelled": "Annulé"
+      },
+      "actions": {
+        "view": "Voir",
+        "cancel": "Annuler"
+      }
+    },
     "goToHome": "Aller à l'Accueil",
     "underDevelopment": "Cette page est en cours de développement",
     "dashboard": {
@@ -335,6 +384,8 @@
       "manageEquipmentDesc": "Voir et modifier le matériel existant",
       "bookings": "Réservations",
       "bookingsDesc": "Gérer les réservations et demandes de location",
+      "sales": "Commandes de Vente",
+      "salesDesc": "Gérer les commandes de matériel à vendre",
       "users": "Utilisateurs",
       "usersDesc": "Gérer les locataires et fournisseurs",
       "analytics": "Analyses",
@@ -361,6 +412,7 @@
       "browseEquipmentDesc": "Trouvez du matériel pour vos projets",
       "myBookings": "Mes Réservations",
       "myBookingsDesc": "Voir vos locations actuelles et passées",
+      "myTransactionsDesc": "Voir et gérer toutes vos transactions incluant locations et achats",
       "requests": "Demandes de Location",
       "requestsDesc": "Suivre le statut de vos demandes de location",
       "profile": "Profil",
@@ -417,12 +469,21 @@
       "brandPlaceholder": "ex: Caterpillar, Komatsu, Volvo",
       "model": "Modèle",
       "modelPlaceholder": "ex: 320D, PC200",
+      "usage": "Utilisation",
+      "equipmentUsage": "Utilisation Totale",
       "hoursUsed": "Heures d'Utilisation",
+      "kilometersUsed": "Kilomètres Parcourus",
+      "tonnageUsed": "Tonnage Utilisé",
       "weight": "Poids",
       "weightPlaceholder": "ex: 20",
       "weightUnits": {
         "kg": "kg",
         "tons": "tonnes"
+      },
+      "usageUnits": {
+        "hours": "heures",
+        "days": "jours",
+        "miles": "miles"
       },
 
       "view": "Voir",
@@ -467,7 +528,8 @@
       "confirmApproveTitle": "Approuver le Matériel",
       "confirmApproveMessage": "Êtes-vous sûr de vouloir approuver ce matériel?",
       "confirmRejectTitle": "Rejeter le Matériel",
-      "confirmRejectMessage": "Êtes-vous sûr de vouloir rejeter ce matériel?"
+      "confirmRejectMessage": "Êtes-vous sûr de vouloir rejeter ce matériel?",
+      "sold": "Vendu"
     },
     "pages": {
       "equipment": {
@@ -481,6 +543,10 @@
       "bookings": {
         "title": "Réservations",
         "subtitle": "Gérer les réservations et demandes de location"
+      },
+      "sales": {
+        "title": "Commandes de Vente",
+        "subtitle": "Gérer les ventes et achats de matériel"
       },
       "users": {
         "title": "Utilisateurs",
@@ -645,7 +711,7 @@
         "amount": "Montant",
         "allAmounts": "Tous les Montants",
         "time": "Date",
-        "allTime": "Toutes les Dates",
+        "allTime": "Tout",
         "today": "Aujourd'hui",
         "last7Days": "7 Derniers Jours",
         "last30Days": "30 Derniers Jours"
@@ -676,14 +742,14 @@
       },
       "details": {
         "title": "Détails de la Réservation",
-        "bookingInfo": "Informations de Réservation",
+        "bookingInfo": "Réservation",
         "bookingId": "ID Réservation",
         "totalAmount": "Montant Total",
         "commission": "Commission",
         "createdAt": "Date de Création",
-        "renterInfo": "Informations Locataire",
-        "supplierInfo": "Informations Fournisseur",
-        "equipmentItems": "Articles de Matériel",
+        "renterInfo": "Locataire",
+        "supplierInfo": "Fournisseur",
+        "equipmentItems": "Matériel",
         "name": "Nom",
         "email": "Email",
         "phone": "Téléphone",
@@ -702,10 +768,79 @@
       "more": "de plus",
       "noBookings": "Aucune Réservation Trouvée",
       "noBookingsDesc": "Aucune demande de réservation n'a encore été soumise",
-      "noMatchingBookings": "Aucune réservation ne correspond à vos filtres",
+      "noAllBookings": "Aucune réservation trouvée",
       "noPendingBookings": "Aucune réservation en attente",
+      "noPaidBookings": "Aucune réservation payée",
+      "noCompletedBookings": "Aucune réservation terminée",
+      "noCancelledBookings": "Aucune réservation annulée",
       "error": "Échec du chargement des réservations",
-      "retry": "Réessayer"
+      "retry": "Réessayer",
+      "cancelBooking": "Annuler la Réservation",
+      "cancelBookingTitle": "Annuler la Réservation",
+      "cancelBookingMessage": "Êtes-vous sûr de vouloir annuler cette réservation ? Cette action ne peut pas être annulée.",
+      "confirmCancel": "Oui, Annuler",
+      "cancelSuccess": "Réservation annulée avec succès",
+      "cancelFailed": "Échec de l'annulation de la réservation. Veuillez réessayer.",
+      "loading": "Chargement..."
+    },
+    "sales": {
+      "searchPlaceholder": "Rechercher par acheteur, matériel...",
+      "filters": {
+        "status": "Statut",
+        "allStatus": "Tous les Statuts",
+        "time": "Date",
+        "allTime": "Tout",
+        "today": "Aujourd'hui",
+        "last7Days": "7 Derniers Jours",
+        "last30Days": "30 Derniers Jours"
+      },
+      "table": {
+        "sale": "ID Vente",
+        "buyer": "Acheteur",
+        "supplier": "Fournisseur",
+        "equipment": "Matériel",
+        "price": "Prix de Vente",
+        "commission": "Commission (5%)",
+        "status": "Statut",
+        "date": "Date",
+        "actions": "Actions"
+      },
+      "status": {
+        "pending": "En attente",
+        "paid": "Payé",
+        "completed": "Terminé",
+        "cancelled": "Annulé"
+      },
+      "actions": {
+        "view": "Voir",
+        "cancel": "Annuler",
+        "save": "Sauvegarder",
+        "saving": "Sauvegarde..."
+      },
+      "details": {
+        "title": "Détails de la Commande",
+        "saleInfo": "Informations de Vente",
+        "saleId": "ID Vente",
+        "equipment": "Matériel",
+        "salePrice": "Prix de Vente",
+        "commission": "Commission (5%)",
+        "createdAt": "Date de Création",
+        "buyerInfo": "Informations Acheteur",
+        "supplierInfo": "Informations Fournisseur",
+        "name": "Nom",
+        "email": "Email",
+        "phone": "Téléphone",
+        "status": "Statut",
+        "buyerMessage": "Message de l'Acheteur"
+      },
+      "noSales": "Aucune Vente Trouvée",
+      "noResults": "Aucune vente trouvée correspondant à votre recherche",
+      "loading": "Chargement...",
+      "statusUpdated": "Statut de vente mis à jour avec succès",
+      "statusUpdateFailed": "Échec de la mise à jour du statut de vente",
+      "equipment": {
+        "createdByAdmin": "Créé par l'Admin"
+      }
     }
   },
   "toast": {
@@ -760,13 +895,12 @@
     "sendRequest": "Envoyer Demande de Réservation",
     "sending": "Envoi...",
     "success": "Demande de réservation envoyée avec succès! L'admin vous contactera bientôt.",
+    "successPending": "Réservation réussie ! En attente d'approbation. Consultez Mes Réservations ou contactez-nous.",
+    "viewBookings": "Voir Mes Réservations",
     "error": "Échec de l'envoi de la demande de réservation. Veuillez réessayer.",
     "hours": "heures",
     "days": "jours",
     "km": "km",
     "tons": "tonnes"
-  },
-  "filters": {
-    "clearFilters": "Effacer les Filtres"
   }
 }

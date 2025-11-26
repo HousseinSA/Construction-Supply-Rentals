@@ -8,6 +8,9 @@ interface Specifications {
   hoursUsed?: number
   weight?: number
   weightUnit?: string
+  usageValue?: number
+  usageUnit?: string
+  usageCategory?: "hours" | "kilometers" | "tonnage"
 }
 
 interface SpecificationsGridProps {
@@ -52,14 +55,17 @@ export default function SpecificationsGrid({ specifications }: SpecificationsGri
             </div>
           </div>
         )}
-        {specifications.hoursUsed && (
+        {(specifications.usageValue || specifications.hoursUsed) && (
           <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
             <div className="text-xs text-gray-500 mb-1 flex items-center gap-1">
               <Clock className="w-3 h-3" />
-              {t("hoursUsed")}
+              {t("equipmentUsage")}
             </div>
             <div className="font-semibold text-sm sm:text-base text-gray-900">
-              {specifications.hoursUsed}h
+              {specifications.usageValue 
+                ? `${specifications.usageValue}${specifications.usageUnit === 'km' ? 'km' : 'h'}`
+                : `${specifications.hoursUsed}h`
+              }
             </div>
           </div>
         )}

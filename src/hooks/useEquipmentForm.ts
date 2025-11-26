@@ -18,7 +18,8 @@ interface FormData {
   description: string
   brand: string
   model: string
-  hoursUsed: string
+  usageValue: string
+  usageUnit: string
   weight: string
   weightUnit: string
 }
@@ -38,7 +39,8 @@ export function useEquipmentForm(equipmentId?: string) {
     description: "",
     brand: "",
     model: "",
-    hoursUsed: "",
+    usageValue: "",
+    usageUnit: "hours",
     weight: "",
     weightUnit: "kg",
   })
@@ -50,6 +52,14 @@ export function useEquipmentForm(equipmentId?: string) {
       const data = await response.json()
       if (data.success) {
         const eq = data.data
+        const usageValue = eq.specifications?.hoursUsed 
+          ? String(eq.specifications.hoursUsed)
+          : eq.specifications?.kilometersUsed
+          ? String(eq.specifications.kilometersUsed)
+          : eq.specifications?.tonnageUsed
+          ? String(eq.specifications.tonnageUsed)
+          : ""
+        
         setFormData({
           category: eq.categoryId,
           type: eq.equipmentTypeId,
@@ -60,7 +70,7 @@ export function useEquipmentForm(equipmentId?: string) {
           description: eq.description || "",
           brand: eq.specifications?.brand || "",
           model: eq.specifications?.model || "",
-          hoursUsed: eq.specifications?.hoursUsed ? String(eq.specifications.hoursUsed) : "",
+          usageValue,
           weight: eq.specifications?.weight ? String(eq.specifications.weight) : "",
           weightUnit: eq.specifications?.weightUnit || "kg",
         })
@@ -103,6 +113,10 @@ export function useEquipmentForm(equipmentId?: string) {
 
   const handleWeightUnitChange = (value: string) => {
     setFormData({ ...formData, weightUnit: value })
+  }
+
+  const handleUsageUnitChange = (value: string) => {
+    setFormData({ ...formData, usageUnit: value })
   }
 
 
@@ -170,6 +184,32 @@ export function useEquipmentForm(equipmentId?: string) {
         pricing.type = formData.priceType
       }
 
+      // Determine usage category from equipment type
+      const typeResponse = await fetch(`/api/equipment-types/${formData.type}`)
+      const typeData = await typeResponse.json()
+      const usageCategory = typeData.data?.usageCategory || "hours"
+
+      const specifications: any = {
+        brand: formData.brand.trim(),
+        ...(formData.model && { model: formData.model.trim() }),
+        ...(formData.weight && { 
+          weight: parseFloat(formData.weight),
+          weightUnit: formData.weightUnit 
+        }),
+      }
+
+      // Add usage based on category
+      if (formData.usageValue) {
+        const usageNum = parseInt(formData.usageValue)
+        if (usageCategory === "hours") {
+          specifications.hoursUsed = usageNum
+        } else if (usageCategory === "kilometers") {
+          specifications.kilometersUsed = usageNum
+        } else if (usageCategory === "tonnage") {
+          specifications.tonnageUsed = usageNum
+        }
+      }
+
       const equipmentData = {
         description: formData.description.trim(),
         categoryId: formData.category,
@@ -177,18 +217,8 @@ export function useEquipmentForm(equipmentId?: string) {
         pricing,
         location: formData.location,
         images: images.map((img) => img.url),
-        specifications: {
-
-          brand: formData.brand.trim(),
-          ...(formData.model && { model: formData.model.trim() }),
-          ...(formData.hoursUsed && { hoursUsed: parseInt(formData.hoursUsed) }),
-          ...(formData.weight && { 
-            weight: parseFloat(formData.weight),
-            weightUnit: formData.weightUnit 
-          }),
-        },
+        specifications,
         listingType: formData.listingType,
-
       }
 
       const url = equipmentId ? `/api/equipment/${equipmentId}` : "/api/equipment"
@@ -232,6 +262,7 @@ export function useEquipmentForm(equipmentId?: string) {
     handleLocationChange,
     handleListingTypeChange,
     handleWeightUnitChange,
+    handleUsageUnitChange,
     handleSubmit,
     loadEquipment,
   }

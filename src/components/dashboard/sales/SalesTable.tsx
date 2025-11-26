@@ -1,0 +1,214 @@
+"use client"
+
+import { useState, useMemo, useEffect } from "react"
+import { useTranslations } from "next-intl"
+import { ArrowLeft } from "lucide-react"
+import { Link } from "@/src/i18n/navigation"
+import { usePagination } from "@/src/hooks/usePagination"
+import { useTableFilters } from "@/src/hooks/useTableFilters"
+import SalesTableRow from "./SalesTableRow"
+import SalesMobileCard from "./SalesMobileCard"
+import SalesDetailsModal from "./SalesDetailsModal"
+import Pagination from "@/src/components/ui/Pagination"
+import HomeButton from "@/src/components/ui/HomeButton"
+import TableFilters from "@/src/components/ui/TableFilters"
+import { Table, TableHeader, TableBody, TableHead } from "@/src/components/ui/Table"
+import { toast } from "sonner"
+
+export default function SalesTable() {
+  const t = useTranslations("dashboard.sales")
+  const tPages = useTranslations("dashboard.pages")
+  const [sales, setSales] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedSale, setSelectedSale] = useState<any>(null)
+  const [showDetailsModal, setShowDetailsModal] = useState(false)
+
+  const fetchSales = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch("/api/sales")
+      const data = await response.json()
+      if (data.success) {
+        setSales(data.data)
+      }
+    } catch (error) {
+      toast.error("Failed to fetch sales")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchSales()
+  }, [])
+
+  const { searchValue, setSearchValue, filterValues, handleFilterChange, filteredData: baseFiltered } = 
+    useTableFilters({
+      data: sales,
+      searchFields: [],
+      filterFunctions: {
+        status: (sale, value) => sale.status === value,
+        date: (sale, value) => {
+          const saleDate = new Date(sale.createdAt)
+          const now = new Date()
+          const daysDiff = Math.floor((now.getTime() - saleDate.getTime()) / (1000 * 60 * 60 * 24))
+          if (value === "today") return daysDiff === 0
+          if (value === "week") return daysDiff <= 7
+          if (value === "month") return daysDiff <= 30
+          return true
+        },
+      },
+      defaultFilters: { status: "pending", date: "all" },
+    })
+
+  const filteredData = useMemo(() => {
+    if (!searchValue.trim()) return baseFiltered
+    const searchLower = searchValue.toLowerCase()
+    return baseFiltered.filter((sale) => {
+      const buyerMatch = sale.buyerInfo && 
+        (sale.buyerInfo[0]?.firstName?.toLowerCase().includes(searchLower) ||
+         sale.buyerInfo[0]?.lastName?.toLowerCase().includes(searchLower))
+      const equipmentMatch = sale.equipmentName?.toLowerCase().includes(searchLower)
+      return buyerMatch || equipmentMatch
+    })
+  }, [baseFiltered, searchValue])
+
+  const { currentPage, totalPages, paginatedData, goToPage, totalItems, itemsPerPage } = 
+    usePagination({ data: filteredData, itemsPerPage: 10 })
+
+  const handleViewDetails = (sale: any) => {
+    setSelectedSale(sale)
+    setShowDetailsModal(true)
+  }
+
+  return (
+    <div className="bg-gray-50">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+        <div className="mb-6">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4 flex-1">
+              <Link href="/dashboard" className="flex items-center justify-center w-10 h-10 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 transition-colors">
+                <ArrowLeft className="h-5 w-5 text-gray-600" />
+              </Link>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">{tPages("sales.title")}</h1>
+                <p className="text-gray-600 text-sm">{tPages("sales.subtitle")}</p>
+              </div>
+            </div>
+            <HomeButton />
+          </div>
+        </div>
+        {sales.length > 0 && (
+          <TableFilters
+            searchValue={searchValue}
+            onSearchChange={setSearchValue}
+            searchPlaceholder={t("searchPlaceholder")}
+            filters={[
+              {
+                key: "status",
+                label: t("filters.status"),
+                options: [
+                  { value: "pending", label: t("status.pending") },
+                  { value: "paid", label: t("status.paid") },
+                  { value: "completed", label: t("status.completed") },
+                  { value: "cancelled", label: t("status.cancelled") },
+                  { value: "all", label: t("filters.allStatus") },
+                ],
+              },
+              {
+                key: "date",
+                label: t("filters.time"),
+                options: [
+                  { value: "all", label: t("filters.allTime") },
+                  { value: "today", label: t("filters.today") },
+                  { value: "week", label: t("filters.last7Days") },
+                  { value: "month", label: t("filters.last30Days") },
+                ],
+              },
+            ]}
+            filterValues={filterValues}
+            onFilterChange={handleFilterChange}
+          />
+        )}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          {loading ? (
+            <div className="p-12 text-center">
+              <div className="animate-pulse text-gray-600 font-medium">{t("loading")}</div>
+            </div>
+          ) : (
+            <>
+              <div className="hidden lg:block">
+                <Table>
+                  <TableHeader>
+                    <tr>
+                      <TableHead>{t("table.buyer")}</TableHead>
+                      <TableHead>{t("table.equipment")}</TableHead>
+                      <TableHead>{t("table.price")}</TableHead>
+                      <TableHead>{t("table.commission")}</TableHead>
+                      <TableHead>{t("table.supplier")}</TableHead>
+                      <TableHead align="center">{t("table.status")}</TableHead>
+                      <TableHead align="center">{t("table.date")}</TableHead>
+                      <TableHead align="center">{t("table.actions")}</TableHead>
+                    </tr>
+                  </TableHeader>
+                  <TableBody>
+                    {sales.length === 0 ? (
+                      <tr>
+                        <td colSpan={8} className="p-12 text-center text-gray-500 font-medium">
+                          {t("noSales")}
+                        </td>
+                      </tr>
+                    ) : filteredData.length === 0 ? (
+                      <tr>
+                        <td colSpan={8} className="p-12 text-center text-gray-500 font-medium">
+                          {t("noResults")}
+                        </td>
+                      </tr>
+                    ) : (
+                      paginatedData.map((sale) => (
+                        <SalesTableRow key={sale._id} sale={sale} onViewDetails={handleViewDetails} t={t} />
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+              <div className="lg:hidden space-y-3">
+                {sales.length === 0 ? (
+                  <div className="p-12 text-center text-gray-500 font-medium">{t("noSales")}</div>
+                ) : filteredData.length === 0 ? (
+                  <div className="p-12 text-center text-gray-500 font-medium">{t("noResults")}</div>
+                ) : (
+                  paginatedData.map((sale) => (
+                    <SalesMobileCard key={sale._id} sale={sale} onViewDetails={handleViewDetails} t={t} />
+                  ))
+                )}
+              </div>
+              {sales.length > 0 && filteredData.length > 0 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={goToPage}
+                  itemsPerPage={itemsPerPage}
+                  totalItems={totalItems}
+                  showInfo={true}
+                />
+              )}
+            </>
+          )}
+        </div>
+
+        {selectedSale && (
+          <SalesDetailsModal
+            sale={selectedSale}
+            isOpen={showDetailsModal}
+            onClose={() => {
+              setShowDetailsModal(false)
+              setSelectedSale(null)
+            }}
+            onStatusUpdate={fetchSales}
+          />
+        )}
+      </div>
+    </div>
+  )
+}

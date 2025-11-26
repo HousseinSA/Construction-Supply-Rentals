@@ -65,9 +65,7 @@ export default function BookingDetailsModal({
         <div className="p-6">
           <ModalHeader title={t("details.title")} onClose={onClose} />
 
-          {/* Desktop Layout */}
-          <div className="hidden lg:block">
-            <div className="grid grid-cols-2 gap-6 mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <BookingInfo
                 bookingId={booking._id}
                 totalPrice={booking.totalPrice}
@@ -93,8 +91,6 @@ export default function BookingDetailsModal({
                   subtotal: t("details.subtotal"),
                 }}
               />
-            </div>
-            <div className="grid grid-cols-2 gap-6">
               <RenterInfo
                 renter={booking.renterInfo[0]}
                 labels={{
@@ -105,25 +101,14 @@ export default function BookingDetailsModal({
                   call: t("details.call"),
                 }}
               />
-              {booking.supplierInfo && booking.supplierInfo.length > 0 ? (
+              {booking.supplierInfo && booking.supplierInfo.length > 0 && (
                 <div className="h-[280px]">
                   <SupplierInfo
                     supplier={booking.supplierInfo[0]}
                     variant="modal"
                   />
                 </div>
-              ) : (
-                <div className="bg-gray-50 rounded-lg p-4 h-[200px] flex flex-col">
-                  <h3 className="font-semibold mb-3 flex items-center gap-2">
-                    <Building className="w-5 h-5 text-gray-600" />
-                    {t("details.supplierInfo")}
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    {t("equipment.createdByAdmin")}
-                  </p>
-                </div>
               )}
-            </div>
           </div>
 
           {/* Mobile Layout */}

@@ -23,6 +23,8 @@ export interface Equipment {
     brand?: string
     model?: string
     hoursUsed?: number
+    kilometersUsed?: number
+    tonnageUsed?: number
     weight?: number
     weightUnit?: string 
   }

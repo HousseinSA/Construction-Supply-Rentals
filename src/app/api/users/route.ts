@@ -101,7 +101,10 @@ export async function POST(request: NextRequest) {
         }, { status: 403 })
       }
 
-      return NextResponse.json({ success: true })
+      return NextResponse.json({ 
+        success: true, 
+        userType: user.userType 
+      })
     }
     
     // Handle user creation

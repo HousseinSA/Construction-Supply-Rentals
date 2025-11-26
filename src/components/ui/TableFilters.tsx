@@ -1,7 +1,6 @@
 "use client"
 
-import { Search, X } from "lucide-react"
-import { useTranslations } from "next-intl"
+import { Search } from "lucide-react"
 import Dropdown from "./Dropdown"
 
 export interface FilterConfig {
@@ -18,8 +17,6 @@ interface TableFiltersProps {
   filters: FilterConfig[]
   filterValues: Record<string, string>
   onFilterChange: (key: string, value: string) => void
-  onClearFilters?: () => void
-  showClearButton?: boolean
 }
 
 export default function TableFilters({
@@ -29,11 +26,7 @@ export default function TableFilters({
   filters,
   filterValues,
   onFilterChange,
-  onClearFilters,
-  showClearButton = true,
 }: TableFiltersProps) {
-  const t = useTranslations("filters")
-  const hasActiveFilters = searchValue || Object.values(filterValues).some((v) => v !== "all")
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 mb-4">
@@ -62,18 +55,6 @@ export default function TableFilters({
             />
           </div>
         ))}
-
-        {/* Clear Filters Button */}
-        {showClearButton && hasActiveFilters && onClearFilters && (
-          <button
-            onClick={onClearFilters}
-            className="flex items-center justify-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors whitespace-nowrap"
-          >
-            <X className="h-4 w-4" />
-            <span className="hidden sm:inline">{t("clearFilters")}</span>
-            <X className="h-4 w-4 sm:hidden" />
-          </button>
-        )}
       </div>
     </div>
   )

@@ -28,6 +28,7 @@ export function useEquipment(selectedCity?: string | null, selectedType?: string
       params.set("available", "true")
       if (selectedCity && listingType !== 'forSale') {
         params.set("city", selectedCity)
+        params.set("listingType", "forRent")
       }
       if (selectedType) {
         params.set("type", selectedType)

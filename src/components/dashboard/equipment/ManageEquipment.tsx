@@ -331,7 +331,7 @@ export default function ManageEquipment() {
                               val === "available"
                             )
                           }
-                          disabled={updating === item._id?.toString()}
+                          disabled={updating === item._id?.toString() || (item.listingType === "forSale" && !item.isAvailable)}
                         />
                       </div>
 

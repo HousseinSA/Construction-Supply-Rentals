@@ -1,8 +1,10 @@
 import { useEffect, useState, useCallback } from 'react'
+import { useSession } from 'next-auth/react'
 import { useBookingsStore, BookingWithDetails } from '@/src/stores/bookingsStore'
 import { useRealtime } from './useRealtime'
 
 export function useBookings() {
+  const { data: session } = useSession()
   const { bookings, loading, setBookings, setLoading, updateBooking, shouldRefetch, invalidateCache } = useBookingsStore()
   const [error, setError] = useState<string | null>(null)
 
@@ -10,7 +12,14 @@ export function useBookings() {
     try {
       setLoading(true)
       setError(null)
-      const response = await fetch('/api/bookings')
+      
+      // Build URL with renterId filter for renter users
+      let url = '/api/bookings'
+      if (session?.user?.userType === 'renter' && session?.user?.id) {
+        url += `?renterId=${session.user.id}`
+      }
+      
+      const response = await fetch(url)
       const data = await response.json()
       if (data.success) {
         setBookings(data.data || [])
@@ -23,7 +32,7 @@ export function useBookings() {
     } finally {
       setLoading(false)
     }
-  }, [setBookings, setLoading])
+  }, [setBookings, setLoading, session?.user?.userType, session?.user?.id])
 
   const updateBookingStatus = async (bookingId: string, status: string, adminId?: string, adminNotes?: string) => {
     try {
