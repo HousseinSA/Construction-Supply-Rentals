@@ -10,6 +10,7 @@ import { Toaster } from "sonner"
 import SessionProvider from "@/src/components/providers/SessionProvider"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
+import WhatsAppFloat from "@/src/components/ui/WhatsAppFloat"
 
 import { routing } from "@/i18n/routing"
 import { inter, cairo, poppins } from "@/lib/fonts"
@@ -76,6 +77,7 @@ export default async function LocaleLayout({
           <NextIntlClientProvider messages={messages} locale={locale}>
             <Header />
             {children}
+            <WhatsAppFloat phoneNumber="22212345678" />
             <Toaster position="top-right" richColors />
           </NextIntlClientProvider>
         </SessionProvider>

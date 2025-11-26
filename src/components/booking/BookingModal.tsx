@@ -6,7 +6,6 @@ import { Send } from "lucide-react"
 import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
 import { useBookingModal } from "@/src/hooks/useBookingModal"
 import { useModalClose } from '@/src/hooks/useModalClose'
-import Toast from "@/src/components/ui/Toast"
 import Button from "@/src/components/ui/Button"
 import Input from "@/src/components/ui/Input"
 import ModalHeader from "./ModalHeader"
@@ -29,7 +28,7 @@ export default function BookingModal({
   const t = useTranslations("booking")
   const modalRef = useRef<HTMLDivElement>(null)
   const { getPriceData } = usePriceFormatter()
-  const { usage, setUsage, message, setMessage, loading, toast, setToast, handleSubmit } =
+  const { usage, setUsage, message, setMessage, loading, handleSubmit } =
     useBookingModal(equipment, onBookingSuccess, onClose)
   
   useModalClose(isOpen, onClose, modalRef)
@@ -46,7 +45,7 @@ export default function BookingModal({
       : t("tons")
 
   return (
-    <div ref={modalRef} className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div ref={modalRef} className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
       <div className="bg-white rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <ModalHeader title={t("title")} onClose={onClose} />
@@ -54,11 +53,13 @@ export default function BookingModal({
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <Input
-              type="number"
+              type="text"
               label={`${t("usage")} (${usageLabel})`}
-              min="1"
               value={usage}
-              onChange={(e) => setUsage(Number(e.target.value))}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, '')
+                setUsage(val ? Number(val) : 0)
+              }}
               required
             />
 
@@ -96,15 +97,6 @@ export default function BookingModal({
           </form>
         </div>
       </div>
-
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          isVisible={!!toast}
-          onClose={() => setToast(null)}
-        />
-      )}
     </div>
   )
 }

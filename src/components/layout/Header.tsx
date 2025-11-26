@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useRef } from "react"
 import { useTranslations, useLocale } from "next-intl"
-import { Menu, X } from "lucide-react"
+import { Menu, X, ClipboardList, Calendar } from "lucide-react"
+import { useSession } from "next-auth/react"
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher"
 import AuthButtons from "@/components/ui/AuthButtons"
 import WhatsAppLink from "@/components/ui/WhatsAppLink"
@@ -10,11 +11,13 @@ import Image from "next/image"
 import { Link } from "@/i18n/navigation"
 
 export default function Header() {
+  const { data: session } = useSession()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [logoWidth, setLogoWidth] = useState(155)
   const locale = useLocale()
   const t = useTranslations("common")
   const mobileMenuRef = useRef<HTMLDivElement>(null)
+  const isRenter = session?.user?.userType === "renter"
 
   const getFontClass = () => {
     switch (locale) {
@@ -66,7 +69,10 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16  ">
           <div className="flex items-center gap-2">
-            <Link href="/" className="flex items-center justify-center rounded-lg cursor-pointer hover:opacity-80 transition-opacity">
+            <Link
+              href="/"
+              className="flex items-center justify-center rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
+            >
               <Image
                 width={logoWidth}
                 height={100}
@@ -77,6 +83,15 @@ export default function Header() {
           </div>
 
           <div className="flex items-center gap-4">
+            {isRenter && (
+              <Link
+                href="/bookings"
+                className="hidden md:flex items-center gap-2 px-3 py-2 text-gray-700 hover:text-primary hover:bg-gray-50 rounded-lg transition-colors"
+              >
+                <ClipboardList className="w-4 h-4" />
+                <span className="text-sm font-medium">{t("myBookings")}</span>
+              </Link>
+            )}
             <Link
               href="/equipment?listingType=forSale"
               className="hidden md:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--primary)] to-amber-500 text-white text-sm font-medium rounded-lg hover:from-[var(--primary-dark)] hover:to-amber-600 transition-all duration-300"
@@ -112,6 +127,16 @@ export default function Header() {
             className="md:hidden border-t border-gray-200 py-4"
           >
             <nav className="flex flex-col space-y-3">
+              {isRenter && (
+                <Link
+                  href="/bookings"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center justify-center gap-2 mx-4 px-4 py-3 text-gray-700 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors font-medium"
+                >
+                  <ClipboardList className="w-4 h-4" />
+                  {t("myBookings")}
+                </Link>
+              )}
               <Link
                 href="/equipment?listingType=forSale"
                 onClick={() => setIsMobileMenuOpen(false)}

@@ -11,6 +11,7 @@ import { useTableFilters } from "@/src/hooks/useTableFilters"
 import BookingDetailsModal from "./BookingDetailsModal"
 import BookingTableRow from "./BookingTableRow"
 import BookingMobileCard from "./BookingMobileCard"
+import RenterBookingView from "./RenterBookingView"
 import Pagination from "@/src/components/ui/Pagination"
 import HomeButton from "@/src/components/ui/HomeButton"
 import TableFilters from "@/src/components/ui/TableFilters"
@@ -38,7 +39,6 @@ export default function BookingTable() {
     setSearchValue,
     filterValues,
     handleFilterChange,
-    clearFilters,
     filteredData: baseFiltered,
   } = useTableFilters({
     data: bookings,
@@ -63,7 +63,7 @@ export default function BookingTable() {
     },
   })
 
-  // Apply custom search for nested arrays
+  // Apply custom search for nested arrays 
   const filteredData = useMemo(() => {
     if (!searchValue.trim()) return baseFiltered
     const searchLower = searchValue.toLowerCase()
@@ -124,7 +124,7 @@ export default function BookingTable() {
             <HomeButton />
           </div>
         </div>
-
+    
         {/* Filters */}
         {session?.user?.userType !== "renter" && bookings.length > 0 && (
           <TableFilters
@@ -156,18 +156,12 @@ export default function BookingTable() {
             ]}
             filterValues={filterValues}
             onFilterChange={handleFilterChange}
-            onClearFilters={clearFilters}
           />
         )}
 
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           {session?.user?.userType === "renter" ? (
-            <div className="p-12 text-center">
-              <div className="text-gray-500 text-lg mb-4">My Bookings</div>
-              <div className="text-gray-400 text-sm">
-                Booking history and status updates will be available here soon.
-              </div>
-            </div>
+            <RenterBookingView />
           ) : loading ? (
             <div className="p-12 text-center">
               <div className="animate-pulse text-gray-600 font-medium">
@@ -190,7 +184,7 @@ export default function BookingTable() {
             </div>
           ) : filteredData.length === 0 ? (
             <div className="p-12 text-center text-gray-500 font-medium">
-              {filterValues.status === "pending" ? t("noPendingBookings") : t("noMatchingBookings")}
+              {t(`no${filterValues.status.charAt(0).toUpperCase()}${filterValues.status.slice(1)}Bookings`)}
             </div>
           ) : (
             <>
@@ -225,7 +219,7 @@ export default function BookingTable() {
               </div>
 
               {/* Mobile Cards */}
-              <div className="lg:hidden divide-y divide-gray-200">
+              <div className="lg:hidden space-y-3">
                 {paginatedBookings.map((booking) => (
                   <BookingMobileCard
                     key={booking._id}

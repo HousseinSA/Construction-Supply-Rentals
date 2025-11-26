@@ -165,7 +165,7 @@ export default function EquipmentTableRow({
                   val === "available"
                 )
               }
-              disabled={updating === item._id?.toString()}
+              disabled={updating === item._id?.toString() || (item.listingType === "forSale" && !item.isAvailable)}
               compact
             />
           </div>

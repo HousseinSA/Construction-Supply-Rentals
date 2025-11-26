@@ -30,6 +30,7 @@ export default function EditEquipmentForm({ equipmentId }: EditEquipmentFormProp
     handleLocationChange,
     handleListingTypeChange,
     handleWeightUnitChange,
+    handleUsageUnitChange,
     handleSubmit,
     loadEquipment,
   } = useEquipmentForm(equipmentId)
@@ -65,6 +66,7 @@ export default function EditEquipmentForm({ equipmentId }: EditEquipmentFormProp
               onLocationChange={handleLocationChange}
               onPriceTypeChange={handlePriceTypeChange}
               onWeightUnitChange={handleWeightUnitChange}
+              onUsageUnitChange={handleUsageUnitChange}
               onImagesChange={setImages}
             />
             <FormActions isSubmitting={isSubmitting} isEdit />

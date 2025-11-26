@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useTranslations } from "next-intl"
-import { User, LogIn, LogOut, LayoutDashboard } from "lucide-react"
+import { User, LogIn, LogOut, LayoutDashboard, ClipboardList } from "lucide-react"
 import { Link } from "@/i18n/navigation"
 import { useSession, signOut } from "next-auth/react"
 import { useLocale } from "next-intl"
@@ -76,24 +76,38 @@ export default function AuthButtons({ onActionClick }: AuthButtonsProps) {
                 </p>
               </div>
               <div className="py-1">
-                <Link
-                  href="/dashboard"
-                  onClick={() => {
-                    setShowDropdown(false)
-                    onActionClick?.()
-                  }}
-                  className={`flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors ${isRTL ? 'flex-row-reverse text-right' : ''}`}
-                >
-                  <LayoutDashboard size={16} />
-                  {t("dashboard")}
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className={`w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors ${isRTL ? 'flex-row-reverse text-right' : ''}`}
-                >
-                  <LogOut size={16} />
-                  {t("logout")}
-                </button>
+                {session.user.role === "admin" || session.user.userType === "supplier" ? (
+                  <Link
+                    href="/dashboard"
+                    onClick={() => {
+                      setShowDropdown(false)
+                      onActionClick?.()
+                    }}
+                    className={`flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors ${isRTL ? 'flex-row-reverse text-right' : ''}`}
+                  >
+                    <LayoutDashboard size={16} />
+                    {t("dashboard")}
+                  </Link>
+                ) : (
+                  <Link
+                    href="/bookings"
+                    onClick={() => {
+                      setShowDropdown(false)
+                      onActionClick?.()
+                    }}
+                    className={`flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors ${isRTL ? 'flex-row-reverse text-right' : ''}`}
+                  >
+                    <ClipboardList size={16} />
+                    {t("myTransactions")}
+                  </Link>
+                )}
+                  <button
+                    onClick={handleLogout}
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors ${isRTL ? 'flex-row-reverse text-right' : ''}`}
+                  >
+                    <LogOut size={16} />
+                    {t("logout")}
+                  </button>
               </div>
             </div>
           )}

@@ -11,8 +11,9 @@ import {
   Truck,
   ClipboardList,
   Package,
-  ShoppingCart,
+  ClipboardCheck,
   User,
+  Receipt,
 } from "lucide-react"
 import DashboardSkeleton from "./DashboardSkeleton"
 import HomeButton from "../ui/HomeButton"
@@ -29,6 +30,20 @@ export default function Dashboard() {
     if (session?.user?.role === "admin") {
       return [
         {
+          title: t("admin.bookings"),
+          description: t("admin.bookingsDesc"),
+          icon: ClipboardList,
+          href: "/dashboard/bookings",
+          color: "bg-orange-500",
+        },
+        {
+          title: t("admin.sales"),
+          description: t("admin.salesDesc"),
+          icon: ClipboardCheck,
+          href: "/dashboard/sales",
+          color: "bg-yellow-500",
+        },
+        {
           title: t("admin.createEquipment"),
           description: t("admin.createEquipmentDesc"),
           icon: Plus,
@@ -42,13 +57,7 @@ export default function Dashboard() {
           href: "/dashboard/equipment",
           color: "bg-green-500",
         },
-        {
-          title: t("admin.bookings"),
-          description: t("admin.bookingsDesc"),
-          icon: ClipboardList,
-          href: "/dashboard/bookings",
-          color: "bg-orange-500",
-        },
+        
         {
           title: t("admin.users"),
           description: t("admin.usersDesc"),
@@ -73,56 +82,32 @@ export default function Dashboard() {
       ]
     }
 
-    if (session?.user?.userType === "supplier") {
-      return [
-        {
-          title: t("supplier.myEquipment"),
-          description: t("supplier.myEquipmentDesc"),
-          icon: Package,
-          href: "/dashboard/equipment",
-          color: "bg-green-500",
-        },
-        {
-          title: t("supplier.addEquipment"),
-          description: t("supplier.addEquipmentDesc"),
-          icon: Plus,
-          href: "/dashboard/equipment/create",
-          color: "bg-blue-500",
-        },
-        {
-          title: t("renter.myBookings"),
-          description: t("renter.myBookingsDesc"),
-          icon: ShoppingCart,
-          href: "/dashboard/bookings",
-          color: "bg-orange-500",
-        },
-        {
-          title: t("supplier.profile"),
-          description: t("supplier.profileDesc"),
-          icon: User,
-          href: "/dashboard/profile",
-          color: "bg-purple-500",
-        },
-      ]
-    }
+    // Supplier dashboard cards
     return [
       {
-        title: t("renter.browseEquipment"),
-        description: t("renter.browseEquipmentDesc"),
-        icon: Truck,
-        href: "/equipment",
+        title: t("supplier.myEquipment"),
+        description: t("supplier.myEquipmentDesc"),
+        icon: Package,
+        href: "/dashboard/equipment",
+        color: "bg-green-500",
+      },
+      {
+        title: t("supplier.addEquipment"),
+        description: t("supplier.addEquipmentDesc"),
+        icon: Plus,
+        href: "/dashboard/equipment/create",
         color: "bg-blue-500",
       },
       {
         title: t("renter.myBookings"),
         description: t("renter.myBookingsDesc"),
-        icon: ShoppingCart,
+        icon: ClipboardList,
         href: "/dashboard/bookings",
-        color: "bg-green-500",
+        color: "bg-orange-500",
       },
       {
-        title: t("renter.profile"),
-        description: t("renter.profileDesc"),
+        title: t("supplier.profile"),
+        description: t("supplier.profileDesc"),
         icon: User,
         href: "/dashboard/profile",
         color: "bg-purple-500",

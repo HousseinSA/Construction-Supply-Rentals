@@ -123,8 +123,8 @@ export default function RegisterForm() {
     <AuthCard>
       <RoleSelector selectedRole={selectedRole} onRoleChange={setSelectedRole} />
       
-      <form onSubmit={handleSubmit} className="p-4 sm:p-6 lg:p-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <form onSubmit={handleSubmit} className="p-2 sm:p-4 lg:p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
             label={t("register.firstName")}
             type="text"
@@ -210,13 +210,13 @@ export default function RegisterForm() {
           )}
         </div>
 
-        <div className="mt-8">
+        <div className="mt-6">
           <Button type="submit" variant="primary" className="w-full" disabled={isLoading}>
             {isLoading ? t("register.creating") : t("register.createAccount")}
           </Button>
         </div>
 
-        <div className="mt-6 text-center">
+        <div className="mt-4 text-center">
           <p className="text-gray-600">
             {t("register.alreadyHaveAccount")}{" "}
             <Link href="/auth/login" className="text-primary hover:text-primary-dark font-medium">

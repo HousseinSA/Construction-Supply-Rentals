@@ -2,9 +2,9 @@ import { setRequestLocale } from "next-intl/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/src/lib/auth"
 import { redirect } from "next/navigation"
-import BookingTable from "@/src/components/dashboard/bookings/BookingTable"
+import SalesTable from "@/src/components/dashboard/sales/SalesTable"
 
-export default async function BookingsPage({
+export default async function SalesPage({
   params,
 }: {
   params: Promise<{ locale: string }>
@@ -17,15 +17,9 @@ export default async function BookingsPage({
     redirect(`/${locale}/auth/login`)
   }
 
-  // Redirect renters to /bookings
-  if (session.user.userType === "renter") {
-    redirect(`/${locale}/bookings`)
-  }
-
-  // Only admin and supplier can access dashboard bookings
-  if (session.user.role !== "admin" && session.user.userType !== "supplier") {
+  if (session.user.role !== "admin") {
     redirect(`/${locale}/dashboard`)
   }
 
-  return <BookingTable />
+  return <SalesTable />
 }

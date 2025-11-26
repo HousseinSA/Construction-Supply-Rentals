@@ -51,20 +51,20 @@ export default function LoginForm() {
     setLoading(true)
     try {
       // First check if user is blocked
-      const checkResponse = await fetch('/api/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          action: 'checkStatus',
+      const checkResponse = await fetch("/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "checkStatus",
           emailOrPhone: formData.emailOrPhone,
-          password: formData.password
-        })
+          password: formData.password,
+        }),
       })
-      
+
       const checkResult = await checkResponse.json()
-      
+
       if (!checkResponse.ok) {
-        if (checkResult.error === 'ACCOUNT_BLOCKED') {
+        if (checkResult.error === "ACCOUNT_BLOCKED") {
           showToast.error(tToast("accountBlockedError"))
         } else {
           showToast.error(tToast("loginFailed"))
@@ -72,7 +72,7 @@ export default function LoginForm() {
         setLoading(false)
         return
       }
-      
+
       // If not blocked, proceed with normal login
       const result = await signIn("credentials", {
         emailOrPhone: formData.emailOrPhone,
@@ -88,7 +88,9 @@ export default function LoginForm() {
 
       if (result?.ok) {
         showToast.success(tToast("loginSuccess"))
-        router.replace("/dashboard")
+        // Redirect renters to bookings page, others to dashboard
+        const redirectPath = checkResult.userType === "renter" ? "/bookings" : "/dashboard"
+        router.replace(redirectPath)
       } else {
         showToast.error(tToast("loginFailed"))
         setLoading(false)

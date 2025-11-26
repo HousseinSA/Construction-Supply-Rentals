@@ -1,15 +1,17 @@
 import { useState } from "react"
 import { useSession } from "next-auth/react"
 import { useTranslations } from "next-intl"
+import { toast } from "sonner"
+import { useRouter } from "@/src/i18n/navigation"
 
 export function useBookingModal(equipment: any, onSuccess?: () => void, onClose?: () => void) {
   const { data: session } = useSession()
+  const router = useRouter()
   const t = useTranslations("booking")
   
   const [usage, setUsage] = useState(1)
   const [message, setMessage] = useState("")
   const [loading, setLoading] = useState(false)
-  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -29,14 +31,15 @@ export function useBookingModal(equipment: any, onSuccess?: () => void, onClose?
       
       const data = await response.json()
       if (data.success) {
-        setToast({ message: t("success"), type: "success" })
+        toast.success(t("successPending"))
         onSuccess?.()
-        setTimeout(() => onClose?.(), 2000)
+        onClose?.()
+        setTimeout(() => router.push("/bookings"), 800)
       } else {
-        setToast({ message: data.error || t("error"), type: "error" })
+        toast.error(data.error || t("error"))
       }
     } catch {
-      setToast({ message: t("error"), type: "error" })
+      toast.error(t("error"))
     } finally {
       setLoading(false)
     }
@@ -48,8 +51,6 @@ export function useBookingModal(equipment: any, onSuccess?: () => void, onClose?
     message,
     setMessage,
     loading,
-    toast,
-    setToast,
     handleSubmit,
   }
 }

@@ -22,6 +22,13 @@ import ConfirmModal from "@/src/components/ui/ConfirmModal"
 import { showToast } from "@/src/lib/toast"
 import CopyButton from "@/src/components/ui/CopyButton"
 import { formatPhoneNumber } from "@/src/lib/format"
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableCell,
+} from "@/src/components/ui/Table"
 
 export default function UsersManagement() {
   const t = useTranslations("dashboard")
@@ -202,37 +209,22 @@ export default function UsersManagement() {
           <>
             {/* Desktop Table */}
             <div className="hidden lg:block">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {t("equipment.name")}
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {t("equipment.email")}
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {t("equipment.phone")}
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Role
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {t("users.status")}
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {t("equipment.createdAt")}
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {t("users.actions")}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100">
+              <Table>
+                <TableHeader>
+                  <tr>
+                    <TableHead>{t("equipment.name")}</TableHead>
+                    <TableHead>{t("equipment.email")}</TableHead>
+                    <TableHead>{t("equipment.phone")}</TableHead>
+                    <TableHead>Role</TableHead>
+                    <TableHead>{t("users.status")}</TableHead>
+                    <TableHead>{t("equipment.createdAt")}</TableHead>
+                    <TableHead>{t("users.actions")}</TableHead>
+                  </tr>
+                </TableHeader>
+                <TableBody>
                     {paginatedUsers.map((user) => (
-                      <tr key={user._id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
+                      <tr key={user._id}>
+                        <TableCell>
                           <div className="flex items-center">
                             <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                               <Users className="h-5 w-5 text-blue-600" />
@@ -249,22 +241,20 @@ export default function UsersManagement() {
                                 )}
                             </div>
                           </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        </TableCell>
+                        <TableCell>
                           <div className="flex items-center text-sm text-gray-900">
-                            <Mail className="h-4 w-4 text-gray-400 mr-2" />
                             <span className="mr-2">{user.email}</span>
                             <CopyButton text={user.email} size="sm" />
                           </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        </TableCell>
+                        <TableCell>
                           <div className="flex items-center text-sm text-gray-900">
-                            <Phone className="h-4 w-4 text-gray-400 mr-2" />
                             <span className="mr-2" dir="ltr">{formatPhoneNumber(user.phone)}</span>
                             <CopyButton text={user.phone} size="sm" />
                           </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        </TableCell>
+                        <TableCell>
                           <span
                             className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                               user.role === "admin"
@@ -276,8 +266,8 @@ export default function UsersManagement() {
                           >
                             {getRoleText(user)}
                           </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        </TableCell>
+                        <TableCell>
                           <span
                             className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                               user.status === "blocked"
@@ -289,14 +279,11 @@ export default function UsersManagement() {
                               ? t("users.blocked")
                               : t("users.active")}
                           </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          <div className="flex items-center">
-                            <Calendar className="h-4 w-4 text-gray-400 mr-2" />
-                            {formatDate(user.createdAt || new Date())}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        </TableCell>
+                        <TableCell>
+                          {formatDate(user.createdAt || new Date())}
+                        </TableCell>
+                        <TableCell>
                           <button
                             onClick={() =>
                               openConfirmModal(
@@ -328,12 +315,11 @@ export default function UsersManagement() {
                               </>
                             )}
                           </button>
-                        </td>
+                        </TableCell>
                       </tr>
                     ))}
-                  </tbody>
-                </table>
-              </div>
+                </TableBody>
+              </Table>
             </div>
 
             {/* Mobile Cards */}

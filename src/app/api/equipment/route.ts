@@ -71,17 +71,53 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    let equipment = await db
+    // For non-admin users, filter out equipment with active bookings
+    if (!isAdmin) {
+      const pipeline: any[] = [
+        { $match: query },
+        {
+          $lookup: {
+            from: "bookings",
+            let: { equipmentId: "$_id" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $in: ["$$equipmentId", "$bookingItems.equipmentId"] },
+                      { $in: ["$status", ["pending", "paid"]] }
+                    ]
+                  }
+                }
+              }
+            ],
+            as: "activeBookings"
+          }
+        },
+        {
+          $match: {
+            activeBookings: { $size: 0 }
+          }
+        },
+        { $project: { activeBookings: 0 } },
+        { $sort: { createdAt: -1 } }
+      ]
+
+      const equipment = await db.collection("equipment").aggregate(pipeline).toArray()
+      
+      return NextResponse.json({
+        success: true,
+        data: equipment,
+        count: equipment.length,
+      })
+    }
+
+    // For admin, show all equipment without filtering bookings
+    const equipment = await db
       .collection("equipment")
       .find(query)
       .sort({ createdAt: -1 })
       .toArray()
-
-    // Filter out equipment with pending/active bookings if availableOnly requested
-    if (availableOnly) {
-      // For now, just check isAvailable field instead of complex booking logic
-      equipment = equipment.filter((item) => item.isAvailable !== false)
-    }
 
     return NextResponse.json({
       success: true,

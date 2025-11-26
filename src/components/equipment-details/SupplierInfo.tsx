@@ -15,12 +15,14 @@ interface SupplierInfoProps {
   supplier: any
   variant?: "card" | "modal"
   showContactButtons?: boolean
+  title?: string
 }
 
 export default function SupplierInfo({
   supplier,
   variant = "card",
   showContactButtons = true,
+  title,
 }: SupplierInfoProps) {
   const t = useTranslations("equipmentDetails")
   const tBooking = useTranslations("dashboard.bookings.details")
@@ -31,7 +33,7 @@ export default function SupplierInfo({
       <div className="bg-orange-50 rounded-lg p-4 h-full flex flex-col">
         <h3 className="font-semibold mb-3 flex items-center gap-2">
           <Building2 className="w-5 h-5 text-orange-600" />
-          {tBooking("supplierInfo")}
+          {title || tBooking("supplierInfo")}
         </h3>
         <div className="space-y-2 text-sm flex-1">
           <div className="flex justify-between">

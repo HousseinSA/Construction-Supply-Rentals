@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import BookingModal from "@/src/components/booking/BookingModal"
+import SaleModal from "@/src/components/booking/SaleModal"
 import Toast from "@/src/components/ui/Toast"
 
 interface ActionButtonsProps {
@@ -17,6 +18,7 @@ export default function ActionButtons({ isForSale, equipment, onBookingSuccess }
   const { data: session } = useSession()
   const router = useRouter()
   const [showBookingModal, setShowBookingModal] = useState(false)
+  const [showSaleModal, setShowSaleModal] = useState(false)
   const [toast, setToast] = useState<{message: string, type: 'success' | 'error'} | null>(null)
 
   const handleActionClick = () => {
@@ -40,7 +42,11 @@ export default function ActionButtons({ isForSale, equipment, onBookingSuccess }
       return
     }
     
-    setShowBookingModal(true)
+    if (isForSale) {
+      setShowSaleModal(true)
+    } else {
+      setShowBookingModal(true)
+    }
   }
   
   const getButtonContent = () => {
@@ -89,12 +95,22 @@ export default function ActionButtons({ isForSale, equipment, onBookingSuccess }
         </button>
       </div>
       
-      <BookingModal
-        isOpen={showBookingModal}
-        onClose={() => setShowBookingModal(false)}
-        equipment={equipment}
-        onBookingSuccess={onBookingSuccess}
-      />
+      {isForSale ? (
+        <SaleModal
+          isOpen={showSaleModal}
+          onClose={() => setShowSaleModal(false)}
+          equipment={equipment}
+          onSaleSuccess={onBookingSuccess}
+          buyerId={session?.user?.id || ""}
+        />
+      ) : (
+        <BookingModal
+          isOpen={showBookingModal}
+          onClose={() => setShowBookingModal(false)}
+          equipment={equipment}
+          onBookingSuccess={onBookingSuccess}
+        />
+      )}
       
       {toast && (
         <Toast

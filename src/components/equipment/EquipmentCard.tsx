@@ -1,12 +1,19 @@
+"use client"
+
 import Image from "next/image"
 import { useTranslations } from "next-intl"
 import { useRouter } from "@/i18n/navigation"
+import { useSession } from "next-auth/react"
+import { useState } from "react"
 import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
 import { useFontClass } from "@/src/hooks/useFontClass"
 import { useCityData } from "@/src/hooks/useCityData"
 import { getEquipmentImage } from "@/src/lib/equipment-images"
 import Button from "../ui/Button"
+import BookingModal from "../booking/BookingModal"
+import SaleModal from "../booking/SaleModal"
 import { MapPin, Tag } from "lucide-react"
+import { toast } from "sonner"
 
 interface Pricing {
   dailyRate?: number
@@ -32,14 +39,30 @@ interface EquipmentCardProps {
 export default function EquipmentCard({ equipment }: EquipmentCardProps) {
   const t = useTranslations("equipment")
   const router = useRouter()
+  const { data: session } = useSession()
   const fontClass = useFontClass()
   const { convertToLocalized } = useCityData()
   const { getPriceData, formatPrice } = usePriceFormatter()
+  const [showBookingModal, setShowBookingModal] = useState(false)
+  const [showSaleModal, setShowSaleModal] = useState(false)
   const isForSale = equipment.listingType === "forSale" || equipment.forSale
   const { rate, unit } = getPriceData(equipment.pricing, isForSale)
   const { displayPrice, displayUnit } = formatPrice(rate, unit)
 
   const localizedCity = convertToLocalized(equipment.location)
+
+  const handleActionClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (!session) {
+      router.push('/auth/login')
+      return
+    }
+    if (session.user.role === 'admin') {
+      toast.error(t('adminCannotBook'))
+      return
+    }
+    isForSale ? setShowSaleModal(true) : setShowBookingModal(true)
+  }
 
   return (
     <div
@@ -106,13 +129,28 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
               variant="card-primary"
               size="card"
               className="flex-1"
-              onClick={(e) => e.stopPropagation()}
+              onClick={handleActionClick}
             >
               {isForSale ? t("buyNow") : t("rentNow")}
             </Button>
           </div>
         </div>
       </div>
+
+      {isForSale ? (
+        <SaleModal
+          isOpen={showSaleModal}
+          onClose={() => setShowSaleModal(false)}
+          equipment={equipment}
+          buyerId={session?.user?.id || ""}
+        />
+      ) : (
+        <BookingModal
+          isOpen={showBookingModal}
+          onClose={() => setShowBookingModal(false)}
+          equipment={equipment}
+        />
+      )}
     </div>
   )
 }

@@ -1,0 +1,185 @@
+import { NextRequest, NextResponse } from "next/server"
+import { connectDB } from "@/src/lib/mongodb"
+import { ObjectId } from "mongodb"
+import { createNotification } from "@/src/lib/notifications"
+import { triggerRealtimeUpdate } from "@/src/lib/realtime-trigger"
+
+// GET /api/sales - Get all sale orders
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const buyerId = searchParams.get('buyerId')
+    
+    const db = await connectDB()
+    const pipeline: any[] = []
+    
+    if (buyerId) {
+      pipeline.push({ $match: { buyerId: new ObjectId(buyerId) } })
+    }
+
+    if (!buyerId) {
+      pipeline.push(
+        {
+          $lookup: {
+            from: "users",
+            localField: "buyerId",
+            foreignField: "_id",
+            as: "buyerInfo",
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "supplierId",
+            foreignField: "_id",
+            as: "supplierInfo",
+          },
+        },
+        {
+          $lookup: {
+            from: "equipment",
+            localField: "equipmentId",
+            foreignField: "_id",
+            as: "equipmentInfo",
+          },
+        }
+      )
+    }
+
+    pipeline.push({ $sort: { createdAt: -1 } })
+
+    const sales = await db.collection("sales").aggregate(pipeline).toArray()
+
+    return NextResponse.json({
+      success: true,
+      data: sales,
+      count: sales.length,
+    })
+  } catch (error) {
+    return NextResponse.json(
+      { success: false, error: "Failed to fetch sales" },
+      { status: 500 }
+    )
+  }
+}
+
+// POST /api/sales - Create new sale order
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const { buyerId, equipmentId, buyerMessage } = body
+
+    if (!buyerId || !equipmentId) {
+      return NextResponse.json(
+        { success: false, error: "Missing required fields" },
+        { status: 400 }
+      )
+    }
+
+    const db = await connectDB()
+    const equipment = await db.collection("equipment").findOne({ _id: new ObjectId(equipmentId) })
+
+    if (!equipment) {
+      return NextResponse.json(
+        { success: false, error: "Equipment not found" },
+        { status: 404 }
+      )
+    }
+
+    if (equipment.listingType !== "forSale") {
+      return NextResponse.json(
+        { success: false, error: "Equipment is not for sale" },
+        { status: 400 }
+      )
+    }
+
+    const salePrice = equipment.pricing?.salePrice || 0
+    const commission = salePrice * 0.05 // 5% fixed commission
+
+    const result = await db.collection("sales").insertOne({
+      buyerId: new ObjectId(buyerId),
+      equipmentId: new ObjectId(equipmentId),
+      supplierId: equipment.supplierId || null,
+      equipmentName: equipment.name,
+      salePrice,
+      commission,
+      status: "pending",
+      buyerMessage: buyerMessage || "",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
+
+    await createNotification(
+      "new_sale",
+      "New Sale Order",
+      `New purchase request for ${equipment.name} - Price: ${salePrice} MRU`,
+      result.insertedId
+    )
+
+    await triggerRealtimeUpdate('sale')
+
+    return NextResponse.json(
+      { success: true, data: { id: result.insertedId, salePrice, commission } },
+      { status: 201 }
+    )
+  } catch (error) {
+    return NextResponse.json(
+      { success: false, error: "Failed to create sale order" },
+      { status: 500 }
+    )
+  }
+}
+
+// PUT /api/sales - Update sale status
+export async function PUT(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const { saleId, status, adminId, adminNotes } = body
+
+    if (!saleId || !status) {
+      return NextResponse.json(
+        { success: false, error: "Missing required fields" },
+        { status: 400 }
+      )
+    }
+
+    const db = await connectDB()
+    const updateData: any = {
+      status,
+      updatedAt: new Date(),
+    }
+
+    if (adminId) {
+      updateData.adminHandledBy = new ObjectId(adminId)
+      updateData.adminHandledAt = new Date()
+    }
+
+    if (adminNotes) updateData.adminNotes = adminNotes
+    if (status === "paid") updateData.paidAt = new Date()
+
+    await db.collection("sales").updateOne(
+      { _id: new ObjectId(saleId) },
+      { $set: updateData }
+    )
+
+    // If paid, mark equipment as sold and unavailable
+    if (status === "paid") {
+      const sale = await db.collection("sales").findOne({ _id: new ObjectId(saleId) })
+      if (sale) {
+        await db.collection("equipment").updateOne(
+          { _id: sale.equipmentId },
+          { $set: { isAvailable: false, updatedAt: new Date() } }
+        )
+      }
+    }
+
+    await triggerRealtimeUpdate('sale')
+
+    return NextResponse.json({ success: true, message: "Sale status updated" })
+  } catch (error: any) {
+    return NextResponse.json(
+      { success: false, error: error.message || "Failed to update sale" },
+      { status: 400 }
+    )
+  }
+}

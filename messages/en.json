@@ -5,6 +5,8 @@
     "logout": "Logout",
     "signup": "Sign Up",
     "dashboard": "Dashboard",
+    "myBookings": "My Orders",
+    "myTransactions": "My Orders",
     "day": "day",
     "hour": "hour",
     "km": "km",
@@ -49,6 +51,8 @@
     "model": "Model",
     "condition": "Condition",
     "hoursUsed": "Hours Used",
+    "usage": "Usage",
+    "equipmentUsage": "Total Usage",
     "weight": "Weight",
     "requestRental": "Request Rental",
     "contactForPurchase": "Contact to Purchase",
@@ -66,6 +70,12 @@
     "clickToViewFullSize": " view full size",
     "supplierInfo": "Supplier Information",
     "call": "Call",
+    "saleRequestSuccess": "Purchase request sent successfully! Admin will contact you soon.",
+    "saleRequestFailed": "Failed to send purchase request. Please try again.",
+    "message": "Message",
+    "optional": "optional",
+    "messagePlaceholder": "Any questions or special requests...",
+    "sending": "Sending...",
     "imageModal": {
       "close": "Close",
       "previous": "Previous",
@@ -176,6 +186,9 @@
     },
     "footer": {
       "support": "Support & Contact"
+    },
+    "whatsapp": {
+      "tooltip": "Need Help? Contact Us!"
     }
   },
   "auth": {
@@ -184,14 +197,10 @@
       "subtitle": "Join our construction equipment rental platform",
       "selectRole": "Choose Account Type",
       "renter": {
-        "title": "Renter",
-        "description": "Rent construction equipment",
-        "submitButton": "Create Renter Account"
+        "title": "Renter"
       },
       "supplier": {
         "title": "Partner",
-        "description": "Rent out construction equipment",
-        "submitButton": "Submit Application",
         "companyName": "Company Name",
         "location": "Company Location"
       },
@@ -311,6 +320,46 @@
     }
   },
   "dashboard": {
+    "transactions": {
+      "rentals": "Rentals",
+      "purchases": "Purchases",
+      "table": {
+        "equipment": "Equipment",
+        "usage": "Usage",
+        "total": "Total",
+        "status": "Status",
+        "date": "Date",
+        "actions": "Actions"
+      }
+    },
+    "purchases": {
+      "loading": "Loading...",
+      "noPurchases": "No Purchases",
+      "noPurchasesDesc": "You haven't made any purchase requests yet",
+      "cancelSuccess": "Purchase request cancelled successfully",
+      "cancelFailed": "Failed to cancel purchase request",
+      "cancelPurchase": "Cancel Purchase",
+      "cancelPurchaseTitle": "Cancel Purchase Request",
+      "cancelPurchaseMessage": "Are you sure you want to cancel this purchase request?",
+      "confirmCancel": "Yes, Cancel",
+      "table": {
+        "equipment": "Equipment",
+        "price": "Price",
+        "status": "Status",
+        "date": "Date",
+        "actions": "Actions"
+      },
+      "status": {
+        "pending": "Pending",
+        "paid": "Paid",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      },
+      "actions": {
+        "view": "View",
+        "cancel": "Cancel"
+      }
+    },
     "goToHome": "Go to Home",
     "underDevelopment": "This page is under development",
     "dashboard": {
@@ -336,6 +385,8 @@
       "manageEquipmentDesc": "View and edit existing equipment",
       "bookings": "Bookings",
       "bookingsDesc": "Manage rental bookings and requests",
+      "sales": "Sales Orders",
+      "salesDesc": "Manage equipment for sale orders",
       "users": "Users",
       "usersDesc": "Manage renters and suppliers",
       "analytics": "Analytics",
@@ -362,6 +413,7 @@
       "browseEquipmentDesc": "Find equipment for your projects",
       "myBookings": "My Bookings",
       "myBookingsDesc": "View your current and past rentals",
+      "myTransactionsDesc": "View and manage all your transactions including rentals and purchases",
       "requests": "Rental Requests",
       "requestsDesc": "Track your rental requests status",
       "profile": "Profile",
@@ -418,12 +470,21 @@
       "brandPlaceholder": "e.g., Caterpillar, Komatsu, Volvo",
       "model": "Model",
       "modelPlaceholder": "e.g., 320D, PC200",
+      "usage": "Usage",
+      "equipmentUsage": "Total Usage",
       "hoursUsed": "Hours Used",
+      "kilometersUsed": "Kilometers Used",
+      "tonnageUsed": "Tonnage Used",
       "weight": "Weight",
       "weightPlaceholder": "e.g., 20",
       "weightUnits": {
         "kg": "kg",
         "tons": "tons"
+      },
+      "usageUnits": {
+        "hours": "hours",
+        "days": "days",
+        "miles": "miles"
       },
 
       "view": "View",
@@ -468,7 +529,8 @@
       "confirmApproveTitle": "Approve Equipment",
       "confirmApproveMessage": "Are you sure you want to approve this equipment?",
       "confirmRejectTitle": "Reject Equipment",
-      "confirmRejectMessage": "Are you sure you want to reject this equipment?"
+      "confirmRejectMessage": "Are you sure you want to reject this equipment?",
+      "sold": "Sold"
     },
     "pages": {
       "equipment": {
@@ -482,6 +544,10 @@
       "bookings": {
         "title": "Bookings",
         "subtitle": "Manage rental bookings and requests"
+      },
+      "sales": {
+        "title": "Sales Orders",
+        "subtitle": "Manage equipment sales and purchases"
       },
       "users": {
         "title": "Users",
@@ -646,7 +712,7 @@
         "amount": "Amount",
         "allAmounts": "All Amounts",
         "time": "Date",
-        "allTime": "All Dates",
+        "allTime": "All",
         "today": "Today",
         "last7Days": "Last 7 Days",
         "last30Days": "Last 30 Days"
@@ -677,14 +743,14 @@
       },
       "details": {
         "title": "Booking Details",
-        "bookingInfo": "Booking Information",
+        "bookingInfo": "Booking",
         "bookingId": "Booking ID",
         "totalAmount": "Total Amount",
         "commission": "Commission",
         "createdAt": "Created Date",
-        "renterInfo": "Renter Information",
-        "supplierInfo": "Supplier Information",
-        "equipmentItems": "Equipment Items",
+        "renterInfo": "Renter ",
+        "supplierInfo": "Supplier ",
+        "equipmentItems": "Equipment",
         "name": "Name",
         "email": "Email",
         "phone": "Phone",
@@ -703,10 +769,79 @@
       "more": "more",
       "noBookings": "No Bookings Found",
       "noBookingsDesc": "No booking requests have been submitted yet",
-      "noMatchingBookings": "No bookings match your filters",
+      "noAllBookings": "No bookings found",
       "noPendingBookings": "No pending bookings",
+      "noPaidBookings": "No paid bookings",
+      "noCompletedBookings": "No completed bookings",
+      "noCancelledBookings": "No cancelled bookings",
       "error": "Failed to fetch bookings",
-      "retry": "Retry"
+      "retry": "Retry",
+      "cancelBooking": "Cancel Booking",
+      "cancelBookingTitle": "Cancel Booking",
+      "cancelBookingMessage": "Are you sure you want to cancel this booking? This action cannot be undone.",
+      "confirmCancel": "Yes, Cancel",
+      "cancelSuccess": "Booking cancelled successfully",
+      "cancelFailed": "Failed to cancel booking. Please try again.",
+      "loading": "Loading..."
+    },
+    "sales": {
+      "searchPlaceholder": "Search by buyer, equipment...",
+      "filters": {
+        "status": "Status",
+        "allStatus": "All Status",
+        "time": "Date",
+        "allTime": "All",
+        "today": "Today",
+        "last7Days": "Last 7 Days",
+        "last30Days": "Last 30 Days"
+      },
+      "table": {
+        "sale": "Sale ID",
+        "buyer": "Buyer",
+        "supplier": "Supplier",
+        "equipment": "Equipment",
+        "price": "Sale Price",
+        "commission": "Commission (5%)",
+        "status": "Status",
+        "date": "Date",
+        "actions": "Actions"
+      },
+      "status": {
+        "pending": "Pending",
+        "paid": "Paid",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      },
+      "actions": {
+        "view": "View",
+        "cancel": "Cancel",
+        "save": "Save Changes",
+        "saving": "Saving..."
+      },
+      "details": {
+        "title": "Sale Order Details",
+        "saleInfo": "Sale Information",
+        "saleId": "Sale ID",
+        "equipment": "Equipment",
+        "salePrice": "Sale Price",
+        "commission": "Commission (5%)",
+        "createdAt": "Created Date",
+        "buyerInfo": "Buyer Information",
+        "supplierInfo": "Supplier Information",
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "status": "Status",
+        "buyerMessage": "Buyer Message"
+      },
+      "noSales": "No Sales Found",
+      "noResults": "No sales found matching your search",
+      "loading": "Loading...",
+      "statusUpdated": "Sale status updated successfully",
+      "statusUpdateFailed": "Failed to update sale status",
+      "equipment": {
+        "createdByAdmin": "Created by Admin"
+      }
     }
   },
   "toast": {
@@ -761,13 +896,12 @@
     "sendRequest": "Send Booking Request",
     "sending": "Sending...",
     "success": "Booking request sent successfully! Admin will contact you soon.",
+    "successPending": "Booking successful! Pending approval. Check My Bookings for updates or contact us.",
+    "viewBookings": "View My Bookings",
     "error": "Failed to send booking request. Please try again.",
     "hours": "hours",
     "days": "days",
     "km": "km",
     "tons": "tons"
-  },
-  "filters": {
-    "clearFilters": "Clear Filters"
   }
 }

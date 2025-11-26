@@ -19,6 +19,7 @@ interface DropdownProps {
   className?: string
   required?: boolean
   compact?: boolean
+  noBorder?: boolean
 }
 
 export default function Dropdown({
@@ -30,7 +31,8 @@ export default function Dropdown({
   disabled = false,
   className = "",
   required = false,
-  compact = false
+  compact = false,
+  noBorder = false
 }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -67,11 +69,11 @@ export default function Dropdown({
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
         className={`
-          w-full ${compact ? 'px-3 py-2 text-sm' : 'px-4 py-3'} text-left bg-white border border-gray-300 ${compact ? 'rounded-lg' : 'rounded-xl'}
-          focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none
+          w-full ${compact ? 'px-3 py-2 text-sm' : 'px-4 py-3'} text-left bg-white ${noBorder ? 'border-0' : 'border border-gray-300'} ${compact ? 'rounded-lg' : 'rounded-xl'}
+          ${noBorder ? '' : 'focus:ring-2 focus:ring-primary focus:border-primary'} focus:outline-none
           transition-all duration-200 flex items-center justify-between
-          ${disabled ? 'bg-gray-50 cursor-not-allowed' : 'hover:border-gray-400 cursor-pointer'}
-          ${isOpen ? 'ring-2 ring-primary border-primary' : ''}
+          ${disabled ? 'bg-gray-50 cursor-not-allowed' : noBorder ? 'cursor-pointer' : 'hover:border-gray-400 cursor-pointer'}
+          ${isOpen && !noBorder ? 'ring-2 ring-primary border-primary' : ''}
         `}
       >
         <span className={selectedOption ? 'text-gray-900' : 'text-gray-500'}>
@@ -85,7 +87,7 @@ export default function Dropdown({
       </button>
 
       {isOpen && (
-        <div className={`absolute z-50 w-full mt-1 bg-white border border-gray-200 ${compact ? 'rounded-lg' : 'rounded-xl'} shadow-lg max-h-60 overflow-auto`}>
+        <div className={`absolute z-[100] w-full mt-1 bg-white border border-gray-200 ${compact ? 'rounded-lg' : 'rounded-xl'} shadow-lg max-h-60 overflow-auto`}>
           {options.length === 0 ? (
             <div className={`${compact ? 'px-3 py-2 text-xs' : 'px-4 py-3 text-sm'} text-gray-500`}>No options available</div>
           ) : (
