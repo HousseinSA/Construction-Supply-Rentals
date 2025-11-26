@@ -28,7 +28,7 @@ export default function RoleSelector({ selectedRole, onRoleChange }: RoleSelecto
           <div className="flex items-center">
             <div className={`w-4 h-4 rounded-full border-2 mr-4 rtl:mr-0 rtl:ml-4 ${
               selectedRole === "renter" ? "border-primary bg-primary" : "border-gray-300"
-            }`} />/2
+            }`} />
 
             
             <h3 className="text-lg font-medium text-gray-800">
