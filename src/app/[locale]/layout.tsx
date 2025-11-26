@@ -16,6 +16,7 @@ import { routing } from "@/i18n/routing"
 import { inter, cairo, poppins } from "@/lib/fonts"
 import Header from "@/components/layout/Header"
 import "../globals.css"
+import { Analytics } from "@vercel/analytics/next"
 
 export async function generateMetadata({
   params,
@@ -77,6 +78,7 @@ export default async function LocaleLayout({
           <NextIntlClientProvider messages={messages} locale={locale}>
             <Header />
             {children}
+            <Analytics />
             <WhatsAppFloat phoneNumber="22212345678" />
             <Toaster position="top-right" richColors />
           </NextIntlClientProvider>
