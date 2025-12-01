@@ -18,7 +18,9 @@ interface LanguageSwitcherProps {
   onLanguageChange?: () => void
 }
 
-export default function LanguageSwitcher({ onLanguageChange }: LanguageSwitcherProps) {
+export default function LanguageSwitcher({
+  onLanguageChange,
+}: LanguageSwitcherProps) {
   const [isOpen, setIsOpen] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
@@ -30,11 +32,9 @@ export default function LanguageSwitcher({ onLanguageChange }: LanguageSwitcherP
 
   const handleLanguageChange = (langCode: string) => {
     document.cookie = `NEXT_LOCALE=${langCode}; path=/; max-age=${60 * 60 * 24}`
-    // Preserve query parameters
     const queryString = searchParams.toString()
     const fullPath = queryString ? `${pathname}?${queryString}` : pathname
     router.replace(fullPath, { locale: langCode })
-    router.refresh()
     setIsOpen(false)
     onLanguageChange?.()
   }
@@ -64,7 +64,9 @@ export default function LanguageSwitcher({ onLanguageChange }: LanguageSwitcherP
       </button>
 
       {isOpen && (
-        <div className="absolute top-full mt-1 right-0 bg-white border border-gray-200 rounded-xl shadow-xl z-50 min-w-[140px] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className={`absolute top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-xl z-50 min-w-[140px] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 ${
+          locale === "ar" ? "left-0" : "right-0"
+        }`}>
           {languages.map((lang) => (
             <button
               key={lang.code}

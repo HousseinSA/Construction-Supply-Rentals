@@ -93,7 +93,7 @@ export default function EquipmentDetailsPage() {
                 displayUnit={displayUnit}
                 isForSale={isForSale}
               />
-              <SpecificationsGrid specifications={equipment.specifications} />
+              <SpecificationsGrid specifications={equipment.specifications} isForSale={isForSale} />
               {isAdminView && equipment.supplierInfo && (
                 <SupplierInfo supplier={equipment.supplierInfo} />
               )}

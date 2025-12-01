@@ -63,7 +63,7 @@ export default function BookingTable() {
     },
   })
 
-  // Apply custom search for nested arrays 
+  // Apply custom search for nested arrays
   const filteredData = useMemo(() => {
     if (!searchValue.trim()) return baseFiltered
     const searchLower = searchValue.toLowerCase()
@@ -124,7 +124,7 @@ export default function BookingTable() {
             <HomeButton />
           </div>
         </div>
-    
+
         {/* Filters */}
         {session?.user?.userType !== "renter" && bookings.length > 0 && (
           <TableFilters
@@ -159,7 +159,7 @@ export default function BookingTable() {
           />
         )}
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div className="lg:bg-white lg:rounded-lg lg:shadow-sm lg:border lg:border-gray-200 overflow-hidden">
           {session?.user?.userType === "renter" ? (
             <RenterBookingView />
           ) : loading ? (
@@ -184,7 +184,11 @@ export default function BookingTable() {
             </div>
           ) : filteredData.length === 0 ? (
             <div className="p-12 text-center text-gray-500 font-medium">
-              {t(`no${filterValues.status.charAt(0).toUpperCase()}${filterValues.status.slice(1)}Bookings`)}
+              {t(
+                `no${filterValues.status
+                  .charAt(0)
+                  .toUpperCase()}${filterValues.status.slice(1)}Bookings`
+              )}
             </div>
           ) : (
             <>
@@ -193,14 +197,12 @@ export default function BookingTable() {
                 <Table>
                   <TableHeader>
                     <tr>
-                      <TableHead>{t("table.booking")}</TableHead>
                       <TableHead>{t("table.renter")}</TableHead>
                       <TableHead>{t("table.equipment")}</TableHead>
                       <TableHead>{t("table.usage")}</TableHead>
                       <TableHead>{t("table.total")}</TableHead>
                       <TableHead>{t("table.commission")}</TableHead>
                       <TableHead>{t("table.supplier")}</TableHead>
-                      <TableHead align="center">{t("table.status")}</TableHead>
                       <TableHead align="center">{t("table.date")}</TableHead>
                       <TableHead align="center">{t("table.actions")}</TableHead>
                     </tr>
@@ -219,7 +221,7 @@ export default function BookingTable() {
               </div>
 
               {/* Mobile Cards */}
-              <div className="lg:hidden space-y-3">
+              <div className="lg:hidden space-y-4">
                 {paginatedBookings.map((booking) => (
                   <BookingMobileCard
                     key={booking._id}

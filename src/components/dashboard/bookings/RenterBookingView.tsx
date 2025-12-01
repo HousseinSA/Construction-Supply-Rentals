@@ -12,6 +12,8 @@ import { toast } from "sonner"
 import type { BookingWithDetails } from "@/src/stores/bookingsStore"
 import ConfirmModal from "@/src/components/ui/ConfirmModal"
 import { AlertTriangle } from "lucide-react"
+import GenericMobileCard from "@/src/components/ui/GenericMobileCard"
+import { formatBookingId } from "@/src/lib/format"
 
 export default function RenterBookingView() {
   const t = useTranslations("dashboard.bookings")
@@ -129,7 +131,7 @@ export default function RenterBookingView() {
                   </span>
                 </TableCell>
                 <TableCell align="center">
-                  <div className="flex items-center justify-center gap-2">
+                  <div className="flex items-center justify-center gap-2 min-w-[80px]">
                     <Link href={`/equipment/${booking.bookingItems[0]?.equipmentId}`} className="inline-block p-2 hover:bg-gray-100 rounded-lg transition-colors">
                       <Eye className="h-4 w-4 text-gray-600" />
                     </Link>
@@ -152,53 +154,48 @@ export default function RenterBookingView() {
       </div>
 
       <div className="lg:hidden space-y-4">
-        {paginatedData.map((booking) => (
-          <div key={booking._id?.toString()} className="p-4 space-y-3 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors">
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex-1">
-                <div className="text-sm font-medium text-gray-900 mb-1">
-                  {booking.bookingItems[0]?.equipmentName}
-                  {booking.bookingItems.length > 1 && (
-                    <span className="text-gray-500"> +{booking.bookingItems.length - 1}</span>
-                  )}
-                </div>
-                <div className="text-xs text-gray-500 mt-0.5">
-                  {new Date(booking.createdAt).toLocaleDateString()}
-                </div>
-              </div>
-              {getStatusBadge(booking.status)}
-            </div>
+        {paginatedData.map((booking) => {
+          const equipmentTitle = `${booking.bookingItems[0]?.equipmentName}${
+            booking.bookingItems.length > 1 ? ` +${booking.bookingItems.length - 1}` : ""
+          }`
+          const totalUsage = booking.bookingItems.reduce((sum, item) => sum + item.usage, 0)
 
-            <div className="space-y-3 pt-2 border-t border-gray-200">
-              <div className="flex items-center gap-4">
-                <div>
-                  <div className="text-xs text-gray-500">{t("table.usage")}</div>
-                  <div className="font-semibold text-gray-900" dir="ltr">{booking.bookingItems.reduce((sum, item) => sum + item.usage, 0)}h</div>
-                </div>
-                <div>
-                  <div className="text-xs text-gray-500">{t("table.total")}</div>
-                  <div className="font-semibold text-gray-900" dir="ltr">{booking.totalPrice.toLocaleString()} MRU</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Link href={`/equipment/${booking.bookingItems[0]?.equipmentId}`} className="flex-1 px-3 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 text-sm flex items-center justify-center gap-1.5">
-                  <Eye className="w-4 h-4" />
-                  {t("actions.view")}
-                </Link>
-                {booking.status === "pending" && (
+          return (
+            <GenericMobileCard
+              key={booking._id?.toString()}
+              id={formatBookingId(booking._id?.toString() || "")}
+              title={equipmentTitle}
+              date={new Date(booking.createdAt).toLocaleDateString()}
+              status={booking.status}
+              fields={[
+                {
+                  label: t("table.usage"),
+                  value: `${totalUsage}h`,
+                },
+                {
+                  label: t("table.total"),
+                  value: booking.totalPrice,
+                },
+              ]}
+              onViewDetails={() => {
+                window.location.href = `/equipment/${booking.bookingItems[0]?.equipmentId}`
+              }}
+              viewButtonText={t("actions.view")}
+              actionButton={
+                booking.status === "pending" ? (
                   <button
                     onClick={() => handleCancelClick(booking._id?.toString() || "")}
                     disabled={cancellingId === booking._id?.toString()}
-                    className="flex-1 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm flex items-center justify-center gap-1.5 disabled:opacity-50 transition-all"
+                    className="p-2 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 group"
+                    title={t("cancelBooking")}
                   >
-                    <XCircle className="w-4 h-4" />
-                    {t("cancelBooking")}
+                    <XCircle className="h-5 w-5 text-red-600 group-hover:text-red-700" />
                   </button>
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
+                ) : undefined
+              }
+            />
+          )
+        })}
       </div>
 
       <Pagination

@@ -70,8 +70,8 @@ export default function SaleModal({
   const { rate } = getPriceData(equipment.pricing, true)
 
   return (
-    <div ref={modalRef} className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
-      <div className="bg-white rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+    <div ref={modalRef} className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60] p-4 animate-in fade-in duration-150">
+      <div className="bg-white rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom-4 duration-200">
         <div className="p-6">
           <ModalHeader title={t("sendSaleRequest")} onClose={onClose} />
           <EquipmentInfo name={equipment.name} location={equipment.location} />

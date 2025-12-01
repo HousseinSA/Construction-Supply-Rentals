@@ -82,7 +82,7 @@ export default function SalesTable() {
   }
 
   return (
-    <div className="bg-gray-50">
+    <div className=" min-h-screen bg-gray-50">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         <div className="mb-6">
           <div className="flex items-center justify-between gap-4">
@@ -130,7 +130,7 @@ export default function SalesTable() {
             onFilterChange={handleFilterChange}
           />
         )}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div className="lg:bg-white lg:rounded-lg lg:shadow-sm lg:border lg:border-gray-200 overflow-hidden">
           {loading ? (
             <div className="p-12 text-center">
               <div className="animate-pulse text-gray-600 font-medium">{t("loading")}</div>
@@ -161,7 +161,7 @@ export default function SalesTable() {
                     ) : filteredData.length === 0 ? (
                       <tr>
                         <td colSpan={8} className="p-12 text-center text-gray-500 font-medium">
-                          {t("noResults")}
+                          {filterValues.status === "all" ? t("noResults") : t(`no${filterValues.status.charAt(0).toUpperCase()}${filterValues.status.slice(1)}Sales`)}
                         </td>
                       </tr>
                     ) : (
@@ -172,11 +172,11 @@ export default function SalesTable() {
                   </TableBody>
                 </Table>
               </div>
-              <div className="lg:hidden space-y-3">
+              <div className="lg:hidden space-y-4">
                 {sales.length === 0 ? (
                   <div className="p-12 text-center text-gray-500 font-medium">{t("noSales")}</div>
                 ) : filteredData.length === 0 ? (
-                  <div className="p-12 text-center text-gray-500 font-medium">{t("noResults")}</div>
+                  <div className="p-12 text-center text-gray-500 font-medium">{filterValues.status === "all" ? t("noResults") : t(`no${filterValues.status.charAt(0).toUpperCase()}${filterValues.status.slice(1)}Sales`)}</div>
                 ) : (
                   paginatedData.map((sale) => (
                     <SalesMobileCard key={sale._id} sale={sale} onViewDetails={handleViewDetails} t={t} />

@@ -18,6 +18,7 @@ interface FormData {
   description: string
   brand: string
   model: string
+  condition: string
   usageValue: string
   usageUnit: string
   weight: string
@@ -39,6 +40,7 @@ export function useEquipmentForm(equipmentId?: string) {
     description: "",
     brand: "",
     model: "",
+    condition: "",
     usageValue: "",
     usageUnit: "hours",
     weight: "",
@@ -70,7 +72,9 @@ export function useEquipmentForm(equipmentId?: string) {
           description: eq.description || "",
           brand: eq.specifications?.brand || "",
           model: eq.specifications?.model || "",
+          condition: eq.specifications?.condition || "",
           usageValue,
+          usageUnit: eq.specifications?.usageUnit || "hours",
           weight: eq.specifications?.weight ? String(eq.specifications.weight) : "",
           weightUnit: eq.specifications?.weightUnit || "kg",
         })
@@ -107,9 +111,9 @@ export function useEquipmentForm(equipmentId?: string) {
     setFormData({ ...formData, listingType })
   }
 
-
-
-
+  const handleConditionChange = (value: string) => {
+    setFormData({ ...formData, condition: value })
+  }
 
   const handleWeightUnitChange = (value: string) => {
     setFormData({ ...formData, weightUnit: value })
@@ -192,6 +196,7 @@ export function useEquipmentForm(equipmentId?: string) {
       const specifications: any = {
         brand: formData.brand.trim(),
         ...(formData.model && { model: formData.model.trim() }),
+        ...(formData.condition && { condition: formData.condition }),
         ...(formData.weight && { 
           weight: parseFloat(formData.weight),
           weightUnit: formData.weightUnit 
@@ -261,6 +266,7 @@ export function useEquipmentForm(equipmentId?: string) {
     handlePriceTypeChange,
     handleLocationChange,
     handleListingTypeChange,
+    handleConditionChange,
     handleWeightUnitChange,
     handleUsageUnitChange,
     handleSubmit,

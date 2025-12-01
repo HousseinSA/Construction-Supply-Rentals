@@ -52,6 +52,7 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
   const localizedCity = convertToLocalized(equipment.location)
 
   const handleActionClick = (e: React.MouseEvent) => {
+    e.preventDefault()
     e.stopPropagation()
     if (!session) {
       router.push('/auth/login')
@@ -70,10 +71,12 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
         isForSale
           ? "border-amber-400 ring-2 ring-amber-400/30"
           : "border-gray-100 hover:border-primary/20"
-      } group cursor-pointer ${fontClass}`}
-      onClick={() => router.push(`/equipment/${equipment._id}`)}
+      } group ${fontClass}`}
     >
-      <div className="h-48 relative overflow-hidden">
+      <div 
+        className="h-48 relative overflow-hidden cursor-pointer"
+        onClick={() => router.push(`/equipment/${equipment._id}`)}
+      >
         <Image
           src={
             equipment.images?.length > 0

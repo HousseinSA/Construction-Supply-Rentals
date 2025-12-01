@@ -20,14 +20,6 @@ export default function BookingTableRow({ booking, onViewDetails, t }: BookingTa
   return (
     <TableRow>
       <TableCell>
-        <div className="font-semibold text-gray-900 text-base mb-1">
-          {formatBookingId(booking._id)}
-        </div>
-        <div className="text-sm text-gray-600">
-          {booking.bookingItems.length} {t("items")}
-        </div>
-      </TableCell>
-      <TableCell>
         <div className="space-y-1.5">
           <div className="font-medium text-gray-900 text-sm">
             {booking.renterInfo[0]?.firstName} {booking.renterInfo[0]?.lastName}
@@ -82,7 +74,6 @@ export default function BookingTableRow({ booking, onViewDetails, t }: BookingTa
           <span className="text-sm text-gray-400">Admin</span>
         )}
       </TableCell>
-      <TableCell align="center"><BookingStatusBadge status={booking.status} /></TableCell>
       <TableCell align="center">
         <span className="text-sm text-gray-600">
           {new Date(booking.createdAt).toLocaleDateString()}

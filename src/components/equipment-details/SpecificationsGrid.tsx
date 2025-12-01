@@ -1,5 +1,5 @@
 import { Wrench, Clock, Weight } from "lucide-react"
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
 
 interface Specifications {
   brand?: string
@@ -15,10 +15,30 @@ interface Specifications {
 
 interface SpecificationsGridProps {
   specifications: Specifications
+  isForSale?: boolean
 }
 
-export default function SpecificationsGrid({ specifications }: SpecificationsGridProps) {
+export default function SpecificationsGrid({ specifications, isForSale }: SpecificationsGridProps) {
   const t = useTranslations("equipmentDetails")
+  const locale = useLocale()
+  
+  const getUnitText = (unit: string) => {
+    if (unit === 'tons') return t('units.tons')
+    if (unit === 'kg') return t('units.kg')
+    if (unit === 'km') return t('units.km')
+    if (unit === 'hours') return t('units.hours')
+    return unit
+  }
+  
+  const formatUsage = (value: number, unit: string) => {
+    const unitText = unit === 'km' ? t('units.km') : t('units.hours')
+    return locale === 'ar' ? `${value} ${unitText}` : `${value} ${unitText}`
+  }
+  
+  const formatWeight = (value: number, unit: string) => {
+    const unitText = getUnitText(unit || 'kg')
+    return locale === 'ar' ? `${value} ${unitText}` : `${value} ${unitText}`
+  }
 
   if (!specifications || Object.keys(specifications).length === 0) {
     return null
@@ -31,55 +51,49 @@ export default function SpecificationsGrid({ specifications }: SpecificationsGri
         {t("specifications")}
       </h3>
       <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:gap-4">
-        {specifications.brand && (
-          <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
-            <div className="text-xs text-gray-500 mb-1">{t("brand")}</div>
-            <div className="font-semibold text-sm sm:text-base text-gray-900">
-              {specifications.brand}
-            </div>
+        <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
+          <div className="text-xs text-gray-500 mb-1">{t("brand")}</div>
+          <div className="font-semibold text-sm sm:text-base text-gray-900">
+            {specifications.brand || '-'}
           </div>
-        )}
-        {specifications.model && (
-          <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
-            <div className="text-xs text-gray-500 mb-1">{t("model")}</div>
-            <div className="font-semibold text-sm sm:text-base text-gray-900">
-              {specifications.model}
-            </div>
+        </div>
+        <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
+          <div className="text-xs text-gray-500 mb-1">{t("model")}</div>
+          <div className="font-semibold text-sm sm:text-base text-gray-900">
+            {specifications.model || '-'}
           </div>
-        )}
-        {specifications.condition && (
+        </div>
+        {isForSale && (
           <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
             <div className="text-xs text-gray-500 mb-1">{t("condition")}</div>
             <div className="font-semibold text-sm sm:text-base text-gray-900 capitalize">
-              {specifications.condition}
+              {specifications.condition || '-'}
             </div>
           </div>
         )}
-        {(specifications.usageValue || specifications.hoursUsed) && (
-          <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
-            <div className="text-xs text-gray-500 mb-1 flex items-center gap-1">
-              <Clock className="w-3 h-3" />
-              {t("equipmentUsage")}
-            </div>
-            <div className="font-semibold text-sm sm:text-base text-gray-900">
-              {specifications.usageValue 
-                ? `${specifications.usageValue}${specifications.usageUnit === 'km' ? 'km' : 'h'}`
-                : `${specifications.hoursUsed}h`
-              }
-            </div>
+        <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
+          <div className="text-xs text-gray-500 mb-1 flex items-center gap-1">
+            <Clock className="w-3 h-3" />
+            {t("equipmentUsage")}
           </div>
-        )}
-        {specifications.weight && (
-          <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
-            <div className="text-xs text-gray-500 mb-1 flex items-center gap-1">
-              <Weight className="w-3 h-3" />
-              {t("weight")}
-            </div>
-            <div className="font-semibold text-sm sm:text-base text-gray-900">
-              {specifications.weight} {specifications.weightUnit || "kg"}
-            </div>
+          <div className="font-semibold text-sm sm:text-base text-gray-900">
+            {specifications.usageValue 
+              ? formatUsage(specifications.usageValue, specifications.usageUnit || 'hours')
+              : specifications.hoursUsed
+              ? formatUsage(specifications.hoursUsed, 'hours')
+              : '-'
+            }
           </div>
-        )}
+        </div>
+        <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
+          <div className="text-xs text-gray-500 mb-1 flex items-center gap-1">
+            <Weight className="w-3 h-3" />
+            {t("weight")}
+          </div>
+          <div className="font-semibold text-sm sm:text-base text-gray-900">
+            {specifications.weight ? formatWeight(specifications.weight, specifications.weightUnit || 'kg') : '-'}
+          </div>
+        </div>
       </div>
     </div>
   )

@@ -1,6 +1,5 @@
 import { setRequestLocale } from "next-intl/server"
 import Dashboard from "@/src/components/dashboard/Dashboard"
-
 export default async function DashboardPage({
   params,
 }: {

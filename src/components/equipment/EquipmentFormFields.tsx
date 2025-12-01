@@ -5,6 +5,7 @@ import CategoryDropdown from "../ui/CategoryDropdown"
 import EquipmentTypeDropdown from "../ui/EquipmentTypeDropdown"
 import CityDropdown from "../ui/CityDropdown"
 import PricingTypeDropdown from "../ui/PricingTypeDropdown"
+import ConditionDropdown from "../ui/ConditionDropdown"
 import UsageInput from "../ui/UsageInput"
 import ImageUpload from "../ui/ImageUpload"
 import { UploadedImage } from "@/src/hooks/useEquipmentForm"
@@ -20,6 +21,7 @@ interface EquipmentFormFieldsProps {
     description: string
     brand: string
     model: string
+    condition: string
     usageValue: string
     usageUnit: string
     weight: string
@@ -34,6 +36,7 @@ interface EquipmentFormFieldsProps {
   onTypeChange: (value: string) => void
   onLocationChange: (value: string) => void
   onPriceTypeChange: (value: string) => void
+  onConditionChange: (value: string) => void
   onWeightUnitChange: (value: string) => void
   onUsageUnitChange: (value: string) => void
   onImagesChange: (images: UploadedImage[]) => void
@@ -48,6 +51,7 @@ export default function EquipmentFormFields({
   onTypeChange,
   onLocationChange,
   onPriceTypeChange,
+  onConditionChange,
   onWeightUnitChange,
   onUsageUnitChange,
   onImagesChange,
@@ -85,14 +89,23 @@ export default function EquipmentFormFields({
           placeholder={t("modelPlaceholder")}
         />
 
-        <UsageInput
-          equipmentTypeId={formData.type}
-          value={formData.usageValue}
-          unitValue={formData.usageUnit}
-          onValueChange={onInputChange}
-          onUnitChange={onUsageUnitChange}
-          disabled={isSubmitting}
-        />
+        {formData.listingType === "forSale" && (
+          <ConditionDropdown
+            value={formData.condition}
+            onChange={onConditionChange}
+          />
+        )}
+
+        {!(formData.listingType === "forSale" && formData.condition === "new") && (
+          <UsageInput
+            equipmentTypeId={formData.type}
+            value={formData.usageValue}
+            unitValue={formData.usageUnit}
+            onValueChange={onInputChange}
+            onUnitChange={onUsageUnitChange}
+            disabled={isSubmitting}
+          />
+        )}
 
         <InputWithUnitSelect
           label={t("weight")}
