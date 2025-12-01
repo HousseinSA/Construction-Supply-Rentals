@@ -74,6 +74,7 @@ export default function BookingTableRow({ booking, onViewDetails, t }: BookingTa
           <span className="text-sm text-gray-400">Admin</span>
         )}
       </TableCell>
+      <TableCell align="center"><BookingStatusBadge status={booking.status} /></TableCell>
       <TableCell align="center">
         <span className="text-sm text-gray-600">
           {new Date(booking.createdAt).toLocaleDateString()}

@@ -15,6 +15,7 @@
     "equipmentForSale": "معدات للبيع",
     "logoutConfirm": "تأكيد تسجيل الخروج",
     "cancel": "إلغاء",
+    "close": "إغلاق",
     "showingResults": "{start} من {total}"
   },
   "equipment": {
@@ -49,6 +50,12 @@
     "brand": "الماركة",
     "model": "الموديل",
     "condition": "الحالة",
+    "conditionLabels": {
+      "new": "جديد",
+      "excellent": "ممتاز",
+      "good": "جيد",
+      "used": "مستعمل"
+    },
     "hoursUsed": "ساعات الاستخدام",
     "usage": "الاستخدام",
     "equipmentUsage": "إجمالي الاستخدام",
@@ -67,7 +74,7 @@
     "currentlyUnavailable": "غير متاح حالياً",
     "bookingPending": "لديك بالفعل طلب حجز في انتظار الموافقة لهذه المعدة",
     "equipmentUnavailable": "هذه المعدة غير متاحة حالياً بسبب وجود حجوزات في الانتظار",
-    "adminCannotBook": "لا يمكن للإدارة إجراء حجوزات",
+    "adminCannotBook": "لا يمكن للإدارة إجراء حجوزات أو طلبات شراء",
     "goBack": "عودة",
     "loading": "جاري التحميل...",
     "equipmentNotFound": "لم يتم العثور على المعدة",
@@ -432,9 +439,9 @@
       "forSale": "للبيع",
       "priceType": "نوع التسعير",
       "selectPriceType": "اختر نوع التسعير",
-      "hourly": "بالساعة",
-      "daily": "باليوم",
-      "perKm": "بالكيلومتر",
+      "hourly": "ساعة",
+      "daily": "يوم",
+      "perKm": "كيلومتر",
       "price": "السعر",
       "description": "الوصف",
       "descriptionPlaceholder": "وصف ميزات وقدرات المعدة",
@@ -459,7 +466,8 @@
       "selectCondition": "اختر الحالة",
       "conditions": {
         "new": "جديد",
-        "excellent": "حالة ممتازة",
+        "excellent": "ممتاز",
+        "good": "جيد",
         "used": "مستعمل"
       },
       "brand": "الماركة",
@@ -741,6 +749,7 @@
       "actions": {
         "view": "عرض",
         "cancel": "إلغاء",
+        "close": "إغلاق",
         "save": "حفظ التغييرات",
         "saving": "جاري الحفظ..."
       },
@@ -818,6 +827,7 @@
       "actions": {
         "view": "عرض",
         "cancel": "إلغاء",
+        "close": "إغلاق",
         "save": "حفظ التغييرات",
         "saving": "جاري الحفظ..."
       },

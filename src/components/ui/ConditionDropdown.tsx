@@ -15,6 +15,7 @@ export default function ConditionDropdown({
   const conditions = [
     { value: "new", label: t("conditions.new") },
     { value: "excellent", label: t("conditions.excellent") },
+    { value: "good", label: t("conditions.good") },
     { value: "used", label: t("conditions.used") },
   ]
 

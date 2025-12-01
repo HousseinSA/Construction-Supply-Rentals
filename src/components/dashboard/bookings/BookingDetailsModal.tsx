@@ -2,7 +2,7 @@
 
 import { useRef } from "react"
 import { useTranslations } from "next-intl"
-import { Building } from "lucide-react"
+import { Building, Save } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { useBookingDetails } from "@/src/hooks/useBookingDetails"
 import { useModalClose } from "@/src/hooks/useModalClose"
@@ -12,7 +12,8 @@ import BookingInfo from "./BookingInfo"
 import RenterInfo from "./RenterInfo"
 import EquipmentItems from "./EquipmentItems"
 import RenterMessage from "./RenterMessage"
-import AdminControls from "./AdminControls"
+import StatusManager from "@/src/components/ui/StatusManager"
+import Button from "@/src/components/ui/Button"
 import type { BookingWithDetails } from "@/src/stores/bookingsStore"
 
 interface BookingDetailsModalProps {
@@ -65,51 +66,73 @@ export default function BookingDetailsModal({
         <div className="p-6">
           <ModalHeader title={t("details.title")} onClose={onClose} />
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <BookingInfo
-                bookingId={booking._id}
-                totalPrice={booking.totalPrice}
-                commission={totalCommission}
-                createdAt={booking.createdAt}
-                labels={{
-                  title: t("details.bookingInfo"),
-                  bookingId: t("details.bookingId"),
-                  totalAmount: t("details.totalAmount"),
-                  commission: t("details.commission"),
-                  createdAt: t("details.createdAt"),
-                }}
-              />
-              <EquipmentItems
-                items={booking.bookingItems}
-                calculateCommission={calculateCommission}
-                getUsageLabel={getUsageUnitLabel}
-                labels={{
-                  title: t("details.equipmentItems"),
-                  usage: t("details.usage"),
-                  rate: t("details.rate"),
-                  commission: t("details.commission"),
-                  subtotal: t("details.subtotal"),
-                }}
-              />
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <BookingInfo
+                  bookingId={booking._id}
+                  totalPrice={booking.totalPrice}
+                  commission={totalCommission}
+                  createdAt={booking.createdAt}
+                  labels={{
+                    title: t("details.bookingInfo"),
+                    bookingId: t("details.bookingId"),
+                    totalAmount: t("details.totalAmount"),
+                    commission: t("details.commission"),
+                    createdAt: t("details.createdAt"),
+                  }}
+                />
+                <EquipmentItems
+                  items={booking.bookingItems}
+                  calculateCommission={calculateCommission}
+                  getUsageLabel={getUsageUnitLabel}
+                  labels={{
+                    title: t("details.equipmentItems"),
+                    usage: t("details.usage"),
+                    rate: t("details.rate"),
+                    commission: t("details.commission"),
+                    subtotal: t("details.subtotal"),
+                  }}
+                />
+            </div>
 
-              <RenterInfo
-                renter={booking.renterInfo[0]}
-                labels={{
-                  title: t("details.renterInfo"),
-                  name: t("details.name"),
-                  email: t("details.email"),
-                  phone: t("details.phone"),
-                  call: t("details.call"),
-                }}
-              />
+            <StatusManager
+              currentStatus={booking.status}
+              selectedStatus={status}
+              onStatusChange={setStatus}
+              labels={{
+                title: t("details.status"),
+                currentStatus: t("details.status"),
+                statusOptions: {
+                  pending: t("status.pending"),
+                  paid: t("status.paid"),
+                  completed: t("status.completed"),
+                  cancelled: t("status.cancelled"),
+                },
+              }}
+            />
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="lg:h-[280px]">
+                <RenterInfo
+                  renter={booking.renterInfo[0]}
+                  labels={{
+                    title: t("details.renterInfo"),
+                    name: t("details.name"),
+                    email: t("details.email"),
+                    phone: t("details.phone"),
+                    call: t("details.call"),
+                  }}
+                />
+              </div>
               {booking.supplierInfo && booking.supplierInfo.length > 0 && (
-                <div className="h-[280px]">
+                <div className="lg:h-[280px]">
                   <SupplierInfo
                     supplier={booking.supplierInfo[0]}
                     variant="modal"
                   />
                 </div>
               )}
+            </div>
           </div>
 
           {booking.renterMessage && (
@@ -119,26 +142,17 @@ export default function BookingDetailsModal({
             />
           )}
 
-          <AdminControls
-            status={status}
-            onStatusChange={setStatus}
-            onSave={() => handleStatusUpdate(session?.user?.id)}
-            onCancel={onClose}
-            loading={loading}
-            isChanged={status !== originalStatus}
-            labels={{
-              status: t("details.status"),
-              statusOptions: {
-                pending: t("status.pending"),
-                paid: t("status.paid"),
-                completed: t("status.completed"),
-                cancelled: t("status.cancelled"),
-              },
-              cancel: t("actions.cancel"),
-              save: t("actions.save"),
-              saving: t("actions.saving"),
-            }}
-          />
+          <div className="mt-6 border-t border-gray-200 pt-6">
+            <div className="flex justify-end gap-3">
+              <button onClick={onClose} className="px-4 py-2 text-gray-600 hover:text-gray-800">
+                {t("actions.close")}
+              </button>
+              <Button onClick={() => handleStatusUpdate(session?.user?.id)} disabled={loading || status === originalStatus} className="flex items-center gap-2">
+                <Save className="w-4 h-4" />
+                {loading ? t("actions.saving") : t("actions.save")}
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

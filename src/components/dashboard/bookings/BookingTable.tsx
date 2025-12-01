@@ -203,6 +203,7 @@ export default function BookingTable() {
                       <TableHead>{t("table.total")}</TableHead>
                       <TableHead>{t("table.commission")}</TableHead>
                       <TableHead>{t("table.supplier")}</TableHead>
+                      <TableHead align="center">{t("table.status")}</TableHead>
                       <TableHead align="center">{t("table.date")}</TableHead>
                       <TableHead align="center">{t("table.actions")}</TableHead>
                     </tr>

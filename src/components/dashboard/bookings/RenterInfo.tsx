@@ -20,7 +20,7 @@ interface RenterInfoProps {
 
 export default function RenterInfo({ renter, labels }: RenterInfoProps) {
   return (
-    <div className="bg-blue-50 rounded-lg p-4 h-[280px] flex flex-col">
+    <div className="bg-blue-50 rounded-lg p-4 lg:h-[280px] flex flex-col">
       <h3 className="font-semibold mb-3 flex items-center gap-2">
         <User className="w-5 h-5 text-blue-600" />
         {labels.title}
@@ -43,7 +43,7 @@ export default function RenterInfo({ renter, labels }: RenterInfoProps) {
         </div>
       </div>
       
-      <div className="mt-4 flex gap-2">
+      <div className="mt-2 flex gap-2">
         <a
           href={`tel:${renter.phone}`}
           className="flex items-center gap-2 px-3 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 text-sm flex-1 justify-center"

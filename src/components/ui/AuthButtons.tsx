@@ -13,7 +13,6 @@ import { Link } from "@/i18n/navigation"
 import { signOut } from "next-auth/react"
 import { useLocale } from "next-intl"
 import ConfirmModal from "./ConfirmModal"
-import { showToast } from "@/src/lib/toast"
 
 interface AuthButtonsProps {
   session?: any
@@ -81,7 +80,7 @@ export default function AuthButtons({
     setIsLoggingOut(true)
     localStorage.clear()
     sessionStorage.clear()
-    showToast.success(tToast("logoutSuccess"))
+    toast.success(tToast("logoutSuccess"))
     signOut({ callbackUrl: `/${locale}` })
   }
 

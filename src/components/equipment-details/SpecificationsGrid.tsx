@@ -39,6 +39,10 @@ export default function SpecificationsGrid({ specifications, isForSale }: Specif
     const unitText = getUnitText(unit || 'kg')
     return locale === 'ar' ? `${value} ${unitText}` : `${value} ${unitText}`
   }
+  
+  const getConditionLabel = (condition: string) => {
+    return t(`conditionLabels.${condition}`) || condition
+  }
 
   if (!specifications || Object.keys(specifications).length === 0) {
     return null
@@ -66,8 +70,8 @@ export default function SpecificationsGrid({ specifications, isForSale }: Specif
         {isForSale && (
           <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
             <div className="text-xs text-gray-500 mb-1">{t("condition")}</div>
-            <div className="font-semibold text-sm sm:text-base text-gray-900 capitalize">
-              {specifications.condition || '-'}
+            <div className="font-semibold text-sm sm:text-base text-gray-900">
+              {specifications.condition ? getConditionLabel(specifications.condition) : '-'}
             </div>
           </div>
         )}

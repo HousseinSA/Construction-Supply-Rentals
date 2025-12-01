@@ -16,6 +16,7 @@
     "equipmentForSale": "Matériel À Vendre",
     "logoutConfirm": "Confirmer la Déconnexion",
     "cancel": "Annuler",
+    "close": "Fermer",
     "showingResults": "{start} sur {total}"
   },
   "equipment": {
@@ -50,6 +51,12 @@
     "brand": "Marque",
     "model": "Modèle",
     "condition": "État",
+    "conditionLabels": {
+      "new": "Neuf",
+      "excellent": "Excellent",
+      "good": "Bon",
+      "used": "Usagé"
+    },
     "hoursUsed": "Heures d'Utilisation",
     "usage": "Utilisation",
     "equipmentUsage": "Utilisation Totale",
@@ -68,7 +75,7 @@
     "currentlyUnavailable": "Actuellement Indisponible",
     "bookingPending": "Vous avez déjà une demande de réservation en attente pour cet équipement",
     "equipmentUnavailable": "Cet équipement est actuellement indisponible en raison de réservations en attente",
-    "adminCannotBook": "Les administrateurs ne peuvent pas faire de réservations",
+    "adminCannotBook": "Les administrateurs ne peuvent pas faire de réservations ou de demandes d'achat",
     "goBack": "Retour",
     "loading": "Chargement...",
     "equipmentNotFound": "Matériel Introuvable",
@@ -440,9 +447,9 @@
       "forSale": "À Vendre",
       "priceType": "Type de Tarification",
       "selectPriceType": "Sélectionner Type de Prix",
-      "hourly": "Par Heure",
-      "daily": "Par Jour",
-      "perKm": "Par Kilomètre",
+      "hourly": "Heure",
+      "daily": "Jour",
+      "perKm": "Kilomètre",
       "price": "Prix",
       "description": "Description",
       "descriptionPlaceholder": "Décrivez les caractéristiques et capacités du matériel",
@@ -466,8 +473,9 @@
       "condition": "État",
       "selectCondition": "Sélectionner l'État",
       "conditions": {
-        "new": "Neuf",
-        "excellent": "Excellent État",
+        "new": "Nouveau",
+        "excellent": "Excellent",
+        "good": "Bon",
         "used": "Usagé"
       },
       "brand": "Marque",
@@ -749,6 +757,7 @@
       "actions": {
         "view": "Voir",
         "cancel": "Annuler",
+        "close": "Fermer",
         "save": "Sauvegarder",
         "saving": "Sauvegarde..."
       },
@@ -826,6 +835,7 @@
       "actions": {
         "view": "Voir",
         "cancel": "Annuler",
+        "close": "Fermer",
         "save": "Sauvegarder",
         "saving": "Sauvegarde..."
       },
