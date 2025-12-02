@@ -17,6 +17,7 @@ interface EquipmentType {
   _id: string
   name: string
   category: string
+  pricingTypes: string[]
 }
 
 export default function PricingTypeDropdown({
@@ -53,21 +54,11 @@ export default function PricingTypeDropdown({
   }, [equipmentType])
 
   const availablePricingTypes = useMemo(() => {
-    if (!equipmentTypeData) return []
+    if (!equipmentTypeData || !equipmentTypeData.pricingTypes) return []
     
-    const typeName = equipmentTypeData.name.toLowerCase()
-    let pricingTypes: string[] = []
-    
-    // Determine pricing types based on equipment name
-    if (typeName.includes('camion') || typeName.includes('porte') || typeName.includes('benne')) {
-      pricingTypes = ["daily", "per_km"]
-    } else {
-      pricingTypes = ["hourly", "daily"]
-    }
-    
-    return pricingTypes.map(type => ({
+    return equipmentTypeData.pricingTypes.map(type => ({
       value: type,
-      label: t(type === "hourly" ? "hourly" : type === "daily" ? "daily" : "perKm")
+      label: t(type === "hourly" ? "hourly" : type === "daily" ? "daily" : type === "per_km" ? "perKm" : "perTon")
     }))
   }, [equipmentTypeData, t])
 

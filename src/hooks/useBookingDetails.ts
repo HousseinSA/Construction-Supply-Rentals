@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useBookings } from './useBookings'
+import { calculateCommission } from '@/src/lib/commission'
 
 export function useBookingDetails(booking: any, onStatusUpdate: () => void, onClose: () => void) {
   const { updateBookingStatus } = useBookings()
@@ -22,15 +23,12 @@ export function useBookingDetails(booking: any, onStatusUpdate: () => void, onCl
     }
   }
 
-  const calculateCommission = (subtotal: number, usage: number) => {
-    let rate = 0.10
-    if (usage >= 1000) rate = 0.08
-    else if (usage >= 500) rate = 0.09
-    return subtotal * rate
+  const calculateItemCommission = (subtotal: number, usage: number, pricingType?: string) => {
+    return calculateCommission(subtotal, usage, pricingType)
   }
 
   const totalCommission = booking.bookingItems.reduce(
-    (sum: number, item: any) => sum + calculateCommission(item.subtotal, item.usage),
+    (sum: number, item: any) => sum + calculateCommission(item.subtotal, item.usage, item.pricingType),
     0
   )
 
@@ -41,7 +39,7 @@ export function useBookingDetails(booking: any, onStatusUpdate: () => void, onCl
     setAdminNotes,
     loading,
     handleStatusUpdate,
-    calculateCommission,
+    calculateCommission: calculateItemCommission,
     totalCommission,
     originalStatus: booking.status,
   }

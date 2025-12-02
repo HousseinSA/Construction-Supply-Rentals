@@ -76,7 +76,7 @@ export default async function LocaleLayout({
       <body className={`${baseFont} antialiased`}>
         <SessionProvider session={session}>
           <NextIntlClientProvider messages={messages} locale={locale}>
-            <Header />
+            <Header session={session} />
             {children}
             <Analytics />
             <WhatsAppFloat phoneNumber="22212345678" />

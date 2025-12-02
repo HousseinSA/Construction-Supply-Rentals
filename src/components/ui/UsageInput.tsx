@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useTranslations } from "next-intl"
+import { Info } from "lucide-react"
 import Dropdown from "./Dropdown"
 
 interface UsageInputProps {
@@ -42,8 +43,15 @@ export default function UsageInput({
     fetchUsageCategory()
   }, [equipmentTypeId])
 
-  const getLabel = () => {
-    return t("equipmentUsage")
+  const getTooltipText = () => {
+    switch (usageCategory) {
+      case "kilometers":
+        return t("usageTooltip.kilometers")
+      case "tonnage":
+        return t("usageTooltip.tonnage")
+      default:
+        return units.length > 1 ? t("usageTooltip.hoursKm") : t("usageTooltip.hours")
+    }
   }
 
   const getPlaceholder = () => {
@@ -75,8 +83,15 @@ export default function UsageInput({
 
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-2">
-        {getLabel()}
+      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+        {t("usageLabel")}
+        <div className="relative group">
+          <Info className="h-4 w-4 text-gray-400 cursor-help" />
+          <div className="absolute ltr:left-0 rtl:right-0 bottom-full mb-2 w-64 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+            {getTooltipText()}
+            <div className="absolute top-full ltr:left-4 rtl:right-4 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+          </div>
+        </div>
       </label>
       <div className="relative z-20">
         <input

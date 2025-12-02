@@ -311,7 +311,7 @@ les 500h / 9% 1000h 8%
 for sale 5% ****
 ****
 for cammion  plus 1  month 9% plus de 2 month 8% 
-for engine each 100h is  1% increae by each 100h increment and it stop commitin fix at 10% when it reach 1000h    
+for engine each 100h is  1% increase by each 100h increment and it stop commitin fix at 10% when it reach 1000h    
 
 
 🚜 Terrassement (12 items)

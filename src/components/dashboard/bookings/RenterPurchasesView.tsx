@@ -6,15 +6,19 @@ import { usePagination } from "@/src/hooks/usePagination"
 import { Table, TableHeader, TableBody, TableHead, TableCell } from "@/src/components/ui/Table"
 import Pagination from "@/src/components/ui/Pagination"
 import { Eye, XCircle } from "lucide-react"
+import Image from "next/image"
 import { Link } from "@/src/i18n/navigation"
 import { toast } from "sonner"
 import ConfirmModal from "@/src/components/ui/ConfirmModal"
 import { AlertTriangle } from "lucide-react"
+import GenericMobileCard from "@/src/components/ui/GenericMobileCard"
+import { formatBookingId } from "@/src/lib/format"
 
 interface SaleOrder {
   _id: string
   equipmentId: string
   equipmentName: string
+  equipmentImage?: string
   salePrice: number
   status: "pending" | "paid" | "completed" | "cancelled"
   buyerMessage?: string
@@ -133,7 +137,18 @@ export default function RenterPurchasesView() {
             {paginatedData.map((purchase) => (
               <tr key={purchase._id}>
                 <TableCell>
-                  <div className="text-sm font-medium">{purchase.equipmentName}</div>
+                  <div className="flex items-center gap-3">
+                    {purchase.equipmentImage && (
+                      <Image
+                        src={purchase.equipmentImage}
+                        alt={purchase.equipmentName}
+                        width={64}
+                        height={56}
+                        className="w-16 h-14 object-cover rounded-lg shadow-sm"
+                      />
+                    )}
+                    <div className="text-sm font-medium">{purchase.equipmentName}</div>
+                  </div>
                 </TableCell>
                 <TableCell>
                   <span className="font-semibold" dir="ltr">{purchase.salePrice.toLocaleString()} MRU</span>
@@ -145,7 +160,7 @@ export default function RenterPurchasesView() {
                   </span>
                 </TableCell>
                 <TableCell align="center">
-                  <div className="flex items-center justify-center gap-2">
+                  <div className="flex items-center justify-center gap-2 min-w-[80px]">
                     <Link href={`/equipment/${purchase.equipmentId}`} className="inline-block p-2 hover:bg-gray-100 rounded-lg transition-colors">
                       <Eye className="h-4 w-4 text-gray-600" />
                     </Link>
@@ -169,42 +184,35 @@ export default function RenterPurchasesView() {
 
       <div className="lg:hidden space-y-4">
         {paginatedData.map((purchase) => (
-          <div key={purchase._id} className="p-4 space-y-3 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors">
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex-1">
-                <div className="text-sm font-medium text-gray-900 mb-1">
-                  {purchase.equipmentName}
-                </div>
-                <div className="text-xs text-gray-500 mt-0.5">
-                  {new Date(purchase.createdAt).toLocaleDateString()}
-                </div>
-              </div>
-              {getStatusBadge(purchase.status)}
-            </div>
-
-            <div className="space-y-3 pt-2 border-t border-gray-200">
-              <div>
-                <div className="text-xs text-gray-500">{t("table.price")}</div>
-                <div className="font-semibold text-gray-900" dir="ltr">{purchase.salePrice.toLocaleString()} MRU</div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Link href={`/equipment/${purchase.equipmentId}`} className="flex-1 px-3 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 text-sm flex items-center justify-center gap-1.5">
-                  <Eye className="w-4 h-4" />
-                  {t("actions.view")}
-                </Link>
-                {purchase.status === "pending" && (
-                  <button
-                    onClick={() => handleCancelClick(purchase._id)}
-                    disabled={cancellingId === purchase._id}
-                    className="flex-1 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm flex items-center justify-center gap-1.5 disabled:opacity-50 transition-all"
-                  >
-                    <XCircle className="w-4 h-4" />
-                    {t("cancelPurchase")}
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
+          <GenericMobileCard
+            key={purchase._id}
+            id={formatBookingId(purchase._id)}
+            title={purchase.equipmentName}
+            date={new Date(purchase.createdAt).toLocaleDateString()}
+            status={purchase.status}
+            fields={[
+              {
+                label: t("table.price"),
+                value: purchase.salePrice,
+              },
+            ]}
+            onViewDetails={() => {
+              window.location.href = `/equipment/${purchase.equipmentId}`
+            }}
+            viewButtonText={t("actions.view")}
+            actionButton={
+              purchase.status === "pending" ? (
+                <button
+                  onClick={() => handleCancelClick(purchase._id)}
+                  disabled={cancellingId === purchase._id}
+                  className="p-2 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 group"
+                  title={t("cancelPurchase")}
+                >
+                  <XCircle className="h-5 w-5 text-red-600 group-hover:text-red-700" />
+                </button>
+              ) : undefined
+            }
+          />
         ))}
       </div>
 

@@ -36,6 +36,56 @@ body {
   font-family: var(--font-inter), sans-serif;
 }
 
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 640px) {
+  html {
+    font-size: 15px;
+  }
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 767px) {
+  .font-french,
+  .font-english {
+    letter-spacing: -0.01em;
+    line-height: 1.5;
+  }
+
+  .font-french h1,
+  .font-english h1 {
+    font-size: 1.75rem;
+  }
+  .font-french h2,
+  .font-english h2 {
+    font-size: 1.5rem;
+  }
+  .font-french h3,
+  .font-english h3 {
+    font-size: 1.25rem;
+  }
+  .font-french h4,
+  .font-english h4 {
+    font-size: 1.1rem;
+  }
+
+  .font-french button,
+  .font-english button,
+  .font-french input,
+  .font-english input,
+  .font-french select,
+  .font-english select {
+    font-size: 0.9rem;
+  }
+}
+
 .bg-primary {
   background-color: var(--primary);
 }
@@ -88,14 +138,12 @@ button {
   cursor: pointer;
 }
 
-/* Video performance optimizations */
 video {
   transform: translateZ(0);
   backface-visibility: hidden;
   perspective: 1000px;
 }
 
-/* Smooth scrolling optimizations */
 html {
   scroll-behavior: smooth;
 }
@@ -104,13 +152,11 @@ body {
   overflow-x: hidden;
 }
 
-/* GPU acceleration for better performance */
 .transform-gpu {
   transform: translateZ(0);
   will-change: transform;
 }
 
-/* Performance optimizations for animations */
 .animate-smooth {
   transform: translateZ(0);
   backface-visibility: hidden;
@@ -118,18 +164,16 @@ body {
   will-change: transform;
 }
 
-/* Optimize image rendering for animations */
-img, picture {
+img,
+picture {
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
 }
 
-/* Contain layout shifts during animations */
 .contain-layout {
   contain: layout style paint;
 }
 
-/* Mobile performance optimizations */
 @media (max-width: 768px) {
   video {
     transform: translate3d(0, 0, 0);
@@ -141,7 +185,6 @@ img, picture {
   }
 }
 
-/* Reduce motion for users who prefer it */
 @media (prefers-reduced-motion: reduce) {
   video {
     animation-duration: 0.01ms !important;
@@ -150,7 +193,6 @@ img, picture {
   }
 }
 
-/* Dropdown animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -187,7 +229,6 @@ img, picture {
   animation-duration: 0.2s;
 }
 
-/* Enhanced Ken Burns effect - smooth zoom and pan animation */
 @keyframes kenBurnsDesktop {
   0% {
     transform: scale3d(1, 1, 1) translate3d(0, 0, 0);
@@ -225,26 +266,22 @@ img, picture {
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Mobile version - lighter animation */
 @media (max-width: 767px) {
   .ken-burns-effect {
     animation: kenBurnsMobile 6s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
   }
 }
 
-/* Desktop version - full effect */
 @media (min-width: 768px) {
   .ken-burns-effect {
     animation: kenBurnsDesktop 10s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
   }
 }
 
-/* Pause animation on hover for better UX */
 .group:hover .ken-burns-effect {
   animation-play-state: paused;
 }
 
-/* Disable animation for users who prefer reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .ken-burns-effect {
     animation: none !important;
@@ -252,9 +289,9 @@ img, picture {
   }
 }
 
-/* WhatsApp Float Animations */
 @keyframes bounce-slow {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {

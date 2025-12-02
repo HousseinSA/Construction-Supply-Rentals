@@ -60,10 +60,10 @@ export default function Pagination({
   const endItem = Math.min(currentPage * itemsPerPage, totalItems)
 
   const getShowingText = () => {
-    return t('showingResults')
-      .replace('{start}', startItem.toString())
-      .replace('{end}', endItem.toString())
-      .replace('{total}', totalItems.toString())
+    return t('showingResults', {
+      start: currentPage,
+      total: totalPages
+    })
   }
 
   return (

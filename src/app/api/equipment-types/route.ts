@@ -71,6 +71,7 @@ export async function GET(request: Request) {
             description: 1,
             equipmentCount: 1,
             categoryId: 1,
+            pricingTypes: 1,
           },
         },
         { $sort: { name: 1 } },

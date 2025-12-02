@@ -4,24 +4,42 @@ import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { useBookings } from "@/src/hooks/useBookings"
 import { usePagination } from "@/src/hooks/usePagination"
-import { Table, TableHeader, TableBody, TableHead, TableCell } from "@/src/components/ui/Table"
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableCell,
+} from "@/src/components/ui/Table"
 import Pagination from "@/src/components/ui/Pagination"
 import { Eye, XCircle } from "lucide-react"
 import { Link } from "@/src/i18n/navigation"
+import Image from "next/image"
 import { toast } from "sonner"
 import type { BookingWithDetails } from "@/src/stores/bookingsStore"
 import ConfirmModal from "@/src/components/ui/ConfirmModal"
 import { AlertTriangle } from "lucide-react"
+import GenericMobileCard from "@/src/components/ui/GenericMobileCard"
+import { formatBookingId } from "@/src/lib/format"
 
 export default function RenterBookingView() {
   const t = useTranslations("dashboard.bookings")
+  const tCommon = useTranslations("common")
   const { bookings, loading, fetchBookings } = useBookings()
   const [cancellingId, setCancellingId] = useState<string | null>(null)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
-  const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null)
+  const [selectedBookingId, setSelectedBookingId] = useState<string | null>(
+    null
+  )
 
-  const { currentPage, totalPages, paginatedData, goToPage, totalItems, itemsPerPage } = 
-    usePagination({ data: bookings, itemsPerPage: 10 })
+  const {
+    currentPage,
+    totalPages,
+    paginatedData,
+    goToPage,
+    totalItems,
+    itemsPerPage,
+  } = usePagination({ data: bookings, itemsPerPage: 10 })
 
   const handleCancelClick = (bookingId: string) => {
     setSelectedBookingId(bookingId)
@@ -30,7 +48,7 @@ export default function RenterBookingView() {
 
   const handleCancelBooking = async () => {
     if (!selectedBookingId) return
-    
+
     setCancellingId(selectedBookingId)
     try {
       const response = await fetch("/api/bookings", {
@@ -65,7 +83,11 @@ export default function RenterBookingView() {
       cancelled: "bg-red-100 text-red-800",
     }
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${styles[status as keyof typeof styles] || "bg-gray-100 text-gray-800"}`}>
+      <span
+        className={`px-2 py-1 rounded-full text-xs font-medium ${
+          styles[status as keyof typeof styles] || "bg-gray-100 text-gray-800"
+        }`}
+      >
         {t(`status.${status}`)}
       </span>
     )
@@ -74,7 +96,9 @@ export default function RenterBookingView() {
   if (loading) {
     return (
       <div className="p-12 text-center">
-        <div className="animate-pulse text-gray-600 font-medium">{t("loading")}</div>
+        <div className="animate-pulse text-gray-600 font-medium">
+          {t("loading")}
+        </div>
       </div>
     )
   }
@@ -106,36 +130,69 @@ export default function RenterBookingView() {
             {paginatedData.map((booking) => (
               <tr key={booking._id?.toString()}>
                 <TableCell>
-                  <div className="space-y-1">
-                    {booking.bookingItems?.map((item, idx) => (
-                      <div key={idx} className="text-sm font-medium">{item.equipmentName}</div>
-                    ))}
+                  <div className="flex items-center gap-3">
+                    <Image
+                      src={booking.bookingItems[0]?.equipmentImage || "/equipement-images/default-fallback-image.png"}
+                      alt={booking.bookingItems[0]?.equipmentName || "Equipment"}
+                      width={64}
+                      height={56}
+                      className="w-16 h-14 object-cover rounded-lg shadow-sm"
+                    />
+                    <div className="space-y-1">
+                      {booking.bookingItems?.map((item, idx) => (
+                        <div key={idx} className="text-sm font-medium">
+                          {item.equipmentName}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </TableCell>
                 <TableCell>
                   <div className="space-y-1">
                     {booking.bookingItems?.map((item, idx) => (
-                      <div key={idx} className="text-sm text-gray-600">{item.usage}h</div>
+                      <div key={idx} className="text-sm text-gray-600">
+                        {item.usage}
+                        {item.usageUnit
+                          ? item.usageUnit === "hours"
+                            ? ` ${tCommon("hour")}`
+                            : item.usageUnit === "days"
+                            ? ` ${tCommon("day")}`
+                            : item.usageUnit === "km"
+                            ? ` ${tCommon("km")}`
+                            : item.usageUnit === "tons"
+                            ? ` ${tCommon("tons")}`
+                            : ""
+                          : "h"}
+                      </div>
                     ))}
                   </div>
                 </TableCell>
                 <TableCell>
-                  <span className="font-semibold" dir="ltr">{booking.totalPrice.toLocaleString()} MRU</span>
+                  <span className="font-semibold" dir="ltr">
+                    {booking.totalPrice.toLocaleString()} MRU
+                  </span>
                 </TableCell>
-                <TableCell align="center">{getStatusBadge(booking.status)}</TableCell>
+                <TableCell align="center">
+                  {getStatusBadge(booking.status)}
+                </TableCell>
                 <TableCell align="center">
                   <span className="text-sm text-gray-600">
                     {new Date(booking.createdAt).toLocaleDateString()}
                   </span>
                 </TableCell>
                 <TableCell align="center">
-                  <div className="flex items-center justify-center gap-2">
-                    <Link href={`/equipment/${booking.bookingItems[0]?.equipmentId}`} className="inline-block p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                  <div className="flex items-center justify-center gap-2 min-w-[80px]">
+                    <Link
+                      href={`/equipment/${booking.bookingItems[0]?.equipmentId}`}
+                      className="inline-block p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    >
                       <Eye className="h-4 w-4 text-gray-600" />
                     </Link>
                     {booking.status === "pending" && (
                       <button
-                        onClick={() => handleCancelClick(booking._id?.toString() || "")}
+                        onClick={() =>
+                          handleCancelClick(booking._id?.toString() || "")
+                        }
                         disabled={cancellingId === booking._id?.toString()}
                         className="p-2 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 group"
                         title={t("cancelBooking")}
@@ -152,53 +209,67 @@ export default function RenterBookingView() {
       </div>
 
       <div className="lg:hidden space-y-4">
-        {paginatedData.map((booking) => (
-          <div key={booking._id?.toString()} className="p-4 space-y-3 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors">
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex-1">
-                <div className="text-sm font-medium text-gray-900 mb-1">
-                  {booking.bookingItems[0]?.equipmentName}
-                  {booking.bookingItems.length > 1 && (
-                    <span className="text-gray-500"> +{booking.bookingItems.length - 1}</span>
-                  )}
-                </div>
-                <div className="text-xs text-gray-500 mt-0.5">
-                  {new Date(booking.createdAt).toLocaleDateString()}
-                </div>
-              </div>
-              {getStatusBadge(booking.status)}
-            </div>
+        {paginatedData.map((booking) => {
+          const equipmentTitle = `${booking.bookingItems[0]?.equipmentName}${
+            booking.bookingItems.length > 1
+              ? ` +${booking.bookingItems.length - 1}`
+              : ""
+          }`
+          const totalUsage = booking.bookingItems.reduce(
+            (sum, item) => sum + item.usage,
+            0
+          )
 
-            <div className="space-y-3 pt-2 border-t border-gray-200">
-              <div className="flex items-center gap-4">
-                <div>
-                  <div className="text-xs text-gray-500">{t("table.usage")}</div>
-                  <div className="font-semibold text-gray-900" dir="ltr">{booking.bookingItems.reduce((sum, item) => sum + item.usage, 0)}h</div>
-                </div>
-                <div>
-                  <div className="text-xs text-gray-500">{t("table.total")}</div>
-                  <div className="font-semibold text-gray-900" dir="ltr">{booking.totalPrice.toLocaleString()} MRU</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Link href={`/equipment/${booking.bookingItems[0]?.equipmentId}`} className="flex-1 px-3 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 text-sm flex items-center justify-center gap-1.5">
-                  <Eye className="w-4 h-4" />
-                  {t("actions.view")}
-                </Link>
-                {booking.status === "pending" && (
+          return (
+            <GenericMobileCard
+              key={booking._id?.toString()}
+              id={formatBookingId(booking._id?.toString() || "")}
+              title={equipmentTitle}
+              date={new Date(booking.createdAt).toLocaleDateString()}
+              status={booking.status}
+              fields={[
+                {
+                  label: t("table.usage"),
+                  value: `${totalUsage}${
+                    booking.bookingItems[0]?.usageUnit
+                      ? booking.bookingItems[0].usageUnit === "hours"
+                        ? ` ${tCommon("hour")}`
+                        : booking.bookingItems[0].usageUnit === "days"
+                        ? ` ${tCommon("day")}`
+                        : booking.bookingItems[0].usageUnit === "km"
+                        ? ` ${tCommon("km")}`
+                        : booking.bookingItems[0].usageUnit === "tons"
+                        ? ` ${tCommon("tons")}`
+                        : ""
+                      : "h"
+                  }`,
+                },
+                {
+                  label: t("table.total"),
+                  value: booking.totalPrice,
+                },
+              ]}
+              onViewDetails={() => {
+                window.location.href = `/equipment/${booking.bookingItems[0]?.equipmentId}`
+              }}
+              viewButtonText={t("actions.view")}
+              actionButton={
+                booking.status === "pending" ? (
                   <button
-                    onClick={() => handleCancelClick(booking._id?.toString() || "")}
+                    onClick={() =>
+                      handleCancelClick(booking._id?.toString() || "")
+                    }
                     disabled={cancellingId === booking._id?.toString()}
-                    className="flex-1 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm flex items-center justify-center gap-1.5 disabled:opacity-50 transition-all"
+                    className="p-2 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 group"
+                    title={t("cancelBooking")}
                   >
-                    <XCircle className="w-4 h-4" />
-                    {t("cancelBooking")}
+                    <XCircle className="h-5 w-5 text-red-600 group-hover:text-red-700" />
                   </button>
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
+                ) : undefined
+              }
+            />
+          )
+        })}
       </div>
 
       <Pagination

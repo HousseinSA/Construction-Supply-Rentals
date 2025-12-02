@@ -1,5 +1,6 @@
 import Image from "next/image"
 import { useTranslations } from "next-intl"
+import { useState } from "react"
 import { EquipmentType } from "@/src/lib/models"
 import { Link } from "@/src/i18n/navigation"
 import { useFontClass } from "@/src/hooks/useFontClass"
@@ -25,6 +26,7 @@ export default function EquipmentTypeCard({
 }: EquipmentTypeCardProps) {
   const t = useTranslations("categories")
   const fontClass = useFontClass()
+  const [isLoading, setIsLoading] = useState(false)
   const hasEquipment = (type.equipmentCount || 0) > 0
 
   const cardContent = (
@@ -55,8 +57,8 @@ export default function EquipmentTypeCard({
             </span>
             <span className="text-sm text-gray-400">{t("available")}</span>
           </div>
-          <Button variant="card-primary" size="card">
-            {t("viewEquipment")}
+          <Button variant="card-primary" size="card" disabled={isLoading}>
+            {isLoading ? t("loading") : t("viewEquipment")}
           </Button>
         </div>
       </div>
@@ -68,7 +70,7 @@ export default function EquipmentTypeCard({
   }
 
   return (
-    <Link href={`/equipment?type=${type._id}`}>
+    <Link href={`/equipment?type=${type._id}`} onClick={() => setIsLoading(true)}>
       {cardContent}
     </Link>
   )

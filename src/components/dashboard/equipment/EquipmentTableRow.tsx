@@ -172,7 +172,7 @@ export default function EquipmentTableRow({
         </div>
       </td>
       <td className="px-6 py-4">
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-2 min-w-[80px]">
           {item.createdBy === "admin" && (
             <button
               onClick={() =>

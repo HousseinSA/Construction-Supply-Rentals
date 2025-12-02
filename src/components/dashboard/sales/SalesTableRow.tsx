@@ -1,4 +1,5 @@
 import { Eye } from "lucide-react"
+import Image from "next/image"
 import { formatBookingId, formatPhoneNumber } from "@/src/lib/format"
 import CopyButton from "@/src/components/ui/CopyButton"
 import BookingStatusBadge from "../bookings/BookingStatusBadge"

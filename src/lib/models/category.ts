@@ -15,7 +15,7 @@ export interface EquipmentType {
   name: string
   slug: string
   categoryId: ObjectId
-  pricingType: 'hourly' | 'daily' | 'per_km' | 'per_ton'
+  pricingTypes: ('hourly' | 'daily' | 'per_km' | 'per_ton')[]
   isActive: boolean
   createdAt: Date
   updatedAt: Date

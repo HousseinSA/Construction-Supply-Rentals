@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl"
+import Dropdown from "./Dropdown"
 
 interface ConditionDropdownProps {
   value: string
@@ -11,26 +12,21 @@ export default function ConditionDropdown({
 }: ConditionDropdownProps) {
   const t = useTranslations("dashboard.equipment")
 
-  const conditions = ["new", "excellent", "good", "fair", "used"]
+  const conditions = [
+    { value: "new", label: t("conditions.new") },
+    { value: "excellent", label: t("conditions.excellent") },
+    { value: "good", label: t("conditions.good") },
+    { value: "used", label: t("conditions.used") },
+  ]
 
   return (
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-2">
-        {t("condition")} <span className="text-red-500">*</span>
-      </label>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition-all duration-200"
-        required
-      >
-        <option value="">{t("selectCondition")}</option>
-        {conditions.map((condition) => (
-          <option key={condition} value={condition}>
-            {t(`conditions.${condition}`)}
-          </option>
-        ))}
-      </select>
-    </div>
+    <Dropdown
+      label={t("condition")}
+      options={conditions}
+      value={value}
+      onChange={onChange}
+      placeholder={t("selectCondition")}
+      required
+    />
   )
 }

@@ -3,8 +3,9 @@ import { Db, ObjectId } from 'mongodb';
 export async function calculateSubtotal(
   db: Db,
   equipmentId: ObjectId,
-  usage: number
-): Promise<{ rate: number; subtotal: number; equipmentName: string; supplierId: ObjectId; usageUnit: string }> {
+  usage: number,
+  pricingType?: string
+): Promise<{ rate: number; subtotal: number; equipmentName: string; supplierId: ObjectId; usageUnit: string; pricingType: string }> {
   const equipment = await db.collection('equipment').findOne({ _id: equipmentId });
   
   if (!equipment) {
@@ -13,7 +14,9 @@ export async function calculateSubtotal(
 
   let rate = 0;
   let usageUnit = 'hours';
-  switch (equipment.pricing.type) {
+  let selectedPricingType = pricingType || equipment.pricing.type;
+
+  switch (selectedPricingType) {
     case 'hourly': 
       rate = equipment.pricing.hourlyRate || 0;
       usageUnit = 'hours';
@@ -32,12 +35,17 @@ export async function calculateSubtotal(
       break;
   }
 
+  if (rate === 0) {
+    throw new Error(`Invalid pricing type: ${selectedPricingType}`);
+  }
+
   return {
     rate,
     subtotal: rate * usage,
     equipmentName: equipment.name,
     supplierId: equipment.createdById,
-    usageUnit
+    usageUnit,
+    pricingType: selectedPricingType
   };
 }
 

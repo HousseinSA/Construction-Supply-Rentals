@@ -7,10 +7,11 @@ interface EquipmentItemsProps {
     equipmentName: string
     usage: number
     usageUnit?: string
+    pricingType?: string
     rate: number
     subtotal: number
   }>
-  calculateCommission: (subtotal: number, usage: number) => number
+  calculateCommission: (subtotal: number, usage: number, pricingType?: string) => number
   getUsageLabel: (unit: string) => string
   labels: {
     title: string
@@ -56,7 +57,7 @@ export default function EquipmentItems({ items, calculateCommission, getUsageLab
               <div className="flex justify-between">
                 <span className="text-gray-600">{labels.commission}:</span>
                 <span className="font-medium text-green-600" dir="ltr">
-                  {calculateCommission(item.subtotal, item.usage).toLocaleString()} MRU
+                  {calculateCommission(item.subtotal, item.usage, item.pricingType).toLocaleString()} MRU
                 </span>
               </div>
               <div className="flex justify-between">

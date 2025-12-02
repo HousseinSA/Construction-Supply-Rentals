@@ -65,9 +65,66 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    pipeline.push({
-      $sort: { createdAt: -1 },
-    })
+    // Add equipment images lookup
+    pipeline.push(
+      {
+        $addFields: {
+          equipmentIds: {
+            $map: {
+              input: "$bookingItems",
+              as: "item",
+              in: "$$item.equipmentId",
+            },
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "equipment",
+          localField: "equipmentIds",
+          foreignField: "_id",
+          as: "equipmentDetails",
+        },
+      },
+      {
+        $addFields: {
+          bookingItems: {
+            $map: {
+              input: "$bookingItems",
+              as: "item",
+              in: {
+                $mergeObjects: [
+                  "$$item",
+                  {
+                    equipmentImage: {
+                      $let: {
+                        vars: {
+                          equipment: {
+                            $arrayElemAt: [
+                              {
+                                $filter: {
+                                  input: "$equipmentDetails",
+                                  as: "eq",
+                                  cond: { $eq: ["$$eq._id", "$$item.equipmentId"] },
+                                },
+                              },
+                              0,
+                            ],
+                          },
+                        },
+                        in: { $arrayElemAt: ["$$equipment.images", 0] },
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+      { $project: { equipmentDetails: 0, equipmentIds: 0 } },
+      { $sort: { createdAt: -1 } }
+    )
 
     const bookings = await db
       .collection("bookings")
@@ -134,13 +191,14 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      const { rate, subtotal, equipmentName, supplierId, usageUnit } =
-        await calculateSubtotal(db, equipmentId, item.usage)
+      const { rate, subtotal, equipmentName, supplierId, usageUnit, pricingType } =
+        await calculateSubtotal(db, equipmentId, item.usage, item.pricingType)
 
       bookingItems.push({
         equipmentId,
         supplierId,
         equipmentName,
+        pricingType,
         rate,
         usage: item.usage,
         usageUnit,

@@ -3,8 +3,9 @@ import { useSession } from "next-auth/react"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { useRouter } from "@/src/i18n/navigation"
+import { PricingType } from "@/src/lib/types"
 
-export function useBookingModal(equipment: any, onSuccess?: () => void, onClose?: () => void) {
+export function useBookingModal(equipment: any, onSuccess?: () => void, onClose?: () => void, pricingType?: PricingType) {
   const { data: session } = useSession()
   const router = useRouter()
   const t = useTranslations("booking")
@@ -24,7 +25,7 @@ export function useBookingModal(equipment: any, onSuccess?: () => void, onClose?
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           renterId: session.user.id,
-          bookingItems: [{ equipmentId: equipment._id, usage }],
+          bookingItems: [{ equipmentId: equipment._id, usage, pricingType }],
           renterMessage: message,
         }),
       })

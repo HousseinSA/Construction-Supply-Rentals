@@ -13,7 +13,6 @@ import Button from "../ui/Button"
 import BookingModal from "../booking/BookingModal"
 import SaleModal from "../booking/SaleModal"
 import { MapPin, Tag } from "lucide-react"
-import { toast } from "sonner"
 
 interface Pricing {
   dailyRate?: number
@@ -38,6 +37,7 @@ interface EquipmentCardProps {
 
 export default function EquipmentCard({ equipment }: EquipmentCardProps) {
   const t = useTranslations("equipment")
+  const tDetails = useTranslations("equipmentDetails")
   const router = useRouter()
   const { data: session } = useSession()
   const fontClass = useFontClass()
@@ -52,13 +52,14 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
   const localizedCity = convertToLocalized(equipment.location)
 
   const handleActionClick = (e: React.MouseEvent) => {
+    e.preventDefault()
     e.stopPropagation()
     if (!session) {
-      router.push('/auth/login')
+      router.push("/auth/login")
       return
     }
-    if (session.user.role === 'admin') {
-      toast.error(t('adminCannotBook'))
+    if (session.user.role === "admin") {
+      toast.error(tDetails("adminCannotBook"))
       return
     }
     isForSale ? setShowSaleModal(true) : setShowBookingModal(true)
@@ -70,10 +71,12 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
         isForSale
           ? "border-amber-400 ring-2 ring-amber-400/30"
           : "border-gray-100 hover:border-primary/20"
-      } group cursor-pointer ${fontClass}`}
-      onClick={() => router.push(`/equipment/${equipment._id}`)}
+      } group ${fontClass}`}
     >
-      <div className="h-48 relative overflow-hidden">
+      <div
+        className="h-48 relative overflow-hidden cursor-pointer"
+        onClick={() => router.push(`/equipment/${equipment._id}`)}
+      >
         <Image
           src={
             equipment.images?.length > 0

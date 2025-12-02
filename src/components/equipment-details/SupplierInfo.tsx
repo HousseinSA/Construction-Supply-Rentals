@@ -30,7 +30,7 @@ export default function SupplierInfo({
 
   if (variant === "modal") {
     return (
-      <div className="bg-orange-50 rounded-lg p-4 h-full flex flex-col">
+      <div className="bg-orange-50 rounded-lg p-4 lg:h-full flex flex-col">
         <h3 className="font-semibold mb-3 flex items-center gap-2">
           <Building2 className="w-5 h-5 text-orange-600" />
           {title || tBooking("supplierInfo")}
@@ -70,7 +70,7 @@ export default function SupplierInfo({
         </div>
 
         {showContactButtons && (
-          <div className="mt-4 flex gap-2">
+          <div className="mt-2 flex gap-2">
             <a
               href={`tel:${supplier.phone}`}
               className="flex items-center gap-2 px-3 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 text-sm flex-1 justify-center"
