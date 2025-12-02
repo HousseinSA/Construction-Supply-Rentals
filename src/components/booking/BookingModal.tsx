@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef } from 'react'
+import { useRef, useState, useMemo } from 'react'
 import { useTranslations } from "next-intl"
 import { Send } from "lucide-react"
 import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
@@ -11,6 +11,7 @@ import Input from "@/src/components/ui/Input"
 import ModalHeader from "./ModalHeader"
 import EquipmentInfo from "./EquipmentInfo"
 import PriceCalculation from "./PriceCalculation"
+import { PricingType } from "@/src/lib/types"
 
 interface BookingModalProps {
   isOpen: boolean
@@ -26,16 +27,33 @@ export default function BookingModal({
   onBookingSuccess,
 }: BookingModalProps) {
   const t = useTranslations("booking")
+  const tCommon = useTranslations("common")
   const modalRef = useRef<HTMLDivElement>(null)
-  const { getPriceData } = usePriceFormatter()
+  
+  const availablePricingTypes = useMemo(() => {
+    if (!equipment?.pricing) return []
+    const types: { type: PricingType; label: string; rate: number }[] = []
+    if (equipment.pricing.hourlyRate) types.push({ type: 'hourly', label: tCommon('hour'), rate: equipment.pricing.hourlyRate })
+    if (equipment.pricing.dailyRate) types.push({ type: 'daily', label: tCommon('day'), rate: equipment.pricing.dailyRate })
+    if (equipment.pricing.kmRate) types.push({ type: 'per_km', label: tCommon('km'), rate: equipment.pricing.kmRate })
+    if (equipment.pricing.tonRate) types.push({ type: 'per_ton', label: tCommon('ton'), rate: equipment.pricing.tonRate })
+    return types
+  }, [equipment, tCommon])
+
+  const [selectedPricingType, setSelectedPricingType] = useState<PricingType>(
+    availablePricingTypes[0]?.type || 'daily'
+  )
+
   const { usage, setUsage, message, setMessage, loading, handleSubmit } =
-    useBookingModal(equipment, onBookingSuccess, onClose)
+    useBookingModal(equipment, onBookingSuccess, onClose, selectedPricingType)
   
   useModalClose(isOpen, onClose, modalRef)
 
   if (!isOpen || !equipment) return null
 
-  const { rate, unit } = getPriceData(equipment.pricing, equipment.listingType === "forSale")
+  const selectedPricing = availablePricingTypes.find(p => p.type === selectedPricingType)
+  const rate = selectedPricing?.rate || 0
+  const unit = selectedPricing?.label || ''
   const subtotal = rate * usage
   const usageLabel =
     equipment.usageCategory === "hours"
@@ -52,6 +70,25 @@ export default function BookingModal({
           <EquipmentInfo name={equipment.name} location={equipment.location} />
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {availablePricingTypes.length > 1 && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("pricingType")}
+                </label>
+                <select
+                  value={selectedPricingType}
+                  onChange={(e) => setSelectedPricingType(e.target.value as PricingType)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition-all duration-200"
+                >
+                  {availablePricingTypes.map((pricing) => (
+                    <option key={pricing.type} value={pricing.type}>
+                      {pricing.rate.toLocaleString()} MRU / {pricing.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
             <Input
               type="text"
               label={`${t("usage")} (${usageLabel})`}

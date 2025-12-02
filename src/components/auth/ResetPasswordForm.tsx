@@ -1,14 +1,16 @@
 "use client"
 
 import { useState } from "react"
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
 import { Link } from "@/src/i18n/navigation"
 import AuthCard from "./AuthCard"
 import Button from "../ui/Button"
 import Input from "../ui/Input"
+import { toast } from "sonner"
 
 export default function ResetPasswordForm() {
   const t = useTranslations("auth.resetPassword")
+  const locale = useLocale()
   const [email, setEmail] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
@@ -17,11 +19,25 @@ export default function ResetPasswordForm() {
     e.preventDefault()
     setIsLoading(true)
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    setIsLoading(false)
-    setIsSubmitted(true)
+    try {
+      const response = await fetch('/api/auth/password-reset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, locale }),
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setIsSubmitted(true)
+      } else {
+        toast.error(data.error || 'Failed to send reset email')
+      }
+    } catch (error) {
+      toast.error('Something went wrong')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   if (isSubmitted) {

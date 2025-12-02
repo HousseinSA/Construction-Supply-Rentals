@@ -4,10 +4,17 @@ import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { useBookings } from "@/src/hooks/useBookings"
 import { usePagination } from "@/src/hooks/usePagination"
-import { Table, TableHeader, TableBody, TableHead, TableCell } from "@/src/components/ui/Table"
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableCell,
+} from "@/src/components/ui/Table"
 import Pagination from "@/src/components/ui/Pagination"
 import { Eye, XCircle } from "lucide-react"
 import { Link } from "@/src/i18n/navigation"
+import Image from "next/image"
 import { toast } from "sonner"
 import type { BookingWithDetails } from "@/src/stores/bookingsStore"
 import ConfirmModal from "@/src/components/ui/ConfirmModal"
@@ -17,13 +24,22 @@ import { formatBookingId } from "@/src/lib/format"
 
 export default function RenterBookingView() {
   const t = useTranslations("dashboard.bookings")
+  const tCommon = useTranslations("common")
   const { bookings, loading, fetchBookings } = useBookings()
   const [cancellingId, setCancellingId] = useState<string | null>(null)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
-  const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null)
+  const [selectedBookingId, setSelectedBookingId] = useState<string | null>(
+    null
+  )
 
-  const { currentPage, totalPages, paginatedData, goToPage, totalItems, itemsPerPage } = 
-    usePagination({ data: bookings, itemsPerPage: 10 })
+  const {
+    currentPage,
+    totalPages,
+    paginatedData,
+    goToPage,
+    totalItems,
+    itemsPerPage,
+  } = usePagination({ data: bookings, itemsPerPage: 10 })
 
   const handleCancelClick = (bookingId: string) => {
     setSelectedBookingId(bookingId)
@@ -32,7 +48,7 @@ export default function RenterBookingView() {
 
   const handleCancelBooking = async () => {
     if (!selectedBookingId) return
-    
+
     setCancellingId(selectedBookingId)
     try {
       const response = await fetch("/api/bookings", {
@@ -67,7 +83,11 @@ export default function RenterBookingView() {
       cancelled: "bg-red-100 text-red-800",
     }
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${styles[status as keyof typeof styles] || "bg-gray-100 text-gray-800"}`}>
+      <span
+        className={`px-2 py-1 rounded-full text-xs font-medium ${
+          styles[status as keyof typeof styles] || "bg-gray-100 text-gray-800"
+        }`}
+      >
         {t(`status.${status}`)}
       </span>
     )
@@ -76,7 +96,9 @@ export default function RenterBookingView() {
   if (loading) {
     return (
       <div className="p-12 text-center">
-        <div className="animate-pulse text-gray-600 font-medium">{t("loading")}</div>
+        <div className="animate-pulse text-gray-600 font-medium">
+          {t("loading")}
+        </div>
       </div>
     )
   }
@@ -108,23 +130,51 @@ export default function RenterBookingView() {
             {paginatedData.map((booking) => (
               <tr key={booking._id?.toString()}>
                 <TableCell>
-                  <div className="space-y-1">
-                    {booking.bookingItems?.map((item, idx) => (
-                      <div key={idx} className="text-sm font-medium">{item.equipmentName}</div>
-                    ))}
+                  <div className="flex items-center gap-3">
+                    <Image
+                      src={booking.bookingItems[0]?.equipmentImage || "/equipement-images/default-fallback-image.png"}
+                      alt={booking.bookingItems[0]?.equipmentName || "Equipment"}
+                      width={64}
+                      height={56}
+                      className="w-16 h-14 object-cover rounded-lg shadow-sm"
+                    />
+                    <div className="space-y-1">
+                      {booking.bookingItems?.map((item, idx) => (
+                        <div key={idx} className="text-sm font-medium">
+                          {item.equipmentName}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </TableCell>
                 <TableCell>
                   <div className="space-y-1">
                     {booking.bookingItems?.map((item, idx) => (
-                      <div key={idx} className="text-sm text-gray-600">{item.usage}h</div>
+                      <div key={idx} className="text-sm text-gray-600">
+                        {item.usage}
+                        {item.usageUnit
+                          ? item.usageUnit === "hours"
+                            ? ` ${tCommon("hour")}`
+                            : item.usageUnit === "days"
+                            ? ` ${tCommon("day")}`
+                            : item.usageUnit === "km"
+                            ? ` ${tCommon("km")}`
+                            : item.usageUnit === "tons"
+                            ? ` ${tCommon("tons")}`
+                            : ""
+                          : "h"}
+                      </div>
                     ))}
                   </div>
                 </TableCell>
                 <TableCell>
-                  <span className="font-semibold" dir="ltr">{booking.totalPrice.toLocaleString()} MRU</span>
+                  <span className="font-semibold" dir="ltr">
+                    {booking.totalPrice.toLocaleString()} MRU
+                  </span>
                 </TableCell>
-                <TableCell align="center">{getStatusBadge(booking.status)}</TableCell>
+                <TableCell align="center">
+                  {getStatusBadge(booking.status)}
+                </TableCell>
                 <TableCell align="center">
                   <span className="text-sm text-gray-600">
                     {new Date(booking.createdAt).toLocaleDateString()}
@@ -132,12 +182,17 @@ export default function RenterBookingView() {
                 </TableCell>
                 <TableCell align="center">
                   <div className="flex items-center justify-center gap-2 min-w-[80px]">
-                    <Link href={`/equipment/${booking.bookingItems[0]?.equipmentId}`} className="inline-block p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <Link
+                      href={`/equipment/${booking.bookingItems[0]?.equipmentId}`}
+                      className="inline-block p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    >
                       <Eye className="h-4 w-4 text-gray-600" />
                     </Link>
                     {booking.status === "pending" && (
                       <button
-                        onClick={() => handleCancelClick(booking._id?.toString() || "")}
+                        onClick={() =>
+                          handleCancelClick(booking._id?.toString() || "")
+                        }
                         disabled={cancellingId === booking._id?.toString()}
                         className="p-2 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 group"
                         title={t("cancelBooking")}
@@ -156,9 +211,14 @@ export default function RenterBookingView() {
       <div className="lg:hidden space-y-4">
         {paginatedData.map((booking) => {
           const equipmentTitle = `${booking.bookingItems[0]?.equipmentName}${
-            booking.bookingItems.length > 1 ? ` +${booking.bookingItems.length - 1}` : ""
+            booking.bookingItems.length > 1
+              ? ` +${booking.bookingItems.length - 1}`
+              : ""
           }`
-          const totalUsage = booking.bookingItems.reduce((sum, item) => sum + item.usage, 0)
+          const totalUsage = booking.bookingItems.reduce(
+            (sum, item) => sum + item.usage,
+            0
+          )
 
           return (
             <GenericMobileCard
@@ -170,7 +230,19 @@ export default function RenterBookingView() {
               fields={[
                 {
                   label: t("table.usage"),
-                  value: `${totalUsage}h`,
+                  value: `${totalUsage}${
+                    booking.bookingItems[0]?.usageUnit
+                      ? booking.bookingItems[0].usageUnit === "hours"
+                        ? ` ${tCommon("hour")}`
+                        : booking.bookingItems[0].usageUnit === "days"
+                        ? ` ${tCommon("day")}`
+                        : booking.bookingItems[0].usageUnit === "km"
+                        ? ` ${tCommon("km")}`
+                        : booking.bookingItems[0].usageUnit === "tons"
+                        ? ` ${tCommon("tons")}`
+                        : ""
+                      : "h"
+                  }`,
                 },
                 {
                   label: t("table.total"),
@@ -184,7 +256,9 @@ export default function RenterBookingView() {
               actionButton={
                 booking.status === "pending" ? (
                   <button
-                    onClick={() => handleCancelClick(booking._id?.toString() || "")}
+                    onClick={() =>
+                      handleCancelClick(booking._id?.toString() || "")
+                    }
                     disabled={cancellingId === booking._id?.toString()}
                     className="p-2 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 group"
                     title={t("cancelBooking")}

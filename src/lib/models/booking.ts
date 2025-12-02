@@ -5,8 +5,10 @@ export interface BookingItem {
   equipmentId: ObjectId;
   supplierId?: ObjectId | null;
   equipmentName: string;
+  pricingType?: string;
   rate: number;
   usage: number;
+  usageUnit?: string;
   subtotal: number; 
 }
 

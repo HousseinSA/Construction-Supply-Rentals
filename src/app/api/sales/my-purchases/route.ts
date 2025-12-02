@@ -15,8 +15,24 @@ export async function GET(req: NextRequest) {
 
     const purchases = await db
       .collection("sales")
-      .find({ buyerId: new ObjectId(session.user.id) })
-      .sort({ createdAt: -1 })
+      .aggregate([
+        { $match: { buyerId: new ObjectId(session.user.id) } },
+        {
+          $lookup: {
+            from: "equipment",
+            localField: "equipmentId",
+            foreignField: "_id",
+            as: "equipmentDetails"
+          }
+        },
+        {
+          $addFields: {
+            equipmentImage: { $arrayElemAt: ["$equipmentDetails.images", 0] }
+          }
+        },
+        { $project: { equipmentDetails: 0 } },
+        { $sort: { createdAt: -1 } }
+      ])
       .toArray()
 
     return NextResponse.json({ success: true, data: purchases })

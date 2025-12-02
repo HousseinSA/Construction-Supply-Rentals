@@ -6,6 +6,7 @@ import { usePagination } from "@/src/hooks/usePagination"
 import { Table, TableHeader, TableBody, TableHead, TableCell } from "@/src/components/ui/Table"
 import Pagination from "@/src/components/ui/Pagination"
 import { Eye, XCircle } from "lucide-react"
+import Image from "next/image"
 import { Link } from "@/src/i18n/navigation"
 import { toast } from "sonner"
 import ConfirmModal from "@/src/components/ui/ConfirmModal"
@@ -17,6 +18,7 @@ interface SaleOrder {
   _id: string
   equipmentId: string
   equipmentName: string
+  equipmentImage?: string
   salePrice: number
   status: "pending" | "paid" | "completed" | "cancelled"
   buyerMessage?: string
@@ -135,7 +137,18 @@ export default function RenterPurchasesView() {
             {paginatedData.map((purchase) => (
               <tr key={purchase._id}>
                 <TableCell>
-                  <div className="text-sm font-medium">{purchase.equipmentName}</div>
+                  <div className="flex items-center gap-3">
+                    {purchase.equipmentImage && (
+                      <Image
+                        src={purchase.equipmentImage}
+                        alt={purchase.equipmentName}
+                        width={64}
+                        height={56}
+                        className="w-16 h-14 object-cover rounded-lg shadow-sm"
+                      />
+                    )}
+                    <div className="text-sm font-medium">{purchase.equipmentName}</div>
+                  </div>
                 </TableCell>
                 <TableCell>
                   <span className="font-semibold" dir="ltr">{purchase.salePrice.toLocaleString()} MRU</span>

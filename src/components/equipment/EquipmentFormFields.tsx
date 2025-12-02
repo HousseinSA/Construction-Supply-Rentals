@@ -128,7 +128,7 @@ export default function EquipmentFormFields({
         )}
 
         <Input
-          label={t("price")}
+          label={formData.listingType === "forSale" ? t("salePrice") : t("price")}
           name="price"
           type="number"
           value={formData.price}

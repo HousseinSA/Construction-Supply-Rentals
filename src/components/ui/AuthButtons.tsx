@@ -12,6 +12,7 @@ import {
 import { Link } from "@/i18n/navigation"
 import { signOut } from "next-auth/react"
 import { useLocale } from "next-intl"
+import { toast } from "sonner"
 import ConfirmModal from "./ConfirmModal"
 
 interface AuthButtonsProps {
