@@ -48,6 +48,7 @@ export async function GET(request: NextRequest) {
     if (status) query.status = status
     if (categoryId) query.categoryId = new ObjectId(categoryId)
     if (type) query.equipmentTypeId = new ObjectId(type)
+    if (availableOnly) query.isAvailable = true
     // Only filter by city if showing equipment for rent
     if (city && listingType !== "forSale")
       query.location = { $regex: new RegExp(city, "i") }

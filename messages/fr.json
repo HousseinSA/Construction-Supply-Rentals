@@ -565,7 +565,15 @@
       "confirmApproveMessage": "Approuver ce matériel ?",
       "confirmRejectTitle": "Rejeter le Matériel",
       "confirmRejectMessage": "Rejeter ce matériel ?",
-      "sold": "Vendu"
+      "sold": "Vendu",
+      "noEquipmentFound": "Aucun matériel trouvé",
+      "searchPlaceholder": "Rechercher par nom ou localisation...",
+      "filters": {
+        "allStatus": "Tous les Statuts",
+        "allTypes": "Tous les Types",
+        "allAvailability": "Tout",
+        "allLocations": "Toutes les Localisations"
+      }
     },
     "pages": {
       "equipment": {

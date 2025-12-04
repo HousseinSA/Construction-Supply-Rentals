@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { connectDB } from "@/src/lib/mongodb"
 import { ObjectId } from "mongodb"
-import { createNotification } from "@/src/lib/notifications"
 import { validateBooking } from "@/src/lib/validation"
 import { triggerRealtimeUpdate } from "@/src/lib/realtime-trigger"
 import {
@@ -219,12 +218,18 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date(),
     })
 
-    await createNotification(
-      "new_booking",
-      "New Usage-Based Booking",
-      `New booking request for ${bookingItems.length} equipment items - Total: ${totalPrice}`,
-      result.insertedId
-    )
+    // Send email to admin
+    const adminEmail = process.env.ADMIN_EMAIL
+    if (adminEmail) {
+      const renter = await db.collection('users').findOne({ _id: new ObjectId(body.renterId) })
+      const { sendNewBookingEmail } = await import('@/src/lib/email')
+      await sendNewBookingEmail(adminEmail, {
+        itemCount: bookingItems.length,
+        totalPrice,
+        renterName: renter ? `${renter.firstName} ${renter.lastName}` : 'Unknown',
+        renterPhone: renter?.phone || 'N/A'
+      }).catch(err => console.error('Email error:', err))
+    }
 
     await triggerRealtimeUpdate('booking')
 

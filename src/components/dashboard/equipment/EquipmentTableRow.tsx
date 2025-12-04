@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl"
 import { useRouter } from "@/src/i18n/navigation"
 import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
+import { useCityData } from "@/src/hooks/useCityData"
 import { MapPin, Edit, Eye, Tag, Loader2 } from "lucide-react"
 import Image from "next/image"
 import Dropdown from "../../ui/Dropdown"
@@ -33,6 +34,7 @@ export default function EquipmentTableRow({
   const t = useTranslations("dashboard.equipment")
   const router = useRouter()
   const { getPriceData, formatPrice } = usePriceFormatter()
+  const { convertToLocalized } = useCityData()
 
   const priceData = getPriceData(item.pricing, item.listingType === "forSale")
   const { displayPrice, displayUnit } = formatPrice(
@@ -72,7 +74,13 @@ export default function EquipmentTableRow({
                   {t("createdByAdmin")}
                 </span>
               )}
-              {item.listingType === "forSale" && (
+              {item.listingType === "forSale" && !item.isAvailable && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-white rounded bg-red-600">
+                  <Tag className="w-3 h-3" />
+                  {t("sold")}
+                </span>
+              )}
+              {item.listingType === "forSale" && item.isAvailable && (
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-white rounded bg-gradient-to-r from-orange-500 to-red-500">
                   <Tag className="w-3 h-3" />
                   {t("forSale")}
@@ -86,7 +94,7 @@ export default function EquipmentTableRow({
         <div className="flex items-center gap-1.5">
           <MapPin className="w-4 h-4 text-primary flex-shrink-0" />
           <span className="text-sm font-medium text-gray-700 capitalize">
-            {item.location}
+            {convertToLocalized(item.location)}
           </span>
         </div>
       </td>
@@ -150,25 +158,34 @@ export default function EquipmentTableRow({
           </span>
         )}
       </td>
-      <td className="px-6 py-4">
+      <td className="px-6 py-4 overflow-visible relative">
         <div className="flex justify-center">
-          <div className="w-40">
-            <Dropdown
-              options={[
-                { value: "available", label: t("available") },
-                { value: "unavailable", label: t("unavailable") },
-              ]}
-              value={item.isAvailable ? "available" : "unavailable"}
-              onChange={(val) =>
-                onAvailabilityChange(
-                  item._id?.toString() || "",
-                  val === "available"
-                )
-              }
-              disabled={updating === item._id?.toString() || (item.listingType === "forSale" && !item.isAvailable)}
-              compact
-            />
-          </div>
+          {item.listingType === "forSale" ? (
+            <div className={`px-3 py-2 text-sm font-semibold rounded-lg ${
+              item.isAvailable 
+                ? "text-green-600 bg-green-50" 
+                : "text-red-600 bg-red-50"
+            }`}>
+              {item.isAvailable ? t("available") : t("sold")}
+            </div>
+          ) : (
+            <div className="w-40">
+              <Dropdown
+                options={[
+                  { value: "available", label: t("available") },
+                  { value: "unavailable", label: t("unavailable") },
+                ]}
+                value={item.isAvailable ? "available" : "unavailable"}
+                onChange={(val) =>
+                  onAvailabilityChange(
+                    item._id?.toString() || "",
+                    val === "available"
+                  )
+                }
+                compact
+              />
+            </div>
+          )}
         </div>
       </td>
       <td className="px-6 py-4">

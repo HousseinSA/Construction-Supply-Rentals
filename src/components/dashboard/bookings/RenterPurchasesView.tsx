@@ -3,22 +3,28 @@
 import { useState, useEffect } from "react"
 import { useTranslations } from "next-intl"
 import { usePagination } from "@/src/hooks/usePagination"
-import { Table, TableHeader, TableBody, TableHead, TableCell } from "@/src/components/ui/Table"
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableCell,
+} from "@/src/components/ui/Table"
 import Pagination from "@/src/components/ui/Pagination"
 import { Eye, XCircle } from "lucide-react"
-import Image from "next/image"
+import EquipmentImage from "@/src/components/ui/EquipmentImage"
 import { Link } from "@/src/i18n/navigation"
-import { toast } from "sonner"
 import ConfirmModal from "@/src/components/ui/ConfirmModal"
 import { AlertTriangle } from "lucide-react"
 import GenericMobileCard from "@/src/components/ui/GenericMobileCard"
 import { formatBookingId } from "@/src/lib/format"
+import { useTransactionCancel } from "@/src/hooks/useTransactionCancel"
 
 interface SaleOrder {
   _id: string
   equipmentId: string
   equipmentName: string
-  equipmentImage?: string
+  equipmentImage?: string[]
   salePrice: number
   status: "pending" | "paid" | "completed" | "cancelled"
   buyerMessage?: string
@@ -29,18 +35,13 @@ export default function RenterPurchasesView() {
   const t = useTranslations("dashboard.purchases")
   const [purchases, setPurchases] = useState<SaleOrder[]>([])
   const [loading, setLoading] = useState(true)
-  const [cancellingId, setCancellingId] = useState<string | null>(null)
-  const [showCancelDialog, setShowCancelDialog] = useState(false)
-  const [selectedPurchaseId, setSelectedPurchaseId] = useState<string | null>(null)
 
   const fetchPurchases = async () => {
     try {
       setLoading(true)
       const response = await fetch("/api/sales/my-purchases")
       const data = await response.json()
-      if (data.success) {
-        setPurchases(data.data)
-      }
+      if (data.success) setPurchases(data.data)
     } catch (error) {
       console.error("Failed to fetch purchases:", error)
     } finally {
@@ -52,42 +53,25 @@ export default function RenterPurchasesView() {
     fetchPurchases()
   }, [])
 
-  const { currentPage, totalPages, paginatedData, goToPage, totalItems, itemsPerPage } = 
-    usePagination({ data: purchases, itemsPerPage: 10 })
+  const {
+    currentPage,
+    totalPages,
+    paginatedData,
+    goToPage,
+    totalItems,
+    itemsPerPage,
+  } = usePagination({ data: purchases, itemsPerPage: 10 })
 
-  const handleCancelClick = (purchaseId: string) => {
-    setSelectedPurchaseId(purchaseId)
-    setShowCancelDialog(true)
-  }
-
-  const handleCancelPurchase = async () => {
-    if (!selectedPurchaseId) return
-    
-    setCancellingId(selectedPurchaseId)
-    try {
-      const response = await fetch("/api/sales", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          saleId: selectedPurchaseId,
-          status: "cancelled",
-        }),
-      })
-
-      if (response.ok) {
-        toast.success(t("cancelSuccess"))
-        fetchPurchases()
-      } else {
-        toast.error(t("cancelFailed"))
-      }
-    } catch (error) {
-      toast.error(t("cancelFailed"))
-    } finally {
-      setCancellingId(null)
-      setShowCancelDialog(false)
-      setSelectedPurchaseId(null)
-    }
-  }
+  const {
+    cancellingId,
+    showDialog,
+    setShowDialog,
+    handleCancelClick,
+    handleConfirm,
+  } = useTransactionCancel("purchase", fetchPurchases, {
+    cancelSuccess: t("cancelSuccess"),
+    cancelFailed: t("cancelFailed"),
+  })
 
   const getStatusBadge = (status: string) => {
     const styles = {
@@ -97,7 +81,11 @@ export default function RenterPurchasesView() {
       cancelled: "bg-red-100 text-red-800",
     }
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${styles[status as keyof typeof styles] || "bg-gray-100 text-gray-800"}`}>
+      <span
+        className={`px-2 py-1 rounded-full text-xs font-medium ${
+          styles[status as keyof typeof styles] || "bg-gray-100 text-gray-800"
+        }`}
+      >
         {t(`status.${status}`)}
       </span>
     )
@@ -106,7 +94,9 @@ export default function RenterPurchasesView() {
   if (loading) {
     return (
       <div className="p-12 text-center">
-        <div className="animate-pulse text-gray-600 font-medium">{t("loading")}</div>
+        <div className="animate-pulse text-gray-600 font-medium">
+          {t("loading")}
+        </div>
       </div>
     )
   }
@@ -138,22 +128,24 @@ export default function RenterPurchasesView() {
               <tr key={purchase._id}>
                 <TableCell>
                   <div className="flex items-center gap-3">
-                    {purchase.equipmentImage && (
-                      <Image
-                        src={purchase.equipmentImage}
-                        alt={purchase.equipmentName}
-                        width={64}
-                        height={56}
-                        className="w-16 h-14 object-cover rounded-lg shadow-sm"
-                      />
-                    )}
-                    <div className="text-sm font-medium">{purchase.equipmentName}</div>
+                    <EquipmentImage
+                      src={purchase.equipmentImage || []}
+                      alt={purchase.equipmentName}
+                      size="lg"
+                    />
+                    <div className="text-sm font-medium">
+                      {purchase.equipmentName}
+                    </div>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <span className="font-semibold" dir="ltr">{purchase.salePrice.toLocaleString()} MRU</span>
+                  <span className="font-semibold" dir="ltr">
+                    {purchase.salePrice.toLocaleString()} MRU
+                  </span>
                 </TableCell>
-                <TableCell align="center">{getStatusBadge(purchase.status)}</TableCell>
+                <TableCell align="center">
+                  {getStatusBadge(purchase.status)}
+                </TableCell>
                 <TableCell align="center">
                   <span className="text-sm text-gray-600">
                     {new Date(purchase.createdAt).toLocaleDateString()}
@@ -161,7 +153,10 @@ export default function RenterPurchasesView() {
                 </TableCell>
                 <TableCell align="center">
                   <div className="flex items-center justify-center gap-2 min-w-[80px]">
-                    <Link href={`/equipment/${purchase.equipmentId}`} className="inline-block p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <Link
+                      href={`/equipment/${purchase.equipmentId}`}
+                      className="inline-block p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    >
                       <Eye className="h-4 w-4 text-gray-600" />
                     </Link>
                     {purchase.status === "pending" && (
@@ -190,12 +185,15 @@ export default function RenterPurchasesView() {
             title={purchase.equipmentName}
             date={new Date(purchase.createdAt).toLocaleDateString()}
             status={purchase.status}
-            fields={[
-              {
-                label: t("table.price"),
-                value: purchase.salePrice,
-              },
-            ]}
+            image={
+              <EquipmentImage
+                src={purchase.equipmentImage || []}
+                alt={purchase.equipmentName}
+                size="lg"
+                onClick={() => { window.location.href = `/equipment/${purchase.equipmentId}` }}
+              />
+            }
+            fields={[{ label: t("table.price"), value: purchase.salePrice }]}
             onViewDetails={() => {
               window.location.href = `/equipment/${purchase.equipmentId}`
             }}
@@ -226,9 +224,9 @@ export default function RenterPurchasesView() {
       />
 
       <ConfirmModal
-        isOpen={showCancelDialog}
-        onClose={() => setShowCancelDialog(false)}
-        onConfirm={handleCancelPurchase}
+        isOpen={showDialog}
+        onClose={() => setShowDialog(false)}
+        onConfirm={handleConfirm}
         title={t("cancelPurchaseTitle")}
         message={t("cancelPurchaseMessage")}
         confirmText={t("confirmCancel")}

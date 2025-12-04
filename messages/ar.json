@@ -556,7 +556,15 @@
       "confirmApproveMessage": "متأكد من الموافقة على هذه المعدة؟",
       "confirmRejectTitle": "رفض المعدة",
       "confirmRejectMessage": "متأكد من رفض هذه المعدة؟",
-      "sold": "مباع"
+      "sold": "مباع",
+      "noEquipmentFound": "لم يتم العثور على معدات",
+      "searchPlaceholder": "البحث بالاسم أو الموقع...",
+      "filters": {
+        "allStatus": "جميع الحالات",
+        "allTypes": "جميع الأنواع",
+        "allAvailability": "الكل",
+        "allLocations": "جميع المواقع"
+      }
     },
     "pages": {
       "equipment": {

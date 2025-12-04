@@ -14,7 +14,7 @@ import {
 import Pagination from "@/src/components/ui/Pagination"
 import { Eye, XCircle } from "lucide-react"
 import { Link } from "@/src/i18n/navigation"
-import Image from "next/image"
+import EquipmentImage from "@/src/components/ui/EquipmentImage"
 import { toast } from "sonner"
 import type { BookingWithDetails } from "@/src/stores/bookingsStore"
 import ConfirmModal from "@/src/components/ui/ConfirmModal"
@@ -131,12 +131,10 @@ export default function RenterBookingView() {
               <tr key={booking._id?.toString()}>
                 <TableCell>
                   <div className="flex items-center gap-3">
-                    <Image
+                    <EquipmentImage
                       src={booking.bookingItems[0]?.equipmentImage || "/equipement-images/default-fallback-image.png"}
                       alt={booking.bookingItems[0]?.equipmentName || "Equipment"}
-                      width={64}
-                      height={56}
-                      className="w-16 h-14 object-cover rounded-lg shadow-sm"
+                      size="lg"
                     />
                     <div className="space-y-1">
                       {booking.bookingItems?.map((item, idx) => (
@@ -227,6 +225,14 @@ export default function RenterBookingView() {
               title={equipmentTitle}
               date={new Date(booking.createdAt).toLocaleDateString()}
               status={booking.status}
+              image={
+                <EquipmentImage
+                  src={booking.bookingItems[0]?.equipmentImage || "/equipement-images/default-fallback-image.png"}
+                  alt={booking.bookingItems[0]?.equipmentName || "Equipment"}
+                  size="lg"
+                  onClick={() => { window.location.href = `/equipment/${booking.bookingItems[0]?.equipmentId}` }}
+                />
+              }
               fields={[
                 {
                   label: t("table.usage"),

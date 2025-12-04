@@ -18,6 +18,7 @@ interface GenericMobileCardProps {
   onViewDetails: () => void
   viewButtonText: string
   actionButton?: React.ReactNode
+  image?: React.ReactNode
 }
 
 export default function GenericMobileCard({
@@ -30,6 +31,7 @@ export default function GenericMobileCard({
   onViewDetails,
   viewButtonText,
   actionButton,
+  image,
 }: GenericMobileCardProps) {
   return (
     <div className="p-4 space-y-3 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all">
@@ -43,9 +45,14 @@ export default function GenericMobileCard({
         <BookingStatusBadge status={status} />
       </div>
 
-      {title && (
-        <div className="text-sm font-medium text-gray-900">{title}</div>
-      )}
+      <div className="flex gap-3">
+        {image && <div className="flex-shrink-0">{image}</div>}
+        <div className="flex-1">
+          {title && (
+            <div className="text-sm font-medium text-gray-900">{title}</div>
+          )}
+        </div>
+      </div>
 
       <div className="flex items-center justify-between pt-2 border-t border-gray-200">
         <div className="flex items-center gap-3">

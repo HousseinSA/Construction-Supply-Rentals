@@ -41,8 +41,11 @@ export function useCityData() {
   
   const convertToLatin = (city: string) => cityToLatinMap[city] || city
   
-  const convertToLocalized = (latinCity: string) => 
-    latinToCityMap[latinCity]?.[locale] || latinCity
+  const convertToLocalized = (latinCity: string) => {
+    if (!latinCity) return latinCity
+    const capitalizedCity = latinCity.charAt(0).toUpperCase() + latinCity.slice(1).toLowerCase()
+    return latinToCityMap[capitalizedCity]?.[locale] || latinCity
+  }
 
   const getDisplayValue = (selectedCity: string) => {
     if (!selectedCity) return getDefaultCity()

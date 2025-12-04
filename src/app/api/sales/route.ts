@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { connectDB } from "@/src/lib/mongodb"
 import { ObjectId } from "mongodb"
-import { createNotification } from "@/src/lib/notifications"
 import { triggerRealtimeUpdate } from "@/src/lib/realtime-trigger"
 
 // GET /api/sales - Get all sale orders
@@ -109,12 +108,18 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date(),
     })
 
-    await createNotification(
-      "new_sale",
-      "New Sale Order",
-      `New purchase request for ${equipment.name} - Price: ${salePrice} MRU`,
-      result.insertedId
-    )
+    // Send email to admin
+    const adminEmail = process.env.ADMIN_EMAIL
+    if (adminEmail) {
+      const buyer = await db.collection('users').findOne({ _id: new ObjectId(buyerId) })
+      const { sendNewSaleEmail } = await import('@/src/lib/email')
+      await sendNewSaleEmail(adminEmail, {
+        equipmentName: equipment.name,
+        salePrice,
+        buyerName: buyer ? `${buyer.firstName} ${buyer.lastName}` : 'Unknown',
+        buyerPhone: buyer?.phone || 'N/A'
+      }).catch(err => console.error('Email error:', err))
+    }
 
     await triggerRealtimeUpdate('sale')
 
