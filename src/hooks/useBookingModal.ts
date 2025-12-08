@@ -10,9 +10,14 @@ export function useBookingModal(equipment: any, onSuccess?: () => void, onClose?
   const router = useRouter()
   const t = useTranslations("booking")
   
-  const [usage, setUsage] = useState(1)
+  const [usage, setUsage] = useState(0)
   const [message, setMessage] = useState("")
   const [loading, setLoading] = useState(false)
+
+  const resetForm = () => {
+    setUsage(0)
+    setMessage("")
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -33,6 +38,7 @@ export function useBookingModal(equipment: any, onSuccess?: () => void, onClose?
       const data = await response.json()
       if (data.success) {
         toast.success(t("successPending"))
+        resetForm()
         onSuccess?.()
         onClose?.()
         setTimeout(() => router.push("/bookings"), 800)
@@ -53,5 +59,6 @@ export function useBookingModal(equipment: any, onSuccess?: () => void, onClose?
     setMessage,
     loading,
     handleSubmit,
+    resetForm,
   }
 }

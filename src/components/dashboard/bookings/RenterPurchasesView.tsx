@@ -18,6 +18,7 @@ import ConfirmModal from "@/src/components/ui/ConfirmModal"
 import { AlertTriangle } from "lucide-react"
 import GenericMobileCard from "@/src/components/ui/GenericMobileCard"
 import { formatBookingId } from "@/src/lib/format"
+import { formatReferenceNumber } from "@/src/lib/format-reference"
 import { useTransactionCancel } from "@/src/hooks/useTransactionCancel"
 
 interface SaleOrder {
@@ -116,6 +117,7 @@ export default function RenterPurchasesView() {
         <Table>
           <TableHeader>
             <tr>
+              <TableHead>{t("table.reference")}</TableHead>
               <TableHead>{t("table.equipment")}</TableHead>
               <TableHead>{t("table.price")}</TableHead>
               <TableHead align="center">{t("table.status")}</TableHead>
@@ -126,6 +128,11 @@ export default function RenterPurchasesView() {
           <TableBody>
             {paginatedData.map((purchase) => (
               <tr key={purchase._id}>
+                <TableCell>
+                  <div className="font-semibold text-orange-600 text-sm" dir="ltr">
+                    {formatReferenceNumber(purchase.referenceNumber)}
+                  </div>
+                </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <EquipmentImage
@@ -181,7 +188,7 @@ export default function RenterPurchasesView() {
         {paginatedData.map((purchase) => (
           <GenericMobileCard
             key={purchase._id}
-            id={formatBookingId(purchase._id)}
+            id={formatReferenceNumber(purchase.referenceNumber)}
             title={purchase.equipmentName}
             date={new Date(purchase.createdAt).toLocaleDateString()}
             status={purchase.status}

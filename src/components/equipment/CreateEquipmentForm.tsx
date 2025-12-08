@@ -22,9 +22,9 @@ export default function CreateEquipmentForm() {
     isSubmitting,
     setImages,
     handleInputChange,
+    handleNumericInputChange,
     handleCategoryChange,
     handleTypeChange,
-    handlePriceTypeChange,
     handleLocationChange,
     handleListingTypeChange,
     handleConditionChange,
@@ -65,10 +65,10 @@ export default function CreateEquipmentForm() {
                 images={images}
                 isSubmitting={isSubmitting}
                 onInputChange={handleInputChange}
+                onNumericInputChange={handleNumericInputChange}
                 onCategoryChange={handleCategoryChange}
                 onTypeChange={handleTypeChange}
                 onLocationChange={handleLocationChange}
-                onPriceTypeChange={handlePriceTypeChange}
                 onConditionChange={handleConditionChange}
                 onWeightUnitChange={handleWeightUnitChange}
                 onUsageUnitChange={handleUsageUnitChange}
@@ -78,7 +78,6 @@ export default function CreateEquipmentForm() {
               <FormActions isSubmitting={isSubmitting} />
             </form>
           </AuthCard>
-          {/* Commission Structure Info - Only for suppliers */}
           {session?.user?.userType === "supplier" && (
             <CommissionStructure variant="compact" />
           )}

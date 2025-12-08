@@ -41,6 +41,19 @@ export async function GET(request: Request) {
       query.categoryId = { $nin: excludedCategoryIds.map((cat) => cat._id) }
     }
 
+    // Get active bookings (pending or paid)
+    const activeBookings = await db
+      .collection("bookings")
+      .find({ status: { $in: ["pending", "paid"] } })
+      .toArray()
+
+    // Extract equipment IDs from active bookings
+    const bookedEquipmentIds = new Set(
+      activeBookings.flatMap((booking) =>
+        booking.bookingItems.map((item: any) => item.equipmentId.toString())
+      )
+    )
+
     const equipmentTypes = await db
       .collection("equipmentTypes")
       .aggregate([
@@ -72,12 +85,33 @@ export async function GET(request: Request) {
             equipmentCount: 1,
             categoryId: 1,
             pricingTypes: 1,
+            equipment: 1,
           },
         },
         { $sort: { name: 1 } },
       ])
       .toArray()
-    return NextResponse.json({ success: true, data: equipmentTypes })
+
+    // Filter out booked equipment from the count
+    const equipmentTypesWithAvailableCount = equipmentTypes.map((type: any) => {
+      // Count only forRent equipment that is not currently booked
+      const forRentEquipment = type.equipment?.filter((eq: any) => 
+        eq.listingType !== "forSale"
+      ) || []
+      
+      const bookedCount = forRentEquipment.filter((eq: any) => 
+        bookedEquipmentIds.has(eq._id.toString())
+      ).length
+      
+      const availableCount = forRentEquipment.length - bookedCount
+      
+      const { equipment, ...typeWithoutEquipment } = type
+      return {
+        ...typeWithoutEquipment,
+        equipmentCount: Math.max(0, availableCount)
+      }
+    })
+    return NextResponse.json({ success: true, data: equipmentTypesWithAvailableCount })
   } catch (error) {
     console.error("[Equipment Types API] Error:", error)
     return NextResponse.json(

@@ -19,6 +19,8 @@ interface RenterInfoProps {
 }
 
 export default function RenterInfo({ renter, labels }: RenterInfoProps) {
+  if (!renter) return null
+  
   return (
     <div className="bg-blue-50 rounded-lg p-4 lg:h-[280px] flex flex-col">
       <h3 className="font-semibold mb-3 flex items-center gap-2">

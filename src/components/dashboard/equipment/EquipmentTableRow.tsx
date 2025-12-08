@@ -36,11 +36,33 @@ export default function EquipmentTableRow({
   const { getPriceData, formatPrice } = usePriceFormatter()
   const { convertToLocalized } = useCityData()
 
-  const priceData = getPriceData(item.pricing, item.listingType === "forSale")
-  const { displayPrice, displayUnit } = formatPrice(
-    priceData.rate,
-    priceData.unit
-  )
+  const getAllPrices = () => {
+    const prices = []
+    if (item.listingType === "forSale" && item.pricing.salePrice) {
+      const { displayPrice, displayUnit } = formatPrice(item.pricing.salePrice, "sale")
+      prices.push({ displayPrice, displayUnit })
+    } else {
+      if (item.pricing.hourlyRate) {
+        const { displayPrice, displayUnit } = formatPrice(item.pricing.hourlyRate, "hour")
+        prices.push({ displayPrice, displayUnit })
+      }
+      if (item.pricing.dailyRate) {
+        const { displayPrice, displayUnit } = formatPrice(item.pricing.dailyRate, "day")
+        prices.push({ displayPrice, displayUnit })
+      }
+      if (item.pricing.kmRate) {
+        const { displayPrice, displayUnit } = formatPrice(item.pricing.kmRate, "km")
+        prices.push({ displayPrice, displayUnit })
+      }
+      if (item.pricing.tonRate) {
+        const { displayPrice, displayUnit } = formatPrice(item.pricing.tonRate, "ton")
+        prices.push({ displayPrice, displayUnit })
+      }
+    }
+    return prices
+  }
+  
+  const allPrices = getAllPrices()
   return (
     <tr className="hover:bg-gray-50 transition-colors">
       <td className="px-6 py-4">
@@ -99,10 +121,14 @@ export default function EquipmentTableRow({
         </div>
       </td>
       <td className="px-6 py-4">
-        <span className="text-sm font-semibold text-gray-900">
-          <span dir="ltr">{displayPrice}</span>
-          {displayUnit && ` ${displayUnit}`}
-        </span>
+        <div className="space-y-1">
+          {allPrices.map((price, index) => (
+            <div key={index} className="text-sm font-semibold text-gray-900">
+              <span dir="ltr">{price.displayPrice}</span>
+              {price.displayUnit && ` ${price.displayUnit}`}
+            </div>
+          ))}
+        </div>
       </td>
       <td className="px-6 py-4">
         {item.supplier ? (
@@ -160,32 +186,22 @@ export default function EquipmentTableRow({
       </td>
       <td className="px-6 py-4 overflow-visible relative">
         <div className="flex justify-center">
-          {item.listingType === "forSale" ? (
-            <div className={`px-3 py-2 text-sm font-semibold rounded-lg ${
-              item.isAvailable 
-                ? "text-green-600 bg-green-50" 
-                : "text-red-600 bg-red-50"
-            }`}>
-              {item.isAvailable ? t("available") : t("sold")}
-            </div>
-          ) : (
-            <div className="w-40">
-              <Dropdown
-                options={[
-                  { value: "available", label: t("available") },
-                  { value: "unavailable", label: t("unavailable") },
-                ]}
-                value={item.isAvailable ? "available" : "unavailable"}
-                onChange={(val) =>
-                  onAvailabilityChange(
-                    item._id?.toString() || "",
-                    val === "available"
-                  )
-                }
-                compact
-              />
-            </div>
-          )}
+          <div className="w-40">
+            <Dropdown
+              options={[
+                { value: "available", label: t("available") },
+                { value: "unavailable", label: t("unavailable") },
+              ]}
+              value={item.isAvailable ? "available" : "unavailable"}
+              onChange={(val) =>
+                onAvailabilityChange(
+                  item._id?.toString() || "",
+                  val === "available"
+                )
+              }
+              compact
+            />
+          </div>
         </div>
       </td>
       <td className="px-6 py-4">

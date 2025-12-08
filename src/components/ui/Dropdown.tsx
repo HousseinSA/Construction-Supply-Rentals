@@ -20,6 +20,8 @@ interface DropdownProps {
   required?: boolean
   compact?: boolean
   noBorder?: boolean
+  useAbsolutePosition?: boolean
+  priceDisplay?: boolean
 }
 
 export default function Dropdown({
@@ -33,6 +35,8 @@ export default function Dropdown({
   required = false,
   compact = false,
   noBorder = false,
+  useAbsolutePosition = false,
+  priceDisplay = false,
 }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [menuPosition, setMenuPosition] = useState({
@@ -42,6 +46,7 @@ export default function Dropdown({
   })
   const dropdownRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
   const fontClass = useFontClass()
 
   const selectedOption = options.find((option) => option.value === value)
@@ -56,8 +61,11 @@ export default function Dropdown({
       }
     }
 
-    const handleScroll = () => {
-      if (isOpen) setIsOpen(false)
+    const handleScroll = (event: Event) => {
+      // Don't close if scrolling inside the dropdown menu itself
+      if (isOpen && menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsOpen(false)
+      }
     }
 
     document.addEventListener("mousedown", handleClickOutside)
@@ -100,7 +108,7 @@ export default function Dropdown({
         className={`
           w-full ${
             compact ? "px-3 py-2 text-sm" : "px-4 py-3"
-          } text-left bg-white ${
+          } ${fontClass.includes("arabic") ? "text-right" : "text-left"} bg-white ${
           noBorder ? "border-0" : "border border-gray-300"
         } ${compact ? "rounded-lg" : "rounded-xl"}
           ${
@@ -113,14 +121,19 @@ export default function Dropdown({
             disabled
               ? "bg-gray-50 cursor-not-allowed"
               : noBorder
-              ? "cursor-pointer"
+              ? "cursor-pointer hover:bg-gray-50"
               : "hover:border-gray-400 cursor-pointer"
           }
           ${isOpen && !noBorder ? "ring-2 ring-primary border-primary" : ""}
+          ${noBorder && isOpen ? "bg-gray-50" : ""}
         `}
       >
         <span className={selectedOption ? "text-gray-900" : "text-gray-500"}>
-          {selectedOption ? selectedOption.label : placeholder}
+          {priceDisplay && selectedOption ? (
+            <span dir="ltr">{selectedOption.label}</span>
+          ) : (
+            selectedOption ? selectedOption.label : placeholder
+          )}
         </span>
         <ChevronDown
           className={`${
@@ -133,10 +146,13 @@ export default function Dropdown({
 
       {isOpen && (
         <div
-          className={`fixed z-[9999] bg-white border border-gray-200 ${
+          ref={menuRef}
+          className={`${useAbsolutePosition ? 'absolute' : 'fixed'} z-[99999] bg-white border border-gray-200 ${
             compact ? "rounded-lg" : "rounded-xl"
-          } shadow-lg max-h-60 overflow-auto`}
-          style={{
+          } shadow-lg max-h-60 overflow-auto ${
+            useAbsolutePosition ? 'top-full mt-1 left-0 right-0' : ''
+          }`}
+          style={useAbsolutePosition ? {} : {
             top: `${menuPosition.top + 4}px`,
             left: `${menuPosition.left}px`,
             width: `${menuPosition.width}px`,
@@ -173,7 +189,7 @@ export default function Dropdown({
                   ${fontClass.includes("arabic") ? "text-right" : "text-left"}
                 `}
               >
-                {option.label}
+                {priceDisplay ? <span dir="ltr">{option.label}</span> : option.label}
               </button>
             ))
           )}

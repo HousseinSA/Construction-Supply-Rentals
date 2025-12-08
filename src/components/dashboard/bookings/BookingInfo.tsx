@@ -2,6 +2,7 @@ import { ClipboardList } from "lucide-react"
 
 interface BookingInfoProps {
   bookingId: string
+  referenceNumber?: string
   totalPrice: number
   commission: number
   createdAt: string
@@ -16,6 +17,7 @@ interface BookingInfoProps {
 
 export default function BookingInfo({
   bookingId,
+  referenceNumber,
   totalPrice,
   commission,
   createdAt,
@@ -30,11 +32,8 @@ export default function BookingInfo({
       <div className="space-y-2 text-sm flex-1">
         <div className="flex justify-between">
           <span className="text-gray-600">{labels.bookingId}</span>
-          <span className="font-medium">
-            {bookingId
-              .slice(-6)
-              .toUpperCase()
-              .replace(/(.{3})(.{3})/, "$1-$2")}
+          <span className="font-medium" dir="ltr">
+            {referenceNumber ? `${referenceNumber.slice(0, 3)}-${referenceNumber.slice(3)}` : bookingId.slice(-6).toUpperCase().replace(/(.{3})(.{3})/, "$1-$2")}
           </span>
         </div>
         <div className="flex justify-between">

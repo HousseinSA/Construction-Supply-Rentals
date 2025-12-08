@@ -66,10 +66,16 @@ export default function BookingDetailsModal({
         <div className="p-6">
           <ModalHeader title={t("details.title")} onClose={onClose} />
 
+          <div className="mb-4 px-3 py-2 bg-orange-50 border border-orange-200 rounded-lg flex items-center justify-between">
+            <div className="text-xs text-gray-600">{t("details.reference")}</div>
+            <div className="text-xl font-bold text-orange-600" dir="ltr">{booking.referenceNumber?.slice(0, 3)}-{booking.referenceNumber?.slice(3)}</div>
+          </div>
+
           <div className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <BookingInfo
                   bookingId={booking._id}
+                  referenceNumber={booking.referenceNumber}
                   totalPrice={booking.totalPrice}
                   commission={totalCommission}
                   createdAt={booking.createdAt}
@@ -112,19 +118,21 @@ export default function BookingDetailsModal({
             />
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="lg:h-[280px]">
-                <RenterInfo
-                  renter={booking.renterInfo[0]}
-                  labels={{
-                    title: t("details.renterInfo"),
-                    name: t("details.name"),
-                    email: t("details.email"),
-                    phone: t("details.phone"),
-                    call: t("details.call"),
-                  }}
-                />
-              </div>
-              {booking.supplierInfo && booking.supplierInfo.length > 0 && (
+              {booking.renterInfo && booking.renterInfo[0] && (
+                <div className="lg:h-[280px]">
+                  <RenterInfo
+                    renter={booking.renterInfo[0]}
+                    labels={{
+                      title: t("details.renterInfo"),
+                      name: t("details.name"),
+                      email: t("details.email"),
+                      phone: t("details.phone"),
+                      call: t("details.call"),
+                    }}
+                  />
+                </div>
+              )}
+              {booking.supplierInfo && booking.supplierInfo.length > 0 && !booking.hasAdminCreatedEquipment && (
                 <div className="lg:h-[280px]">
                   <SupplierInfo
                     supplier={booking.supplierInfo[0]}

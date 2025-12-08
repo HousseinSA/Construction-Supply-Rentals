@@ -24,11 +24,12 @@ export default function EditEquipmentForm({ equipmentId }: EditEquipmentFormProp
     isSubmitting,
     setImages,
     handleInputChange,
+    handleNumericInputChange,
     handleCategoryChange,
     handleTypeChange,
-    handlePriceTypeChange,
     handleLocationChange,
     handleListingTypeChange,
+    handleConditionChange,
     handleWeightUnitChange,
     handleUsageUnitChange,
     handleSubmit,
@@ -61,10 +62,11 @@ export default function EditEquipmentForm({ equipmentId }: EditEquipmentFormProp
               images={images}
               isSubmitting={isSubmitting}
               onInputChange={handleInputChange}
+              onNumericInputChange={handleNumericInputChange}
               onCategoryChange={handleCategoryChange}
               onTypeChange={handleTypeChange}
               onLocationChange={handleLocationChange}
-              onPriceTypeChange={handlePriceTypeChange}
+              onConditionChange={handleConditionChange}
               onWeightUnitChange={handleWeightUnitChange}
               onUsageUnitChange={handleUsageUnitChange}
               onImagesChange={setImages}

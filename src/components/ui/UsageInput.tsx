@@ -81,6 +81,10 @@ export default function UsageInput({
 
   const units = getUnits()
 
+  const handleWheel = (e: React.WheelEvent<HTMLInputElement>) => {
+    e.currentTarget.blur()
+  }
+
   return (
     <div>
       <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
@@ -93,17 +97,18 @@ export default function UsageInput({
           </div>
         </div>
       </label>
-      <div className="relative z-20">
+      <div className="relative">
         <input
           type="number"
           name="usageValue"
           value={value}
           onChange={onValueChange}
+          onWheel={handleWheel}
           placeholder={getPlaceholder()}
           disabled={disabled}
           className="w-full px-4 py-3 pr-28 rtl:pl-28 rtl:pr-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition-all duration-200 disabled:bg-gray-100 disabled:cursor-not-allowed"
         />
-        <div className="absolute right-3 rtl:left-3 rtl:right-auto top-1/2 -translate-y-1/2 w-20">
+        <div className="absolute right-3 rtl:left-3 rtl:right-auto top-1/2 -translate-y-1/2 w-20 z-30">
           <Dropdown
             options={units}
             value={unitValue || "hours"}
@@ -111,6 +116,7 @@ export default function UsageInput({
             disabled={disabled}
             noBorder
             compact
+            useAbsolutePosition
           />
         </div>
       </div>

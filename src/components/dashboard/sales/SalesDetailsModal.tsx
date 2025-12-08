@@ -67,6 +67,11 @@ export default function SalesDetailsModal({
         <div className="p-6">
           <ModalHeader title={t("details.title")} onClose={onClose} />
 
+          <div className="mb-4 px-3 py-2 bg-orange-50 border border-orange-200 rounded-lg flex items-center justify-between">
+            <div className="text-xs text-gray-600">{t("details.reference")}</div>
+            <div className="text-xl font-bold text-orange-600" dir="ltr">{sale.referenceNumber?.slice(0, 3)}-{sale.referenceNumber?.slice(3)}</div>
+          </div>
+
           <div className="space-y-6">
             <div className="bg-gray-50 rounded-lg p-4">
               <h3 className="font-semibold mb-3">{t("details.saleInfo")}</h3>

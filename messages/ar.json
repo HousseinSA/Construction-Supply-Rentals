@@ -9,6 +9,7 @@
     "myTransactions": "الطلبات",
     "day": "يوم",
     "hour": "ساعة",
+    "month": "شهر",
     "km": "KM",
     "ton": "طن",
     "phone": "+222 45 111111",
@@ -17,7 +18,18 @@
     "logoutConfirm": "تأكيد تسجيل الخروج",
     "cancel": "إلغاء",
     "close": "إغلاق",
-    "showingResults": "{start} من {total}"
+    "showingResults": "{start} من {total}",
+    "admin": "الإدارة"
+  },
+  "quickSearch": {
+    "button": "بحث سريع",
+    "title": "البحث برقم المرجع",
+    "description": "أدخل رقم مرجع الحجز أو المبيع (مثل: 123456)",
+    "placeholder": "123456",
+    "enterReference": "يرجى إدخال رقم المرجع",
+    "notFound": "لم يتم العثور على أي حجز أو عملية بيع بهذا الرقم",
+    "error": "فشل البحث. يرجى المحاولة مرة أخرى.",
+    "searching": "جاري البحث..."
   },
   "equipment": {
     "allEquipment": "جميع المعدات",
@@ -53,8 +65,8 @@
     "condition": "الحالة",
     "conditionLabels": {
       "new": "جديد",
-      "excellent": "ممتاز",
-      "good": "جيد",
+      "excellent": "حالة ممتازة",
+      "good": "حالة جيدة",
       "used": "مستعمل"
     },
     "hoursUsed": "ساعات الاستخدام",
@@ -363,6 +375,7 @@
       "cancelPurchaseMessage": "متأكد من إلغاء طلب الشراء هذا؟",
       "confirmCancel": "نعم، إلغاء",
       "table": {
+        "reference": "المرجع",
         "equipment": "المعدات",
         "price": "السعر",
         "status": "الحالة",
@@ -456,9 +469,16 @@
       "selectPriceType": "اختر نوع التسعير",
       "hourly": "ساعة",
       "daily": "يوم",
+      "monthly": "شهر",
       "perKm": "كيلومتر",
       "price": "السعر",
       "salePrice": "سعر البيع",
+      "hourlyRate": "السعر بالساعة (MRU/ساعة)",
+      "dailyRate": "السعر باليوم (MRU/يوم)",
+      "monthlyRate": "السعر بالشهر (MRU/شهر)",
+      "autoCalculated": "حساب تلقائي: السعر اليومي × 30",
+      "kmRate": "السعر بالكيلومتر (MRU/كم)",
+      "tonRate": "السعر بالطن (MRU/طن)",
       "description": "الوصف",
       "descriptionPlaceholder": "وصف ميزات وقدرات المعدة",
       "specifications": "المواصفات",
@@ -482,8 +502,8 @@
       "selectCondition": "اختر الحالة",
       "conditions": {
         "new": "جديد",
-        "excellent": "ممتاز",
-        "good": "جيد",
+        "excellent": "حالة ممتازة",
+        "good": "حالة جيدة",
         "used": "مستعمل"
       },
       "brand": "الماركة",
@@ -737,6 +757,7 @@
       "noPartners": "لا يوجد شركاء"
     },
     "bookings": {
+      "admin": "الإدارة",
       "searchPlaceholder": "البحث بالمستأجر، المورد، المعدات...",
       "filters": {
         "status": "الحالة",
@@ -752,6 +773,7 @@
         "last30Days": "آخر 30 يوم"
       },
       "table": {
+        "reference": "المرجع",
         "booking": "الحجز",
         "renter": "المستأجر",
         "supplier": "المورد",
@@ -780,6 +802,7 @@
       "details": {
         "title": "تفاصيل الحجز",
         "bookingInfo": " الحجز",
+        "reference": "المرجع",
         "bookingId": "رقم الحجز",
         "totalAmount": "المبلغ الإجمالي",
         "commission": "العمولة",
@@ -821,6 +844,7 @@
       "loading": "جاري التحميل..."
     },
     "sales": {
+      "admin": "الإدارة",
       "searchPlaceholder": "البحث بالمشتري، المعدات...",
       "filters": {
         "status": "الحالة",
@@ -832,6 +856,7 @@
         "last30Days": "آخر 30 يوم"
       },
       "table": {
+        "reference": "المرجع",
         "sale": "رقم البيع",
         "buyer": "المشتري",
         "supplier": "المورد",
@@ -858,6 +883,7 @@
       "details": {
         "title": "تفاصيل طلب البيع",
         "saleInfo": "معلومات البيع",
+        "reference": "المرجع",
         "saleId": "رقم البيع",
         "equipment": "المعدات",
         "salePrice": "سعر البيع",
@@ -943,6 +969,7 @@
     "error": "فشل في إرسال طلب الحجز. يرجى المحاولة مرة أخرى.",
     "hours": "ساعات",
     "days": "أيام",
+    "months": "أشهر",
     "km": "كم",
     "tons": "أطنان"
   }

@@ -30,10 +30,30 @@ export default function EquipmentDetailsPage() {
   const { convertToLocalized } = useCityData()
   const { getPriceData, formatPrice } = usePriceFormatter()
 
-  const getFormattedPrice = (pricing: any, isForSale: boolean) => {
-    const { rate, unit } = getPriceData(pricing, isForSale)
-    const { displayPrice, displayUnit } = formatPrice(rate, unit)
-    return { displayPrice, displayUnit }
+  const getAllFormattedPrices = (pricing: any, isForSale: boolean) => {
+    const prices = []
+    if (isForSale && pricing.salePrice) {
+      const { displayPrice, displayUnit } = formatPrice(pricing.salePrice, "sale")
+      prices.push({ displayPrice, displayUnit })
+    } else {
+      if (pricing.hourlyRate) {
+        const { displayPrice, displayUnit } = formatPrice(pricing.hourlyRate, "hour")
+        prices.push({ displayPrice, displayUnit })
+      }
+      if (pricing.dailyRate) {
+        const { displayPrice, displayUnit } = formatPrice(pricing.dailyRate, "day")
+        prices.push({ displayPrice, displayUnit })
+      }
+      if (pricing.kmRate) {
+        const { displayPrice, displayUnit } = formatPrice(pricing.kmRate, "km")
+        prices.push({ displayPrice, displayUnit })
+      }
+      if (pricing.tonRate) {
+        const { displayPrice, displayUnit } = formatPrice(pricing.tonRate, "ton")
+        prices.push({ displayPrice, displayUnit })
+      }
+    }
+    return prices
   }
 
   const isForSale = equipment?.listingType === "forSale"
@@ -67,9 +87,7 @@ export default function EquipmentDetailsPage() {
   if (loading) return <LoadingState />
   if (!equipment) return <NotFoundState />
 
-  const { displayPrice, displayUnit } = equipment
-    ? getFormattedPrice(equipment.pricing, isForSale)
-    : { displayPrice: "", displayUnit: "" }
+  const allPrices = equipment ? getAllFormattedPrices(equipment.pricing, isForSale) : []
 
   return (
     <div className={`min-h-screen bg-gray-50 ${fontClass}`}>
@@ -89,12 +107,11 @@ export default function EquipmentDetailsPage() {
               <EquipmentHeader name={equipment.name} description={equipment.description} />
               <LocationInfo location={convertToLocalized(equipment.location)} />
               <PricingCard
-                displayPrice={displayPrice}
-                displayUnit={displayUnit}
+                prices={allPrices}
                 isForSale={isForSale}
               />
               <SpecificationsGrid specifications={equipment.specifications} isForSale={isForSale} />
-              {isAdminView && equipment.supplierInfo && (
+              {isAdminView && equipment.supplierInfo && equipment.createdBy !== "admin" && (
                 <SupplierInfo supplier={equipment.supplierInfo} />
               )}
               {!isAdminView && (

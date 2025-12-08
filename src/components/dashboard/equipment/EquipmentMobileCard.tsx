@@ -133,13 +133,9 @@ export default function EquipmentMobileCard({
         <p className="text-xs font-semibold text-gray-600 mb-2">
           {t("availability")}:
         </p>
-        {item.listingType === "forSale" ? (
-          <div className={`px-3 py-2 text-sm font-semibold rounded-lg text-center ${
-            item.isAvailable 
-              ? "text-green-600 bg-green-50" 
-              : "text-red-600 bg-red-50"
-          }`}>
-            {item.isAvailable ? t("available") : t("sold")}
+        {item.listingType === "forSale" && !item.isAvailable ? (
+          <div className="px-3 py-2 text-sm font-semibold text-red-600 bg-red-50 rounded-lg text-center">
+            {t("sold")}
           </div>
         ) : (
           <Dropdown

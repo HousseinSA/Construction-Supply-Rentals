@@ -12,6 +12,7 @@ export interface Equipment {
     type: PricingType
     hourlyRate?: number
     dailyRate?: number
+    monthlyRate?: number
     kmRate?: number
     tonRate?: number
     salePrice?: number
@@ -31,6 +32,7 @@ export interface Equipment {
   usageCategory: UsageCategory
   status: EquipmentStatus
   isAvailable: boolean
+  isSold?: boolean
   listingType: "forSale" | "forRent"
   createdBy: "admin" | "supplier"
   createdById: ObjectId

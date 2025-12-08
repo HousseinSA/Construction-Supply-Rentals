@@ -21,6 +21,7 @@ import ConfirmModal from "@/src/components/ui/ConfirmModal"
 import { AlertTriangle } from "lucide-react"
 import GenericMobileCard from "@/src/components/ui/GenericMobileCard"
 import { formatBookingId } from "@/src/lib/format"
+import { formatReferenceNumber } from "@/src/lib/format-reference"
 
 export default function RenterBookingView() {
   const t = useTranslations("dashboard.bookings")
@@ -118,6 +119,7 @@ export default function RenterBookingView() {
         <Table>
           <TableHeader>
             <tr>
+              <TableHead>{t("table.reference")}</TableHead>
               <TableHead>{t("table.equipment")}</TableHead>
               <TableHead>{t("table.usage")}</TableHead>
               <TableHead>{t("table.total")}</TableHead>
@@ -129,6 +131,11 @@ export default function RenterBookingView() {
           <TableBody>
             {paginatedData.map((booking) => (
               <tr key={booking._id?.toString()}>
+                <TableCell>
+                  <div className="font-semibold text-orange-600 text-sm" dir="ltr">
+                    {formatReferenceNumber(booking.referenceNumber)}
+                  </div>
+                </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <EquipmentImage
@@ -221,7 +228,7 @@ export default function RenterBookingView() {
           return (
             <GenericMobileCard
               key={booking._id?.toString()}
-              id={formatBookingId(booking._id?.toString() || "")}
+              id={formatReferenceNumber(booking.referenceNumber)}
               title={equipmentTitle}
               date={new Date(booking.createdAt).toLocaleDateString()}
               status={booking.status}

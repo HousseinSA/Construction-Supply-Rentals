@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from "react"
 import { useTranslations } from "next-intl"
 import { ArrowLeft } from "lucide-react"
 import { Link } from "@/src/i18n/navigation"
+import { useSearchParams } from "next/navigation"
 import { usePagination } from "@/src/hooks/usePagination"
 import { useTableFilters } from "@/src/hooks/useTableFilters"
 import SalesTableRow from "./SalesTableRow"
@@ -16,12 +17,15 @@ import { Table, TableHeader, TableBody, TableHead } from "@/src/components/ui/Ta
 import { toast } from "sonner"
 
 export default function SalesTable() {
+  const searchParams = useSearchParams()
+  const highlightRef = searchParams.get("highlight")
   const t = useTranslations("dashboard.sales")
   const tPages = useTranslations("dashboard.pages")
   const [sales, setSales] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedSale, setSelectedSale] = useState<any>(null)
   const [showDetailsModal, setShowDetailsModal] = useState(false)
+  const [highlightId, setHighlightId] = useState<string | null>(null)
 
   const fetchSales = async () => {
     try {
@@ -75,6 +79,18 @@ export default function SalesTable() {
 
   const { currentPage, totalPages, paginatedData, goToPage, totalItems, itemsPerPage } = 
     usePagination({ data: filteredData, itemsPerPage: 10 })
+
+  useEffect(() => {
+    if (highlightRef && sales.length > 0) {
+      const index = filteredData.findIndex(s => s.referenceNumber === highlightRef)
+      if (index !== -1) {
+        const page = Math.floor(index / itemsPerPage) + 1
+        goToPage(page)
+        setHighlightId(filteredData[index]._id)
+        setTimeout(() => setHighlightId(null), 3000)
+      }
+    }
+  }, [highlightRef, sales, filteredData, itemsPerPage, goToPage])
 
   const handleViewDetails = (sale: any) => {
     setSelectedSale(sale)
@@ -141,6 +157,7 @@ export default function SalesTable() {
                 <Table>
                   <TableHeader>
                     <tr>
+                      <TableHead>{t("table.reference")}</TableHead>
                       <TableHead>{t("table.buyer")}</TableHead>
                       <TableHead>{t("table.equipment")}</TableHead>
                       <TableHead>{t("table.price")}</TableHead>
@@ -166,7 +183,7 @@ export default function SalesTable() {
                       </tr>
                     ) : (
                       paginatedData.map((sale) => (
-                        <SalesTableRow key={sale._id} sale={sale} onViewDetails={handleViewDetails} t={t} />
+                        <SalesTableRow key={sale._id} sale={sale} onViewDetails={handleViewDetails} t={t} highlight={highlightId === sale._id} />
                       ))
                     )}
                   </TableBody>
@@ -179,7 +196,7 @@ export default function SalesTable() {
                   <div className="p-12 text-center text-gray-500 font-medium">{filterValues.status === "all" ? t("noResults") : t(`no${filterValues.status.charAt(0).toUpperCase()}${filterValues.status.slice(1)}Sales`)}</div>
                 ) : (
                   paginatedData.map((sale) => (
-                    <SalesMobileCard key={sale._id} sale={sale} onViewDetails={handleViewDetails} t={t} />
+                    <SalesMobileCard key={sale._id} sale={sale} onViewDetails={handleViewDetails} t={t} highlight={highlightId === sale._id} />
                   ))
                 )}
               </div>

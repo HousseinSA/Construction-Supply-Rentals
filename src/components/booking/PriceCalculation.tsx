@@ -1,4 +1,4 @@
-import { useLocale } from "next-intl"
+import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
 
 interface PriceCalculationProps {
   rate: number
@@ -22,13 +22,22 @@ export default function PriceCalculation({
   subtotal,
   labels,
 }: PriceCalculationProps) {
-  const locale = useLocale()
+  const { formatPrice } = usePriceFormatter()
+  const { displayPrice: rateDisplay, displayUnit } = formatPrice(rate, unit)
+  const { displayPrice: totalDisplay } = formatPrice(subtotal, "")
+
   return (
     <div className="p-4 bg-blue-50 rounded-lg">
       <div className="mb-3">
         <span className="font-medium text-blue-900">{labels.calculation}</span>
       </div>
       <div className="text-sm space-y-1">
+        <div className="flex justify-between">
+          <span>{labels.rate}</span>
+          <span dir="ltr">
+            {rateDisplay} / {usageLabel}
+          </span>
+        </div>
         <div className="flex justify-between">
           <span>{labels.usage}</span>
           <span>
@@ -38,7 +47,7 @@ export default function PriceCalculation({
         <div className="flex justify-between font-semibold text-blue-900 pt-2 border-t">
           <span>{labels.total}</span>
           <span className="text-lg" dir="ltr">
-            {subtotal.toLocaleString()} MRU
+            {totalDisplay}
           </span>
         </div>
       </div>

@@ -6,7 +6,13 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, className = "", required, ...props }, ref) => {
+  ({ label, error, className = "", required, type, ...props }, ref) => {
+    const handleWheel = (e: React.WheelEvent<HTMLInputElement>) => {
+      if (type === "number") {
+        e.currentTarget.blur()
+      }
+    }
+
     return (
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -14,6 +20,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         </label>
         <input
           ref={ref}
+          type={type}
+          onWheel={handleWheel}
           className={`w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition-all duration-200 ${className}`}
           {...props}
         />

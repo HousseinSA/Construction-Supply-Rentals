@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
 import { connectDB } from "@/src/lib/mongodb"
-import { createNotification } from "@/src/lib/notifications"
 import { ObjectId } from "mongodb"
 import { triggerRealtimeUpdate } from "@/src/lib/realtime-trigger"
 import {
@@ -86,26 +85,29 @@ export async function GET(request: NextRequest) {
                   $expr: {
                     $and: [
                       { $in: ["$$equipmentId", "$bookingItems.equipmentId"] },
-                      { $in: ["$status", ["pending", "paid"]] }
-                    ]
-                  }
-                }
-              }
+                      { $in: ["$status", ["pending", "paid"]] },
+                    ],
+                  },
+                },
+              },
             ],
-            as: "activeBookings"
-          }
+            as: "activeBookings",
+          },
         },
         {
           $match: {
-            activeBookings: { $size: 0 }
-          }
+            activeBookings: { $size: 0 },
+          },
         },
         { $project: { activeBookings: 0 } },
-        { $sort: { createdAt: -1 } }
+        { $sort: { createdAt: -1 } },
       ]
 
-      const equipment = await db.collection("equipment").aggregate(pipeline).toArray()
-      
+      const equipment = await db
+        .collection("equipment")
+        .aggregate(pipeline)
+        .toArray()
+
       return NextResponse.json({
         success: true,
         data: equipment,
@@ -260,29 +262,63 @@ export async function POST(request: NextRequest) {
       status,
       isAvailable: true,
       listingType: listingType || "forRent",
-      createdBy: userRole === "admin" ? "admin" : (userType === "supplier" ? "supplier" : "admin"),
+      createdBy:
+        userRole === "admin"
+          ? "admin"
+          : userType === "supplier"
+          ? "supplier"
+          : "admin",
       createdById: new ObjectId(userId),
       ...(status === "approved" && { approvedAt: new Date() }),
       createdAt: new Date(),
       updatedAt: new Date(),
     })
 
-    // Create notification if supplier created equipment
-    if (userType === "supplier") {
-      try {
-        await createNotification(
-          "new_equipment",
-          "New Equipment Pending Approval",
-          `New equipment "${equipmentName}" added by supplier - requires approval`,
-          result.insertedId
-        )
-      } catch (notificationError) {
-        console.error("Notification creation failed:", notificationError)
-        // Continue without failing the equipment creation
+    // Send email to admin only if supplier created equipment (not admin)
+    if (userRole !== "admin" && userType === "supplier") {
+      const adminEmail = process.env.ADMIN_EMAIL
+      if (adminEmail) {
+        try {
+          const supplier = await db
+            .collection("users")
+            .findOne({ _id: new ObjectId(userId) })
+          const category = await db
+            .collection("categories")
+            .findOne({ _id: new ObjectId(categoryId) })
+          let pricingText = ""
+          if (listingType === "forSale" && pricing.salePrice) {
+            pricingText = `${pricing.salePrice.toFixed(2)} MRU`
+          } else {
+            const prices = []
+            if (pricing.hourlyRate)
+              prices.push(`${pricing.hourlyRate} MRU / heure`)
+            if (pricing.dailyRate)
+              prices.push(`${pricing.dailyRate} MRU / jour`)
+            if (pricing.kmRate) prices.push(`${pricing.kmRate} MRU / km`)
+            if (pricing.tonRate) prices.push(`${pricing.tonRate} MRU / tonne`)
+            pricingText = prices.join(", ")
+          }
+
+          const { sendNewEquipmentEmail } = await import("@/src/lib/email")
+          await sendNewEquipmentEmail(adminEmail, {
+            equipmentName,
+            supplierName: supplier
+              ? `${supplier.firstName} ${supplier.lastName}`
+              : "Unknown",
+            supplierPhone: supplier?.phone || "N/A",
+            location,
+            category: category?.name || undefined,
+            listingType: listingType === "forSale" ? "Vente" : "Location",
+            pricing: pricingText,
+            dateSubmitted: new Date(),
+          })
+        } catch (emailError) {
+          console.error("Email error:", emailError)
+        }
       }
     }
 
-    await triggerRealtimeUpdate('equipment')
+    await triggerRealtimeUpdate("equipment")
 
     return NextResponse.json(
       {
@@ -338,7 +374,7 @@ export async function PUT(request: NextRequest) {
       .collection("equipment")
       .updateOne({ _id: new ObjectId(equipmentId) }, { $set: updateData })
 
-    await triggerRealtimeUpdate('equipment')
+    await triggerRealtimeUpdate("equipment")
 
     return NextResponse.json({
       success: true,

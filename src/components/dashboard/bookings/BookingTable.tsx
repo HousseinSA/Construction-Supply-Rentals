@@ -1,10 +1,11 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { useTranslations } from "next-intl"
 import { ArrowLeft } from "lucide-react"
 import { Link } from "@/src/i18n/navigation"
 import { useSession } from "next-auth/react"
+import { useSearchParams } from "next/navigation"
 import { usePagination } from "@/src/hooks/usePagination"
 import { useBookings } from "@/src/hooks/useBookings"
 import { useTableFilters } from "@/src/hooks/useTableFilters"
@@ -25,6 +26,8 @@ import type { BookingWithDetails } from "@/src/stores/bookingsStore"
 
 export default function BookingTable() {
   const { data: session } = useSession()
+  const searchParams = useSearchParams()
+  const highlightRef = searchParams.get("highlight")
   const t = useTranslations("dashboard.bookings")
   const tPages = useTranslations("dashboard.pages")
   const tEquipment = useTranslations("dashboard.equipment")
@@ -32,8 +35,8 @@ export default function BookingTable() {
   const [selectedBooking, setSelectedBooking] =
     useState<BookingWithDetails | null>(null)
   const [showDetailsModal, setShowDetailsModal] = useState(false)
+  const [highlightId, setHighlightId] = useState<string | null>(null)
 
-  // Filter configuration
   const {
     searchValue,
     setSearchValue,
@@ -94,6 +97,18 @@ export default function BookingTable() {
     totalItems,
     itemsPerPage,
   } = usePagination({ data: filteredData, itemsPerPage: 10 })
+
+  useEffect(() => {
+    if (highlightRef && bookings.length > 0) {
+      const index = filteredData.findIndex(b => b.referenceNumber === highlightRef)
+      if (index !== -1) {
+        const page = Math.floor(index / itemsPerPage) + 1
+        goToPage(page)
+        setHighlightId(filteredData[index]._id)
+        setTimeout(() => setHighlightId(null), 3000)
+      }
+    }
+  }, [highlightRef, bookings, filteredData, itemsPerPage, goToPage])
 
   const handleViewDetails = (booking: BookingWithDetails) => {
     setSelectedBooking(booking)
@@ -197,6 +212,7 @@ export default function BookingTable() {
                 <Table>
                   <TableHeader>
                     <tr>
+                      <TableHead>{t("table.reference")}</TableHead>
                       <TableHead>{t("table.renter")}</TableHead>
                       <TableHead>{t("table.equipment")}</TableHead>
                       <TableHead>{t("table.usage")}</TableHead>
@@ -215,6 +231,7 @@ export default function BookingTable() {
                         booking={booking}
                         onViewDetails={handleViewDetails}
                         t={t}
+                        highlight={highlightId === booking._id}
                       />
                     ))}
                   </TableBody>
@@ -229,6 +246,7 @@ export default function BookingTable() {
                     booking={booking}
                     onViewDetails={handleViewDetails}
                     t={t}
+                    highlight={highlightId === booking._id}
                   />
                 ))}
               </div>
