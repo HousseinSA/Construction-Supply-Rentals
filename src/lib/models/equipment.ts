@@ -23,6 +23,7 @@ export interface Equipment {
     condition?: string
     brand?: string
     model?: string
+    year?: number
     hoursUsed?: number
     kilometersUsed?: number
     tonnageUsed?: number

@@ -1,4 +1,4 @@
-import { Wrench, Clock, Weight } from "lucide-react"
+import { Wrench, Clock, Weight, Gauge } from "lucide-react"
 import { useTranslations, useLocale } from "next-intl"
 
 interface Specifications {
@@ -18,28 +18,31 @@ interface SpecificationsGridProps {
   isForSale?: boolean
 }
 
-export default function SpecificationsGrid({ specifications, isForSale }: SpecificationsGridProps) {
+export default function SpecificationsGrid({
+  specifications,
+  isForSale,
+}: SpecificationsGridProps) {
   const t = useTranslations("equipmentDetails")
   const locale = useLocale()
-  
+
   const getUnitText = (unit: string) => {
-    if (unit === 'tons') return t('units.tons')
-    if (unit === 'kg') return t('units.kg')
-    if (unit === 'km') return t('units.km')
-    if (unit === 'hours') return t('units.hours')
+    if (unit === "tons") return t("units.tons")
+    if (unit === "kg") return t("units.kg")
+    if (unit === "km") return t("units.km")
+    if (unit === "hours") return t("units.hours")
     return unit
   }
-  
+
   const formatUsage = (value: number, unit: string) => {
-    const unitText = unit === 'km' ? t('units.km') : t('units.hours')
-    return locale === 'ar' ? `${value} ${unitText}` : `${value} ${unitText}`
+    const unitText = unit === "km" ? t("units.km") : t("units.hours")
+    return locale === "ar" ? `${value} ${unitText}` : `${value} ${unitText}`
   }
-  
+
   const formatWeight = (value: number, unit: string) => {
-    const unitText = getUnitText(unit || 'kg')
-    return locale === 'ar' ? `${value} ${unitText}` : `${value} ${unitText}`
+    const unitText = getUnitText(unit || "kg")
+    return locale === "ar" ? `${value} ${unitText}` : `${value} ${unitText}`
   }
-  
+
   const getConditionLabel = (condition: string) => {
     return t(`conditionLabels.${condition}`) || condition
   }
@@ -58,44 +61,66 @@ export default function SpecificationsGrid({ specifications, isForSale }: Specif
         <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
           <div className="text-xs text-gray-500 mb-1">{t("brand")}</div>
           <div className="font-semibold text-sm sm:text-base text-gray-900">
-            {specifications.brand || '-'}
+            {specifications.brand || "-"}
           </div>
         </div>
         <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
           <div className="text-xs text-gray-500 mb-1">{t("model")}</div>
           <div className="font-semibold text-sm sm:text-base text-gray-900">
-            {specifications.model || '-'}
+            {specifications.model || "-"}
           </div>
         </div>
         {isForSale && (
           <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
             <div className="text-xs text-gray-500 mb-1">{t("condition")}</div>
             <div className="font-semibold text-sm sm:text-base text-gray-900">
-              {specifications.condition ? getConditionLabel(specifications.condition) : '-'}
+              {specifications.condition
+                ? getConditionLabel(specifications.condition)
+                : "-"}
             </div>
           </div>
         )}
-        <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
-          <div className="text-xs text-gray-500 mb-1 flex items-center gap-1">
-            <Clock className="w-3 h-3" />
-            {t("equipmentUsage")}
+        {(specifications.usageValue || specifications.hoursUsed) && (
+          <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
+            <div className="text-xs text-gray-500 mb-1 flex items-center gap-1">
+              <Clock className="w-3 h-3" />
+              {t("equipmentUsage")}
+            </div>
+            <div className="font-semibold text-sm sm:text-base text-gray-900">
+              {specifications.usageValue
+                ? formatUsage(
+                    specifications.usageValue,
+                    specifications.usageUnit || "hours"
+                  )
+                : specifications.hoursUsed
+                ? formatUsage(specifications.hoursUsed, "hours")
+                : "-"}
+            </div>
           </div>
-          <div className="font-semibold text-sm sm:text-base text-gray-900">
-            {specifications.usageValue 
-              ? formatUsage(specifications.usageValue, specifications.usageUnit || 'hours')
-              : specifications.hoursUsed
-              ? formatUsage(specifications.hoursUsed, 'hours')
-              : '-'
-            }
+        )}
+        {specifications.kilometersUsed && (
+          <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
+            <div className="text-xs text-gray-500 mb-1 flex items-center gap-1">
+              <Gauge className="w-3 h-3" />
+              {t("kilometersUsed")}
+            </div>
+            <div className="font-semibold text-sm sm:text-base text-gray-900">
+              {specifications.kilometersUsed.toLocaleString()} {t("units.km")}
+            </div>
           </div>
-        </div>
+        )}
         <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
           <div className="text-xs text-gray-500 mb-1 flex items-center gap-1">
             <Weight className="w-3 h-3" />
             {t("weight")}
           </div>
           <div className="font-semibold text-sm sm:text-base text-gray-900">
-            {specifications.weight ? formatWeight(specifications.weight, specifications.weightUnit || 'kg') : '-'}
+            {specifications.weight
+              ? formatWeight(
+                  specifications.weight,
+                  specifications.weightUnit || "kg"
+                )
+              : "-"}
           </div>
         </div>
       </div>

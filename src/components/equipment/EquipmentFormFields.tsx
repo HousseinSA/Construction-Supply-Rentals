@@ -25,6 +25,7 @@ interface EquipmentFormFieldsProps {
     description: string
     brand: string
     model: string
+    year: string
     condition: string
     usageValue: string
     usageUnit: string
@@ -100,6 +101,15 @@ export default function EquipmentFormFields({
           value={formData.model}
           onChange={onInputChange}
           placeholder={t("modelPlaceholder")}
+        />
+
+        <Input
+          label={t("year")}
+          name="year"
+          type="text"
+          value={formData.year}
+          onChange={onNumericInputChange}
+          placeholder={t("yearPlaceholder")}
         />
 
         {formData.listingType === "forSale" && (

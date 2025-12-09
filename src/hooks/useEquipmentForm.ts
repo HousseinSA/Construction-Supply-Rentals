@@ -22,6 +22,7 @@ interface FormData {
   description: string
   brand: string
   model: string
+  year: string
   condition: string
   usageValue: string
   usageUnit: string
@@ -48,6 +49,7 @@ export function useEquipmentForm(equipmentId?: string) {
     description: "",
     brand: "",
     model: "",
+    year: "",
     condition: "",
     usageValue: "",
     usageUnit: "hours",
@@ -86,6 +88,7 @@ export function useEquipmentForm(equipmentId?: string) {
           description: eq.description || "",
           brand: eq.specifications?.brand || "",
           model: eq.specifications?.model || "",
+          year: eq.specifications?.year ? String(eq.specifications.year) : "",
           condition: eq.specifications?.condition || "",
           usageValue,
           usageUnit: eq.specifications?.usageUnit || "hours",
@@ -211,14 +214,10 @@ export function useEquipmentForm(equipmentId?: string) {
         if (formData.tonRate) pricing.tonRate = parseFloat(formData.tonRate)
       }
 
-      // Determine usage category from equipment type
-      const typeResponse = await fetch(`/api/equipment-types/${formData.type}`)
-      const typeData = await typeResponse.json()
-      const usageCategory = typeData.data?.usageCategory || "hours"
-
       const specifications: any = {
         brand: formData.brand.trim(),
         ...(formData.model && { model: formData.model.trim() }),
+        ...(formData.year && { year: parseInt(formData.year) }),
         ...(formData.condition && { condition: formData.condition }),
         ...(formData.weight && {
           weight: parseFloat(formData.weight),
@@ -226,14 +225,16 @@ export function useEquipmentForm(equipmentId?: string) {
         }),
       }
 
-      // Add usage based on category
+      // Add usage based on user's selected unit
       if (formData.usageValue) {
         const usageNum = parseInt(formData.usageValue)
-        if (usageCategory === "hours") {
+        specifications.usageUnit = formData.usageUnit
+        
+        if (formData.usageUnit === "hours") {
           specifications.hoursUsed = usageNum
-        } else if (usageCategory === "kilometers") {
+        } else if (formData.usageUnit === "km") {
           specifications.kilometersUsed = usageNum
-        } else if (usageCategory === "tonnage") {
+        } else if (formData.usageUnit === "tons") {
           specifications.tonnageUsed = usageNum
         }
       }
