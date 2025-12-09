@@ -14,6 +14,7 @@ export interface BookingItem {
 
 export interface Booking {
   _id?: ObjectId;
+  referenceNumber?: string;
   renterId: ObjectId;
   bookingItems: BookingItem[];
   totalPrice: number; 

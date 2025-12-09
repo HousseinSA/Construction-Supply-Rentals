@@ -3,6 +3,7 @@ import { useState, useMemo } from "react"
 export interface UseTableFiltersConfig<T> {
   data: T[]
   searchFields: (keyof T)[]
+  customSearchFilter?: (item: T, search: string) => boolean
   filterFunctions?: Record<string, (item: T, value: string) => boolean>
   defaultFilters?: Record<string, string>
 }
@@ -10,6 +11,7 @@ export interface UseTableFiltersConfig<T> {
 export function useTableFilters<T>({
   data,
   searchFields,
+  customSearchFilter,
   filterFunctions = {},
   defaultFilters = {},
 }: UseTableFiltersConfig<T>) {
@@ -22,26 +24,31 @@ export function useTableFilters<T>({
     // Apply search filter
     if (searchValue.trim()) {
       const searchLower = searchValue.toLowerCase()
-      result = result.filter((item) =>
-        searchFields.some((field) => {
-          // Handle nested fields (e.g., "renterInfo.firstName")
-          const fieldPath = String(field).split('.')
-          let value: any = item
-          
-          for (const key of fieldPath) {
+      
+      if (customSearchFilter) {
+        result = result.filter((item) => customSearchFilter(item, searchValue))
+      } else {
+        result = result.filter((item) =>
+          searchFields.some((field) => {
+            // Handle nested fields (e.g., "renterInfo.firstName")
+            const fieldPath = String(field).split('.')
+            let value: any = item
+            
+            for (const key of fieldPath) {
+              if (value == null) return false
+              value = value[key]
+            }
+            
+            // Handle arrays (e.g., supplierInfo array)
+            if (Array.isArray(value)) {
+              return value.some(v => String(v).toLowerCase().includes(searchLower))
+            }
+            
             if (value == null) return false
-            value = value[key]
-          }
-          
-          // Handle arrays (e.g., supplierInfo array)
-          if (Array.isArray(value)) {
-            return value.some(v => String(v).toLowerCase().includes(searchLower))
-          }
-          
-          if (value == null) return false
-          return String(value).toLowerCase().includes(searchLower)
-        })
-      )
+            return String(value).toLowerCase().includes(searchLower)
+          })
+        )
+      }
     }
 
     // Apply custom filters

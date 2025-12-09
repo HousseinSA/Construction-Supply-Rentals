@@ -66,6 +66,13 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    if (newPassword.length < 6) {
+      return NextResponse.json(
+        { success: false, error: 'Password must be at least 6 characters' },
+        { status: 400 }
+      );
+    }
+
     const db = await connectDB();
     const resetRequest = await db.collection('password_resets').findOne({
       token,

@@ -9,6 +9,7 @@
     "myTransactions": "Mes Transactions",
     "day": "jour",
     "hour": "heure",
+    "month": "mois",
     "km": "km",
     "ton": "tonne",
     "currency": "MRU",
@@ -18,7 +19,18 @@
     "logoutConfirm": "Confirmer la Déconnexion",
     "cancel": "Annuler",
     "close": "Fermer",
-    "showingResults": "{start} sur {total}"
+    "showingResults": "{start} sur {total}",
+    "admin": "Admin"
+  },
+  "quickSearch": {
+    "button": "Recherche Rapide",
+    "title": "Rechercher par Numéro de Référence",
+    "description": "Entrez le numéro de référence de réservation ou de vente (ex: 123456)",
+    "placeholder": "123456",
+    "enterReference": "Veuillez entrer un numéro de référence",
+    "notFound": "Aucune réservation ou vente trouvée avec ce numéro de référence",
+    "error": "Échec de la recherche. Veuillez réessayer.",
+    "searching": "Recherche en cours..."
   },
   "equipment": {
     "allEquipment": "Tout le Matériel",
@@ -28,6 +40,7 @@
     "buyNow": "Acheter Maintenant",
     "salePrice": "Prix de Vente",
     "viewDetails": "Voir Détails",
+    "condition": "État",
     "forSale": "À Vendre",
     "noEquipmentFound": "Aucun Matériel Trouvé",
     "noEquipmentFoundDesc": "Aucun matériel n'est actuellement disponible. Veuillez réessayer plus tard.",
@@ -59,6 +72,7 @@
       "used": "Usagé"
     },
     "hoursUsed": "Heures d'Utilisation",
+    "kilometersUsed": "Kilomètres Parcourus",
     "usage": "Utilisation",
     "equipmentUsage": "Utilisation Totale",
     "weight": "Poids",
@@ -370,6 +384,7 @@
       "cancelPurchaseMessage": "Annuler cette demande d'achat ?",
       "confirmCancel": "Oui, Annuler",
       "table": {
+        "reference": "Référence",
         "equipment": "Matériel",
         "price": "Prix",
         "status": "Statut",
@@ -464,9 +479,16 @@
       "selectPriceType": "Sélectionner Type de Prix",
       "hourly": "Heure",
       "daily": "Jour",
+      "monthly": "Mois",
       "perKm": "Kilomètre",
       "price": "Prix",
       "salePrice": "Prix de Vente",
+      "hourlyRate": "Tarif Horaire (MRU/h)",
+      "dailyRate": "Tarif Journalier (MRU/jour)",
+      "monthlyRate": "Tarif Mensuel (MRU/mois)",
+      "autoCalculated": "calculé automatiquement: tarif journalier × 30",
+      "kmRate": "Tarif au KM (MRU/km)",
+      "tonRate": "Tarif à la Tonne (MRU/tonne)",
       "description": "Description",
       "descriptionPlaceholder": "Décrivez les caractéristiques et capacités du matériel",
       "specifications": "Spécifications",
@@ -498,11 +520,14 @@
       "brandPlaceholder": "ex: Caterpillar, Komatsu, Volvo",
       "model": "Modèle",
       "modelPlaceholder": "ex: 320D, PC200",
+      "year": "Année",
+      "yearPlaceholder": "ex: 2020",
       "usage": "Utilisation",
       "equipmentUsage": "Utilisation Totale",
       "hoursUsed": "Heures d'Utilisation",
       "kilometersUsed": "Kilomètres Parcourus",
       "tonnageUsed": "Tonnage Utilisé",
+      "optional": "optionnel",
       "weight": "Poids",
       "weightPlaceholder": "ex: 20",
       "weightUnits": {
@@ -565,7 +590,15 @@
       "confirmApproveMessage": "Approuver ce matériel ?",
       "confirmRejectTitle": "Rejeter le Matériel",
       "confirmRejectMessage": "Rejeter ce matériel ?",
-      "sold": "Vendu"
+      "sold": "Vendu",
+      "noEquipmentFound": "Aucun matériel trouvé",
+      "searchPlaceholder": "Rechercher par nom ou localisation...",
+      "filters": {
+        "allStatus": "Tous les Statuts",
+        "allTypes": "Tous les Types",
+        "allAvailability": "Tout",
+        "allLocations": "Toutes les Localisations"
+      }
     },
     "pages": {
       "equipment": {
@@ -738,6 +771,7 @@
       "noPartners": "Aucun partenaire trouvé"
     },
     "bookings": {
+      "admin": "Admin",
       "searchPlaceholder": "Rechercher par locataire, fournisseur, matériel...",
       "filters": {
         "status": "Statut",
@@ -753,6 +787,7 @@
         "last30Days": "30 Derniers Jours"
       },
       "table": {
+        "reference": "Référence",
         "booking": "Réservation",
         "renter": "Locataire",
         "supplier": "Fournisseur",
@@ -780,6 +815,7 @@
       "details": {
         "title": "Détails de la Réservation",
         "bookingInfo": "Réservation",
+        "reference": "Référence",
         "bookingId": "ID Réservation",
         "totalAmount": "Montant Total",
         "commission": "Commission",
@@ -821,6 +857,7 @@
       "loading": "Chargement..."
     },
     "sales": {
+      "admin": "Admin",
       "searchPlaceholder": "Rechercher par acheteur, matériel...",
       "filters": {
         "status": "Statut",
@@ -832,6 +869,7 @@
         "last30Days": "30 Derniers Jours"
       },
       "table": {
+        "reference": "Référence",
         "sale": "ID Vente",
         "buyer": "Acheteur",
         "supplier": "Fournisseur",
@@ -858,6 +896,7 @@
       "details": {
         "title": "Détails de la Commande",
         "saleInfo": "Informations de Vente",
+        "reference": "Référence",
         "saleId": "ID Vente",
         "equipment": "Matériel",
         "salePrice": "Prix de Vente",
@@ -943,6 +982,7 @@
     "error": "Échec de l'envoi de la demande de réservation. Veuillez réessayer.",
     "hours": "heures",
     "days": "jours",
+    "months": "mois",
     "km": "km",
     "tons": "tonnes"
   }

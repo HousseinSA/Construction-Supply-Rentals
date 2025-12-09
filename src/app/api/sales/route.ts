@@ -1,18 +1,17 @@
 import { NextRequest, NextResponse } from "next/server"
 import { connectDB } from "@/src/lib/mongodb"
 import { ObjectId } from "mongodb"
-import { createNotification } from "@/src/lib/notifications"
 import { triggerRealtimeUpdate } from "@/src/lib/realtime-trigger"
+import { generateReferenceNumber } from "@/src/lib/reference-number"
 
-// GET /api/sales - Get all sale orders
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const buyerId = searchParams.get('buyerId')
-    
+    const buyerId = searchParams.get("buyerId")
+
     const db = await connectDB()
     const pipeline: any[] = []
-    
+
     if (buyerId) {
       pipeline.push({ $match: { buyerId: new ObjectId(buyerId) } })
     }
@@ -63,7 +62,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/sales - Create new sale order
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -77,7 +75,9 @@ export async function POST(request: NextRequest) {
     }
 
     const db = await connectDB()
-    const equipment = await db.collection("equipment").findOne({ _id: new ObjectId(equipmentId) })
+    const equipment = await db
+      .collection("equipment")
+      .findOne({ _id: new ObjectId(equipmentId) })
 
     if (!equipment) {
       return NextResponse.json(
@@ -95,8 +95,10 @@ export async function POST(request: NextRequest) {
 
     const salePrice = equipment.pricing?.salePrice || 0
     const commission = salePrice * 0.05 // 5% fixed commission
+    const referenceNumber = await generateReferenceNumber('sale')
 
     const result = await db.collection("sales").insertOne({
+      referenceNumber,
       buyerId: new ObjectId(buyerId),
       equipmentId: new ObjectId(equipmentId),
       supplierId: equipment.supplierId || null,
@@ -109,14 +111,37 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date(),
     })
 
-    await createNotification(
-      "new_sale",
-      "New Sale Order",
-      `New purchase request for ${equipment.name} - Price: ${salePrice} MRU`,
-      result.insertedId
-    )
+    const adminEmail = process.env.ADMIN_EMAIL
+    if (adminEmail) {
+      const buyer = await db
+        .collection("users")
+        .findOne({ _id: new ObjectId(buyerId) })
+      
+      // Get supplier details if available
+      let supplierName, supplierPhone;
+      if (equipment.supplierId) {
+        const supplier = await db.collection("users").findOne({ _id: equipment.supplierId })
+        if (supplier) {
+          supplierName = `${supplier.firstName} ${supplier.lastName}`
+          supplierPhone = supplier.phone
+        }
+      }
+      
+      const { sendNewSaleEmail } = await import("@/src/lib/email")
+      await sendNewSaleEmail(adminEmail, {
+        referenceNumber,
+        equipmentName: equipment.name,
+        salePrice,
+        buyerName: buyer ? `${buyer.firstName} ${buyer.lastName}` : "Unknown",
+        buyerPhone: buyer?.phone || "N/A",
+        buyerLocation: buyer?.city || undefined,
+        saleDate: new Date(),
+        supplierName,
+        supplierPhone
+      }).catch((err) => console.error("Email error:", err))
+    }
 
-    await triggerRealtimeUpdate('sale')
+    await triggerRealtimeUpdate("sale")
 
     return NextResponse.json(
       { success: true, data: { id: result.insertedId, salePrice, commission } },
@@ -130,7 +155,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// PUT /api/sales - Update sale status
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json()
@@ -156,24 +180,27 @@ export async function PUT(request: NextRequest) {
 
     if (adminNotes) updateData.adminNotes = adminNotes
     if (status === "paid") updateData.paidAt = new Date()
+    if (status === "completed") updateData.completedAt = new Date()
 
-    await db.collection("sales").updateOne(
-      { _id: new ObjectId(saleId) },
-      { $set: updateData }
-    )
+    await db
+      .collection("sales")
+      .updateOne({ _id: new ObjectId(saleId) }, { $set: updateData })
 
-    // If paid, mark equipment as sold and unavailable
     if (status === "paid") {
-      const sale = await db.collection("sales").findOne({ _id: new ObjectId(saleId) })
+      const sale = await db
+        .collection("sales")
+        .findOne({ _id: new ObjectId(saleId) })
       if (sale) {
-        await db.collection("equipment").updateOne(
-          { _id: sale.equipmentId },
-          { $set: { isAvailable: false, updatedAt: new Date() } }
-        )
+        await db
+          .collection("equipment")
+          .updateOne(
+            { _id: sale.equipmentId },
+            { $set: { isAvailable: false, soldViaTransaction: true, updatedAt: new Date() } }
+          )
       }
     }
 
-    await triggerRealtimeUpdate('sale')
+    await triggerRealtimeUpdate("sale")
 
     return NextResponse.json({ success: true, message: "Sale status updated" })
   } catch (error: any) {

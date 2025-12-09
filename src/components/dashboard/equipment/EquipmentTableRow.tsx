@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl"
 import { useRouter } from "@/src/i18n/navigation"
 import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
+import { useCityData } from "@/src/hooks/useCityData"
 import { MapPin, Edit, Eye, Tag, Loader2 } from "lucide-react"
 import Image from "next/image"
 import Dropdown from "../../ui/Dropdown"
@@ -33,12 +34,35 @@ export default function EquipmentTableRow({
   const t = useTranslations("dashboard.equipment")
   const router = useRouter()
   const { getPriceData, formatPrice } = usePriceFormatter()
+  const { convertToLocalized } = useCityData()
 
-  const priceData = getPriceData(item.pricing, item.listingType === "forSale")
-  const { displayPrice, displayUnit } = formatPrice(
-    priceData.rate,
-    priceData.unit
-  )
+  const getAllPrices = () => {
+    const prices = []
+    if (item.listingType === "forSale" && item.pricing.salePrice) {
+      const { displayPrice, displayUnit } = formatPrice(item.pricing.salePrice, "sale")
+      prices.push({ displayPrice, displayUnit })
+    } else {
+      if (item.pricing.hourlyRate) {
+        const { displayPrice, displayUnit } = formatPrice(item.pricing.hourlyRate, "hour")
+        prices.push({ displayPrice, displayUnit })
+      }
+      if (item.pricing.dailyRate) {
+        const { displayPrice, displayUnit } = formatPrice(item.pricing.dailyRate, "day")
+        prices.push({ displayPrice, displayUnit })
+      }
+      if (item.pricing.kmRate) {
+        const { displayPrice, displayUnit } = formatPrice(item.pricing.kmRate, "km")
+        prices.push({ displayPrice, displayUnit })
+      }
+      if (item.pricing.tonRate) {
+        const { displayPrice, displayUnit } = formatPrice(item.pricing.tonRate, "ton")
+        prices.push({ displayPrice, displayUnit })
+      }
+    }
+    return prices
+  }
+  
+  const allPrices = getAllPrices()
   return (
     <tr className="hover:bg-gray-50 transition-colors">
       <td className="px-6 py-4">
@@ -72,7 +96,13 @@ export default function EquipmentTableRow({
                   {t("createdByAdmin")}
                 </span>
               )}
-              {item.listingType === "forSale" && (
+              {item.listingType === "forSale" && !item.isAvailable && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-white rounded bg-red-600">
+                  <Tag className="w-3 h-3" />
+                  {t("sold")}
+                </span>
+              )}
+              {item.listingType === "forSale" && item.isAvailable && (
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-white rounded bg-gradient-to-r from-orange-500 to-red-500">
                   <Tag className="w-3 h-3" />
                   {t("forSale")}
@@ -86,15 +116,19 @@ export default function EquipmentTableRow({
         <div className="flex items-center gap-1.5">
           <MapPin className="w-4 h-4 text-primary flex-shrink-0" />
           <span className="text-sm font-medium text-gray-700 capitalize">
-            {item.location}
+            {convertToLocalized(item.location)}
           </span>
         </div>
       </td>
       <td className="px-6 py-4">
-        <span className="text-sm font-semibold text-gray-900">
-          <span dir="ltr">{displayPrice}</span>
-          {displayUnit && ` ${displayUnit}`}
-        </span>
+        <div className="space-y-1">
+          {allPrices.map((price, index) => (
+            <div key={index} className="text-sm font-semibold text-gray-900">
+              <span dir="ltr">{price.displayPrice}</span>
+              {price.displayUnit && ` ${price.displayUnit}`}
+            </div>
+          ))}
+        </div>
       </td>
       <td className="px-6 py-4">
         {item.supplier ? (
@@ -150,7 +184,7 @@ export default function EquipmentTableRow({
           </span>
         )}
       </td>
-      <td className="px-6 py-4">
+      <td className="px-6 py-4 overflow-visible relative">
         <div className="flex justify-center">
           <div className="w-40">
             <Dropdown
@@ -165,7 +199,6 @@ export default function EquipmentTableRow({
                   val === "available"
                 )
               }
-              disabled={updating === item._id?.toString() || (item.listingType === "forSale" && !item.isAvailable)}
               compact
             />
           </div>

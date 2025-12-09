@@ -14,13 +14,14 @@ import {
 import Pagination from "@/src/components/ui/Pagination"
 import { Eye, XCircle } from "lucide-react"
 import { Link } from "@/src/i18n/navigation"
-import Image from "next/image"
+import EquipmentImage from "@/src/components/ui/EquipmentImage"
 import { toast } from "sonner"
 import type { BookingWithDetails } from "@/src/stores/bookingsStore"
 import ConfirmModal from "@/src/components/ui/ConfirmModal"
 import { AlertTriangle } from "lucide-react"
 import GenericMobileCard from "@/src/components/ui/GenericMobileCard"
 import { formatBookingId } from "@/src/lib/format"
+import { formatReferenceNumber } from "@/src/lib/format-reference"
 
 export default function RenterBookingView() {
   const t = useTranslations("dashboard.bookings")
@@ -118,6 +119,7 @@ export default function RenterBookingView() {
         <Table>
           <TableHeader>
             <tr>
+              <TableHead>{t("table.reference")}</TableHead>
               <TableHead>{t("table.equipment")}</TableHead>
               <TableHead>{t("table.usage")}</TableHead>
               <TableHead>{t("table.total")}</TableHead>
@@ -130,13 +132,16 @@ export default function RenterBookingView() {
             {paginatedData.map((booking) => (
               <tr key={booking._id?.toString()}>
                 <TableCell>
+                  <div className="font-semibold text-orange-600 text-sm" dir="ltr">
+                    {formatReferenceNumber(booking.referenceNumber)}
+                  </div>
+                </TableCell>
+                <TableCell>
                   <div className="flex items-center gap-3">
-                    <Image
+                    <EquipmentImage
                       src={booking.bookingItems[0]?.equipmentImage || "/equipement-images/default-fallback-image.png"}
                       alt={booking.bookingItems[0]?.equipmentName || "Equipment"}
-                      width={64}
-                      height={56}
-                      className="w-16 h-14 object-cover rounded-lg shadow-sm"
+                      size="lg"
                     />
                     <div className="space-y-1">
                       {booking.bookingItems?.map((item, idx) => (
@@ -223,10 +228,18 @@ export default function RenterBookingView() {
           return (
             <GenericMobileCard
               key={booking._id?.toString()}
-              id={formatBookingId(booking._id?.toString() || "")}
+              id={formatReferenceNumber(booking.referenceNumber)}
               title={equipmentTitle}
               date={new Date(booking.createdAt).toLocaleDateString()}
               status={booking.status}
+              image={
+                <EquipmentImage
+                  src={booking.bookingItems[0]?.equipmentImage || "/equipement-images/default-fallback-image.png"}
+                  alt={booking.bookingItems[0]?.equipmentName || "Equipment"}
+                  size="lg"
+                  onClick={() => { window.location.href = `/equipment/${booking.bookingItems[0]?.equipmentId}` }}
+                />
+              }
               fields={[
                 {
                   label: t("table.usage"),

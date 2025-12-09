@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { useRouter } from "@/src/i18n/navigation"
+import { useCityData } from "@/src/hooks/useCityData"
 import Button from "../ui/Button"
 import { showToast } from "@/src/lib/toast"
 import Image from "next/image"
@@ -49,6 +50,7 @@ export default function AdminEquipmentCard({ equipment }: EquipmentCardProps) {
   const tCommon = useTranslations("common")
   const tToast = useTranslations("toast")
   const router = useRouter()
+  const { convertToLocalized } = useCityData()
   const [isAvailable, setIsAvailable] = useState(equipment.isAvailable)
   const [status, setStatus] = useState(equipment.status)
   const [loading, setLoading] = useState(false)
@@ -165,7 +167,7 @@ export default function AdminEquipmentCard({ equipment }: EquipmentCardProps) {
           <div className="space-y-2 mb-4 text-sm">
             <div className="flex justify-between">
               <span className="text-gray-600">{t("location")}:</span>
-              <span className="font-medium">{equipment.location}</span>
+              <span className="font-medium">{convertToLocalized(equipment.location)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">{t("price")}:</span>

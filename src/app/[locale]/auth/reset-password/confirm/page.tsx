@@ -30,7 +30,7 @@ export default function ConfirmResetPage() {
       return
     }
 
-    if (password.length < 8) {
+    if (password.length < 6) {
       toast.error(t("passwordTooShort"))
       return
     }

@@ -2,10 +2,11 @@
 
 import { useEffect, useState, useRef } from "react"
 import { useTranslations, useLocale } from "next-intl"
-import { Menu, X, ClipboardList, TagIcon } from "lucide-react"
+import { Menu, X, ClipboardList, TagIcon, LayoutDashboard } from "lucide-react"
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher"
 import AuthButtons from "@/components/ui/AuthButtons"
 import WhatsAppLink from "@/components/ui/WhatsAppLink"
+import QuickSearchButton from "@/src/components/dashboard/shared/QuickSearchButton"
 import Image from "next/image"
 import { Link } from "@/i18n/navigation"
 import { type Session } from "next-auth"
@@ -25,6 +26,7 @@ export default function Header({ session: serverSession }: HeaderProps) {
   const t = useTranslations("common")
   const mobileMenuRef = useRef<HTMLDivElement>(null)
   const isRenter = session?.user?.userType === "renter"
+  const isAdminOrSupplier = session?.user?.role === "admin" || session?.user?.userType === "supplier"
 
   const getFontClass = () => {
     switch (locale) {
@@ -89,6 +91,18 @@ export default function Header({ session: serverSession }: HeaderProps) {
             </Link>
           </div>
           <div className="flex items-center gap-4">
+            {session?.user?.role === "admin" && (
+              <QuickSearchButton />
+            )}
+            {isAdminOrSupplier && (
+              <Link
+                href="/dashboard"
+                className="hidden md:flex items-center gap-2 px-3 py-2 text-gray-700 hover:text-primary hover:bg-gray-50 rounded-lg transition-colors"
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                <span className="text-sm font-medium">{t("dashboard")}</span>
+              </Link>
+            )}
             {isRenter && (
               <Link
                 href="/bookings"

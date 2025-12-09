@@ -13,11 +13,16 @@ interface FormData {
   type: string
   location: string
   listingType: "forSale" | "forRent"
-  priceType: string
-  price: string
+  hourlyRate: string
+  dailyRate: string
+  monthlyRate: string
+  kmRate: string
+  tonRate: string
+  salePrice: string
   description: string
   brand: string
   model: string
+  year: string
   condition: string
   usageValue: string
   usageUnit: string
@@ -35,11 +40,16 @@ export function useEquipmentForm(equipmentId?: string) {
     type: "",
     location: "",
     listingType: "forRent",
-    priceType: "hourly",
-    price: "",
+    hourlyRate: "",
+    dailyRate: "",
+    monthlyRate: "",
+    kmRate: "",
+    tonRate: "",
+    salePrice: "",
     description: "",
     brand: "",
     model: "",
+    year: "",
     condition: "",
     usageValue: "",
     usageUnit: "hours",
@@ -54,31 +64,46 @@ export function useEquipmentForm(equipmentId?: string) {
       const data = await response.json()
       if (data.success) {
         const eq = data.data
-        const usageValue = eq.specifications?.hoursUsed 
+        const usageValue = eq.specifications?.hoursUsed
           ? String(eq.specifications.hoursUsed)
           : eq.specifications?.kilometersUsed
           ? String(eq.specifications.kilometersUsed)
           : eq.specifications?.tonnageUsed
           ? String(eq.specifications.tonnageUsed)
           : ""
-        
+
         setFormData({
           category: eq.categoryId,
           type: eq.equipmentTypeId,
           location: eq.location,
           listingType: eq.listingType,
-          priceType: eq.pricing.type || "hourly",
-          price: String(eq.pricing.salePrice || eq.pricing.hourlyRate || eq.pricing.dailyRate || eq.pricing.kmRate || ""),
+          hourlyRate: eq.pricing.hourlyRate
+            ? String(eq.pricing.hourlyRate)
+            : "",
+          dailyRate: eq.pricing.dailyRate ? String(eq.pricing.dailyRate) : "",
+          monthlyRate: eq.pricing.monthlyRate ? String(eq.pricing.monthlyRate) : "",
+          kmRate: eq.pricing.kmRate ? String(eq.pricing.kmRate) : "",
+          tonRate: eq.pricing.tonRate ? String(eq.pricing.tonRate) : "",
+          salePrice: eq.pricing.salePrice ? String(eq.pricing.salePrice) : "",
           description: eq.description || "",
           brand: eq.specifications?.brand || "",
           model: eq.specifications?.model || "",
+          year: eq.specifications?.year ? String(eq.specifications.year) : "",
           condition: eq.specifications?.condition || "",
           usageValue,
           usageUnit: eq.specifications?.usageUnit || "hours",
-          weight: eq.specifications?.weight ? String(eq.specifications.weight) : "",
+          weight: eq.specifications?.weight
+            ? String(eq.specifications.weight)
+            : "",
           weightUnit: eq.specifications?.weightUnit || "kg",
         })
-        setImages(eq.images.map((url: string) => ({ url, public_id: "" })))
+        setImages(
+          eq.images.map((url: string) => {
+            const match = url.match(/\/([^\/]+)\.[^.]+$/)
+            const public_id = match ? `equipment/${match[1]}` : ""
+            return { url, public_id }
+          })
+        )
       }
     } catch (error) {
       console.error("Error loading equipment:", error)
@@ -91,16 +116,17 @@ export function useEquipmentForm(equipmentId?: string) {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
+  const handleNumericInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.replace(/\D/g, "")
+    setFormData({ ...formData, [e.target.name]: val })
+  }
+
   const handleCategoryChange = (value: string) => {
-    setFormData({ ...formData, category: value, type: "", priceType: "" })
+    setFormData({ ...formData, category: value, type: "" })
   }
 
   const handleTypeChange = (value: string) => {
     setFormData({ ...formData, type: value })
-  }
-
-  const handlePriceTypeChange = (value: string) => {
-    setFormData({ ...formData, priceType: value })
   }
 
   const handleLocationChange = (value: string) => {
@@ -123,8 +149,6 @@ export function useEquipmentForm(equipmentId?: string) {
     setFormData({ ...formData, usageUnit: value })
   }
 
-
-
   const validateForm = () => {
     if (!formData.category) {
       toast.error(tToast("categoryRequired"))
@@ -143,13 +167,21 @@ export function useEquipmentForm(equipmentId?: string) {
       toast.error(tToast("brandRequired"))
       return false
     }
-    if (formData.listingType === "forRent" && !formData.priceType) {
-      toast.error(tToast("priceTypeRequired"))
-      return false
-    }
-    if (!formData.price || parseFloat(formData.price) <= 0) {
-      toast.error(tToast("priceRequired"))
-      return false
+    if (formData.listingType === "forSale") {
+      if (!formData.salePrice || parseFloat(formData.salePrice) <= 0) {
+        toast.error(tToast("priceRequired"))
+        return false
+      }
+    } else {
+      const hasAnyPrice =
+        formData.hourlyRate ||
+        formData.dailyRate ||
+        formData.kmRate ||
+        formData.tonRate
+      if (!hasAnyPrice) {
+        toast.error("Au moins un prix doit être renseigné")
+        return false
+      }
     }
     if (images.length === 0) {
       toast.error(tToast("imagesRequired"))
@@ -169,48 +201,40 @@ export function useEquipmentForm(equipmentId?: string) {
       const pricing: any = {}
 
       if (formData.listingType === "forSale") {
-        pricing.salePrice = parseFloat(formData.price)
+        pricing.salePrice = parseFloat(formData.salePrice)
       } else {
-        switch (formData.priceType) {
-          case "hourly":
-            pricing.hourlyRate = parseFloat(formData.price)
-            break
-          case "daily":
-            pricing.dailyRate = parseFloat(formData.price)
-            break
-          case "per_km":
-            pricing.kmRate = parseFloat(formData.price)
-            break
-          case "per_ton":
-            pricing.tonRate = parseFloat(formData.price)
-            break
+        if (formData.hourlyRate)
+          pricing.hourlyRate = parseFloat(formData.hourlyRate)
+        if (formData.dailyRate) {
+          pricing.dailyRate = parseFloat(formData.dailyRate)
+          // Auto-calculate monthly rate: dailyRate × 30 days
+          pricing.monthlyRate = parseFloat(formData.dailyRate) * 30
         }
-        pricing.type = formData.priceType
+        if (formData.kmRate) pricing.kmRate = parseFloat(formData.kmRate)
+        if (formData.tonRate) pricing.tonRate = parseFloat(formData.tonRate)
       }
-
-      // Determine usage category from equipment type
-      const typeResponse = await fetch(`/api/equipment-types/${formData.type}`)
-      const typeData = await typeResponse.json()
-      const usageCategory = typeData.data?.usageCategory || "hours"
 
       const specifications: any = {
         brand: formData.brand.trim(),
         ...(formData.model && { model: formData.model.trim() }),
+        ...(formData.year && { year: parseInt(formData.year) }),
         ...(formData.condition && { condition: formData.condition }),
-        ...(formData.weight && { 
+        ...(formData.weight && {
           weight: parseFloat(formData.weight),
-          weightUnit: formData.weightUnit 
+          weightUnit: formData.weightUnit,
         }),
       }
 
-      // Add usage based on category
+      // Add usage based on user's selected unit
       if (formData.usageValue) {
         const usageNum = parseInt(formData.usageValue)
-        if (usageCategory === "hours") {
+        specifications.usageUnit = formData.usageUnit
+        
+        if (formData.usageUnit === "hours") {
           specifications.hoursUsed = usageNum
-        } else if (usageCategory === "kilometers") {
+        } else if (formData.usageUnit === "km") {
           specifications.kilometersUsed = usageNum
-        } else if (usageCategory === "tonnage") {
+        } else if (formData.usageUnit === "tons") {
           specifications.tonnageUsed = usageNum
         }
       }
@@ -226,9 +250,11 @@ export function useEquipmentForm(equipmentId?: string) {
         listingType: formData.listingType,
       }
 
-      const url = equipmentId ? `/api/equipment/${equipmentId}` : "/api/equipment"
+      const url = equipmentId
+        ? `/api/equipment/${equipmentId}`
+        : "/api/equipment"
       const method = equipmentId ? "PUT" : "POST"
-      
+
       const response = await fetch(url, {
         method,
         headers: {
@@ -240,10 +266,15 @@ export function useEquipmentForm(equipmentId?: string) {
       const result = await response.json()
 
       if (!response.ok) {
-        throw new Error(result.error || `Failed to ${equipmentId ? 'update' : 'create'} equipment`)
+        throw new Error(
+          result.error ||
+            `Failed to ${equipmentId ? "update" : "create"} equipment`
+        )
       }
 
-      toast.success(tToast(equipmentId ? "equipmentUpdated" : "equipmentCreated"))
+      toast.success(
+        tToast(equipmentId ? "equipmentUpdated" : "equipmentCreated")
+      )
       router.push(equipmentId ? "/dashboard/equipment" : "/dashboard")
     } catch (error) {
       console.error("Equipment creation error:", error)
@@ -261,9 +292,9 @@ export function useEquipmentForm(equipmentId?: string) {
     isSubmitting,
     setImages,
     handleInputChange,
+    handleNumericInputChange,
     handleCategoryChange,
     handleTypeChange,
-    handlePriceTypeChange,
     handleLocationChange,
     handleListingTypeChange,
     handleConditionChange,

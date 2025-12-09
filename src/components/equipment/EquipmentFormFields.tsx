@@ -1,10 +1,10 @@
 import { useTranslations } from "next-intl"
+import { useEffect, useState } from "react"
 import Input from "../ui/Input"
 import InputWithUnitSelect from "../ui/InputWithUnitSelect"
 import CategoryDropdown from "../ui/CategoryDropdown"
 import EquipmentTypeDropdown from "../ui/EquipmentTypeDropdown"
 import CityDropdown from "../ui/CityDropdown"
-import PricingTypeDropdown from "../ui/PricingTypeDropdown"
 import ConditionDropdown from "../ui/ConditionDropdown"
 import UsageInput from "../ui/UsageInput"
 import ImageUpload from "../ui/ImageUpload"
@@ -16,11 +16,16 @@ interface EquipmentFormFieldsProps {
     type: string
     location: string
     listingType: "forSale" | "forRent"
-    priceType: string
-    price: string
+    hourlyRate: string
+    dailyRate: string
+    monthlyRate: string
+    kmRate: string
+    tonRate: string
+    salePrice: string
     description: string
     brand: string
     model: string
+    year: string
     condition: string
     usageValue: string
     usageUnit: string
@@ -35,11 +40,11 @@ interface EquipmentFormFieldsProps {
   onCategoryChange: (value: string) => void
   onTypeChange: (value: string) => void
   onLocationChange: (value: string) => void
-  onPriceTypeChange: (value: string) => void
   onConditionChange: (value: string) => void
   onWeightUnitChange: (value: string) => void
   onUsageUnitChange: (value: string) => void
   onImagesChange: (images: UploadedImage[]) => void
+  onNumericInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 export default function EquipmentFormFields({
@@ -50,13 +55,22 @@ export default function EquipmentFormFields({
   onCategoryChange,
   onTypeChange,
   onLocationChange,
-  onPriceTypeChange,
   onConditionChange,
   onWeightUnitChange,
   onUsageUnitChange,
   onImagesChange,
+  onNumericInputChange,
 }: EquipmentFormFieldsProps) {
   const t = useTranslations("dashboard.equipment")
+  const [pricingTypes, setPricingTypes] = useState<string[]>([])
+
+  useEffect(() => {
+    if (formData.type) {
+      fetch(`/api/equipment-types/${formData.type}`)
+        .then((res) => res.json())
+        .then((data) => setPricingTypes(data.data?.pricingTypes || []))
+    }
+  }, [formData.type])
 
   return (
     <>
@@ -89,6 +103,15 @@ export default function EquipmentFormFields({
           placeholder={t("modelPlaceholder")}
         />
 
+        <Input
+          label={t("year")}
+          name="year"
+          type="text"
+          value={formData.year}
+          onChange={onNumericInputChange}
+          placeholder={t("yearPlaceholder")}
+        />
+
         {formData.listingType === "forSale" && (
           <ConditionDropdown
             value={formData.condition}
@@ -96,7 +119,9 @@ export default function EquipmentFormFields({
           />
         )}
 
-        {!(formData.listingType === "forSale" && formData.condition === "new") && (
+        {!(
+          formData.listingType === "forSale" && formData.condition === "new"
+        ) && (
           <UsageInput
             equipmentTypeId={formData.type}
             value={formData.usageValue}
@@ -106,7 +131,6 @@ export default function EquipmentFormFields({
             disabled={isSubmitting}
           />
         )}
-
         <InputWithUnitSelect
           label={t("weight")}
           name="weight"
@@ -116,29 +140,78 @@ export default function EquipmentFormFields({
           onUnitChange={onWeightUnitChange}
           placeholder={t("weightPlaceholder")}
         />
-
         <CityDropdown value={formData.location} onChange={onLocationChange} />
-
-        {formData.listingType === "forRent" && formData.type && (
-          <PricingTypeDropdown
-            equipmentType={formData.type}
-            value={formData.priceType}
-            onChange={onPriceTypeChange}
-          />
-        )}
-
-        <Input
-          label={formData.listingType === "forSale" ? t("salePrice") : t("price")}
-          name="price"
-          type="number"
-          value={formData.price}
-          onChange={onInputChange}
-          placeholder="5000"
-          required
-        />
       </div>
 
+      {formData.listingType === "forSale" ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Input
+            label={t("salePrice")}
+            name="salePrice"
+            type="text"
+            value={formData.salePrice}
+            onChange={onNumericInputChange}
+            placeholder="50000"
+            required
+          />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {pricingTypes.includes("hourly") && (
+            <Input
+              label={t("hourlyRate")}
+              name="hourlyRate"
+              type="text"
+              value={formData.hourlyRate}
+              onChange={onNumericInputChange}
+              placeholder="500"
+            />
+          )}
+          {pricingTypes.includes("daily") && (
+            <Input
+              label={t("dailyRate")}
+              name="dailyRate"
+              type="text"
+              value={formData.dailyRate}
+              onChange={onNumericInputChange}
+              placeholder="5000"
+            />
+          )}
+          {pricingTypes.includes("monthly") && formData.dailyRate && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t("monthlyRate")}
+              </label>
+              <div className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-700">
+                {(parseFloat(formData.dailyRate) * 30).toLocaleString()} MRU
+                <span className="text-xs text-gray-500 ml-2">({t("autoCalculated")})</span>
+              </div>
+            </div>
+          )}
+          {pricingTypes.includes("per_km") && (
+            <Input
+              label={t("kmRate")}
+              name="kmRate"
+              type="text"
+              value={formData.kmRate}
+              onChange={onNumericInputChange}
+              placeholder="50"
+            />
+          )}
+          {pricingTypes.includes("per_ton") && (
+            <Input
+              label={t("tonRate")}
+              name="tonRate"
+              type="text"
+              value={formData.tonRate}
+              onChange={onNumericInputChange}
+              placeholder="100"
+            />
+          )}
+        </div>
+      )}
 
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">

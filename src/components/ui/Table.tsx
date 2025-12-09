@@ -2,8 +2,8 @@ import { ReactNode } from 'react'
 
 export function Table({ children }: { children: ReactNode }) {
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full">{children}</table>
+    <div className="overflow-x-auto flex-1">
+      <table className="w-full h-full">{children}</table>
     </div>
   )
 }

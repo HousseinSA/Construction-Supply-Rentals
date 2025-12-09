@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb';
 
 export interface SaleOrder {
   _id?: ObjectId;
+  referenceNumber?: string;
   buyerId: ObjectId;
   equipmentId: ObjectId;
   supplierId?: ObjectId | null;

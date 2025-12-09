@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
 import { connectDB } from "@/src/lib/mongodb"
 import { ObjectId } from "mongodb"
-import { createNotification } from "@/src/lib/notifications"
 import { validateBooking } from "@/src/lib/validation"
 import { triggerRealtimeUpdate } from "@/src/lib/realtime-trigger"
+import { generateReferenceNumber } from "@/src/lib/reference-number"
 import {
   calculateSubtotal,
   validateReferences,
@@ -28,17 +28,15 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // Only add renter lookup for admin/supplier views
-    if (!renterId) {
-      pipeline.push({
-        $lookup: {
-          from: "users",
-          localField: "renterId",
-          foreignField: "_id",
-          as: "renterInfo",
-        },
-      })
-    }
+    // Always add renter lookup
+    pipeline.push({
+      $lookup: {
+        from: "users",
+        localField: "renterId",
+        foreignField: "_id",
+        as: "renterInfo",
+      },
+    })
 
     // Only add supplier lookup for admin/supplier views (renters don't see suppliers)
     if (!renterId) {
@@ -61,11 +59,24 @@ export async function GET(request: NextRequest) {
             foreignField: "_id",
             as: "supplierInfo",
           },
+        },
+        {
+          $addFields: {
+            hasAdminCreatedEquipment: {
+              $anyElementTrue: {
+                $map: {
+                  input: "$supplierInfo",
+                  as: "supplier",
+                  in: { $eq: ["$$supplier.role", "admin"] }
+                }
+              }
+            }
+          }
         }
       )
     }
 
-    // Add equipment images lookup
+    // Add equipment images and creation info lookup
     pipeline.push(
       {
         $addFields: {
@@ -113,6 +124,25 @@ export async function GET(request: NextRequest) {
                           },
                         },
                         in: { $arrayElemAt: ["$$equipment.images", 0] },
+                      },
+                    },
+                    equipmentCreatedBy: {
+                      $let: {
+                        vars: {
+                          equipment: {
+                            $arrayElemAt: [
+                              {
+                                $filter: {
+                                  input: "$equipmentDetails",
+                                  as: "eq",
+                                  cond: { $eq: ["$$eq._id", "$$item.equipmentId"] },
+                                },
+                              },
+                              0,
+                            ],
+                          },
+                        },
+                        in: "$$equipment.createdBy",
                       },
                     },
                   },
@@ -209,7 +239,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Create booking (no dates)
+    const referenceNumber = await generateReferenceNumber('booking')
     const result = await db.collection("bookings").insertOne({
+      referenceNumber,
       renterId: new ObjectId(body.renterId),
       bookingItems,
       totalPrice,
@@ -219,12 +251,37 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date(),
     })
 
-    await createNotification(
-      "new_booking",
-      "New Usage-Based Booking",
-      `New booking request for ${bookingItems.length} equipment items - Total: ${totalPrice}`,
-      result.insertedId
-    )
+    // Send email to admin
+    const adminEmail = process.env.ADMIN_EMAIL
+    if (adminEmail) {
+      const renter = await db.collection('users').findOne({ _id: new ObjectId(body.renterId) })
+      
+      // Get supplier details for each booking item
+      const suppliers = await Promise.all(
+        bookingItems.map(async (item) => {
+          if (!item.supplierId) return null;
+          const supplier = await db.collection('users').findOne({ _id: item.supplierId })
+          return {
+            name: supplier ? `${supplier.firstName} ${supplier.lastName}` : 'N/A',
+            phone: supplier?.phone || 'N/A',
+            equipment: item.equipmentName,
+            duration: `${item.usage} ${item.usageUnit || ''}`
+          }
+        })
+      )
+      
+      const { sendNewBookingEmail } = await import('@/src/lib/email')
+      await sendNewBookingEmail(adminEmail, {
+        referenceNumber,
+        equipmentNames: bookingItems.map(item => item.equipmentName),
+        totalPrice,
+        renterName: renter ? `${renter.firstName} ${renter.lastName}` : 'Unknown',
+        renterPhone: renter?.phone || 'N/A',
+        renterLocation: renter?.city || undefined,
+        bookingDate: new Date(),
+        suppliers: suppliers.filter(s => s !== null) as Array<{ name: string; phone: string; equipment: string; duration: string }>
+      }).catch(err => console.error('Email error:', err))
+    }
 
     await triggerRealtimeUpdate('booking')
 

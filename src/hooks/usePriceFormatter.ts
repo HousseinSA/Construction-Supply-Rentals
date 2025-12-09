@@ -3,6 +3,7 @@ import { useTranslations, useLocale } from "next-intl"
 interface Pricing {
   dailyRate?: number
   hourlyRate?: number
+  monthlyRate?: number
   kmRate?: number
   salePrice?: number
 }
@@ -25,9 +26,11 @@ export function usePriceFormatter() {
       return { rate: pricing.salePrice, unit: "" }
     }
 
-    const rate = pricing.dailyRate || pricing.hourlyRate || pricing.kmRate || 0
+    const rate = pricing.dailyRate || pricing.monthlyRate || pricing.hourlyRate || pricing.kmRate || 0
     const unit = pricing.dailyRate
       ? tCommon("day")
+      : pricing.monthlyRate
+      ? tCommon("month")
       : pricing.hourlyRate
       ? tCommon("hour")
       : pricing.kmRate
@@ -37,21 +40,28 @@ export function usePriceFormatter() {
     return { rate, unit }
   }
 
-  const formatPrice = (rate: number, unit: string) => {
+  const formatPrice = (rate: number, unitType: string) => {
     const isArabic = locale === "ar"
+    
+    let translatedUnit = ""
+    if (unitType === "hour") translatedUnit = tCommon("hour")
+    else if (unitType === "day") translatedUnit = tCommon("day")
+    else if (unitType === "month") translatedUnit = tCommon("month")
+    else if (unitType === "km") translatedUnit = tCommon("km")
+    else if (unitType === "ton") translatedUnit = tCommon("ton")
     
     if (isArabic) {
       return {
         formattedRate: rate.toLocaleString(),
         displayPrice: `${rate.toLocaleString()} MRU`,
-        displayUnit: unit ? `/ ${unit}` : ""
+        displayUnit: translatedUnit ? `/ ${translatedUnit}` : ""
       }
     }
     
     return {
       formattedRate: rate.toLocaleString(),
       displayPrice: `${rate.toLocaleString()} MRU `,
-      displayUnit: unit ? `/ ${unit}` : ""
+      displayUnit: translatedUnit ? `/ ${translatedUnit}` : ""
     }
   }
 

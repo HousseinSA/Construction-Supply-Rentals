@@ -1,6 +1,7 @@
 import { Eye } from "lucide-react"
 import Image from "next/image"
 import { formatBookingId, formatPhoneNumber } from "@/src/lib/format"
+import { formatReferenceNumber } from "@/src/lib/format-reference"
 import CopyButton from "@/src/components/ui/CopyButton"
 import BookingStatusBadge from "../bookings/BookingStatusBadge"
 import { TableRow, TableCell } from "@/src/components/ui/Table"
@@ -9,11 +10,17 @@ interface SalesTableRowProps {
   sale: any
   onViewDetails: (sale: any) => void
   t: (key: string) => string
+  highlight?: boolean
 }
 
-export default function SalesTableRow({ sale, onViewDetails, t }: SalesTableRowProps) {
+export default function SalesTableRow({ sale, onViewDetails, t, highlight = false }: SalesTableRowProps) {
   return (
-    <TableRow>
+    <TableRow className={highlight ? "animate-pulse bg-yellow-50" : ""}>
+      <TableCell>
+        <div className="font-semibold text-orange-600 text-sm mb-1" dir="ltr">
+          {formatReferenceNumber(sale.referenceNumber)}
+        </div>
+      </TableCell>
       <TableCell>
         <div className="space-y-1.5">
           <div className="font-medium text-gray-900 text-sm">
@@ -54,7 +61,7 @@ export default function SalesTableRow({ sale, onViewDetails, t }: SalesTableRowP
             </div>
           </div>
         ) : (
-          <span className="text-sm text-gray-400">Admin</span>
+          <span className="text-sm text-gray-400">{t("admin")}</span>
         )}
       </TableCell>
       <TableCell align="center"><BookingStatusBadge status={sale.status} /></TableCell>

@@ -9,7 +9,7 @@ export type { User } from "./models/user"
 // Equipment Types
 export type EquipmentStatus = "pending" | "approved" | "rejected"
 export type UsageCategory = "hours" | "kilometers" | "tonnage"
-export type PricingType = "hourly" | "daily" | "per_km" | "per_ton"
+export type PricingType = "hourly" | "daily" | "monthly" | "per_km" | "per_ton"
 
 // Booking Types
 export type BookingStatus = "pending" | "paid" | "completed" | "cancelled"

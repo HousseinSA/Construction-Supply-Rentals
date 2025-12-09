@@ -31,7 +31,12 @@ export default function SaleModal({
   const [message, setMessage] = useState("")
   const [loading, setLoading] = useState(false)
   
-  useModalClose(isOpen, onClose, modalRef)
+  const handleClose = () => {
+    setMessage("")
+    onClose()
+  }
+  
+  useModalClose(isOpen, handleClose, modalRef)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -73,7 +78,7 @@ export default function SaleModal({
     <div ref={modalRef} className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60] p-4 animate-in fade-in duration-150">
       <div className="bg-white rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom-4 duration-200">
         <div className="p-6">
-          <ModalHeader title={t("sendSaleRequest")} onClose={onClose} />
+          <ModalHeader title={t("sendSaleRequest")} onClose={handleClose} />
           <EquipmentInfo name={equipment.name} location={equipment.location} />
 
           <form onSubmit={handleSubmit} className="space-y-4">

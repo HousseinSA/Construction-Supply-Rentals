@@ -29,26 +29,28 @@ body {
 }
 
 .font-french {
-  font-family: var(--font-poppins), sans-serif;
+  font-family: var(--font-inter), sans-serif;
+  font-size: 0.9rem;
 }
 
 .font-english {
   font-family: var(--font-inter), sans-serif;
+  font-size: 0.9rem;
 }
 
 html {
-  font-size: 14px;
+  font-size: 13px;
 }
 
 @media (min-width: 640px) {
   html {
-    font-size: 15px;
+    font-size: 14px;
   }
 }
 
 @media (min-width: 768px) {
   html {
-    font-size: 16px;
+    font-size: 15px;
   }
 }
 
