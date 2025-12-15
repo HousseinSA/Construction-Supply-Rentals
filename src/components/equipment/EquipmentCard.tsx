@@ -92,7 +92,7 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
       } group ${fontClass}`}
     >
       <div
-        className="h-48 relative overflow-hidden cursor-pointer"
+        className="h-52 sm:h-56 md:h-64 lg:h-56 relative overflow-hidden cursor-pointer"
         onClick={() => router.push(`/equipment/${equipment._id}`)}
       >
         <Image
@@ -112,9 +112,9 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
           </div>
         )}
       </div>
-      <div className="p-4 flex flex-col flex-1">
+      <div className="p-5 sm:p-6 flex flex-col flex-1">
         <div className="flex-1">
-          <h3 className="text-base font-medium text-gray-800 mb-2 leading-tight">
+          <h3 className="text-base sm:text-lg font-medium text-gray-800 mb-3 leading-snug line-clamp-2">
             {equipment.name}
           </h3>
           {specs && (specs.brand || specs.model || specs.year) && (
@@ -157,20 +157,20 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
             </div>
           )}
 
-          <div className="flex items-center gap-2 mb-2">
-            <MapPin className="w-3 h-3 text-primary" />
-            <span className="text-xs text-gray-600 capitalize">
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
+            <MapPin className="w-4 h-4 text-primary flex-shrink-0" />
+            <span className="text-sm text-gray-600 capitalize">
               {localizedCity}
             </span>
             {specs?.condition && (
               <>
                 <span className="text-gray-300">•</span>
-                <span className="text-xs text-gray-600">{specs.condition}</span>
+                <span className="text-sm text-gray-600">{specs.condition}</span>
               </>
             )}
           </div>
         </div>
-        <div className="space-y-2.5 mt-auto border-t border-gray-50 pt-3">
+        <div className="space-y-3 mt-auto border-t border-gray-50 pt-4">
           {!isForSale && (
             <div className="flex items-center justify-around gap-2">
               {equipment.pricing.hourlyRate && (

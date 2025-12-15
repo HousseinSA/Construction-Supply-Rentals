@@ -32,6 +32,7 @@ export default function EquipmentTableRow({
   onNavigate,
 }: EquipmentTableRowProps) {
   const t = useTranslations("dashboard.equipment")
+  const tCommon = useTranslations("common")
   const router = useRouter()
   const { getPriceData, formatPrice } = usePriceFormatter()
   const { convertToLocalized } = useCityData()
@@ -131,7 +132,9 @@ export default function EquipmentTableRow({
         </div>
       </td>
       <td className="px-6 py-4">
-        {item.supplier ? (
+        {item.createdBy === "admin" ? (
+          <span className="text-sm font-medium text-blue-700">{tCommon("admin")}</span>
+        ) : item.supplier ? (
           <div className="space-y-1.5">
             <div className="font-medium text-gray-900 text-sm">
               {item.supplier.firstName} {item.supplier.lastName}

@@ -34,7 +34,7 @@ export default function GenericMobileCard({
   image,
 }: GenericMobileCardProps) {
   return (
-    <div className="p-4 space-y-3 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all">
+    <div className="p-4 space-y-1  bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all">
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1">
           <div className="font-semibold text-orange-600 text-sm mb-1" dir="ltr">
@@ -43,9 +43,13 @@ export default function GenericMobileCard({
           {subtitle && (
             <div className="text-sm text-gray-600">{subtitle}</div>
           )}
-          <div className="text-xs text-gray-500 mt-0.5">{date}</div>
+         
         </div>
+        <div className="flex flex-col items-center gap-1">
+          
         <BookingStatusBadge status={status} />
+         <div className="text-xs text-gray-500 mt-0.5">{date}</div>
+        </div>
       </div>
 
       {title && (

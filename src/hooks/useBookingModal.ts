@@ -2,12 +2,10 @@ import { useState } from "react"
 import { useSession } from "next-auth/react"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
-import { useRouter } from "@/src/i18n/navigation"
 import { PricingType } from "@/src/lib/types"
 
 export function useBookingModal(equipment: any, onSuccess?: () => void, onClose?: () => void, pricingType?: PricingType) {
   const { data: session } = useSession()
-  const router = useRouter()
   const t = useTranslations("booking")
   
   const [usage, setUsage] = useState(0)
@@ -41,7 +39,6 @@ export function useBookingModal(equipment: any, onSuccess?: () => void, onClose?
         resetForm()
         onSuccess?.()
         onClose?.()
-        setTimeout(() => router.push("/bookings"), 800)
       } else {
         toast.error(data.error || t("error"))
       }

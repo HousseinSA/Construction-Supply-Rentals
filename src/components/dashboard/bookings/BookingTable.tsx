@@ -61,7 +61,7 @@ export default function BookingTable() {
       },
     },
     defaultFilters: {
-      status: "pending",
+      status: "all",
       date: "all",
     },
   })
@@ -151,11 +151,11 @@ export default function BookingTable() {
                 key: "status",
                 label: t("filters.status"),
                 options: [
+                  { value: "all", label: t("filters.allStatus") },
                   { value: "pending", label: t("status.pending") },
                   { value: "paid", label: t("status.paid") },
                   { value: "completed", label: t("status.completed") },
                   { value: "cancelled", label: t("status.cancelled") },
-                  { value: "all", label: t("filters.allStatus") },
                 ],
               },
               {

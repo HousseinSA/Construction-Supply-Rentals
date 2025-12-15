@@ -1,8 +1,11 @@
 import { Coins } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { formatBookingId } from "@/src/lib/format"
 import { formatReferenceNumber } from "@/src/lib/format-reference"
+import { formatPhoneNumber } from "@/src/lib/format"
 import { calculateBookingCommission } from "@/src/lib/commission"
 import GenericMobileCard from "@/src/components/ui/GenericMobileCard"
+import CopyButton from "@/src/components/ui/CopyButton"
 import type { BookingWithDetails } from "@/src/stores/bookingsStore"
 
 interface BookingMobileCardProps {
@@ -13,6 +16,7 @@ interface BookingMobileCardProps {
 }
 
 export default function BookingMobileCard({ booking, onViewDetails, t, highlight = false }: BookingMobileCardProps) {
+  const tCommon = useTranslations("common")
   const commission = calculateBookingCommission(booking.bookingItems)
   const equipmentTitle = `${booking.bookingItems[0]?.equipmentName}${
     booking.bookingItems.length > 1 ? ` +${booking.bookingItems.length - 1}` : ""
@@ -20,9 +24,15 @@ export default function BookingMobileCard({ booking, onViewDetails, t, highlight
   const renterName = `${booking.renterInfo[0]?.firstName} ${booking.renterInfo[0]?.lastName}`
   const totalUsage = booking.bookingItems.reduce((sum, item) => sum + item.usage, 0)
   const usageUnit = booking.bookingItems[0]?.usageUnit || ""
-  const supplierName = booking.supplierInfo?.[0] 
-    ? `${booking.supplierInfo[0].firstName} ${booking.supplierInfo[0].lastName}`
-    : t("admin")
+  
+  const supplierDisplay = booking.supplierInfo && booking.supplierInfo.length > 0 && !booking.hasAdminCreatedEquipment
+    ? (
+        <div className="flex items-center gap-2">
+          <span>{booking.supplierInfo[0].firstName} {booking.supplierInfo[0].lastName}</span>
+          <CopyButton text={booking.supplierInfo[0].phone} size="sm" />
+        </div>
+      )
+    : tCommon("admin")
 
   return (
     <div className={highlight ? "animate-pulse" : ""}>
@@ -39,7 +49,7 @@ export default function BookingMobileCard({ booking, onViewDetails, t, highlight
           },
           {
             label: t("table.supplier"),
-            value: supplierName,
+            value: supplierDisplay,
           },
           {
             label: t("table.total"),

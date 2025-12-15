@@ -40,6 +40,7 @@ const NAME_MAPPINGS: Record<string, string> = {
   niveleuse: "Niveuleuse.jpg",
   "pelle hydraulique": "Pelle hydraulique.jpg",
   pelle: "Pelle hydraulique.jpg",
+  "pelle pneumatique": "Pelle pneumatique.jpg",
   pilonneuse: "Pilonneuse.jpg",
   "plaque vibrante": "Plaque Vibrante.jpeg",
   "porte char": "Porte char.jpg",

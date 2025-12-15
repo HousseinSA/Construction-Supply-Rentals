@@ -68,7 +68,7 @@ export default function EquipmentList({
         </Table>
       </div>
 
-      <div className="lg:hidden divide-y divide-gray-200">
+      <div className="lg:hidden grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {equipment.map((item) => {
           const priceData = getPriceData(
             item.pricing,

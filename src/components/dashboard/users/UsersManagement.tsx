@@ -5,7 +5,6 @@ import { useTranslations, useLocale } from "next-intl"
 import {
   Users,
   Search,
-  Mail,
   Phone,
   MapPin,
   Calendar,
@@ -51,7 +50,6 @@ export default function UsersManagement() {
     const matchesSearch =
       user.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.phone?.includes(searchTerm)
 
     const matchesRole = filterRole === "all" || user.userType === filterRole
@@ -213,7 +211,6 @@ export default function UsersManagement() {
                 <TableHeader>
                   <tr>
                     <TableHead>{t("equipment.name")}</TableHead>
-                    <TableHead>{t("equipment.email")}</TableHead>
                     <TableHead>{t("equipment.phone")}</TableHead>
                     <TableHead>Role</TableHead>
                     <TableHead>{t("users.status")}</TableHead>
@@ -229,7 +226,7 @@ export default function UsersManagement() {
                             <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                               <Users className="h-5 w-5 text-blue-600" />
                             </div>
-                            <div className="ml-4">
+                            <div className="mx-2">
                               <div className="text-sm font-medium text-gray-900">
                                 {user.firstName} {user.lastName}
                               </div>
@@ -240,12 +237,6 @@ export default function UsersManagement() {
                                   </div>
                                 )}
                             </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center text-sm text-gray-900">
-                            <span className="mr-2">{user.email}</span>
-                            <CopyButton text={user.email} size="sm" />
                           </div>
                         </TableCell>
                         <TableCell>
@@ -351,13 +342,6 @@ export default function UsersManagement() {
                   </div>
 
                   <div className="space-y-2 text-sm text-gray-600 mb-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <Mail className="h-4 w-4 mr-2" />
-                        <span>{user.email}</span>
-                      </div>
-                      <CopyButton text={user.email} size="sm" />
-                    </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
                         <Phone className="h-4 w-4 mr-2" />

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react"
 import { useTranslations } from "next-intl"
+import { useCategoryMapping } from "@/src/hooks/useCategoryMapping"
 import Dropdown from "./Dropdown"
 
 interface EquipmentTypeDropdownProps {
@@ -30,6 +31,7 @@ export default function EquipmentTypeDropdown({
   className = ""
 }: EquipmentTypeDropdownProps) {
   const t = useTranslations("dashboard.equipment")
+  const { getEquipmentTypeName } = useCategoryMapping()
   const [equipmentTypes, setEquipmentTypes] = useState<EquipmentType[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -58,7 +60,7 @@ export default function EquipmentTypeDropdown({
 
   const equipmentTypeOptions = filteredTypes.map(type => ({
     value: type._id,
-    label: type.name
+    label: getEquipmentTypeName(type.name)
   }))
 
   return (

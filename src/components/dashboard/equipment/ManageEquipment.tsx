@@ -106,7 +106,7 @@ export default function ManageEquipment() {
           />
         )}
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 min-h-[600px] flex flex-col">
+        <div className="lg:bg-white lg:rounded-lg lg:shadow-sm lg:border lg:border-gray-200 min-h-[600px] flex flex-col">
           {loading ? (
             <div className="p-12 text-center">
               <div className="animate-pulse text-gray-600 font-medium">

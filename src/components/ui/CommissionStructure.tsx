@@ -24,16 +24,8 @@ export default function CommissionStructure({
           <div className="space-y-2">
             <h4 className="font-medium text-blue-900">{t('title')}</h4>
             <div className="text-sm text-blue-800 space-y-1">
-              <div>• {t('standardEquipment')}</div>
-              <div>• {t('highUsage500')}</div>
-              <div>• {t('extendedUsage1000')}</div>
-              <div>• {t('vehiclesStandard')}</div>
-              <div>• {t('vehicles1Month')}</div>
-              <div>• {t('vehicles2Months')}</div>
-              <div>• {t('forSale')}</div>
-            </div>
-            <div className="text-xs text-blue-700 mt-2 pt-2 border-t border-blue-200">
-              {t('note')}
+              <div>• {t('rentals')}</div>
+              <div>• {t('sales')}</div>
             </div>
           </div>
         </div>
@@ -52,48 +44,15 @@ export default function CommissionStructure({
           <p className="text-blue-700 mb-4">{t('subtitle')}</p>
           
           <div className="grid gap-3">
-            <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-blue-100">
-              <span className="text-gray-700">{t('standardEquipment')}</span>
-              <span className="font-semibold text-blue-600">10%</span>
+            <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-blue-100">
+              <span className="text-gray-700 font-medium">{t('rentals')}</span>
+              <span className="font-bold text-blue-600 text-lg">10%</span>
             </div>
             
-            <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-blue-100">
-              <span className="text-gray-700">{t('highUsage500')}</span>
-              <span className="font-semibold text-green-600">9%</span>
+            <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-purple-100">
+              <span className="text-gray-700 font-medium">{t('sales')}</span>
+              <span className="font-bold text-purple-600 text-lg">5%</span>
             </div>
-            
-            <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-blue-100">
-              <span className="text-gray-700">{t('extendedUsage1000')}</span>
-              <span className="font-semibold text-green-600">8%</span>
-            </div>
-            
-            <div className="bg-orange-50 border border-orange-200 rounded-lg p-2 space-y-2">
-              <div className="text-sm font-medium text-orange-800 mb-2">🚛 Vehicles (Camions)</div>
-              
-              <div className="flex items-center justify-between p-2 bg-white rounded border border-orange-100">
-                <span className="text-gray-700 text-sm">{t('vehiclesStandard')}</span>
-                <span className="font-semibold text-blue-600">10%</span>
-              </div>
-              
-              <div className="flex items-center justify-between p-2 bg-white rounded border border-orange-100">
-                <span className="text-gray-700 text-sm">{t('vehicles1Month')}</span>
-                <span className="font-semibold text-green-600">9%</span>
-              </div>
-              
-              <div className="flex items-center justify-between p-2 bg-white rounded border border-orange-100">
-                <span className="text-gray-700 text-sm">{t('vehicles2Months')}</span>
-                <span className="font-semibold text-green-600">8%</span>
-              </div>
-            </div>
-            
-            <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-blue-100">
-              <span className="text-gray-700">{t('forSale')}</span>
-              <span className="font-semibold text-purple-600">5%</span>
-            </div>
-          </div>
-          
-          <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-            <p className="text-sm text-amber-800">{t('note')}</p>
           </div>
         </div>
       </div>

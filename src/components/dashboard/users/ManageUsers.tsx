@@ -1,13 +1,15 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useTranslations } from "next-intl"
 import { useSession } from "next-auth/react"
-import { ArrowLeft, Users, Shield, Building, Mail, Phone, MapPin, Calendar } from "lucide-react"
+import { ArrowLeft, Users, Shield, Building, Phone, MapPin, Calendar } from "lucide-react"
 import { Link } from "@/src/i18n/navigation"
 import { usePagination } from "@/src/hooks/usePagination"
+import { useTableFilters } from "@/src/hooks/useTableFilters"
 import HomeButton from "../../ui/HomeButton"
 import Pagination from "../../ui/Pagination"
+import TableFilters from "../../ui/TableFilters"
 import { User } from "@/src/lib/models/user"
 
 export default function ManageUsers() {
@@ -16,11 +18,36 @@ export default function ManageUsers() {
 
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState<"all" | "admin" | "supplier" | "renter">("all")
 
-  const filteredUsers = users.filter(user => 
-    filter === "all" || user.role === filter
-  )
+  const {
+    searchValue,
+    setSearchValue,
+    filterValues,
+    handleFilterChange,
+    filteredData: baseFiltered,
+  } = useTableFilters({
+    data: users,
+    searchFields: [],
+    filterFunctions: {
+      role: (user, value) => user.role === value,
+    },
+    defaultFilters: {
+      role: "all",
+    },
+  })
+
+  const filteredUsers = useMemo(() => {
+    if (!searchValue.trim()) return baseFiltered
+    const searchLower = searchValue.toLowerCase()
+    return baseFiltered.filter((user) => {
+      return (
+        user.firstName?.toLowerCase().includes(searchLower) ||
+        user.lastName?.toLowerCase().includes(searchLower) ||
+        user.phone?.toLowerCase().includes(searchLower) ||
+        user.companyName?.toLowerCase().includes(searchLower)
+      )
+    })
+  }, [baseFiltered, searchValue])
 
   const {
     currentPage,
@@ -94,23 +121,27 @@ export default function ManageUsers() {
           </div>
         </div>
 
-        <div className="mb-6">
-          <div className="flex gap-2">
-            {["all", "admin", "supplier", "renter"].map((roleFilter) => (
-              <button
-                key={roleFilter}
-                onClick={() => setFilter(roleFilter as any)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  filter === roleFilter
-                    ? "bg-primary text-white"
-                    : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-200"
-                }`}
-              >
-                {roleFilter === "all" ? "All Users" : roleFilter.charAt(0).toUpperCase() + roleFilter.slice(1)}
-              </button>
-            ))}
-          </div>
-        </div>
+        {users.length > 0 && (
+          <TableFilters
+            searchValue={searchValue}
+            onSearchChange={setSearchValue}
+            searchPlaceholder="Search by name or phone..."
+            filters={[
+              {
+                key: "role",
+                label: "Role",
+                options: [
+                  { value: "all", label: "All Roles" },
+                  { value: "admin", label: "Admin" },
+                  { value: "supplier", label: "Supplier" },
+                  { value: "renter", label: "Renter" },
+                ],
+              },
+            ]}
+            filterValues={filterValues}
+            onFilterChange={handleFilterChange}
+          />
+        )}
 
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           {loading ? (
@@ -137,7 +168,7 @@ export default function ManageUsers() {
                           Role
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Contact
+                          Phone
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Location
@@ -167,15 +198,9 @@ export default function ManageUsers() {
                             </span>
                           </td>
                           <td className="px-6 py-4">
-                            <div className="space-y-1">
-                              <div className="flex items-center gap-1 text-sm text-gray-600">
-                                <Mail className="w-3 h-3" />
-                                {user.email}
-                              </div>
-                              <div className="flex items-center gap-1 text-sm text-gray-600">
-                                <Phone className="w-3 h-3" />
-                                {user.phone}
-                              </div>
+                            <div className="flex items-center gap-1 text-sm text-gray-600">
+                              <Phone className="w-3 h-3" />
+                              {user.phone}
                             </div>
                           </td>
                           <td className="px-6 py-4">
@@ -215,10 +240,6 @@ export default function ManageUsers() {
                       </span>
                     </div>
                     <div className="space-y-1 text-sm text-gray-600">
-                      <div className="flex items-center gap-1">
-                        <Mail className="w-3 h-3" />
-                        {user.email}
-                      </div>
                       <div className="flex items-center gap-1">
                         <Phone className="w-3 h-3" />
                         {user.phone}

@@ -60,9 +60,11 @@ export default function BookingDetailsModal({
   return (
     <div
       ref={modalRef}
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 z-50 animate-in fade-in duration-150"
     >
-      <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+      <div className="relative h-full flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom-4 duration-200">
         <div className="p-6">
           <ModalHeader title={t("details.title")} onClose={onClose} />
 
@@ -161,6 +163,7 @@ export default function BookingDetailsModal({
               </Button>
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>

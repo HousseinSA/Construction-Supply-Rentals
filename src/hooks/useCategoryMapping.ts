@@ -23,10 +23,12 @@ const categoryMapping: {
 
 const equipmentTypeMapping: { [key: string]: string } = {
   "Pelle hydraulique": "pellehydraulique",
+  "Pelle pneumatique": "pellepneumatique",
   "Chargeuse sur pneus": "chargeusesurpneus",
   "Chargeuse sur chenilles": "chargeusesurchenilles",
   "جرافة": "bulldozer",
   "حفارة هيدروليكية": "pellehydraulique",
+  "حفارة هوائية": "pellepneumatique",
   "Mini-pelle": "minipelle",
   "Décapeuse (Scraper)": "decapeuse",
   Bulldozer: "bulldozer",

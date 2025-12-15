@@ -20,7 +20,9 @@
     "cancel": "Annuler",
     "close": "Fermer",
     "showingResults": "{start} sur {total}",
-    "admin": "Admin"
+    "admin": "Admin",
+    "filters": "Filtres",
+    "applyFilters": "Appliquer les Filtres"
   },
   "quickSearch": {
     "button": "Recherche Rapide",
@@ -277,15 +279,9 @@
     },
     "commission": {
       "title": "Structure de Commission",
-      "subtitle": "Taux de commission transparents pour tous les équipements",
-      "standardEquipment": "Matériel standard: 10% de commission",
-      "highUsage500": "Usage élevé (500+ heures): 9% de commission",
-      "extendedUsage1000": "Usage prolongé (1000+ heures): 8% de commission",
-      "vehiclesStandard": "Véhicules (moins d'1 mois): 10% de commission",
-      "vehicles1Month": "Véhicules (1+ mois de location): 9% de commission",
-      "vehicles2Months": "Véhicules (2+ mois de location): 8% de commission",
-      "forSale": "À vendre: 5% de commission",
-      "note": "Commission basée sur le type d'équipement et la durée d'usage"
+      "subtitle": "Taux de commission simples et transparents",
+      "rentals": "Toutes les locations: 10% de commission",
+      "sales": "Ventes d'équipements: 5% de commission"
     }
   },
   "categories": {
@@ -306,6 +302,8 @@
     "equipmentTypes": {
       "pellehydraulique": "Pelle Hydraulique",
       "pellehydrauliqueDesc": "Excavation et terrassement",
+      "pellepneumatique": "Pelle Pneumatique",
+      "pellepneumatiqueDesc": "Excavatrice pneumatique pour travaux de terrassement",
       "bulldozer": "Bulldozer",
       "bulldozerDesc": "Poussage et déplacement de terre",
       "chargeuse": "Chargeuse",
@@ -684,15 +682,9 @@
         "volume1000": "Commission 1000+ Heures (%)",
         "structure": {
           "title": "Structure de Commission",
-          "subtitle": "Taux de commission transparents pour tous les équipements",
-          "standardEquipment": "Matériel standard: 10% de commission",
-          "highUsage500": "Usage élevé (500+ heures): 9% de commission",
-          "extendedUsage1000": "Usage prolongé (1000+ heures): 8% de commission",
-          "vehiclesStandard": "Véhicules (moins d'1 mois): 10% de commission",
-          "vehicles1Month": "Véhicules (1+ mois de location): 9% de commission",
-          "vehicles2Months": "Véhicules (2+ mois de location): 8% de commission",
-          "forSale": "À vendre: 5% de commission",
-          "note": "Commission basée sur le type d'équipement et la durée d'usage"
+          "subtitle": "Taux de commission simples et transparents",
+          "rentals": "Toutes les locations: 10% de commission",
+          "sales": "Ventes d'équipements: 5% de commission"
         }
       },
       "users": {

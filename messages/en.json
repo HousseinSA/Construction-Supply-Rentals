@@ -20,7 +20,9 @@
     "cancel": "Cancel",
     "close": "Close",
     "showingResults": "{start} of {total}",
-    "admin": "Admin"
+    "admin": "Admin",
+    "filters": "Filters",
+    "applyFilters": "Apply Filters"
   },
   "quickSearch": {
     "button": "Quick Search",
@@ -279,15 +281,9 @@
     },
     "commission": {
       "title": "Commission Structure",
-      "subtitle": "Transparent commission rates for all equipment",
-      "standardEquipment": "Standard equipment: 10% commission",
-      "highUsage500": "High usage (500+ hours): 9% commission",
-      "extendedUsage1000": "Extended usage (1000+ hours): 8% commission",
-      "vehiclesStandard": "Vehicles (less than 1 month): 10% commission",
-      "vehicles1Month": "Vehicles (1+ month rental): 9% commission",
-      "vehicles2Months": "Vehicles (2+ months rental): 8% commission",
-      "forSale": "For sale: 5% commission",
-      "note": "Commission based on equipment type and usage duration"
+      "subtitle": "Simple and transparent commission rates",
+      "rentals": "All equipment rentals: 10% commission",
+      "sales": "Equipment sales: 5% commission"
     }
   },
   "categories": {
@@ -308,6 +304,8 @@
     "equipmentTypes": {
       "pellehydraulique": "Hydraulic Excavator",
       "pellehydrauliqueDesc": "Heavy-duty excavator for digging and earthmoving",
+      "pellepneumatique": "Pneumatic Excavator",
+      "pellepneumatiqueDesc": "Pneumatic excavator for earthmoving work",
       "bulldozer": "Bulldozer",
       "bulldozerDesc": "Powerful tractor for pushing and moving earth",
       "chargeuse": "Wheel Loader",
@@ -684,15 +682,9 @@
         "volume1000": "1000+ Hours Commission (%)",
         "structure": {
           "title": "Commission Structure",
-          "subtitle": "Transparent commission rates for all equipment",
-          "standardEquipment": "Standard equipment: 10% commission",
-          "highUsage500": "High usage (500+ hours): 9% commission",
-          "extendedUsage1000": "Extended usage (1000+ hours): 8% commission",
-          "vehiclesStandard": "Vehicles (less than 1 month): 10% commission",
-          "vehicles1Month": "Vehicles (1+ month rental): 9% commission",
-          "vehicles2Months": "Vehicles (2+ months rental): 8% commission",
-          "forSale": "For sale: 5% commission",
-          "note": "Commission based on equipment type and usage duration"
+          "subtitle": "Simple and transparent commission rates",
+          "rentals": "All equipment rentals: 10% commission",
+          "sales": "Equipment sales: 5% commission"
         }
       },
       "users": {
