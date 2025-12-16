@@ -21,6 +21,7 @@ export async function GET(request: NextRequest) {
     const listingType = searchParams.get("listingType")
     const availableOnly = searchParams.get("available") === "true"
     const isAdmin = searchParams.get("admin") === "true"
+    const supplierId = searchParams.get("supplierId")
 
     const db = await connectDB()
 
@@ -39,8 +40,13 @@ export async function GET(request: NextRequest) {
       categoryId: { $nin: excludedCategoryIds.map((cat) => cat._id) },
     }
 
+    // Filter by supplierId if provided (for supplier dashboard)
+    if (supplierId) {
+      query.supplierId = new ObjectId(supplierId)
+    }
+
     // For admin, show all equipment; for others, only approved
-    if (!isAdmin) {
+    if (!isAdmin && !supplierId) {
       query.status = "approved"
     }
 

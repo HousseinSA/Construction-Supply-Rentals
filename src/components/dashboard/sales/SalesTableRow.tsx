@@ -16,8 +16,8 @@ interface SalesTableRowProps {
 export default function SalesTableRow({ sale, onViewDetails, t, highlight = false }: SalesTableRowProps) {
   return (
     <TableRow className={highlight ? "animate-pulse bg-yellow-50" : ""}>
-      <TableCell>
-        <div className="font-semibold text-orange-600 text-sm mb-1" dir="ltr">
+      <TableCell className="w-24">
+        <div className="font-semibold text-orange-600 text-xs" dir="ltr">
           {formatReferenceNumber(sale.referenceNumber)}
         </div>
       </TableCell>

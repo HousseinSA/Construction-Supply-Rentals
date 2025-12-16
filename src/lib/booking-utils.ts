@@ -25,6 +25,10 @@ export async function calculateSubtotal(
       rate = equipment.pricing.dailyRate || 0;
       usageUnit = 'days';
       break;
+    case 'monthly': 
+      rate = equipment.pricing.monthlyRate || 0;
+      usageUnit = 'months';
+      break;
     case 'per_km': 
       rate = equipment.pricing.kmRate || 0;
       usageUnit = 'km';

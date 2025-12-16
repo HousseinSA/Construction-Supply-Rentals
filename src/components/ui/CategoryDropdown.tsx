@@ -15,6 +15,7 @@ interface CategoryDropdownProps {
 interface Category {
   _id: string
   name: string
+  nameFr?: string
 }
 
 export default function CategoryDropdown({
@@ -57,7 +58,7 @@ export default function CategoryDropdown({
 
   const categoryOptions = categories.map(cat => ({
     value: cat._id,
-    label: cat.name
+    label: cat.nameFr || cat.name
   }))
 
   return (

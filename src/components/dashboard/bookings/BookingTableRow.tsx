@@ -5,6 +5,7 @@ import { calculateBookingCommission } from "@/src/lib/commission"
 import CopyButton from "@/src/components/ui/CopyButton"
 import BookingStatusBadge from "./BookingStatusBadge"
 import { TableRow, TableCell } from "@/src/components/ui/Table"
+import { useTranslations } from "next-intl"
 import type { BookingWithDetails } from "@/src/stores/bookingsStore"
 
 interface BookingTableRowProps {
@@ -20,17 +21,30 @@ export default function BookingTableRow({
   t,
   highlight = false,
 }: BookingTableRowProps) {
+  const tCommon = useTranslations('common')
   const commission = calculateBookingCommission(booking.bookingItems)
   const totalUsage = booking.bookingItems.reduce(
     (sum, item) => sum + item.usage,
     0
   )
   const usageUnit = booking.bookingItems[0]?.usageUnit || "hours"
+  
+  // Translate usage unit
+  const getTranslatedUnit = (unit: string) => {
+    const unitMap: Record<string, string> = {
+      'hours': tCommon('hour'),
+      'days': tCommon('day'),
+      'months': tCommon('month'),
+      'km': tCommon('km'),
+      'tons': tCommon('ton')
+    }
+    return unitMap[unit] || unit
+  }
 
   return (
     <TableRow className={highlight ? "animate-pulse bg-yellow-50" : ""}>
-      <TableCell>
-        <div className="font-semibold text-orange-600 text-sm mb-1" dir="ltr">
+      <TableCell className="w-24">
+        <div className="font-semibold text-orange-600 text-xs" dir="ltr">
           {formatReferenceNumber(booking.referenceNumber)}
         </div>
       </TableCell>
@@ -59,7 +73,7 @@ export default function BookingTableRow({
       </TableCell>
       <TableCell>
         <span className="text-sm font-medium text-gray-700" dir="ltr">
-          {totalUsage} {usageUnit}
+          {totalUsage} {getTranslatedUnit(usageUnit)}
         </span>
       </TableCell>
       <TableCell>

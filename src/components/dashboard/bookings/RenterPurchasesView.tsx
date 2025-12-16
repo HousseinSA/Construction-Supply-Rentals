@@ -128,8 +128,8 @@ export default function RenterPurchasesView() {
           <TableBody>
             {paginatedData.map((purchase) => (
               <tr key={purchase._id}>
-                <TableCell>
-                  <div className="font-semibold text-orange-600 text-sm" dir="ltr">
+                <TableCell className="w-24">
+                  <div className="font-semibold text-orange-600 text-xs" dir="ltr">
                     {formatReferenceNumber(purchase.referenceNumber)}
                   </div>
                 </TableCell>

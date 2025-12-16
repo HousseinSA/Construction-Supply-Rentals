@@ -32,6 +32,12 @@ export default function ActionButtons({ isForSale, equipment, onBookingSuccess }
       return
     }
     
+    // Prevent suppliers from booking their own equipment
+    if (session.user.id === equipment.supplierId) {
+      setToast({ message: t('cannotBookOwnEquipment'), type: 'error' })
+      return
+    }
+    
     if (equipment.userBookingStatus === 'pending') {
       setToast({ message: t('bookingPending'), type: 'error' })
       return

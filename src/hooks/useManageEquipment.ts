@@ -8,16 +8,20 @@ import { usePagination } from './usePagination'
 
 interface UseManageEquipmentConfig {
   convertToLocalized: (location: string) => string
+  supplierId?: string
 }
 
-export function useManageEquipment({ convertToLocalized }: UseManageEquipmentConfig) {
+export function useManageEquipment({ convertToLocalized, supplierId }: UseManageEquipmentConfig) {
   const { equipment, loading, setEquipment, setLoading, updateEquipment } = useEquipmentStore()
   const [updating, setUpdating] = useState<string | null>(null)
 
   const fetchEquipment = useCallback(async () => {
     try {
       setLoading(true)
-      const response = await fetch("/api/equipment?admin=true")
+      const url = supplierId 
+        ? `/api/equipment?supplierId=${supplierId}`
+        : "/api/equipment?admin=true"
+      const response = await fetch(url)
       const data = await response.json()
       if (data.success) {
         const usersResponse = await fetch("/api/users")
@@ -46,7 +50,7 @@ export function useManageEquipment({ convertToLocalized }: UseManageEquipmentCon
     } finally {
       setLoading(false)
     }
-  }, [setEquipment, setLoading])
+  }, [setEquipment, setLoading, supplierId])
 
   const handleStatusChange = async (id: string, newStatus: string) => {
     setUpdating(id)

@@ -18,6 +18,7 @@ interface EquipmentListProps {
   onNavigate: (url: string, id: string) => void
   onPageChange: (page: number) => void
   t: any
+  isSupplier?: boolean
 }
 
 export default function EquipmentList({
@@ -33,6 +34,7 @@ export default function EquipmentList({
   onNavigate,
   onPageChange,
   t,
+  isSupplier = false,
 }: EquipmentListProps) {
   const { getPriceData, formatPrice } = usePriceFormatter()
 
@@ -62,13 +64,14 @@ export default function EquipmentList({
                 onStatusChange={onStatusChange}
                 onAvailabilityChange={onAvailabilityChange}
                 onNavigate={onNavigate}
+                isSupplier={isSupplier}
               />
             ))}
           </TableBody>
         </Table>
       </div>
 
-      <div className="lg:hidden grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      <div className="lg:hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
         {equipment.map((item) => {
           const priceData = getPriceData(
             item.pricing,
@@ -91,6 +94,7 @@ export default function EquipmentList({
               onAvailabilityChange={onAvailabilityChange}
               onNavigate={onNavigate}
               t={t}
+              isSupplier={isSupplier}
             />
           )
         })}

@@ -47,11 +47,7 @@ export default function EquipmentItems({ items, calculateCommission, getUsageLab
             </div>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-600">{labels.usage}:</span>
-                <span className="font-medium">{item.usage} {getUsageLabel(item.usageUnit || 'hours')}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">{labels.rate}:</span>
+                <span className="text-gray-600">{item.usage} {getUsageLabel(item.usageUnit || 'hours')}</span>
                 <span className="font-medium" dir="ltr">{item.rate.toLocaleString()} MRU</span>
               </div>
               <div className="flex justify-between">

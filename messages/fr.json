@@ -93,6 +93,9 @@
     "bookingPending": "Vous avez déjà une demande de réservation en attente pour cet équipement",
     "equipmentUnavailable": "Cet équipement est actuellement indisponible en raison de réservations en attente",
     "adminCannotBook": "Les administrateurs ne peuvent pas faire de réservations ou de demandes d'achat",
+    "cannotBookOwnEquipment": "Vous ne pouvez pas louer ou acheter votre propre matériel",
+    "yourEquipment": "Votre Matériel",
+    "editEquipment": "Modifier Matériel",
     "goBack": "Retour",
     "loading": "Chargement...",
     "equipmentNotFound": "Matériel Introuvable",
@@ -213,7 +216,8 @@
       "selectDates": "Sélectionnez les dates"
     },
     "footer": {
-      "support": "Support et Contact"
+      "support": "Support et Contact",
+      "rights": "Tous droits réservés."
     },
     "whatsapp": {
       "tooltip": "Besoin d'Aide? Contactez-Nous!"
@@ -704,6 +708,13 @@
         "adminPassword": "Mot de Passe Admin"
       }
     },
+    "profile": {
+      "userInfo": {
+        "title": "Informations de Profil",
+        "phone": "Numéro de Téléphone",
+        "password": "Mot de Passe"
+      }
+    },
     "analytics": {
       "title": "Statistiques",
       "timeRanges": {
@@ -802,7 +813,9 @@
         "cancel": "Annuler",
         "close": "Fermer",
         "save": "Sauvegarder",
-        "saving": "Sauvegarde..."
+        "saving": "Sauvegarde...",
+        "updateBooking": "Mettre à jour la réservation",
+        "updating": "Mise à jour..."
       },
       "details": {
         "title": "Détails de la Réservation",
@@ -883,7 +896,9 @@
         "cancel": "Annuler",
         "close": "Fermer",
         "save": "Sauvegarder",
-        "saving": "Sauvegarde..."
+        "saving": "Sauvegarde...",
+        "updateSale": "Mettre à jour la vente",
+        "updating": "Mise à jour..."
       },
       "details": {
         "title": "Détails de la Commande",
@@ -962,18 +977,18 @@
     "usage": "Usage Requis",
     "calculation": "Calcul du Prix",
     "rate": "Tarif",
-    "total": "Total",
+    "total": "Total Estimé",
     "message": "Message",
     "optional": "optionnel",
     "messagePlaceholder": "Exigences spéciales ou notes...",
     "sendRequest": "Envoyer Demande de Réservation",
     "sending": "Envoi...",
     "success": "Demande de réservation envoyée avec succès! L'admin vous contactera bientôt.",
-    "successPending": "Réservation réussie ! En attente d'approbation. Consultez Mes Réservations ou contactez-nous.",
+    "successPending": "Demande de réservation envoyée avec succès ! L'admin vous contactera pour confirmer la disponibilité et finaliser les détails de tarification. Consultez Mes Réservations pour les mises à jour.",
     "viewBookings": "Voir Mes Réservations",
     "error": "Échec de l'envoi de la demande de réservation. Veuillez réessayer.",
-    "hours": "heures",
-    "days": "jours",
+    "hours": "heure",
+    "days": "jour",
     "months": "mois",
     "km": "km",
     "tons": "tonnes"

@@ -10,7 +10,7 @@ export default function EquipmentTableHeader({ headerAlign }: EquipmentTableHead
   return (
     <thead className="bg-gray-50 border-b">
       <tr>
-        <th className={`px-6 py-4 ${headerAlign} text-sm font-semibold text-gray-700`}>
+        <th className={`px-6 py-4 ${headerAlign} text-sm font-semibold text-gray-700 sticky left-0 z-10 bg-gray-50`}>
           {t("name")}
         </th>
         <th className={`px-6 py-4 ${headerAlign} text-sm font-semibold text-gray-700`}>

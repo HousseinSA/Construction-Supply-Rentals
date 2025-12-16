@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl"
 import { ArrowLeft } from "lucide-react"
 import { Link } from "@/src/i18n/navigation"
 import { useSearchParams } from "next/navigation"
+import { useSession } from "next-auth/react"
 import { usePagination } from "@/src/hooks/usePagination"
 import { useTableFilters } from "@/src/hooks/useTableFilters"
 import SalesTableRow from "./SalesTableRow"
@@ -17,6 +18,7 @@ import { Table, TableHeader, TableBody, TableHead } from "@/src/components/ui/Ta
 import { toast } from "sonner"
 
 export default function SalesTable() {
+  const { data: session } = useSession()
   const searchParams = useSearchParams()
   const highlightRef = searchParams.get("highlight")
   const t = useTranslations("dashboard.sales")
@@ -30,7 +32,11 @@ export default function SalesTable() {
   const fetchSales = async () => {
     try {
       setLoading(true)
-      const response = await fetch("/api/sales")
+      let url = "/api/sales"
+      if (session?.user?.userType === "supplier" && session?.user?.id) {
+        url += `?supplierId=${session.user.id}`
+      }
+      const response = await fetch(url)
       const data = await response.json()
       if (data.success) {
         setSales(data.data)
@@ -43,8 +49,10 @@ export default function SalesTable() {
   }
 
   useEffect(() => {
-    fetchSales()
-  }, [])
+    if (session?.user) {
+      fetchSales()
+    }
+  }, [session?.user])
 
   const { searchValue, setSearchValue, filterValues, handleFilterChange, filteredData: baseFiltered } = 
     useTableFilters({

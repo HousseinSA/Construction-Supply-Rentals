@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/src/lib/mongodb';
 import { sendPasswordResetEmail } from '@/src/lib/email';
-import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
 
-// POST /api/auth/password-reset - Request password reset
 export async function POST(request: NextRequest) {
   try {
     const { email, locale } = await request.json();
@@ -18,7 +17,6 @@ export async function POST(request: NextRequest) {
     const db = await connectDB();
     const user = await db.collection('users').findOne({ email });
 
-    // Always return success (security: don't reveal if email exists)
     if (!user) {
       return NextResponse.json({
         success: true,
@@ -26,19 +24,12 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Generate reset token
-    const resetToken = crypto.randomBytes(32).toString('hex');
-    const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour
+    const resetToken = jwt.sign(
+      { email, userId: user._id.toString() },
+      process.env.NEXTAUTH_SECRET!,
+      { expiresIn: '1h' }
+    );
 
-    // Save token to database
-    await db.collection('password_resets').insertOne({
-      email,
-      token: resetToken,
-      expiresAt: resetTokenExpiry,
-      createdAt: new Date(),
-    });
-
-    // Send email
     await sendPasswordResetEmail(email, resetToken, locale || 'en');
 
     return NextResponse.json({
@@ -54,7 +45,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// PUT /api/auth/password-reset - Reset password with token
 export async function PUT(request: NextRequest) {
   try {
     const { token, newPassword } = await request.json();
@@ -73,27 +63,21 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const db = await connectDB();
-    const resetRequest = await db.collection('password_resets').findOne({
-      token,
-      expiresAt: { $gt: new Date() },
-    });
-
-    if (!resetRequest) {
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET!) as { email: string; userId: string };
+    } catch (error) {
       return NextResponse.json(
         { success: false, error: 'Invalid or expired token' },
         { status: 400 }
       );
     }
 
-    // Update password
+    const db = await connectDB();
     await db.collection('users').updateOne(
-      { email: resetRequest.email },
+      { email: decoded.email },
       { $set: { password: newPassword, updatedAt: new Date() } }
     );
-
-    // Delete used token
-    await db.collection('password_resets').deleteOne({ token });
 
     return NextResponse.json({
       success: true,

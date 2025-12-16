@@ -26,6 +26,18 @@ import { formatReferenceNumber } from "@/src/lib/format-reference"
 export default function RenterBookingView() {
   const t = useTranslations("dashboard.bookings")
   const tCommon = useTranslations("common")
+  
+  // Translate usage unit
+  const getTranslatedUnit = (unit: string) => {
+    const unitMap: Record<string, string> = {
+      'hours': tCommon('hour'),
+      'days': tCommon('day'),
+      'months': tCommon('month'),
+      'km': tCommon('km'),
+      'tons': tCommon('ton')
+    }
+    return unitMap[unit] || unit
+  }
   const { bookings, loading, fetchBookings } = useBookings()
   const [cancellingId, setCancellingId] = useState<string | null>(null)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
@@ -122,7 +134,7 @@ export default function RenterBookingView() {
               <TableHead>{t("table.reference")}</TableHead>
               <TableHead>{t("table.equipment")}</TableHead>
               <TableHead>{t("table.usage")}</TableHead>
-              <TableHead>{t("table.total")}</TableHead>
+              <TableHead>{t("table.estimatedTotal")}</TableHead>
               <TableHead align="center">{t("table.status")}</TableHead>
               <TableHead align="center">{t("table.date")}</TableHead>
               <TableHead align="center">{t("table.actions")}</TableHead>
@@ -131,8 +143,8 @@ export default function RenterBookingView() {
           <TableBody>
             {paginatedData.map((booking) => (
               <tr key={booking._id?.toString()}>
-                <TableCell>
-                  <div className="font-semibold text-orange-600 text-sm" dir="ltr">
+                <TableCell className="w-24">
+                  <div className="font-semibold text-orange-600 text-xs" dir="ltr">
                     {formatReferenceNumber(booking.referenceNumber)}
                   </div>
                 </TableCell>
@@ -156,18 +168,7 @@ export default function RenterBookingView() {
                   <div className="space-y-1">
                     {booking.bookingItems?.map((item, idx) => (
                       <div key={idx} className="text-sm text-gray-600">
-                        {item.usage}
-                        {item.usageUnit
-                          ? item.usageUnit === "hours"
-                            ? ` ${tCommon("hour")}`
-                            : item.usageUnit === "days"
-                            ? ` ${tCommon("day")}`
-                            : item.usageUnit === "km"
-                            ? ` ${tCommon("km")}`
-                            : item.usageUnit === "tons"
-                            ? ` ${tCommon("tons")}`
-                            : ""
-                          : "h"}
+                        {item.usage} {getTranslatedUnit(item.usageUnit || 'hours')}
                       </div>
                     ))}
                   </div>
@@ -243,19 +244,7 @@ export default function RenterBookingView() {
               fields={[
                 {
                   label: t("table.usage"),
-                  value: `${totalUsage}${
-                    booking.bookingItems[0]?.usageUnit
-                      ? booking.bookingItems[0].usageUnit === "hours"
-                        ? ` ${tCommon("hour")}`
-                        : booking.bookingItems[0].usageUnit === "days"
-                        ? ` ${tCommon("day")}`
-                        : booking.bookingItems[0].usageUnit === "km"
-                        ? ` ${tCommon("km")}`
-                        : booking.bookingItems[0].usageUnit === "tons"
-                        ? ` ${tCommon("tons")}`
-                        : ""
-                      : "h"
-                  }`,
+                  value: `${totalUsage} ${getTranslatedUnit(booking.bookingItems[0]?.usageUnit || 'hours')}`,
                 },
                 {
                   label: t("table.total"),

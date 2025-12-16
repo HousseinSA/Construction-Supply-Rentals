@@ -17,6 +17,9 @@ export default function ManageEquipment() {
   const tCommon = useTranslations("common")
   const { convertToLocalized } = useCityData()
 
+  const isSupplier = session?.user?.userType === "supplier"
+  const isAdmin = session?.user?.role === "admin"
+
   const {
     equipment,
     loading,
@@ -34,7 +37,10 @@ export default function ManageEquipment() {
     totalItems,
     itemsPerPage,
     hasEquipment,
-  } = useManageEquipment({ convertToLocalized })
+  } = useManageEquipment({ 
+    convertToLocalized,
+    supplierId: isSupplier ? session?.user?.id : undefined 
+  })
 
   const {
     navigating,
@@ -46,7 +52,7 @@ export default function ManageEquipment() {
     handleNavigation,
   } = useEquipmentActions(handleStatusChange, handleAvailabilityChange, t)
 
-  if (!session?.user || session.user.role !== "admin") {
+  if (!session?.user || (!isAdmin && !isSupplier)) {
     return null
   }
 
@@ -131,6 +137,7 @@ export default function ManageEquipment() {
               onNavigate={handleNavigation}
               onPageChange={goToPage}
               t={t}
+              isSupplier={isSupplier}
             />
           )}
         </div>

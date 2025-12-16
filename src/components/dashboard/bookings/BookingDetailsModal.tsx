@@ -159,7 +159,7 @@ export default function BookingDetailsModal({
               </button>
               <Button onClick={() => handleStatusUpdate(session?.user?.id)} disabled={loading || status === originalStatus} className="flex items-center gap-2">
                 <Save className="w-4 h-4" />
-                {loading ? t("actions.saving") : t("actions.save")}
+                {loading ? t("actions.updating") : t("actions.updateBooking")}
               </Button>
             </div>
           </div>

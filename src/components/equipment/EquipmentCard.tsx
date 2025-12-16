@@ -45,6 +45,7 @@ interface Equipment {
   listingType?: string
   forSale?: boolean
   images: string[]
+  supplierId?: string
 }
 
 interface EquipmentCardProps {
@@ -68,6 +69,7 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
   const specs = equipment.specifications
   const tCommon = useTranslations("common")
   const localizedCity = convertToLocalized(equipment.location)
+  const isOwnEquipment = session?.user?.id === equipment.supplierId
 
   const handleActionClick = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -80,19 +82,31 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
       toast.error(tDetails("adminCannotBook"))
       return
     }
+    if (isOwnEquipment) {
+      toast.error(tDetails("cannotBookOwnEquipment"))
+      return
+    }
     isForSale ? setShowSaleModal(true) : setShowBookingModal(true)
+  }
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    router.push(`/dashboard/equipment/edit/${equipment._id}`)
   }
 
   return (
     <div
       className={`bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full border ${
-        isForSale
+        isOwnEquipment
+          ? "border-blue-300 ring-2 ring-blue-300/30"
+          : isForSale
           ? "border-amber-400 ring-2 ring-amber-400/30"
           : "border-gray-100 hover:border-primary/20"
       } group ${fontClass}`}
     >
       <div
-        className="h-52 sm:h-56 md:h-64 lg:h-56 relative overflow-hidden cursor-pointer"
+        className="h-48 sm:h-52 relative overflow-hidden cursor-pointer"
         onClick={() => router.push(`/equipment/${equipment._id}`)}
       >
         <Image
@@ -105,116 +119,112 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
           fill
           className="object-cover bg-gray-50"
         />
-        {isForSale && (
+        {isOwnEquipment && (
+          <div className="absolute top-2 right-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
+            {tDetails("yourEquipment")}
+          </div>
+        )}
+        {!isOwnEquipment && isForSale && (
           <div className="absolute top-2 right-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg flex items-center gap-1">
             <Tag className="w-3 h-3" />
             {t("forSale")}
           </div>
         )}
       </div>
-      <div className="p-5 sm:p-6 flex flex-col flex-1">
+      <div className="p-4 flex flex-col flex-1">
         <div className="flex-1">
-          <h3 className="text-base sm:text-lg font-medium text-gray-800 mb-3 leading-snug line-clamp-2">
+          <h3 className="text-base font-medium text-gray-800 mb-2 leading-tight line-clamp-1">
             {equipment.name}
           </h3>
-          {specs && (specs.brand || specs.model || specs.year) && (
-            <div className="mb-2">
-              <div className="px-2 py-1 bg-gray-50 rounded-md inline-block">
-                <span className="text-xs font-bold text-gray-800">
-                  {specs.brand}
-                </span>
-                {specs.model && (
-                  <span className="text-xs text-gray-600 ml-1">
-                    • {specs.model}
-                  </span>
-                )}
-                {specs.year && (
-                  <span className="text-xs text-gray-600 ml-1">
-                    • {specs.year}
-                  </span>
-                )}
+          
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <div className="flex items-center gap-1.5 text-xs text-gray-600">
+              <MapPin className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+              <span className="capitalize">{localizedCity}</span>
+            </div>
+            {specs?.condition && (
+              <span className="text-xs text-gray-600 px-2 py-0.5 bg-gray-50 rounded">{tDetails(`conditionLabels.${specs.condition}`)}</span>
+            )}
+          </div>
+
+          {specs && (specs.brand || specs.model || specs.year || specs.hoursUsed || specs.kilometersUsed) && (
+            <div className="flex items-center justify-between gap-2 text-xs text-gray-700 mb-2">
+              <div>
+                {specs.brand && <span className="font-semibold">{specs.brand}</span>}
+                {specs.model && <span className="text-gray-600"> • {specs.model}</span>}
+                {specs.year && <span className="text-gray-600"> • {specs.year}</span>}
               </div>
               {(specs.hoursUsed || specs.kilometersUsed) && (
-                <div className="flex items-center gap-2 mt-1">
+                <div className="flex items-center gap-1.5">
                   {specs.hoursUsed && (
-                    <div className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 rounded-md">
+                    <div className="inline-flex items-center gap-0.5">
                       <Clock className="w-3 h-3 text-blue-600" />
-                      <span className="text-xs font-semibold text-blue-700">
-                        {specs.hoursUsed.toLocaleString()}h
-                      </span>
+                      <span>{specs.hoursUsed.toLocaleString()}h</span>
                     </div>
                   )}
                   {specs.kilometersUsed && (
-                    <div className="inline-flex items-center gap-1 px-2 py-1 bg-green-50 rounded-md">
+                    <div className="inline-flex items-center gap-0.5">
                       <Gauge className="w-3 h-3 text-green-600" />
-                      <span className="text-xs font-semibold text-green-700">
-                        {specs.kilometersUsed.toLocaleString()} km
-                      </span>
+                      <span>{specs.kilometersUsed.toLocaleString()}km</span>
                     </div>
                   )}
                 </div>
               )}
             </div>
           )}
-
-          <div className="flex items-center gap-2 mb-3 flex-wrap">
-            <MapPin className="w-4 h-4 text-primary flex-shrink-0" />
-            <span className="text-sm text-gray-600 capitalize">
-              {localizedCity}
-            </span>
-            {specs?.condition && (
-              <>
-                <span className="text-gray-300">•</span>
-                <span className="text-sm text-gray-600">{specs.condition}</span>
-              </>
-            )}
-          </div>
         </div>
-        <div className="space-y-3 mt-auto border-t border-gray-50 pt-4">
+        <div className="space-y-2.5 mt-auto border-t border-gray-100 pt-3">
           {!isForSale && (
-            <div className="flex items-center justify-around gap-2">
+            <div className="flex items-baseline justify-around gap-3 text-sm">
               {equipment.pricing.hourlyRate && (
-                <div className="text-center">
-                  <span className="text-base font-bold text-primary" dir="ltr">
+                <div className="flex items-baseline gap-1">
+                  <span className="font-bold text-primary" dir="ltr">
                     {equipment.pricing.hourlyRate.toLocaleString()} MRU
                   </span>
-                  <span className="text-xs text-gray-500">
-                    /{tCommon("hour")}
-                  </span>
+                  <span className="text-xs text-gray-500">/{tCommon("hour")}</span>
                 </div>
               )}
               {equipment.pricing.dailyRate && (
-                <div className="text-center">
-                  <span className="text-base font-bold text-primary" dir="ltr">
+                <div className="flex items-baseline gap-1">
+                  <span className="font-bold text-primary" dir="ltr">
                     {equipment.pricing.dailyRate.toLocaleString()} MRU
                   </span>
-                  <span className="text-xs text-gray-500">
-                    /{tCommon("day")}
-                  </span>
+                  <span className="text-xs text-gray-500">/{tCommon("day")}</span>
                 </div>
               )}
             </div>
           )}
           {isForSale && (
             <div className="text-center">
-              <div className="text-lg font-bold text-primary" dir="ltr">
+              <div className="text-base font-bold text-primary" dir="ltr">
                 {displayPrice}
               </div>
               <div className="text-xs text-gray-500">{t("salePrice")}</div>
             </div>
           )}
 
-          <Button
-            variant="card-primary"
-            size="card"
-            className="w-full"
-            onClick={(e) => {
-              e.stopPropagation()
-              router.push(`/equipment/${equipment._id}`)
-            }}
-          >
-            {t("viewDetails")}
-          </Button>
+          {isOwnEquipment ? (
+            <Button
+              variant="secondary"
+              size="card"
+              className="w-full"
+              onClick={handleEditClick}
+            >
+              {tDetails("editEquipment")}
+            </Button>
+          ) : (
+            <Button
+              variant="card-primary"
+              size="card"
+              className="w-full"
+              onClick={(e) => {
+                e.stopPropagation()
+                router.push(`/equipment/${equipment._id}`)
+              }}
+            >
+              {t("viewDetails")}
+            </Button>
+          )}
         </div>
       </div>
 

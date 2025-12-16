@@ -16,6 +16,7 @@ interface EquipmentMobileCardProps {
   onAvailabilityChange: (id: string, isAvailable: boolean) => void
   onNavigate: (url: string, id: string) => void
   t: any
+  isSupplier?: boolean
 }
 
 export default function EquipmentMobileCard({
@@ -28,6 +29,7 @@ export default function EquipmentMobileCard({
   onAvailabilityChange,
   onNavigate,
   t,
+  isSupplier = false,
 }: EquipmentMobileCardProps) {
   const { formatPrice } = usePriceFormatter()
   const { convertToLocalized } = useCityData()
@@ -93,14 +95,14 @@ export default function EquipmentMobileCard({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 pb-3 border-b border-gray-200">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-3 border-b border-gray-200">
          
-          <div className="relative">
+          <div className="relative h-32 overflow-hidden rounded-lg bg-gray-100">
             <EquipmentImage
               src={item.images[0] || "/equipement-images/default-fallback-image.png"}
               alt={item.name}
               size="lg"
-              className="!w-full !h-28"
+              className="!w-full !h-full object-contain"
               onClick={() =>
                 onNavigate(
                   `/equipment/${item._id?.toString()}?admin=true`,
@@ -134,7 +136,7 @@ export default function EquipmentMobileCard({
         </div>
       </div>
 
-      {item.status === "pending" && (
+      {item.status === "pending" && !isSupplier && (
         <div className="flex gap-2">
           <button
             onClick={() => onStatusChange(item._id?.toString() || "", "approve")}
@@ -153,7 +155,7 @@ export default function EquipmentMobileCard({
         </div>
       )}
 
-      {!(item.listingType === "forSale" && !item.isAvailable) && (
+      {item.status === "approved" && !(item.listingType === "forSale" && !item.isAvailable) && (
         <div className="w-full">
           <Dropdown
             options={[
@@ -172,7 +174,25 @@ export default function EquipmentMobileCard({
         </div>
       )}
       <div className="flex items-stretch gap-2">
-        {item.createdBy === "admin" && (
+        {!isSupplier && item.createdBy === "admin" && (
+          <button
+            onClick={() =>
+              onNavigate(
+                `/dashboard/equipment/edit/${item._id?.toString()}`,
+                `edit-${item._id?.toString()}`
+              )
+            }
+            disabled={navigating === `edit-${item._id?.toString()}`}
+            className="px-3 py-2 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 text-sm font-medium flex items-center justify-center gap-1.5"
+          >
+            {navigating === `edit-${item._id?.toString()}` ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Edit className="w-4 h-4" />
+            )}
+          </button>
+        )}
+        {isSupplier && (item.status === "pending" || item.status === "rejected") && (
           <button
             onClick={() =>
               onNavigate(

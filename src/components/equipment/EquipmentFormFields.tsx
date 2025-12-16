@@ -177,17 +177,6 @@ export default function EquipmentFormFields({
               placeholder="5000"
             />
           )}
-          {pricingTypes.includes("monthly") && formData.dailyRate && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t("monthlyRate")}
-              </label>
-              <div className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-700">
-                {(parseFloat(formData.dailyRate) * 30).toLocaleString()} MRU
-                <span className="text-xs text-gray-500 ml-2">({t("autoCalculated")})</span>
-              </div>
-            </div>
-          )}
           {pricingTypes.includes("per_km") && (
             <Input
               label={t("kmRate")}

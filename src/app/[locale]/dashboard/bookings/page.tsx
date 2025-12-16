@@ -17,11 +17,6 @@ export default async function BookingsPage({
     redirect(`/${locale}/auth/login`)
   }
 
-  // Redirect renters to /bookings
-  if (session.user.userType === "renter") {
-    redirect(`/${locale}/bookings`)
-  }
-
   // Only admin and supplier can access dashboard bookings
   if (session.user.role !== "admin" && session.user.userType !== "supplier") {
     redirect(`/${locale}/dashboard`)

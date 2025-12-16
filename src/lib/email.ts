@@ -27,17 +27,17 @@ export async function sendPasswordResetEmail(
         <head>
           <meta charset="utf-8">
         </head>
-        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <div style="background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-            <h1 style="color: white; margin: 0;">Mot de passe oublié</h1>
+        <body style="font-family: Arial, sans-serif; line-height: 1.5; color: #111; max-width: 600px; margin: 0 auto; padding: 0;">
+          <div style="padding: 20px 0; border-bottom: 1px solid #ddd;">
+            <h2 style="margin: 0; font-size: 18px; font-weight: 600;">Kriliy Engin</h2>
           </div>
-          <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px;">
-            <p style="font-size: 16px; margin-bottom: 20px;">Cliquez sur le bouton pour créer un nouveau mot de passe.</p>
-            <div style="text-align: center; margin: 30px 0;">
-              <a href="${resetUrl}" style="background: #f97316; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">Changer mon mot de passe</a>
+          <div style="padding: 24px 0;">
+            <h1 style="font-size: 20px; font-weight: 600; margin: 0 0 16px 0;">Réinitialisation du mot de passe</h1>
+            <p style="margin: 0 0 16px 0; font-size: 14px;">Nous avons reçu une demande de réinitialisation de votre mot de passe.</p>
+            <div style="margin: 24px 0;">
+              <a href="${resetUrl}" style="background: #f97316; color: white; padding: 8px 16px; text-decoration: none; border-radius: 3px; display: inline-block; font-size: 13px;">Réinitialiser le mot de passe</a>
             </div>
-            <p style="font-size: 14px; color: #666; margin-top: 20px;">Ce lien expire dans 1 heure.</p>
-            <p style="font-size: 14px; color: #666;">Si ce n'est pas vous, ignorez cet email.</p>
+            <p style="margin: 16px 0 0 0; font-size: 13px; color: #565959;">Ce lien expire dans 1 heure. Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.</p>
           </div>
         </body>
       </html>
@@ -60,11 +60,11 @@ export async function sendNewBookingEmail(
 ) {
   const equipmentList = bookingDetails.equipmentNames.map(name => `<li style="margin: 5px 0;">${name}</li>`).join('');
   const suppliersList = bookingDetails.suppliers.map(s => 
-    `<div style="background: #f3f4f6; padding: 10px; border-radius: 5px; margin: 10px 0;">
-      <p style="margin: 5px 0;"><strong>Fournisseur:</strong> ${s.name}</p>
-      <p style="margin: 5px 0;"><strong>Téléphone:</strong> ${s.phone}</p>
-      <p style="margin: 5px 0;"><strong>Équipement:</strong> ${s.equipment}</p>
-      <p style="margin: 5px 0;"><strong>Durée:</strong> ${s.duration}</p>
+    `<div style="border-top: 1px solid #e7e7e7; padding: 12px 0; font-size: 13px;">
+      <p style="margin: 0 0 4px 0;"><strong>${s.name === 'admin' ? 'Fournisseur: Administrateur' : s.name}</strong></p>
+      ${s.name !== 'admin' ? `<p style="margin: 0 0 4px 0; color: #565959;">${s.phone}</p>` : ''}
+      <p style="margin: 0 0 4px 0;">${s.equipment}</p>
+      <p style="margin: 0; color: #565959;">${s.duration}</p>
     </div>`
   ).join('');
   
@@ -78,28 +78,37 @@ export async function sendNewBookingEmail(
         <head>
           <meta charset="utf-8">
         </head>
-        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <div style="background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-            <h1 style="color: white; margin: 0;">Nouvelle demande de location</h1>
+        <body style="font-family: Arial, sans-serif; line-height: 1.5; color: #111; max-width: 600px; margin: 0 auto; padding: 0;">
+          <div style="padding: 20px 0; border-bottom: 1px solid #ddd;">
+            <h2 style="margin: 0; font-size: 18px; font-weight: 600;">Kriliy Engin</h2>
           </div>
-          <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px;">
-            <p style="font-size: 16px; margin-bottom: 20px;">Une nouvelle demande de location a été reçue.</p>
-            <div style="background: white; padding: 20px; border-radius: 5px; margin: 20px 0;">
-              <p style="margin: 10px 0;"><strong>Référence:</strong> ${bookingDetails.referenceNumber}</p>
-              <p style="margin: 10px 0;"><strong>Date de réservation:</strong> ${new Date(bookingDetails.bookingDate).toLocaleDateString('fr-FR', { year: 'numeric', month: 'short', day: 'numeric' })}, ${new Date(bookingDetails.bookingDate).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}</p>
-              <p style="margin: 10px 0;"><strong>Client:</strong> ${bookingDetails.renterName}</p>
-              <p style="margin: 10px 0;"><strong>Téléphone:</strong> ${bookingDetails.renterPhone}</p>
-              ${bookingDetails.renterLocation ? `<p style="margin: 10px 0;"><strong>Localisation:</strong> ${bookingDetails.renterLocation}</p>` : ''}
-              <p style="margin: 10px 0;"><strong>Équipements:</strong></p>
-              <ul style="margin: 10px 0; padding-left: 20px;">${equipmentList}</ul>
-              <p style="margin: 10px 0;"><strong>Total:</strong> ${bookingDetails.totalPrice.toFixed(2)} MRU</p>
+          <div style="padding: 24px 0;">
+            <h1 style="font-size: 20px; font-weight: 600; margin: 0 0 8px 0;">Nouvelle demande de location</h1>
+            <p style="margin: 0 0 20px 0; font-size: 13px; color: #565959;">Référence: ${bookingDetails.referenceNumber}</p>
+            
+            <div style="border: 1px solid #ddd; border-radius: 4px; padding: 16px; margin: 16px 0;">
+              <h3 style="font-size: 14px; font-weight: 600; margin: 0 0 12px 0;">Informations client</h3>
+              <table style="width: 100%; font-size: 13px;">
+                <tr><td style="padding: 4px 0; color: #565959;">Nom</td><td style="padding: 4px 0;">${bookingDetails.renterName}</td></tr>
+                <tr><td style="padding: 4px 0; color: #565959;">Téléphone</td><td style="padding: 4px 0;">${bookingDetails.renterPhone}</td></tr>
+                ${bookingDetails.renterLocation ? `<tr><td style="padding: 4px 0; color: #565959;">Localisation</td><td style="padding: 4px 0;">${bookingDetails.renterLocation}</td></tr>` : ''}
+                <tr><td style="padding: 4px 0; color: #565959;">Date</td><td style="padding: 4px 0;">${new Date(bookingDetails.bookingDate).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}</td></tr>
+              </table>
             </div>
-            ${suppliersList ? `<div style="background: white; padding: 20px; border-radius: 5px; margin: 20px 0;">
-              <p style="margin: 10px 0 15px 0;"><strong>Détails des fournisseurs:</strong></p>
+
+            <div style="border: 1px solid #ddd; border-radius: 4px; padding: 16px; margin: 16px 0;">
+              <h3 style="font-size: 14px; font-weight: 600; margin: 0 0 12px 0;">Équipements demandés</h3>
+              <ul style="margin: 0; padding-left: 20px; font-size: 13px;">${equipmentList}</ul>
+              <p style="margin: 12px 0 0 0; font-size: 16px; font-weight: 700; color: #1e40af;">Total: ${bookingDetails.totalPrice.toLocaleString('fr-FR')} MRU</p>
+            </div>
+
+            ${suppliersList ? `<div style="border: 1px solid #ddd; border-radius: 4px; padding: 16px; margin: 16px 0;">
+              <h3 style="font-size: 14px; font-weight: 600; margin: 0 0 12px 0;">Fournisseurs concernés</h3>
               ${suppliersList}
             </div>` : ''}
-            <div style="text-align: center; margin: 30px 0;">
-              <a href="${process.env.NEXTAUTH_URL}/fr/dashboard/bookings" style="background: #f97316; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">Voir les détails</a>
+
+            <div style="margin: 24px 0;">
+              <a href="${process.env.NEXTAUTH_URL}/fr/dashboard/bookings" style="background: #f97316; color: white; padding: 8px 16px; text-decoration: none; border-radius: 3px; display: inline-block; font-size: 13px;">Voir les détails</a>
             </div>
           </div>
         </body>
@@ -132,30 +141,38 @@ export async function sendNewSaleEmail(
         <head>
           <meta charset="utf-8">
         </head>
-        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <div style="background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-            <h1 style="color: white; margin: 0;">Nouvelle demande d'achat</h1>
+        <body style="font-family: Arial, sans-serif; line-height: 1.5; color: #111; max-width: 600px; margin: 0 auto; padding: 0;">
+          <div style="padding: 20px 0; border-bottom: 1px solid #ddd;">
+            <h2 style="margin: 0; font-size: 18px; font-weight: 600;">Kriliy Engin</h2>
           </div>
-          <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px;">
-            <p style="font-size: 16px; margin-bottom: 20px;">Une nouvelle demande d'achat a été reçue.</p>
-            <div style="background: white; padding: 20px; border-radius: 5px; margin: 20px 0;">
-              <p style="margin: 10px 0;"><strong>Référence:</strong> ${saleDetails.referenceNumber}</p>
-              <p style="margin: 10px 0;"><strong>Date de demande:</strong> ${new Date(saleDetails.saleDate).toLocaleDateString('fr-FR', { year: 'numeric', month: 'short', day: 'numeric' })}, ${new Date(saleDetails.saleDate).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}</p>
-              <p style="margin: 10px 0;"><strong>Client:</strong> ${saleDetails.buyerName}</p>
-              <p style="margin: 10px 0;"><strong>Téléphone:</strong> ${saleDetails.buyerPhone}</p>
-              ${saleDetails.buyerLocation ? `<p style="margin: 10px 0;"><strong>Localisation:</strong> ${saleDetails.buyerLocation}</p>` : ''}
-              <p style="margin: 10px 0;"><strong>Équipement:</strong> ${saleDetails.equipmentName}</p>
-              <p style="margin: 10px 0;"><strong>Prix:</strong> ${saleDetails.salePrice.toFixed(2)} MRU</p>
+          <div style="padding: 24px 0;">
+            <h1 style="font-size: 20px; font-weight: 600; margin: 0 0 8px 0;">Nouvelle demande d'achat</h1>
+            <p style="margin: 0 0 20px 0; font-size: 13px; color: #565959;">Référence: ${saleDetails.referenceNumber}</p>
+            
+            <div style="border: 1px solid #ddd; border-radius: 4px; padding: 16px; margin: 16px 0;">
+              <h3 style="font-size: 14px; font-weight: 600; margin: 0 0 12px 0;">Informations acheteur</h3>
+              <table style="width: 100%; font-size: 13px;">
+                <tr><td style="padding: 4px 0; color: #565959;">Nom</td><td style="padding: 4px 0;">${saleDetails.buyerName}</td></tr>
+                <tr><td style="padding: 4px 0; color: #565959;">Téléphone</td><td style="padding: 4px 0;">${saleDetails.buyerPhone}</td></tr>
+                ${saleDetails.buyerLocation ? `<tr><td style="padding: 4px 0; color: #565959;">Localisation</td><td style="padding: 4px 0;">${saleDetails.buyerLocation}</td></tr>` : ''}
+                <tr><td style="padding: 4px 0; color: #565959;">Date</td><td style="padding: 4px 0;">${new Date(saleDetails.saleDate).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}</td></tr>
+              </table>
             </div>
-            ${saleDetails.supplierName ? `<div style="background: white; padding: 20px; border-radius: 5px; margin: 20px 0;">
-              <p style="margin: 10px 0 15px 0;"><strong>Détails du fournisseur:</strong></p>
-              <div style="background: #f3f4f6; padding: 10px; border-radius: 5px;">
-                <p style="margin: 5px 0;"><strong>Fournisseur:</strong> ${saleDetails.supplierName}</p>
-                ${saleDetails.supplierPhone ? `<p style="margin: 5px 0;"><strong>Téléphone:</strong> ${saleDetails.supplierPhone}</p>` : ''}
-              </div>
+
+            <div style="border: 1px solid #ddd; border-radius: 4px; padding: 16px; margin: 16px 0;">
+              <h3 style="font-size: 14px; font-weight: 600; margin: 0 0 12px 0;">Équipement</h3>
+              <p style="margin: 0 0 8px 0; font-size: 13px;">${saleDetails.equipmentName}</p>
+              <p style="margin: 0; font-size: 16px; font-weight: 700; color: #1e40af;">${saleDetails.salePrice.toLocaleString('fr-FR')} MRU</p>
+            </div>
+
+            ${saleDetails.supplierName ? `<div style="border: 1px solid #ddd; border-radius: 4px; padding: 16px; margin: 16px 0;">
+              <h3 style="font-size: 14px; font-weight: 600; margin: 0 0 12px 0;">Fournisseur</h3>
+              <p style="margin: 0 0 4px 0; font-size: 13px;"><strong>${saleDetails.supplierName === 'admin' ? 'Administrateur' : saleDetails.supplierName}</strong></p>
+              ${saleDetails.supplierName !== 'admin' && saleDetails.supplierPhone ? `<p style="margin: 0; font-size: 13px; color: #565959;">${saleDetails.supplierPhone}</p>` : ''}
             </div>` : ''}
-            <div style="text-align: center; margin: 30px 0;">
-              <a href="${process.env.NEXTAUTH_URL}/fr/dashboard/sales" style="background: #f97316; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">Voir les détails</a>
+
+            <div style="margin: 24px 0;">
+              <a href="${process.env.NEXTAUTH_URL}/fr/dashboard/sales" style="background: #f97316; color: white; padding: 8px 16px; text-decoration: none; border-radius: 3px; display: inline-block; font-size: 13px;">Voir les détails</a>
             </div>
           </div>
         </body>
@@ -187,24 +204,34 @@ export async function sendNewEquipmentEmail(
         <head>
           <meta charset="utf-8">
         </head>
-        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <div style="background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-            <h1 style="color: white; margin: 0;">Nouveau matériel ajouté</h1>
+        <body style="font-family: Arial, sans-serif; line-height: 1.5; color: #111; max-width: 600px; margin: 0 auto; padding: 0;">
+          <div style="padding: 20px 0; border-bottom: 1px solid #ddd;">
+            <h2 style="margin: 0; font-size: 18px; font-weight: 600;">Kriliy Engin</h2>
           </div>
-          <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px;">
-            <p style="font-size: 16px; margin-bottom: 20px;">Un partenaire a ajouté un nouveau matériel qui nécessite votre approbation.</p>
-            <div style="background: white; padding: 20px; border-radius: 5px; margin: 20px 0;">
-              <p style="margin: 10px 0;"><strong>Partenaire:</strong> ${equipmentDetails.supplierName}</p>
-              <p style="margin: 10px 0;"><strong>Téléphone:</strong> ${equipmentDetails.supplierPhone}</p>
-              <p style="margin: 10px 0;"><strong>Matériel:</strong> ${equipmentDetails.equipmentName}</p>
-              ${equipmentDetails.category ? `<p style="margin: 10px 0;"><strong>Catégorie:</strong> ${equipmentDetails.category}</p>` : ''}
-              <p style="margin: 10px 0;"><strong>Type d'annonce:</strong> ${equipmentDetails.listingType}</p>
-              <p style="margin: 10px 0;"><strong>Prix:</strong> ${equipmentDetails.pricing}</p>
-              <p style="margin: 10px 0;"><strong>Localisation:</strong> ${equipmentDetails.location}</p>
-              <p style="margin: 10px 0;"><strong>Date de soumission:</strong> ${new Date(equipmentDetails.dateSubmitted).toLocaleDateString('fr-FR', { year: 'numeric', month: 'short', day: 'numeric' })}, ${new Date(equipmentDetails.dateSubmitted).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}</p>
+          <div style="padding: 24px 0;">
+            <h1 style="font-size: 20px; font-weight: 600; margin: 0 0 8px 0;">Nouveau matériel à approuver</h1>
+            <p style="margin: 0 0 20px 0; font-size: 13px; color: #565959;">Un partenaire a ajouté un nouveau matériel</p>
+            
+            <div style="border: 1px solid #ddd; border-radius: 4px; padding: 16px; margin: 16px 0;">
+              <h3 style="font-size: 14px; font-weight: 600; margin: 0 0 12px 0;">Partenaire</h3>
+              <p style="margin: 0 0 4px 0; font-size: 13px;"><strong>${equipmentDetails.supplierName}</strong></p>
+              <p style="margin: 0; font-size: 13px; color: #565959;">${equipmentDetails.supplierPhone}</p>
             </div>
-            <div style="text-align: center; margin: 30px 0;">
-              <a href="${process.env.NEXTAUTH_URL}/fr/dashboard/equipment" style="background: #f97316; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">Voir et approuver</a>
+
+            <div style="border: 1px solid #ddd; border-radius: 4px; padding: 16px; margin: 16px 0;">
+              <h3 style="font-size: 14px; font-weight: 600; margin: 0 0 12px 0;">Détails du matériel</h3>
+              <table style="width: 100%; font-size: 13px;">
+                <tr><td style="padding: 4px 0; color: #565959;">Matériel</td><td style="padding: 4px 0;">${equipmentDetails.equipmentName}</td></tr>
+                ${equipmentDetails.category ? `<tr><td style="padding: 4px 0; color: #565959;">Catégorie</td><td style="padding: 4px 0;">${equipmentDetails.category}</td></tr>` : ''}
+                <tr><td style="padding: 4px 0; color: #565959;">Type</td><td style="padding: 4px 0;">${equipmentDetails.listingType}</td></tr>
+                <tr><td style="padding: 4px 0; color: #565959;">Prix</td><td style="padding: 4px 0;">${equipmentDetails.pricing}</td></tr>
+                <tr><td style="padding: 4px 0; color: #565959;">Localisation</td><td style="padding: 4px 0;">${equipmentDetails.location}</td></tr>
+                <tr><td style="padding: 4px 0; color: #565959;">Date</td><td style="padding: 4px 0;">${new Date(equipmentDetails.dateSubmitted).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}</td></tr>
+              </table>
+            </div>
+
+            <div style="margin: 24px 0;">
+              <a href="${process.env.NEXTAUTH_URL}/fr/dashboard/equipment" style="background: #f97316; color: white; padding: 8px 16px; text-decoration: none; border-radius: 3px; display: inline-block; font-size: 13px;">Voir et approuver</a>
             </div>
           </div>
         </body>

@@ -25,6 +25,18 @@ export default function BookingMobileCard({ booking, onViewDetails, t, highlight
   const totalUsage = booking.bookingItems.reduce((sum, item) => sum + item.usage, 0)
   const usageUnit = booking.bookingItems[0]?.usageUnit || ""
   
+  // Translate usage unit
+  const getTranslatedUnit = (unit: string) => {
+    const unitMap: Record<string, string> = {
+      'hours': tCommon('hour'),
+      'days': tCommon('day'),
+      'months': tCommon('month'),
+      'km': tCommon('km'),
+      'tons': tCommon('ton')
+    }
+    return unitMap[unit] || unit
+  }
+  
   const supplierDisplay = booking.supplierInfo && booking.supplierInfo.length > 0 && !booking.hasAdminCreatedEquipment
     ? (
         <div className="flex items-center gap-2">
@@ -45,7 +57,7 @@ export default function BookingMobileCard({ booking, onViewDetails, t, highlight
         fields={[
           {
             label: t("table.usage"),
-            value: `${totalUsage} ${usageUnit}`,
+            value: `${totalUsage} ${getTranslatedUnit(usageUnit)}`,
           },
           {
             label: t("table.supplier"),

@@ -21,6 +21,7 @@ interface EquipmentTableRowProps {
   onStatusChange: (id: string, action: "approve" | "reject") => void
   onAvailabilityChange: (id: string, isAvailable: boolean) => void
   onNavigate?: (url: string, id: string) => void
+  isSupplier?: boolean
 }
 
 export default function EquipmentTableRow({
@@ -30,6 +31,7 @@ export default function EquipmentTableRow({
   onStatusChange,
   onAvailabilityChange,
   onNavigate,
+  isSupplier = false,
 }: EquipmentTableRowProps) {
   const t = useTranslations("dashboard.equipment")
   const tCommon = useTranslations("common")
@@ -66,8 +68,8 @@ export default function EquipmentTableRow({
   const allPrices = getAllPrices()
   return (
     <tr className="hover:bg-gray-50 transition-colors">
-      <td className="px-6 py-4">
-        <div className="flex items-center gap-4">
+      <td className="px-6 py-4 sticky left-0 z-10 bg-white">
+        <div className="flex items-center gap-4 min-w-[280px]">
           <div className="relative">
             <Image
               src={
@@ -114,15 +116,15 @@ export default function EquipmentTableRow({
         </div>
       </td>
       <td className="px-6 py-4">
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 min-w-[120px]">
           <MapPin className="w-4 h-4 text-primary flex-shrink-0" />
-          <span className="text-sm font-medium text-gray-700 capitalize">
+          <span className="text-sm font-medium text-gray-700 capitalize whitespace-nowrap">
             {convertToLocalized(item.location)}
           </span>
         </div>
       </td>
       <td className="px-6 py-4">
-        <div className="space-y-1">
+        <div className="space-y-1 min-w-[140px]">
           {allPrices.map((price, index) => (
             <div key={index} className="text-sm font-semibold text-gray-900">
               <span dir="ltr">{price.displayPrice}</span>
@@ -133,14 +135,14 @@ export default function EquipmentTableRow({
       </td>
       <td className="px-6 py-4">
         {item.createdBy === "admin" ? (
-          <span className="text-sm font-medium text-blue-700">{tCommon("admin")}</span>
+          <span className="text-sm font-medium text-blue-700 whitespace-nowrap">{tCommon("admin")}</span>
         ) : item.supplier ? (
-          <div className="space-y-1.5">
-            <div className="font-medium text-gray-900 text-sm">
+          <div className="space-y-1.5 min-w-[160px]">
+            <div className="font-medium text-gray-900 text-sm whitespace-nowrap">
               {item.supplier.firstName} {item.supplier.lastName}
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-700" dir="ltr">{formatPhoneNumber(item.supplier.phone)}</span>
+              <span className="text-sm text-gray-700 whitespace-nowrap" dir="ltr">{formatPhoneNumber(item.supplier.phone)}</span>
               <CopyButton text={item.supplier.phone} size="sm" />
             </div>
           </div>
@@ -149,12 +151,12 @@ export default function EquipmentTableRow({
         )}
       </td>
       <td className="px-6 py-4 text-center">
-        <span className="text-sm text-gray-600">
+        <span className="text-sm text-gray-600 whitespace-nowrap">
           {new Date(item.createdAt).toLocaleDateString()}
         </span>
       </td>
-      <td className="px-6 py-4 text-center">
-        {item.status === "pending" ? (
+      <td className="px-6 py-4 text-center min-w-[120px]">
+        {item.status === "pending" && !isSupplier ? (
           <div className="flex flex-col gap-2">
             <button
               onClick={() =>
@@ -178,7 +180,9 @@ export default function EquipmentTableRow({
         ) : (
           <span
             className={`inline-block px-3 py-1.5 text-xs font-semibold rounded-md ${
-              item.status === "approved"
+              item.status === "pending"
+                ? "bg-yellow-100 text-yellow-700"
+                : item.status === "approved"
                 ? "bg-green-100 text-green-700"
                 : "bg-red-100 text-red-700"
             }`}
@@ -189,27 +193,47 @@ export default function EquipmentTableRow({
       </td>
       <td className="px-6 py-4 overflow-visible relative">
         <div className="flex justify-center">
-          <div className="w-40">
-            <Dropdown
-              options={[
-                { value: "available", label: t("available") },
-                { value: "unavailable", label: t("unavailable") },
-              ]}
-              value={item.isAvailable ? "available" : "unavailable"}
-              onChange={(val) =>
-                onAvailabilityChange(
-                  item._id?.toString() || "",
-                  val === "available"
-                )
-              }
-              compact
-            />
-          </div>
+          {item.status === "approved" ? (
+            <div className="w-40">
+              <Dropdown
+                options={[
+                  { value: "available", label: t("available") },
+                  { value: "unavailable", label: t("unavailable") },
+                ]}
+                value={item.isAvailable ? "available" : "unavailable"}
+                onChange={(val) =>
+                  onAvailabilityChange(
+                    item._id?.toString() || "",
+                    val === "available"
+                  )
+                }
+                compact
+              />
+            </div>
+          ) : (
+            <span className="text-sm text-gray-400">-</span>
+          )}
         </div>
       </td>
       <td className="px-6 py-4">
         <div className="flex items-center justify-center gap-2 min-w-[80px]">
-          {item.createdBy === "admin" && (
+          {!isSupplier && item.createdBy === "admin" && (
+            <button
+              onClick={() =>
+                onNavigate ? onNavigate(`/dashboard/equipment/edit/${item._id?.toString()}`, `edit-${item._id?.toString()}`) : router.push(`/dashboard/equipment/edit/${item._id?.toString()}`)
+              }
+              disabled={navigating === `edit-${item._id?.toString()}`}
+              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50"
+              title={t("editEquipment")}
+            >
+              {navigating === `edit-${item._id?.toString()}` ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <Edit className="w-5 h-5" />
+              )}
+            </button>
+          )}
+          {isSupplier && (item.status === "pending" || item.status === "rejected") && (
             <button
               onClick={() =>
                 onNavigate ? onNavigate(`/dashboard/equipment/edit/${item._id?.toString()}`, `edit-${item._id?.toString()}`) : router.push(`/dashboard/equipment/edit/${item._id?.toString()}`)

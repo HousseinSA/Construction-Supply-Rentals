@@ -8,12 +8,17 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const buyerId = searchParams.get("buyerId")
+    const supplierId = searchParams.get("supplierId")
 
     const db = await connectDB()
     const pipeline: any[] = []
 
     if (buyerId) {
       pipeline.push({ $match: { buyerId: new ObjectId(buyerId) } })
+    }
+    
+    if (supplierId) {
+      pipeline.push({ $match: { supplierId: new ObjectId(supplierId) } })
     }
 
     if (!buyerId) {
@@ -43,6 +48,18 @@ export async function GET(request: NextRequest) {
           },
         }
       )
+    }
+    
+    // Add equipment image for supplier view
+    if (supplierId) {
+      pipeline.push({
+        $lookup: {
+          from: "equipment",
+          localField: "equipmentId",
+          foreignField: "_id",
+          as: "equipmentInfo",
+        },
+      })
     }
 
     pipeline.push({ $sort: { createdAt: -1 } })
@@ -83,6 +100,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { success: false, error: "Equipment not found" },
         { status: 404 }
+      )
+    }
+
+    // Check if buyer is trying to buy their own equipment
+    if (equipment.supplierId && equipment.supplierId.toString() === buyerId) {
+      return NextResponse.json(
+        { success: false, error: "You cannot buy your own equipment" },
+        { status: 403 }
       )
     }
 

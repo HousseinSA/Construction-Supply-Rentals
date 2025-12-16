@@ -13,10 +13,12 @@ export function useBookings() {
       setLoading(true)
       setError(null)
       
-      // Build URL with renterId filter for renter users
+      // Build URL with filters based on user type
       let url = '/api/bookings'
       if (session?.user?.userType === 'renter' && session?.user?.id) {
         url += `?renterId=${session.user.id}`
+      } else if (session?.user?.userType === 'supplier' && session?.user?.id) {
+        url += `?supplierId=${session.user.id}`
       }
       
       const response = await fetch(url)

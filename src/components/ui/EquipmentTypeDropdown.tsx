@@ -60,7 +60,7 @@ export default function EquipmentTypeDropdown({
 
   const equipmentTypeOptions = filteredTypes.map(type => ({
     value: type._id,
-    label: getEquipmentTypeName(type.name)
+    label: type.nameFr || type.name
   }))
 
   return (

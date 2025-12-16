@@ -16,6 +16,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const renterId = searchParams.get('renterId')
+    const supplierId = searchParams.get('supplierId')
     
     const db = await connectDB()
 
@@ -25,6 +26,15 @@ export async function GET(request: NextRequest) {
     if (renterId) {
       pipeline.push({
         $match: { renterId: new ObjectId(renterId) }
+      })
+    }
+    
+    // Filter by supplierId if provided (for supplier users)
+    if (supplierId) {
+      pipeline.push({
+        $match: {
+          'bookingItems.supplierId': new ObjectId(supplierId)
+        }
       })
     }
 
@@ -209,6 +219,18 @@ export async function POST(request: NextRequest) {
 
     for (const item of body.bookingItems) {
       const equipmentId = new ObjectId(item.equipmentId)
+
+      // Check if renter is trying to book their own equipment
+      const equipment = await db.collection("equipment").findOne({ _id: equipmentId })
+      if (equipment && equipment.supplierId && equipment.supplierId.toString() === body.renterId) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "You cannot rent or buy your own equipment",
+          },
+          { status: 403 }
+        )
+      }
 
       const available = await checkEquipmentAvailability(db, equipmentId)
       if (!available) {

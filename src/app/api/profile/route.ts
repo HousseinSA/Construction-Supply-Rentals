@@ -7,22 +7,21 @@ export async function GET() {
   try {
     const session = await getServerSession(authOptions)
     
-    if (!session || session.user.role !== 'admin') {
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const db = await connectDB()
-    const admin = await db.collection('users').findOne({ 
-      email: session.user.email,
-      role: 'admin' 
+    const user = await db.collection('users').findOne({ 
+      email: session.user.email
     })
     
     return NextResponse.json({
-      adminPhone: admin?.phone || '',
-      adminPassword: admin?.password || ''
+      phone: user?.phone || '',
+      password: user?.password || ''
     })
   } catch (error) {
-    console.error('Error fetching settings:', error)
+    console.error('Error fetching profile:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -31,24 +30,24 @@ export async function PUT(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
-    if (!session || session.user.role !== 'admin') {
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const body = await request.json()
-    const { adminPhone, adminPassword } = body
+    const { phone, password } = body
 
-    if (!adminPhone || !adminPassword) {
+    if (!phone || !password) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 })
     }
 
     const db = await connectDB()
     await db.collection('users').updateOne(
-      { email: session.user.email, role: 'admin' },
+      { email: session.user.email },
       {
         $set: {
-          phone: adminPhone,
-          password: adminPassword,
+          phone: phone,
+          password: password,
           updatedAt: new Date()
         }
       }
@@ -56,10 +55,10 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({ 
       success: true, 
-      message: 'Settings updated successfully' 
+      message: 'Profile updated successfully' 
     })
   } catch (error) {
-    console.error('Error updating settings:', error)
+    console.error('Error updating profile:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
