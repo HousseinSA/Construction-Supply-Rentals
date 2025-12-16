@@ -53,9 +53,7 @@ export default function ProfileSettings({
   const handleSave = async () => {
     setIsLoading(true)
     try {
-      const body = apiEndpoint.includes('settings') 
-        ? { adminPhone: settings.phone, adminPassword: settings.password }
-        : { phone: settings.phone, password: settings.password }
+      const body = { phone: settings.phone, password: settings.password }
 
       const response = await fetch(apiEndpoint, {
         method: 'PUT',

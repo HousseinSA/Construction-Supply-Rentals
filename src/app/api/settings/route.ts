@@ -7,29 +7,34 @@ export async function GET() {
   try {
     const session = await getServerSession(authOptions)
     
-    if (!session || session.user.role !== 'admin') {
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const db = await connectDB()
     
-    // Get platform settings
-    const settings = await db.collection('settings').findOne({ type: 'platform' })
-    
-    // Get current admin user details
-    const admin = await db.collection('users').findOne({ 
-      email: session.user.email,
-      role: 'admin' 
+    const user = await db.collection('users').findOne({ 
+      email: session.user.email
     })
     
-    const response = {
-      supportPhone: settings?.supportPhone || '+222 45 111111',
-      supportEmail: settings?.supportEmail || 'support@krilyengin.com',
-      adminPhone: admin?.phone || '+222 45 111111',
-      adminPassword: admin?.password || '12345678'
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    return NextResponse.json(response)
+    if (session.user.role === 'admin') {
+      const settings = await db.collection('settings').findOne({ type: 'platform' })
+      return NextResponse.json({
+        supportPhone: settings?.supportPhone || '+222 45 111111',
+        supportEmail: settings?.supportEmail || 'support@krilyengin.com',
+        adminPhone: user.phone || '+222 45 111111',
+        adminPassword: user.password || '12345678'
+      })
+    }
+
+    return NextResponse.json({
+      phone: user.phone || '',
+      password: user.password || ''
+    })
   } catch (error) {
     console.error('Error fetching settings:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
@@ -40,48 +45,79 @@ export async function PUT(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
-    if (!session || session.user.role !== 'admin') {
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const body = await request.json()
-    const { supportPhone, supportEmail, adminPhone, adminPassword } = body
-
-    // Validate required fields
-    if (!supportPhone || !supportEmail || !adminPhone || !adminPassword) {
-      return NextResponse.json({ error: 'All fields are required' }, { status: 400 })
-    }
-
     const db = await connectDB()
-    
-    // Update platform settings
-    await db.collection('settings').updateOne(
-      { type: 'platform' },
-      {
-        $set: {
-          supportPhone,
-          supportEmail,
-          updatedAt: new Date()
-        },
-        $setOnInsert: {
-          type: 'platform',
-          createdAt: new Date()
-        }
-      },
-      { upsert: true }
-    )
 
-    // Update current admin user details
-    await db.collection('users').updateOne(
-      { email: session.user.email, role: 'admin' },
-      {
-        $set: {
-          phone: adminPhone,
-          password: adminPassword,
-          updatedAt: new Date()
+    if (session.user.role === 'admin') {
+      const { supportPhone, supportEmail, adminPhone, adminPassword } = body
+
+      if (supportPhone && supportEmail && adminPhone && adminPassword) {
+        await db.collection('settings').updateOne(
+          { type: 'platform' },
+          {
+            $set: {
+              supportPhone,
+              supportEmail,
+              updatedAt: new Date()
+            },
+            $setOnInsert: {
+              type: 'platform',
+              createdAt: new Date()
+            }
+          },
+          { upsert: true }
+        )
+
+        await db.collection('users').updateOne(
+          { email: session.user.email, role: 'admin' },
+          {
+            $set: {
+              phone: adminPhone,
+              password: adminPassword,
+              updatedAt: new Date()
+            }
+          }
+        )
+      } else {
+        const { phone, password } = body
+        
+        if (!phone || !password) {
+          return NextResponse.json({ error: 'Phone and password are required' }, { status: 400 })
         }
+
+        await db.collection('users').updateOne(
+          { email: session.user.email, role: 'admin' },
+          {
+            $set: {
+              phone,
+              password,
+              updatedAt: new Date()
+            }
+          }
+        )
       }
-    )
+    } else {
+      const { phone, password } = body
+
+      if (!phone || !password) {
+        return NextResponse.json({ error: 'Phone and password are required' }, { status: 400 })
+      }
+
+      await db.collection('users').updateOne(
+        { email: session.user.email },
+        {
+          $set: {
+            phone,
+            password,
+            updatedAt: new Date()
+          }
+        }
+      )
+    }
 
     return NextResponse.json({ 
       success: true, 

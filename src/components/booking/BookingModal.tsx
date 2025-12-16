@@ -143,7 +143,7 @@ export default function BookingModal({
                 calculation: t("calculation"),
                 rate: t("rate"),
                 usage: t("usage"),
-                total: t("total"),
+                total: t("estimatedTotal"),
               }}
             />
 

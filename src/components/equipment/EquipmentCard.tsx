@@ -89,11 +89,7 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
     isForSale ? setShowSaleModal(true) : setShowBookingModal(true)
   }
 
-  const handleEditClick = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    router.push(`/dashboard/equipment/edit/${equipment._id}`)
-  }
+
 
   return (
     <div
@@ -203,28 +199,17 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
             </div>
           )}
 
-          {isOwnEquipment ? (
-            <Button
-              variant="secondary"
-              size="card"
-              className="w-full"
-              onClick={handleEditClick}
-            >
-              {tDetails("editEquipment")}
-            </Button>
-          ) : (
-            <Button
-              variant="card-primary"
-              size="card"
-              className="w-full"
-              onClick={(e) => {
-                e.stopPropagation()
-                router.push(`/equipment/${equipment._id}`)
-              }}
-            >
-              {t("viewDetails")}
-            </Button>
-          )}
+          <Button
+            variant="card-primary"
+            size="card"
+            className="w-full"
+            onClick={(e) => {
+              e.stopPropagation()
+              router.push(`/equipment/${equipment._id}`)
+            }}
+          >
+            {t("viewDetails")}
+          </Button>
         </div>
       </div>
 

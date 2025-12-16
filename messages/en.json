@@ -25,7 +25,7 @@
     "applyFilters": "Apply Filters"
   },
   "quickSearch": {
-    "button": "Quick Search",
+    "button": "Search",
     "title": "Search by Reference Number",
     "description": "Enter booking or sale reference number (e.g., 123456)",
     "placeholder": "123456",
@@ -86,13 +86,16 @@
     },
     "requestRental": "Request Rental",
     "contactForPurchase": "Contact to Purchase",
-    "sendBookingRequest": "Send Booking Request",
+    "sendBookingRequest": "Booking Request",
     "sendSaleRequest": "Send Sale Request",
     "waitingApproval": "Waiting for Approval",
     "currentlyUnavailable": "Currently Unavailable",
     "bookingPending": "You already have a pending booking for this equipment",
     "equipmentUnavailable": "This equipment is currently unavailable due to pending bookings",
     "adminCannotBook": "Admins cannot make bookings or purchase requests",
+    "cannotBookOwnEquipment": "You cannot book your own equipment",
+    "yourEquipment": "Your Equipment",
+    "editEquipment": "Edit Equipment",
     "goBack": "Go Back",
     "loading": "Loading...",
     "equipmentNotFound": "Equipment Not Found",
@@ -702,6 +705,11 @@
         "title": "Admin Information",
         "adminPhone": "Admin Phone Number",
         "adminPassword": "Admin Password"
+      },
+      "profileInfo": {
+        "title": "Profile Information",
+        "phone": "Phone Number",
+        "password": "Password"
       }
     },
     "analytics": {
@@ -962,6 +970,7 @@
     "calculation": "Price Calculation",
     "rate": "Rate",
     "total": "Total",
+    "estimatedTotal": "Estimated Total",
     "message": "Message",
     "optional": "optional",
     "messagePlaceholder": "Any special requirements or notes...",

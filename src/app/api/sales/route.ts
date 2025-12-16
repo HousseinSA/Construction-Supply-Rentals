@@ -168,6 +168,55 @@ export async function PUT(request: NextRequest) {
     }
 
     const db = await connectDB()
+    
+    // Validate cancellation policy: Only pending sales can be cancelled by buyers
+    if (status === 'cancelled' && !adminId) {
+      const sale = await db.collection('sales').findOne({ _id: new ObjectId(saleId) })
+      if (sale && sale.status !== 'pending') {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Only pending purchases can be cancelled. Please contact support for assistance.",
+          },
+          { status: 400 }
+        )
+      }
+    }
+    
+    // If buyer is cancelling, send email to admin
+    if (status === 'cancelled' && !adminId) {
+      const sale = await db.collection('sales').findOne({ _id: new ObjectId(saleId) })
+      
+      if (sale) {
+        const adminEmail = process.env.ADMIN_EMAIL
+        if (adminEmail) {
+          const buyer = await db.collection('users').findOne({ _id: sale.buyerId })
+          
+          let supplierName, supplierPhone;
+          if (sale.supplierId) {
+            const supplier = await db.collection('users').findOne({ _id: sale.supplierId })
+            if (supplier) {
+              supplierName = `${supplier.firstName} ${supplier.lastName}`
+              supplierPhone = supplier.phone
+            }
+          }
+          
+          const { sendSaleCancellationEmail } = await import('@/src/lib/email')
+          await sendSaleCancellationEmail(adminEmail, {
+            referenceNumber: sale.referenceNumber,
+            equipmentName: sale.equipmentName,
+            salePrice: sale.salePrice,
+            buyerName: buyer ? `${buyer.firstName} ${buyer.lastName}` : 'Unknown',
+            buyerPhone: buyer?.phone || 'N/A',
+            buyerLocation: buyer?.city || undefined,
+            cancellationDate: new Date(),
+            supplierName,
+            supplierPhone
+          }).catch(err => console.error('Email error:', err))
+        }
+      }
+    }
+    
     const updateData: any = {
       status,
       updatedAt: new Date(),

@@ -331,6 +331,58 @@ export async function PUT(request: NextRequest) {
     }
 
     const db = await connectDB()
+    
+    // Validate cancellation policy: Only pending orders can be cancelled by clients
+    if (status === 'cancelled' && !adminId) {
+      const booking = await db.collection('bookings').findOne({ _id: new ObjectId(bookingId) })
+      if (booking && booking.status !== 'pending') {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Only pending bookings can be cancelled. Please contact support for assistance.",
+          },
+          { status: 400 }
+        )
+      }
+    }
+    
+    // If client is cancelling, send email to admin
+    if (status === 'cancelled' && !adminId) {
+      const booking = await db.collection('bookings').findOne({ _id: new ObjectId(bookingId) })
+      
+      if (booking) {
+        const adminEmail = process.env.ADMIN_EMAIL
+        if (adminEmail) {
+          const renter = await db.collection('users').findOne({ _id: booking.renterId })
+          
+          const suppliers = await Promise.all(
+            booking.bookingItems.map(async (item: any) => {
+              if (!item.supplierId) return null;
+              const supplier = await db.collection('users').findOne({ _id: item.supplierId })
+              return {
+                name: supplier ? `${supplier.firstName} ${supplier.lastName}` : 'N/A',
+                phone: supplier?.phone || 'N/A',
+                equipment: item.equipmentName,
+                duration: `${item.usage} ${item.usageUnit || ''}`
+              }
+            })
+          )
+          
+          const { sendBookingCancellationEmail } = await import('@/src/lib/email')
+          await sendBookingCancellationEmail(adminEmail, {
+            referenceNumber: booking.referenceNumber,
+            equipmentNames: booking.bookingItems.map((item: any) => item.equipmentName),
+            totalPrice: booking.totalPrice,
+            renterName: renter ? `${renter.firstName} ${renter.lastName}` : 'Unknown',
+            renterPhone: renter?.phone || 'N/A',
+            renterLocation: renter?.city || undefined,
+            cancellationDate: new Date(),
+            suppliers: suppliers.filter(s => s !== null) as Array<{ name: string; phone: string; equipment: string; duration: string }>
+          }).catch(err => console.error('Email error:', err))
+        }
+      }
+    }
+    
     const { updateBookingStatus } = await import("@/src/lib/booking-service")
 
     await updateBookingStatus(

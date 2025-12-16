@@ -24,7 +24,7 @@
     "applyFilters": "تطبيق الفلتر"
   },
   "quickSearch": {
-    "button": "بحث سريع",
+    "button": "بحث",
     "title": "البحث برقم المرجع",
     "description": "أدخل رقم مرجع الحجز أو المبيع (مثل: 123456)",
     "placeholder": "123456",
@@ -85,13 +85,15 @@
     },
     "requestRental": "طلب إيجار",
     "contactForPurchase": "تواصل للشراء",
-    "sendBookingRequest": "إرسال طلب حجز",
+    "sendBookingRequest": "طلب حجز",
     "sendSaleRequest": "إرسال طلب شراء",
     "waitingApproval": "في انتظار الموافقة",
     "currentlyUnavailable": "غير متاح حالياً",
     "bookingPending": "لديك بالفعل طلب حجز في انتظار الموافقة لهذه المعدة",
     "equipmentUnavailable": "هذه المعدة غير متاحة حالياً بسبب وجود حجوزات في الانتظار",
     "adminCannotBook": "لا يمكن للإدارة إجراء حجوزات أو طلبات شراء",
+    "yourEquipment": "معداتك",
+    "editEquipment": "تعديل المعدة",
     "goBack": "عودة",
     "loading": "جاري التحميل...",
     "equipmentNotFound": "لم يتم العثور على المعدة",
@@ -693,6 +695,11 @@
         "title": "معلومات الإدارة",
         "adminPhone": "رقم هاتف الإدارة",
         "adminPassword": "كلمة مرور الإدارة"
+      },
+      "profileInfo": {
+        "title": "معلومات الملف الشخصي",
+        "phone": "رقم الهاتف",
+        "password": "كلمة المرور"
       }
     },
     "analytics": {
@@ -815,6 +822,7 @@
         "rate": "السعر",
         "usage": "الاستخدام",
         "subtotal": "المجموع الفرعي",
+        "estimatedTotal": "الإجمالي المقدر",
         "status": "الحالة",
         "renterMessage": "رسالة المستأجر",
         "adminNotes": "ملاحظات الإدارة",
@@ -955,6 +963,7 @@
     "calculation": "حساب السعر",
     "rate": "السعر",
     "total": "المجموع",
+    "estimatedTotal":"الإجمالي المقدر",
     "message": "رسالة",
     "optional": "اختياري",
     "messagePlaceholder": "أي متطلبات خاصة أو ملاحظات...",

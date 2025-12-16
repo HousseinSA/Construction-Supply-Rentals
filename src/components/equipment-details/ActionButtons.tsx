@@ -21,20 +21,13 @@ export default function ActionButtons({ isForSale, equipment, onBookingSuccess }
   const [showSaleModal, setShowSaleModal] = useState(false)
   const [toast, setToast] = useState<{message: string, type: 'success' | 'error'} | null>(null)
 
+  const isOwnEquipment = session?.user?.id === equipment.supplierId
+  const isAdmin = session?.user?.role === 'admin'
+  const shouldHideButton = isOwnEquipment || isAdmin
+
   const handleActionClick = () => {
     if (!session) {
       router.push('/auth/login')
-      return
-    }
-    
-    if (session.user.role === 'admin') {
-      setToast({ message: t('adminCannotBook'), type: 'error' })
-      return
-    }
-    
-    // Prevent suppliers from booking their own equipment
-    if (session.user.id === equipment.supplierId) {
-      setToast({ message: t('cannotBookOwnEquipment'), type: 'error' })
       return
     }
     
@@ -84,14 +77,16 @@ export default function ActionButtons({ isForSale, equipment, onBookingSuccess }
   return (
     <>
       <div className="mt-auto pt-4 sm:pt-6 space-y-2 sm:space-y-3">
-        <button 
-          onClick={handleActionClick}
-          disabled={equipment.hasPendingBookings && equipment.userBookingStatus !== 'pending'}
-          className={`w-full ${buttonContent.className} text-white py-3 sm:py-4 px-4 sm:px-6 rounded-xl transition-all duration-300 font-semibold text-base sm:text-lg shadow-lg hover:shadow-xl flex items-center justify-center gap-2 disabled:hover:shadow-lg`}
-        >
-          {buttonContent.icon}
-          {buttonContent.text}
-        </button>
+        {!shouldHideButton && (
+          <button 
+            onClick={handleActionClick}
+            disabled={equipment.hasPendingBookings && equipment.userBookingStatus !== 'pending'}
+            className={`w-full ${buttonContent.className} text-white py-3 sm:py-4 px-4 sm:px-6 rounded-xl transition-all duration-300 font-semibold text-base sm:text-lg shadow-lg hover:shadow-xl flex items-center justify-center gap-2 disabled:hover:shadow-lg`}
+          >
+            {buttonContent.icon}
+            {buttonContent.text}
+          </button>
+        )}
         <button
           onClick={() => window.history.back()}
           className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all duration-200 font-medium text-sm sm:text-base flex items-center justify-center gap-2"

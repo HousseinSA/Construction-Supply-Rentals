@@ -25,7 +25,7 @@
     "applyFilters": "Appliquer les Filtres"
   },
   "quickSearch": {
-    "button": "Recherche Rapide",
+    "button": "Recherche",
     "title": "Rechercher par Numéro de Référence",
     "description": "Entrez le numéro de référence de réservation ou de vente (ex: 123456)",
     "placeholder": "123456",
@@ -86,13 +86,15 @@
     },
     "requestRental": "Demander Location",
     "contactForPurchase": "Contacter pour Achat",
-    "sendBookingRequest": "Envoyer Demande de Réservation",
+    "sendBookingRequest": " Demande de Réservation",
     "sendSaleRequest": "Envoyer Demande d'Achat",
     "waitingApproval": "En Attente d'Approbation",
     "currentlyUnavailable": "Actuellement Indisponible",
     "bookingPending": "Vous avez déjà une demande de réservation en attente pour cet équipement",
     "equipmentUnavailable": "Cet équipement est actuellement indisponible en raison de réservations en attente",
     "adminCannotBook": "Les administrateurs ne peuvent pas faire de réservations ou de demandes d'achat",
+    "yourEquipment": "Votre Matériel",
+    "editEquipment": "Modifier Matériel",
     "goBack": "Retour",
     "loading": "Chargement...",
     "equipmentNotFound": "Matériel Introuvable",
@@ -702,6 +704,11 @@
         "title": "Informations Administrateur",
         "adminPhone": "Numéro de Téléphone Admin",
         "adminPassword": "Mot de Passe Admin"
+      },
+      "profileInfo": {
+        "title": "Informations de Profil",
+        "phone": "Numéro de Téléphone",
+        "password": "Mot de Passe"
       }
     },
     "analytics": {
@@ -963,6 +970,7 @@
     "calculation": "Calcul du Prix",
     "rate": "Tarif",
     "total": "Total",
+    "estimatedTotal": "Total Estimé",
     "message": "Message",
     "optional": "optionnel",
     "messagePlaceholder": "Exigences spéciales ou notes...",
