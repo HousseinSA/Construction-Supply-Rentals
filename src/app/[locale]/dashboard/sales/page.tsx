@@ -17,8 +17,7 @@ export default async function SalesPage({
     redirect(`/${locale}/auth/login`)
   }
 
-  // Only admin and supplier can access dashboard sales
-  if (session.user.role !== "admin" && session.user.userType !== "supplier") {
+  if (session.user.role !== "admin") {
     redirect(`/${locale}/dashboard`)
   }
 

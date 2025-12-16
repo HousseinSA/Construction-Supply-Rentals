@@ -93,9 +93,6 @@
     "bookingPending": "You already have a pending booking for this equipment",
     "equipmentUnavailable": "This equipment is currently unavailable due to pending bookings",
     "adminCannotBook": "Admins cannot make bookings or purchase requests",
-    "cannotBookOwnEquipment": "You cannot rent or buy your own equipment",
-    "yourEquipment": "Your Equipment",
-    "editEquipment": "Edit Equipment",
     "goBack": "Go Back",
     "loading": "Loading...",
     "equipmentNotFound": "Equipment Not Found",
@@ -218,8 +215,7 @@
       "selectDates": "Select dates"
     },
     "footer": {
-      "support": "Support & Contact",
-      "rights": "All rights reserved."
+      "support": "Support & Contact"
     },
     "whatsapp": {
       "tooltip": "Need Help? Contact Us!"
@@ -708,13 +704,6 @@
         "adminPassword": "Admin Password"
       }
     },
-    "profile": {
-      "userInfo": {
-        "title": "Profile Information",
-        "phone": "Phone Number",
-        "password": "Password"
-      }
-    },
     "analytics": {
       "title": " Statistics",
       "timeRanges": {
@@ -813,9 +802,7 @@
         "cancel": "Cancel",
         "close": "Close",
         "save": "Save Changes",
-        "saving": "Saving...",
-        "updateBooking": "Update Booking",
-        "updating": "Updating..."
+        "saving": "Saving..."
       },
       "details": {
         "title": "Booking Details",
@@ -896,9 +883,7 @@
         "cancel": "Cancel",
         "close": "Close",
         "save": "Save Changes",
-        "saving": "Saving...",
-        "updateSale": "Update Sale",
-        "updating": "Updating..."
+        "saving": "Saving..."
       },
       "details": {
         "title": "Sale Order Details",
@@ -976,20 +961,20 @@
     "usage": "Usage Required",
     "calculation": "Price Calculation",
     "rate": "Rate",
-    "total": "Estimated Total",
+    "total": "Total",
     "message": "Message",
     "optional": "optional",
     "messagePlaceholder": "Any special requirements or notes...",
     "sendRequest": "Send Booking Request",
     "sending": "Sending...",
     "success": "Booking request sent successfully! Admin will contact you soon.",
-    "successPending": "Booking request sent successfully! Admin will contact you to confirm availability and finalize pricing details. Check My Bookings for updates.",
+    "successPending": "Booking successful! Pending approval. Check My Bookings for updates or contact us.",
     "viewBookings": "View My Bookings",
     "error": "Failed to send booking request. Please try again.",
-    "hours": "hour",
-    "days": "day",
+    "hours": "hours",
+    "days": "days",
     "km": "km",
-    "tons": "ton",
-    "months": "month"
+    "tons": "tons",
+    "months": "months"
   }
 }

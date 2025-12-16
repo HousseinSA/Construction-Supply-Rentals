@@ -5,7 +5,6 @@ import ProfileSettings from "./ProfileSettings"
 
 export default function SettingsManagement() {
   const t = useTranslations("dashboard")
-
   return (
     <ProfileSettings
       apiEndpoint="/api/settings"

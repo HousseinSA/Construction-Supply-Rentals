@@ -83,65 +83,31 @@ export default function Dashboard() {
     }
 
     // Supplier dashboard cards
-    if (session?.user?.userType === "supplier") {
-      return [
-        {
-          title: t("admin.bookings"),
-          description: t("admin.bookingsDesc"),
-          icon: ClipboardList,
-          href: "/dashboard/bookings",
-          color: "bg-orange-500",
-        },
-        {
-          title: t("admin.sales"),
-          description: t("admin.salesDesc"),
-          icon: ClipboardCheck,
-          href: "/dashboard/sales",
-          color: "bg-yellow-500",
-        },
-        {
-          title: t("supplier.addEquipment"),
-          description: t("supplier.addEquipmentDesc"),
-          icon: Plus,
-          href: "/dashboard/equipment/create",
-          color: "bg-blue-500",
-        },
-        {
-          title: t("supplier.myEquipment"),
-          description: t("supplier.myEquipmentDesc"),
-          icon: Package,
-          href: "/dashboard/equipment",
-          color: "bg-green-500",
-        },
-        {
-          title: t("supplier.profile"),
-          description: t("supplier.profileDesc"),
-          icon: User,
-          href: "/dashboard/profile",
-          color: "bg-purple-500",
-        },
-      ]
-    }
-
-    // Renter dashboard cards
     return [
+      {
+        title: t("supplier.myEquipment"),
+        description: t("supplier.myEquipmentDesc"),
+        icon: Package,
+        href: "/dashboard/equipment",
+        color: "bg-green-500",
+      },
+      {
+        title: t("supplier.addEquipment"),
+        description: t("supplier.addEquipmentDesc"),
+        icon: Plus,
+        href: "/dashboard/equipment/create",
+        color: "bg-blue-500",
+      },
       {
         title: t("renter.myBookings"),
         description: t("renter.myBookingsDesc"),
         icon: ClipboardList,
-        href: "/bookings",
+        href: "/dashboard/bookings",
         color: "bg-orange-500",
       },
       {
-        title: t("renter.browseEquipment"),
-        description: t("renter.browseEquipmentDesc"),
-        icon: Truck,
-        href: "/equipment",
-        color: "bg-blue-500",
-      },
-      {
-        title: t("renter.profile"),
-        description: t("renter.profileDesc"),
+        title: t("supplier.profile"),
+        description: t("supplier.profileDesc"),
         icon: User,
         href: "/dashboard/profile",
         color: "bg-purple-500",

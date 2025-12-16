@@ -12,15 +12,24 @@ export async function GET() {
     }
 
     const db = await connectDB()
+    
+    // Get platform settings
+    const settings = await db.collection('settings').findOne({ type: 'platform' })
+    
+    // Get current admin user details
     const admin = await db.collection('users').findOne({ 
       email: session.user.email,
       role: 'admin' 
     })
     
-    return NextResponse.json({
-      adminPhone: admin?.phone || '',
-      adminPassword: admin?.password || ''
-    })
+    const response = {
+      supportPhone: settings?.supportPhone || '+222 45 111111',
+      supportEmail: settings?.supportEmail || 'support@krilyengin.com',
+      adminPhone: admin?.phone || '+222 45 111111',
+      adminPassword: admin?.password || '12345678'
+    }
+
+    return NextResponse.json(response)
   } catch (error) {
     console.error('Error fetching settings:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
@@ -36,13 +45,33 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { adminPhone, adminPassword } = body
+    const { supportPhone, supportEmail, adminPhone, adminPassword } = body
 
-    if (!adminPhone || !adminPassword) {
+    // Validate required fields
+    if (!supportPhone || !supportEmail || !adminPhone || !adminPassword) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 })
     }
 
     const db = await connectDB()
+    
+    // Update platform settings
+    await db.collection('settings').updateOne(
+      { type: 'platform' },
+      {
+        $set: {
+          supportPhone,
+          supportEmail,
+          updatedAt: new Date()
+        },
+        $setOnInsert: {
+          type: 'platform',
+          createdAt: new Date()
+        }
+      },
+      { upsert: true }
+    )
+
+    // Update current admin user details
     await db.collection('users').updateOne(
       { email: session.user.email, role: 'admin' },
       {
