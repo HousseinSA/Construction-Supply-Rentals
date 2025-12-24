@@ -27,7 +27,8 @@ export default function ActionButtons({ isForSale, equipment, onBookingSuccess }
 
   const handleActionClick = () => {
     if (!session) {
-      router.push('/auth/login')
+      const currentPath = window.location.pathname
+      router.push(`/auth/login?callbackUrl=${encodeURIComponent(currentPath)}`)
       return
     }
     
@@ -76,12 +77,12 @@ export default function ActionButtons({ isForSale, equipment, onBookingSuccess }
 
   return (
     <>
-      <div className="mt-auto pt-4 sm:pt-6 space-y-2 sm:space-y-3">
+      <div className="space-y-3 mt-6">
         {!shouldHideButton && (
           <button 
             onClick={handleActionClick}
             disabled={equipment.hasPendingBookings && equipment.userBookingStatus !== 'pending'}
-            className={`w-full ${buttonContent.className} text-white py-3 sm:py-4 px-4 sm:px-6 rounded-xl transition-all duration-300 font-semibold text-base sm:text-lg shadow-lg hover:shadow-xl flex items-center justify-center gap-2 disabled:hover:shadow-lg`}
+            className={`w-full ${buttonContent.className} text-white py-3 sm:py-3.5 px-4 rounded-xl transition-all duration-300 font-semibold text-base sm:text-lg shadow-lg hover:shadow-xl flex items-center justify-center gap-2 disabled:hover:shadow-lg`}
           >
             {buttonContent.icon}
             {buttonContent.text}
@@ -89,7 +90,7 @@ export default function ActionButtons({ isForSale, equipment, onBookingSuccess }
         )}
         <button
           onClick={() => window.history.back()}
-          className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all duration-200 font-medium text-sm sm:text-base flex items-center justify-center gap-2"
+          className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2.5 sm:py-3 px-4 rounded-xl transition-all duration-200 font-medium text-sm sm:text-base flex items-center justify-center gap-2"
         >
           <ArrowLeft className="w-4 h-4" />
           {t("goBack")}

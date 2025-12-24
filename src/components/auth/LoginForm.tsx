@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { Link, useRouter } from "@/src/i18n/navigation"
+import { useSearchParams } from "next/navigation"
 import { signIn } from "next-auth/react"
 import AuthCard from "./AuthCard"
 import Input from "../ui/Input"
@@ -15,6 +16,7 @@ export default function LoginForm() {
   const t = useTranslations("auth")
   const tToast = useTranslations("toast")
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     emailOrPhone: "",
@@ -50,7 +52,6 @@ export default function LoginForm() {
 
     setLoading(true)
     try {
-      // First check if user is blocked
       const checkResponse = await fetch("/api/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -73,7 +74,6 @@ export default function LoginForm() {
         return
       }
 
-      // If not blocked, proceed with normal login
       const result = await signIn("credentials", {
         emailOrPhone: formData.emailOrPhone,
         password: formData.password,
@@ -88,9 +88,21 @@ export default function LoginForm() {
 
       if (result?.ok) {
         showToast.success(tToast("loginSuccess"))
-        // Redirect renters to bookings page, others to dashboard
-        const redirectPath = checkResult.userType === "renter" ? "/bookings" : "/dashboard"
-        router.replace(redirectPath)
+        
+        const callbackUrl = searchParams.get("callbackUrl")
+        const fromRegister = searchParams.get("from") === "register"
+        
+        if (checkResult.userType === "renter") {
+          if (fromRegister) {
+            router.replace("/")
+          } else if (callbackUrl) {
+            router.replace(callbackUrl)
+          } else {
+            router.replace("/")
+          }
+        } else {
+          router.replace("/dashboard")
+        }
       } else {
         showToast.error(tToast("loginFailed"))
         setLoading(false)

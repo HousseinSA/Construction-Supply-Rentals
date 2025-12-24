@@ -38,7 +38,6 @@ export default function CategoryDropdown({
         const data = await response.json()
         if (data.success || Array.isArray(data)) {
           const categoryData = data.success ? data.data : data
-          // Filter main categories
           const mainCategoryNames = ['terrassement', 'nivellement', 'compactage', 'transport', 'levage', 'manutention']
           const mainCategories = categoryData.filter((cat: Category) => {
             const lowerName = cat.name.toLowerCase()

@@ -1,4 +1,3 @@
-// Export all models from one place
 export * from './user';
 export * from './equipment';
 export * from './booking';

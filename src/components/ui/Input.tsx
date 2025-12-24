@@ -22,7 +22,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           type={type}
           onWheel={handleWheel}
-          className={`w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition-all duration-200 ${className}`}
+          className={`w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition-all duration-200 ${props.disabled ? 'bg-gray-100 cursor-not-allowed' : ''} ${className}`}
           {...props}
         />
         {error && <p className="mt-1 text-sm text-red-600">{error}</p>}

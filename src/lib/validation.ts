@@ -16,7 +16,6 @@ export function validateBooking(booking: any): { valid: boolean; errors: string[
     errors.push('At least one booking item is required');
   }
 
-  // Validate each booking item has usage amount
   booking.bookingItems?.forEach((item: any, index: number) => {
     if (!item.equipmentId || !validateObjectId(item.equipmentId)) {
       errors.push(`Invalid equipmentId for item ${index + 1}`);

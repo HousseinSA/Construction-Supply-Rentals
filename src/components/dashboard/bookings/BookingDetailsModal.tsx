@@ -1,19 +1,13 @@
 "use client"
 
-import { useRef } from "react"
 import { useTranslations } from "next-intl"
-import { Building, Save } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { useBookingDetails } from "@/src/hooks/useBookingDetails"
-import { useModalClose } from "@/src/hooks/useModalClose"
-import SupplierInfo from "@/src/components/equipment-details/SupplierInfo"
-import ModalHeader from "@/src/components/booking/ModalHeader"
-import BookingInfo from "./BookingInfo"
-import RenterInfo from "./RenterInfo"
-import EquipmentItems from "./EquipmentItems"
-import RenterMessage from "./RenterMessage"
+import BaseDetailsModal from "@/src/components/shared/BaseDetailsModal"
+import ContactCard from "@/src/components/shared/ContactCard"
+import MessageSection from "@/src/components/shared/MessageSection"
+import TransactionInfoCard from "@/src/components/shared/TransactionInfoCard"
 import StatusManager from "@/src/components/ui/StatusManager"
-import Button from "@/src/components/ui/Button"
 import type { BookingWithDetails } from "@/src/stores/bookingsStore"
 
 interface BookingDetailsModalProps {
@@ -31,8 +25,8 @@ export default function BookingDetailsModal({
 }: BookingDetailsModalProps) {
   const t = useTranslations("dashboard.bookings")
   const tBooking = useTranslations("booking")
+  const tDashboard = useTranslations("dashboard")
   const { data: session } = useSession()
-  const modalRef = useRef<HTMLDivElement>(null)
   const {
     status,
     setStatus,
@@ -42,10 +36,6 @@ export default function BookingDetailsModal({
     totalCommission,
     originalStatus,
   } = useBookingDetails(booking, onStatusUpdate, onClose)
-
-  useModalClose(isOpen, onClose, modalRef)
-
-  if (!isOpen) return null
 
   const getUsageUnitLabel = (unit: string) => {
     const unitMap: Record<string, string> = {
@@ -57,115 +47,205 @@ export default function BookingDetailsModal({
     return unitMap[unit] || unit
   }
 
+  const getSingularUnitLabel = (unit: string) => {
+    const unitMap: Record<string, string> = {
+      hours: tBooking("hour"),
+      days: tBooking("day"),
+      km: tBooking("km"),
+      tons: tBooking("ton"),
+    }
+    return unitMap[unit] || unit
+  }
+
+  const transactionRows: Array<{
+    label: string
+    value: string | number
+    highlight?: boolean
+    dir?: "ltr" | "rtl"
+  }> = []
+
+  // Equipment items
+  booking.bookingItems?.forEach((item: any) => {
+    const usageLabel = getUsageUnitLabel(item.usageUnit)
+    const singularLabel = getSingularUnitLabel(item.usageUnit)
+    transactionRows.push(
+      {
+        label: item.equipmentName,
+        value: `${item.usage} ${usageLabel}`,
+        dir: "ltr",
+      },
+      {
+        label: `${tBooking("rate")}`,
+        value: `${item.rate.toLocaleString()} MRU/${singularLabel}`,
+        dir: "ltr",
+      }
+    )
+  })
+
+  // If transport exists, show equipment and transport in separate columns
+  const equipmentRows = booking.transportDetails ? [...transactionRows] : []
+  const transportRows: Array<{
+    label: string
+    value: string | number
+    highlight?: boolean
+    dir?: "ltr" | "rtl"
+  }> = []
+
+  if (booking.transportDetails) {
+    // Equipment total
+    equipmentRows.push({
+      label: t("table.total"),
+      value: `${booking.totalPrice.toLocaleString()} MRU`,
+      dir: "ltr",
+      highlight: true,
+    })
+
+    // Transport details
+    transportRows.push(
+      {
+        label: booking.transportDetails.porteCharName,
+        value: `${booking.transportDetails.distance} ${tBooking("km")}`,
+        dir: "ltr",
+      },
+      {
+        label: tBooking("ratePerKm"),
+        value: `${booking.transportDetails.ratePerKm.toLocaleString()} MRU/${tBooking("km")}`,
+        dir: "ltr",
+      },
+      {
+        label: t("table.total"),
+        value: `${booking.transportDetails.transportCost.toLocaleString()} MRU`,
+        dir: "ltr",
+        highlight: true,
+      }
+    )
+  }
+
+  // Summary rows (only when transport exists)
+  const summaryRows: Array<{
+    label: string
+    value: string | number
+    highlight?: boolean
+    dir?: "ltr" | "rtl"
+  }> = booking.transportDetails ? [
+    {
+      label: t("table.estimatedTotal"),
+      value: `${(booking.grandTotal || booking.totalPrice).toLocaleString()} MRU`,
+      dir: "ltr",
+      highlight: true,
+    },
+    {
+      label: t("details.commission"),
+      value: `${totalCommission.toLocaleString()} MRU`,
+      highlight: true,
+      dir: "ltr",
+    },
+    {
+      label: t("details.createdAt"),
+      value: new Date(booking.createdAt).toLocaleDateString(),
+    }
+  ] : []
+
+  // When no transport, add summary to transaction rows
+  if (!booking.transportDetails) {
+    transactionRows.push(
+      {
+        label: t("table.total"),
+        value: `${booking.totalPrice.toLocaleString()} MRU`,
+        dir: "ltr",
+        highlight: true,
+      },
+      {
+        label: t("details.commission"),
+        value: `${totalCommission.toLocaleString()} MRU`,
+        highlight: true,
+        dir: "ltr",
+      },
+      {
+        label: t("details.createdAt"),
+        value: new Date(booking.createdAt).toLocaleDateString(),
+      }
+    )
+  }
+
   return (
-    <div
-      ref={modalRef}
-      className="fixed inset-0 z-50 animate-in fade-in duration-150"
+    <BaseDetailsModal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={t("details.title")}
+      referenceNumber={booking.referenceNumber}
+      referenceLabel={t("details.reference")}
+      onUpdate={() => handleStatusUpdate(session?.user?.id)}
+      updateDisabled={loading || status === originalStatus}
+      updateLoading={loading}
+      updateLabel={t("actions.update")}
+      updatingLabel={t("actions.updating")}
+      closeLabel={t("actions.close")}
     >
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-      <div className="relative h-full flex items-center justify-center p-4">
-        <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom-4 duration-200">
-        <div className="p-6">
-          <ModalHeader title={t("details.title")} onClose={onClose} />
-
-          <div className="mb-4 px-3 py-2 bg-orange-50 border border-orange-200 rounded-lg flex items-center justify-between">
-            <div className="text-xs text-gray-600">{t("details.reference")}</div>
-            <div className="text-xl font-bold text-orange-600" dir="ltr">{booking.referenceNumber?.slice(0, 3)}-{booking.referenceNumber?.slice(3)}</div>
-          </div>
-
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <BookingInfo
-                  bookingId={booking._id}
-                  referenceNumber={booking.referenceNumber}
-                  totalPrice={booking.totalPrice}
-                  commission={totalCommission}
-                  createdAt={booking.createdAt}
-                  labels={{
-                    title: t("details.bookingInfo"),
-                    bookingId: t("details.bookingId"),
-                    totalAmount: t("details.totalAmount"),
-                    commission: t("details.commission"),
-                    createdAt: t("details.createdAt"),
-                  }}
-                />
-                <EquipmentItems
-                  items={booking.bookingItems}
-                  calculateCommission={calculateCommission}
-                  getUsageLabel={getUsageUnitLabel}
-                  labels={{
-                    title: t("details.equipmentItems"),
-                    usage: t("details.usage"),
-                    rate: t("details.rate"),
-                    commission: t("details.commission"),
-                    subtotal: t("details.subtotal"),
-                  }}
-                />
-            </div>
-
-            <StatusManager
-              currentStatus={booking.status}
-              selectedStatus={status}
-              onStatusChange={setStatus}
-              labels={{
-                title: t("details.status"),
-                currentStatus: t("details.status"),
-                statusOptions: {
-                  pending: t("status.pending"),
-                  paid: t("status.paid"),
-                  completed: t("status.completed"),
-                  cancelled: t("status.cancelled"),
-                },
-              }}
+      {booking.transportDetails ? (
+        <>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <TransactionInfoCard
+              title={t("table.equipment")}
+              rows={equipmentRows}
             />
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {booking.renterInfo && booking.renterInfo[0] && (
-                <div className="lg:h-[280px]">
-                  <RenterInfo
-                    renter={booking.renterInfo[0]}
-                    labels={{
-                      title: t("details.renterInfo"),
-                      name: t("details.name"),
-                      email: t("details.email"),
-                      phone: t("details.phone"),
-                      call: t("details.call"),
-                    }}
-                  />
-                </div>
-              )}
-              {booking.supplierInfo && booking.supplierInfo.length > 0 && !booking.hasAdminCreatedEquipment && (
-                <div className="lg:h-[280px]">
-                  <SupplierInfo
-                    supplier={booking.supplierInfo[0]}
-                    variant="modal"
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-
-          {booking.renterMessage && (
-            <RenterMessage
-              message={booking.renterMessage}
-              title={t("details.renterMessage")}
+            <TransactionInfoCard
+              title={tBooking("transport")}
+              rows={transportRows}
             />
-          )}
-
-          <div className="mt-6 border-t border-gray-200 pt-6">
-            <div className="flex justify-end gap-3">
-              <button onClick={onClose} className="px-4 py-2 text-gray-600 hover:text-gray-800">
-                {t("actions.close")}
-              </button>
-              <Button onClick={() => handleStatusUpdate(session?.user?.id)} disabled={loading || status === originalStatus} className="flex items-center gap-2">
-                <Save className="w-4 h-4" />
-                {loading ? t("actions.updating") : t("actions.updateBooking")}
-              </Button>
-            </div>
           </div>
-        </div>
-        </div>
+          <TransactionInfoCard
+            title={t("table.summary")}
+            rows={summaryRows}
+          />
+        </>
+      ) : (
+        <TransactionInfoCard
+          title={t("details.bookingInfo")}
+          rows={transactionRows}
+        />
+      )}
+
+      <StatusManager
+        currentStatus={booking.status}
+        selectedStatus={status}
+        onStatusChange={setStatus}
+        labels={{
+          title: t("details.status"),
+          currentStatus: t("details.status"),
+          statusOptions: {
+            pending: t("status.pending"),
+            paid: t("status.paid"),
+            completed: t("status.completed"),
+            cancelled: t("status.cancelled"),
+          },
+        }}
+      />
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {booking.renterInfo?.[0] && (
+          <ContactCard
+            user={booking.renterInfo[0]}
+            title={t("details.renterInfo")}
+            variant="renter"
+          />
+        )}
+        <ContactCard
+          user={booking.supplierInfo?.[0]}
+          title={t("details.supplierInfo")}
+          variant="supplier"
+          adminCreated={booking.hasAdminCreatedEquipment}
+          adminLabel={tDashboard("equipment.createdByAdmin")}
+        />
       </div>
-    </div>
+
+      {booking.renterMessage && (
+        <MessageSection
+          message={booking.renterMessage}
+          title={t("details.renterMessage")}
+          variant="renter"
+        />
+      )}
+    </BaseDetailsModal>
   )
 }

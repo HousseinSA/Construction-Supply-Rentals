@@ -22,7 +22,8 @@
     "showingResults": "{start} of {total}",
     "admin": "Admin",
     "filters": "Filters",
-    "applyFilters": "Apply Filters"
+    "applyFilters": "Apply Filters",
+    "clearFilters": "Clear Filters"
   },
   "quickSearch": {
     "button": "Search",
@@ -109,6 +110,7 @@
     "optional": "optional",
     "messagePlaceholder": "Any questions or special requests...",
     "sending": "Sending...",
+    "pricingRejected": "Pricing Update Rejected",
     "imageModal": {
       "close": "Close",
       "previous": "Previous",
@@ -218,7 +220,8 @@
       "selectDates": "Select dates"
     },
     "footer": {
-      "support": "Support & Contact"
+      "support": "Support & Contact",
+      "by": "by"
     },
     "whatsapp": {
       "tooltip": "Need Help? Contact Us!"
@@ -422,7 +425,7 @@
       }
     },
     "admin": {
-      "title": "Admin Dashboard",
+      "title": "Dashboard",
       "subtitle": "Manage your construction equipment rental platform",
       "createEquipment": "Create Equipment",
       "createEquipmentDesc": "Add new equipment to the platform",
@@ -440,9 +443,8 @@
       "settingsDesc": "Configure platform settings"
     },
     "supplier": {
-      "title": "Partner Dashboard",
-      "subtitle": "Manage your equipment and rental business",
-      "myEquipment": "My Equipment",
+      "title": "Dashboard",
+      "myEquipment": "Equipment",
       "myEquipmentDesc": "View and manage your listed equipment",
       "addEquipment": "Add Equipment",
       "addEquipmentDesc": "List new equipment for rental",
@@ -466,7 +468,6 @@
     },
     "equipment": {
       "createTitle": "Create New Equipment",
-      "createSubtitle": "Add equipment to make it available for rental",
       "backToDashboard": "Back to Dashboard",
       "category": "Category",
       "selectCategory": "Select Category",
@@ -499,7 +500,7 @@
       "dropHere": "Drop images here",
       "uploadHint": "Or drag & drop / paste",
       "selectImages": "Select Images",
-      "imageConstraints": "(Min: 1, Max: 5)",
+      "imageConstraints": "(Min: 1, Max: 10)",
       "imagesUploaded": "{count} of {max} images uploaded",
       "uploading": "Uploading...",
       "creatingEquipment": "Creating Equipment...",
@@ -521,7 +522,7 @@
       "brandPlaceholder": "e.g., Caterpillar, Komatsu, Volvo",
       "model": "Model",
       "modelPlaceholder": "e.g., 320D, PC200",
-      "year": "Year",
+      "year": "Year of Manufacturing",
       "yearPlaceholder": "e.g., 2020",
       "usage": "Usage",
       "equipmentUsage": "Total Usage",
@@ -553,14 +554,24 @@
       "manageSubtitle": "View and manage all equipment listings",
       "createdByAdmin": "Created by Admin",
       "pending": "Pending",
+      "pendingVerification": "Pending Admin Verification",
       "approved": "Approved",
       "rejected": "Rejected",
+      "rejectionReason": "Rejection Reason",
+      "resubmit": "Resubmit for Approval",
+      "resubmitting": "Resubmitting...",
+      "editBeforeResubmit": "Please edit equipment before resubmitting",
+      "cannotEditCoreFields": "Cannot edit location, category, or equipment type. These are locked fields.",
+      "provideRejectionReason": "Please provide a reason for rejection",
+      "rejectionReasonPlaceholder": "Explain why this equipment is being rejected...",
+      "resubmitSuccess": "Equipment resubmitted successfully",
+      "resubmitFailed": "Failed to resubmit equipment",
+      "retired": "Retired",
       "status": "Status",
       "actions": "Actions",
       "createdAt": "Created Date",
       "loading": "Loading...",
       "editTitle": "Edit Equipment",
-      "editSubtitle": "Update equipment details",
       "updateEquipment": "Update Equipment",
       "updatingEquipment": "Updating Equipment...",
       "supplierInfo": "Supplier",
@@ -587,11 +598,27 @@
       "equipmentApproved": "Equipment approved successfully",
       "equipmentRejected": "Equipment rejected successfully",
       "availabilityUpdated": "Availability updated successfully",
+      "cannotEditActiveBooking": "Cannot edit - equipment has active bookings or pending sale",
       "confirmApproveTitle": "Approve Equipment",
       "confirmApproveMessage": "Approve this equipment?",
       "confirmRejectTitle": "Reject Equipment",
-      "confirmRejectMessage": "Reject this equipment?",
+      "confirmRejectMessage": "Provide a reason for rejecting this equipment",
       "sold": "Sold",
+      "retired": "Retired",
+      "pricingUpdateRequest": "Pricing Update",
+      "pricingPendingApproval": "Pricing update pending admin approval",
+      "reviewPricingRequest": "Review Pricing Request",
+      "currentPricing": "Current Pricing",
+      "requestedPricing": "Requested Pricing",
+      "rejectPricing": "Reject",
+      "confirmReject": "Confirm Reject",
+      "approvePricing": "Approve & Update",
+      "pricingApproved": "Pricing approved",
+      "pricingRejected": "Pricing Rejected",
+      "pricingRejectionReason": "Pricing Rejection Reason",
+      "viewRejectionReason": "View Rejection Reason",
+      "pricingUpdateRejectedMessage": "Your pricing update has been rejected for the following reason:",
+      "processingRequest": "Processing...",
       "noEquipmentFound": "No equipment found",
       "searchPlaceholder": "Search by name or location...",
       "filters": {
@@ -599,7 +626,9 @@
         "allTypes": "All Types",
         "allAvailability": "All",
         "allLocations": "All Locations"
-      }
+      },
+      "activeBookingWarning": "Active Bookings Warning",
+      "activeBookingWarningMessage": "This equipment has active bookings. Editing may affect ongoing rentals. Please proceed with caution."
     },
     "pages": {
       "equipment": {
@@ -607,32 +636,25 @@
         "subtitle": "View and manage all equipment listings"
       },
       "analytics": {
-        "title": "Analytics",
-        "subtitle": "View platform statistics "
+        "title": "Analytics"
       },
       "bookings": {
-        "title": "Bookings",
-        "subtitle": "Manage rental bookings and requests"
+        "title": "Bookings"
       },
       "sales": {
-        "title": "Sales Orders",
-        "subtitle": "Manage equipment sales and purchases"
+        "title": "Sales Orders"
       },
       "users": {
-        "title": "Users",
-        "subtitle": "Manage platform users and suppliers"
+        "title": "Users"
       },
       "profile": {
-        "title": "Profile",
-        "subtitle": "Manage your account settings and information"
+        "title": "Profile"
       },
       "requests": {
-        "title": "Rental Requests",
-        "subtitle": "Track your rental requests and status"
+        "title": "Rental Requests"
       },
       "settings": {
-        "title": "Settings",
-        "subtitle": "Configure platform settings and preferences"
+        "title": "Settings"
       }
     },
     "users": {
@@ -794,7 +816,8 @@
         "equipment": "Equipment",
         "usage": "Usage",
         "total": "Total",
-        "commission": "Commission",
+        "estimatedTotal": "Estimated Total",
+        "commission": "Commission (10%)",
         "status": "Status",
         "date": "Date",
         "actions": "Actions"
@@ -810,7 +833,9 @@
         "cancel": "Cancel",
         "close": "Close",
         "save": "Save Changes",
-        "saving": "Saving..."
+        "saving": "Saving...",
+        "update": "Update",
+        "updating": "Updating..."
       },
       "details": {
         "title": "Booking Details",
@@ -891,7 +916,10 @@
         "cancel": "Cancel",
         "close": "Close",
         "save": "Save Changes",
-        "saving": "Saving..."
+        "saving": "Saving...",
+        "update":" Update",
+        "updating":"Updating...",
+        "updateSale": "Update Sale"
       },
       "details": {
         "title": "Sale Order Details",
@@ -980,10 +1008,31 @@
     "successPending": "Booking successful! Pending approval. Check My Bookings for updates or contact us.",
     "viewBookings": "View My Bookings",
     "error": "Failed to send booking request. Please try again.",
+    "hour": "hour",
     "hours": "hours",
+    "day": "day",
     "days": "days",
+    "month": "month",
+    "months": "months",
     "km": "km",
+    "ton": "ton",
     "tons": "tons",
-    "months": "months"
+    "transportRequired": "Transport Required",
+    "transportOptional": "Transport (Optional)",
+    "addTransport": "Add transport service",
+    "porteChar": "Porte-Char",
+    "viewDetails": "View Details",
+    "changePorteChar": "Change Porte-Char",
+    "selectPorteChar": "Select Porte-Char",
+    "otherSuppliers": "Other Suppliers",
+    "estimatedDistance": "Estimated Distance",
+    "ratePerKm": "per km",
+    "transportCost": "Transport Cost",
+    "costBreakdown": "Cost Breakdown",
+    "equipment": "Equipment",
+    "transport": "Transport",
+    "noTransportAvailable": "No transport available",
+    "contactPlatform": "Please contact the platform for assistance",
+    "confirmSelection": "Confirm Selection"
   }
 }

@@ -1,13 +1,8 @@
-import { connectDB } from './mongodb'
-import { UpdateType } from './realtime'
+import { sseManager, UpdateType } from './sse-manager'
 
 export async function triggerRealtimeUpdate(type: UpdateType) {
   try {
-    const db = await connectDB()
-    await db.collection('realtime_updates').insertOne({
-      type,
-      timestamp: new Date(),
-    })
+    sseManager.broadcast(type)
   } catch (error) {
     console.error('Failed to trigger realtime update:', error)
   }

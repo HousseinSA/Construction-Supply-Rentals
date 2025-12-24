@@ -18,7 +18,7 @@ interface BookingsStore {
   invalidateCache: () => void
 }
 
-const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
+const CACHE_DURATION = 5 * 60 * 1000 
 
 export const useBookingsStore = create<BookingsStore>((set, get) => ({
   bookings: [],

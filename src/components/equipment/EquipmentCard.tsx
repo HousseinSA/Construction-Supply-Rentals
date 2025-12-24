@@ -10,6 +10,7 @@ import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
 import { useFontClass } from "@/src/hooks/useFontClass"
 import { useCityData } from "@/src/hooks/useCityData"
 import { getEquipmentImage } from "@/src/lib/equipment-images"
+import { getOptimizedCloudinaryUrl, getBlurDataURL } from "@/src/lib/cloudinary-url"
 import Button from "../ui/Button"
 import BookingModal from "../booking/BookingModal"
 import SaleModal from "../booking/SaleModal"
@@ -76,7 +77,8 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
     e.preventDefault()
     e.stopPropagation()
     if (!session) {
-      router.push("/auth/login")
+      const currentPath = `/equipment/${equipment._id}`
+      router.push(`/auth/login?callbackUrl=${encodeURIComponent(currentPath)}`)
       return
     }
     if (session.user.role === "admin") {
@@ -105,7 +107,7 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
           : isForSale
           ? "border-amber-400 ring-2 ring-amber-400/30"
           : "border-gray-100 hover:border-primary/20"
-      } group ${fontClass} ${isNavigating ? 'pointer-events-none opacity-75' : ''}`}
+      } group ${fontClass} ${isNavigating ? 'pointer-events-none' : ''}`}
     >
       <div
         className="h-48 sm:h-52 relative overflow-hidden cursor-pointer"
@@ -114,12 +116,22 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
         <Image
           src={
             equipment.images?.length > 0
-              ? equipment.images[0]
+              ? getOptimizedCloudinaryUrl(equipment.images[0], {
+                  width: 600,
+                  height: 400,
+                  quality: 'auto:good',
+                  format: 'auto',
+                  crop: 'fill'
+                })
               : getEquipmentImage(equipment.name)
           }
           alt={equipment.name}
           fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="object-cover bg-gray-50"
+          placeholder={equipment.images?.length > 0 ? "blur" : "empty"}
+          blurDataURL={equipment.images?.length > 0 ? getBlurDataURL(equipment.images[0]) : undefined}
+          loading="lazy"
         />
         {isOwnEquipment && (
           <div className="absolute top-2 right-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
@@ -177,7 +189,7 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
         </div>
         <div className="space-y-2.5 mt-auto border-t border-gray-100 pt-3">
           {!isForSale && (
-            <div className="flex items-baseline justify-around gap-3 text-sm">
+            <div className="flex items-baseline justify-around gap-3 text-sm flex-wrap">
               {equipment.pricing.hourlyRate && (
                 <div className="flex items-baseline gap-1">
                   <span className="font-bold text-primary" dir="ltr">
@@ -192,6 +204,14 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
                     {equipment.pricing.dailyRate.toLocaleString()} MRU
                   </span>
                   <span className="text-xs text-gray-500">/{tCommon("day")}</span>
+                </div>
+              )}
+              {equipment.pricing.kmRate && (
+                <div className="flex items-baseline gap-1">
+                  <span className="font-bold text-primary" dir="ltr">
+                    {equipment.pricing.kmRate.toLocaleString()} MRU
+                  </span>
+                  <span className="text-xs text-gray-500">/{tCommon("km")}</span>
                 </div>
               )}
             </div>

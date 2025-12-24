@@ -15,23 +15,18 @@ export async function GET(request: Request) {
       equipmentByCity,
       topSuppliers
     ] = await Promise.all([
-      // Basic counts - exclude admins
       db.collection('users').countDocuments({ userType: { $ne: 'admin' } }),
       db.collection('equipment').countDocuments(),
       
-      // User growth - exclude admins
       db.collection('users').countDocuments({ createdAt: { $gte: thirtyDaysAgo }, userType: { $ne: 'admin' } }),
       
-      // Equipment status - using isAvailable field
       db.collection('equipment').countDocuments({ isAvailable: true }),
       
-      // User type distribution
       db.collection('users').aggregate([
         { $match: { userType: { $in: ['supplier', 'renter'] } } },
         { $group: { _id: '$userType', count: { $sum: 1 } } }
       ]).toArray(),
       
-      // Equipment by city
       db.collection('equipment').aggregate([
         { $match: { location: { $exists: true, $ne: null, $ne: '' } } },
         { $group: { _id: '$location', count: { $sum: 1 } } },
@@ -39,7 +34,6 @@ export async function GET(request: Request) {
         { $limit: 10 }
       ]).toArray(),
       
-      // Top 3 suppliers by equipment count
       db.collection('users').aggregate([
         { $match: { userType: 'supplier' } },
         {
@@ -70,7 +64,6 @@ export async function GET(request: Request) {
     ])
 
     return NextResponse.json({
-      // Overview metrics
       overview: {
         totalUsers,
         totalEquipment,
@@ -78,7 +71,6 @@ export async function GET(request: Request) {
         newUsersThisMonth
       },
       
-      // Distribution data
       usersByRole: usersByRole.reduce((acc, item) => {
         acc[item._id] = item.count
         return acc

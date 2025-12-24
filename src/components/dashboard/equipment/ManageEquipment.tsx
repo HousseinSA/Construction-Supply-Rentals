@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { useSession } from "next-auth/react"
 import { AlertTriangle, CheckCircle } from "lucide-react"
@@ -9,7 +10,10 @@ import { useEquipmentActions } from "@/src/hooks/useEquipmentActions"
 import EquipmentList from "./EquipmentList"
 import DashboardPageHeader from "../DashboardPageHeader"
 import ConfirmModal from "../../ui/ConfirmModal"
+import RejectionModal from "./RejectionModal"
 import TableFilters from "../../ui/TableFilters"
+import PricingReviewModal from "./PricingReviewModal"
+import { showToast } from "@/src/lib/toast"
 
 export default function ManageEquipment() {
   const { data: session } = useSession()
@@ -52,6 +56,36 @@ export default function ManageEquipment() {
     handleNavigation,
   } = useEquipmentActions(handleStatusChange, handleAvailabilityChange, t)
 
+  const [pricingReviewModal, setPricingReviewModal] = useState<any>(null)
+  const [rejectionModal, setRejectionModal] = useState<{ isOpen: boolean; equipmentId: string | null }>({ isOpen: false, equipmentId: null })
+
+  const handleReject = async (reason: string) => {
+    if (!rejectionModal.equipmentId) return
+    const success = await handleStatusChange(rejectionModal.equipmentId, "rejected", reason)
+    if (success) {
+      setRejectionModal({ isOpen: false, equipmentId: null })
+    }
+  }
+
+  const handleResubmit = async (id: string) => {
+    try {
+      const response = await fetch(`/api/equipment/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "resubmit" }),
+      })
+      const data = await response.json()
+      if (response.ok) {
+        showToast.success(t("resubmitSuccess"))
+        window.location.reload()
+      } else {
+        showToast.error(data.error || t("resubmitFailed"))
+      }
+    } catch (error) {
+      showToast.error(t("resubmitFailed"))
+    }
+  }
+
   if (!session?.user || (!isAdmin && !isSupplier)) {
     return null
   }
@@ -61,7 +95,6 @@ export default function ManageEquipment() {
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         <DashboardPageHeader
           title={t("manageTitle")}
-          subtitle={t("manageSubtitle")}
         />
 
         {hasEquipment && (
@@ -132,10 +165,18 @@ export default function ManageEquipment() {
               totalPages={totalPages}
               totalItems={totalItems}
               itemsPerPage={itemsPerPage}
-              onStatusChange={openConfirmModal}
+              onStatusChange={(id, action, reason) => {
+                if (action === "reject") {
+                  setRejectionModal({ isOpen: true, equipmentId: id })
+                } else {
+                  openConfirmModal(id, action)
+                }
+              }}
               onAvailabilityChange={handleAvailabilityChangeWithToast}
               onNavigate={handleNavigation}
               onPageChange={goToPage}
+              onPricingReview={(item) => setPricingReviewModal(item)}
+              onResubmit={handleResubmit}
               t={t}
               isSupplier={isSupplier}
             />
@@ -171,6 +212,29 @@ export default function ManageEquipment() {
             confirmModal.action === "approve" ? "bg-gray-100" : "bg-red-100"
           }
           isLoading={updating === confirmModal.equipmentId}
+        />
+
+        {pricingReviewModal && (
+          <PricingReviewModal
+            equipmentId={pricingReviewModal._id?.toString()}
+            equipmentName={pricingReviewModal.name}
+            currentPricing={pricingReviewModal.pricing}
+            pendingPricing={pricingReviewModal.pendingPricing}
+            onClose={() => setPricingReviewModal(null)}
+            onSuccess={() => window.location.reload()}
+          />
+        )}
+
+        <RejectionModal
+          isOpen={rejectionModal.isOpen}
+          onClose={() => setRejectionModal({ isOpen: false, equipmentId: null })}
+          onConfirm={handleReject}
+          title={t("confirmRejectTitle")}
+          message={t("confirmRejectMessage")}
+          confirmText={t("reject")}
+          cancelText={tCommon("cancel")}
+          placeholder={t("rejectionReasonPlaceholder")}
+          isLoading={updating === rejectionModal.equipmentId}
         />
       </div>
     </div>

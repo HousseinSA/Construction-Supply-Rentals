@@ -17,10 +17,8 @@ export async function POST(req: NextRequest) {
       location 
     } = body
 
-    // Normalize email
     email = email?.trim().toLowerCase()
 
-    // Required fields validation
     if (!firstName?.trim()) {
       return NextResponse.json({ error: "First name is required" }, { status: 400 })
     }
@@ -45,7 +43,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "User type must be renter or supplier" }, { status: 400 })
     }
 
-    // Supplier-specific validation
     if (userType === "supplier") {
       if (!companyName?.trim()) {
         return NextResponse.json({ error: "Company name is required for suppliers" }, { status: 400 })
@@ -57,19 +54,16 @@ export async function POST(req: NextRequest) {
 
     const db = await connectDB()
     
-    // Check if email already exists
     const existingUserByEmail = await db.collection(COLLECTIONS.USERS).findOne({ email })
     if (existingUserByEmail) {
       return NextResponse.json({ error: "emailAlreadyExists" }, { status: 409 })
     }
 
-    // Check if phone already exists
     const existingUserByPhone = await db.collection(COLLECTIONS.USERS).findOne({ phone: phone.replace(/\s+/g, '') })
     if (existingUserByPhone) {
       return NextResponse.json({ error: "phoneAlreadyExists" }, { status: 409 })
     }
 
-    // Create user document
     const userData = {
       email,
       username: email.split("@")[0],

@@ -38,12 +38,10 @@ export default function CalendarDatePicker({ startDate, endDate, onDateChange, p
 
     const days = []
     
-    // Add empty cells for days before the first day of the month
     for (let i = 0; i < startingDayOfWeek; i++) {
       days.push(null)
     }
     
-    // Add days of the month
     for (let day = 1; day <= daysInMonth; day++) {
       days.push(new Date(year, month, day))
     }
@@ -53,12 +51,10 @@ export default function CalendarDatePicker({ startDate, endDate, onDateChange, p
 
   const handleDateClick = (date: Date) => {
     if (!selectedStart || (selectedStart && selectedEnd)) {
-      // Start new selection
       setSelectedStart(date)
       setSelectedEnd(null)
       setIsSelectingEnd(true)
     } else if (selectedStart && !selectedEnd) {
-      // Select end date
       if (date >= selectedStart) {
         setSelectedEnd(date)
         setIsSelectingEnd(false)
@@ -136,7 +132,6 @@ export default function CalendarDatePicker({ startDate, endDate, onDateChange, p
             </button>
           </div>
 
-          {/* Days of week */}
           <div className="grid grid-cols-7 gap-1 mb-2">
             {dayNames[locale as keyof typeof dayNames].map(day => (
               <div key={day} className="text-center text-sm font-medium text-gray-500 p-2">
@@ -145,7 +140,6 @@ export default function CalendarDatePicker({ startDate, endDate, onDateChange, p
             ))}
           </div>
 
-          {/* Calendar Days */}
           <div className="grid grid-cols-7 gap-1 mb-4">
             {getDaysInMonth(currentMonth).map((date, index) => (
               <div key={index} className="aspect-square">
@@ -167,7 +161,6 @@ export default function CalendarDatePicker({ startDate, endDate, onDateChange, p
             ))}
           </div>
 
-          {/* Action Buttons */}
           <div className="flex justify-between">
             <button
               onClick={handleClear}

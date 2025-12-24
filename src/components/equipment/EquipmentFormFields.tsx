@@ -8,6 +8,7 @@ import CityDropdown from "../ui/CityDropdown"
 import ConditionDropdown from "../ui/ConditionDropdown"
 import UsageInput from "../ui/UsageInput"
 import ImageUpload from "../ui/ImageUpload"
+import YearPicker from "../ui/YearPicker"
 import { UploadedImage } from "@/src/hooks/useEquipmentForm"
 
 interface EquipmentFormFieldsProps {
@@ -45,6 +46,11 @@ interface EquipmentFormFieldsProps {
   onUsageUnitChange: (value: string) => void
   onImagesChange: (images: UploadedImage[]) => void
   onNumericInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  isAdmin?: boolean
+  equipmentCreatedBy?: "admin" | "supplier"
+  hasPendingPricing?: boolean
+  isEditMode?: boolean
+  hasActiveBookings?: boolean
 }
 
 export default function EquipmentFormFields({
@@ -60,9 +66,16 @@ export default function EquipmentFormFields({
   onUsageUnitChange,
   onImagesChange,
   onNumericInputChange,
+  isAdmin = true,
+  equipmentCreatedBy = "supplier",
+  hasPendingPricing = false,
+  isEditMode = false,
+  hasActiveBookings = false,
 }: EquipmentFormFieldsProps) {
   const t = useTranslations("dashboard.equipment")
   const [pricingTypes, setPricingTypes] = useState<string[]>([])
+  
+  const shouldLockFields = isEditMode && !isAdmin
 
   useEffect(() => {
     if (formData.type) {
@@ -74,16 +87,29 @@ export default function EquipmentFormFields({
 
   return (
     <>
+      {isAdmin && hasActiveBookings && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+          <div className="flex items-start gap-3">
+            <span className="text-2xl">⚠️</span>
+            <div>
+              <h4 className="font-semibold text-yellow-900 mb-1">{t("activeBookingWarning")}</h4>
+              <p className="text-sm text-yellow-800">{t("activeBookingWarningMessage")}</p>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <CategoryDropdown
           value={formData.category}
           onChange={onCategoryChange}
+          disabled={shouldLockFields}
         />
 
         <EquipmentTypeDropdown
           category={formData.category}
           value={formData.type}
           onChange={onTypeChange}
+          disabled={isEditMode && !isAdmin}
         />
 
         <Input
@@ -103,21 +129,23 @@ export default function EquipmentFormFields({
           placeholder={t("modelPlaceholder")}
         />
 
-        <Input
+        <YearPicker
           label={t("year")}
-          name="year"
-          type="text"
           value={formData.year}
-          onChange={onNumericInputChange}
+          onChange={(year) => {
+            const event = {
+              target: { name: "year", value: year },
+            } as React.ChangeEvent<HTMLInputElement>
+            onInputChange(event)
+          }}
           placeholder={t("yearPlaceholder")}
         />
 
-        {formData.listingType === "forSale" && (
-          <ConditionDropdown
-            value={formData.condition}
-            onChange={onConditionChange}
-          />
-        )}
+        <ConditionDropdown
+          value={formData.condition}
+          onChange={onConditionChange}
+          required={formData.listingType === "forSale"}
+        />
 
         {!(
           formData.listingType === "forSale" && formData.condition === "new"
@@ -140,7 +168,11 @@ export default function EquipmentFormFields({
           onUnitChange={onWeightUnitChange}
           placeholder={t("weightPlaceholder")}
         />
-        <CityDropdown value={formData.location} onChange={onLocationChange} />
+        <CityDropdown 
+          value={formData.location} 
+          onChange={onLocationChange} 
+          disabled={shouldLockFields} 
+        />
       </div>
 
       {formData.listingType === "forSale" ? (
@@ -153,11 +185,12 @@ export default function EquipmentFormFields({
             onChange={onNumericInputChange}
             placeholder="50000"
             required
+            disabled={false}
           />
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {pricingTypes.includes("hourly") && (
+          {(pricingTypes.includes("hourly") || pricingTypes.length === 0) && (
             <Input
               label={t("hourlyRate")}
               name="hourlyRate"
@@ -165,9 +198,10 @@ export default function EquipmentFormFields({
               value={formData.hourlyRate}
               onChange={onNumericInputChange}
               placeholder="500"
+              disabled={false}
             />
           )}
-          {pricingTypes.includes("daily") && (
+          {(pricingTypes.includes("daily") || pricingTypes.length === 0) && (
             <Input
               label={t("dailyRate")}
               name="dailyRate"
@@ -175,6 +209,7 @@ export default function EquipmentFormFields({
               value={formData.dailyRate}
               onChange={onNumericInputChange}
               placeholder="5000"
+              disabled={false}
             />
           )}
           {pricingTypes.includes("per_km") && (
@@ -185,6 +220,7 @@ export default function EquipmentFormFields({
               value={formData.kmRate}
               onChange={onNumericInputChange}
               placeholder="50"
+              disabled={false}
             />
           )}
           {pricingTypes.includes("per_ton") && (
@@ -195,6 +231,7 @@ export default function EquipmentFormFields({
               value={formData.tonRate}
               onChange={onNumericInputChange}
               placeholder="100"
+              disabled={false}
             />
           )}
         </div>
@@ -226,7 +263,7 @@ export default function EquipmentFormFields({
         <ImageUpload
           images={images}
           onImagesChange={onImagesChange}
-          maxImages={5}
+          maxImages={10}
           disabled={isSubmitting}
         />
       </div>

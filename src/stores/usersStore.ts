@@ -11,7 +11,7 @@ interface UsersStore {
   shouldRefetch: () => boolean
 }
 
-const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
+const CACHE_DURATION = 5 * 60 * 1000 
 
 export const useUsersStore = create<UsersStore>((set, get) => ({
   users: [],

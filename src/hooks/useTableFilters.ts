@@ -21,7 +21,6 @@ export function useTableFilters<T>({
   const filteredData = useMemo(() => {
     let result = [...data]
 
-    // Apply search filter
     if (searchValue.trim()) {
       const searchLower = searchValue.toLowerCase()
       
@@ -30,7 +29,6 @@ export function useTableFilters<T>({
       } else {
         result = result.filter((item) =>
           searchFields.some((field) => {
-            // Handle nested fields (e.g., "renterInfo.firstName")
             const fieldPath = String(field).split('.')
             let value: any = item
             
@@ -39,7 +37,6 @@ export function useTableFilters<T>({
               value = value[key]
             }
             
-            // Handle arrays (e.g., supplierInfo array)
             if (Array.isArray(value)) {
               return value.some(v => String(v).toLowerCase().includes(searchLower))
             }
@@ -51,7 +48,6 @@ export function useTableFilters<T>({
       }
     }
 
-    // Apply custom filters
     Object.entries(filterValues).forEach(([key, value]) => {
       if (value && value !== "all" && filterFunctions[key]) {
         result = result.filter((item) => filterFunctions[key](item, value))

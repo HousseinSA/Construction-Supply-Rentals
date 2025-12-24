@@ -44,14 +44,26 @@ export function useImageUpload({
     }
 
     const maxSize = 10 * 1024 * 1024
-    const oversizedFiles = Array.from(files).filter((file) => file.size > maxSize)
-    if (oversizedFiles.length > 0) {
-      toast.error(tToast("imageTooLarge"))
-      return
+    const validFiles: File[] = []
+    
+    for (const file of Array.from(files)) {
+      if (file.size > maxSize) {
+        toast.error(tToast("imageTooLarge"))
+        continue
+      }
+      
+      if (!file.type.startsWith('image/')) {
+        toast.error(tToast("invalidFileType"))
+        continue
+      }
+      
+      validFiles.push(file)
     }
 
+    if (validFiles.length === 0) return
+
     setUploading(true)
-    const uploadPromises = Array.from(files).map(async (file) => {
+    const uploadPromises = validFiles.map(async (file) => {
       const formData = new FormData()
       formData.append("file", file)
 

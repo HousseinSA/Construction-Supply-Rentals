@@ -22,12 +22,9 @@ export default function SettingsPageClient() {
                 <ArrowLeft className="h-5 w-5 text-gray-600" />
               </Link>
               <div className="flex-1">
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                <h1 className="text-2xl font-bold text-primary">
                   {t("title")}
                 </h1>
-                <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
-                  {t("subtitle")}
-                </p>
               </div>
             </div>
             <HomeButton />

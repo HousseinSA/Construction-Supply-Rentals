@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/src/lib/auth"
 import { connectDB } from "@/src/lib/mongodb"
 import { ObjectId } from "mongodb"
 import { validateBooking } from "@/src/lib/validation"
@@ -11,24 +13,23 @@ import {
 } from "@/src/lib/booking-utils"
 import { BookingItem } from "@/src/lib/models/booking"
 
-// GET /api/bookings - Get bookings with renter/supplier details
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const renterId = searchParams.get('renterId')
+    const session = await getServerSession(authOptions)
+    if (!session?.user) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+    }
     
     const db = await connectDB()
 
     const pipeline: any[] = []
     
-    // Filter by renterId if provided (for renter users)
-    if (renterId) {
+    if (session.user.role !== 'admin') {
       pipeline.push({
-        $match: { renterId: new ObjectId(renterId) }
+        $match: { renterId: new ObjectId(session.user.id) }
       })
     }
 
-    // Always add renter lookup
     pipeline.push({
       $lookup: {
         from: "users",
@@ -38,8 +39,7 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    // Only add supplier lookup for admin/supplier views (renters don't see suppliers)
-    if (!renterId) {
+    if (session.user.role === 'admin') {
       pipeline.push(
         {
           $addFields: {
@@ -76,7 +76,6 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Add equipment images and creation info lookup
     pipeline.push(
       {
         $addFields: {
@@ -206,6 +205,7 @@ export async function POST(request: NextRequest) {
 
     const bookingItems: BookingItem[] = []
     let totalPrice = 0
+    let transportCost = 0
 
     for (const item of body.bookingItems) {
       const equipmentId = new ObjectId(item.equipmentId)
@@ -238,25 +238,40 @@ export async function POST(request: NextRequest) {
       totalPrice += subtotal
     }
 
-    // Create booking (no dates)
+    let transportDetails = null
+    if (body.transportDetails) {
+      transportDetails = {
+        porteCharId: new ObjectId(body.transportDetails.porteCharId),
+        porteCharName: body.transportDetails.porteCharName,
+        supplierId: body.transportDetails.supplierId ? new ObjectId(body.transportDetails.supplierId) : null,
+        supplierName: body.transportDetails.supplierName || null,
+        distance: body.transportDetails.distance,
+        ratePerKm: body.transportDetails.ratePerKm,
+        transportCost: body.transportDetails.transportCost,
+      }
+      transportCost = transportDetails.transportCost
+    }
+
+    const grandTotal = totalPrice + transportCost
+
     const referenceNumber = await generateReferenceNumber('booking')
     const result = await db.collection("bookings").insertOne({
       referenceNumber,
       renterId: new ObjectId(body.renterId),
       bookingItems,
       totalPrice,
+      transportDetails,
+      grandTotal,
       status: "pending",
       renterMessage: body.renterMessage || "",
       createdAt: new Date(),
       updatedAt: new Date(),
     })
 
-    // Send email to admin
     const adminEmail = process.env.ADMIN_EMAIL
     if (adminEmail) {
       const renter = await db.collection('users').findOne({ _id: new ObjectId(body.renterId) })
       
-      // Get supplier details for each booking item
       const suppliers = await Promise.all(
         bookingItems.map(async (item) => {
           if (!item.supplierId) return null;
@@ -314,7 +329,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// PUT /api/bookings - Update booking status
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json()
@@ -332,7 +346,6 @@ export async function PUT(request: NextRequest) {
 
     const db = await connectDB()
     
-    // Validate cancellation policy: Only pending orders can be cancelled by clients
     if (status === 'cancelled' && !adminId) {
       const booking = await db.collection('bookings').findOne({ _id: new ObjectId(bookingId) })
       if (booking && booking.status !== 'pending') {
@@ -346,7 +359,6 @@ export async function PUT(request: NextRequest) {
       }
     }
     
-    // If client is cancelling, send email to admin
     if (status === 'cancelled' && !adminId) {
       const booking = await db.collection('bookings').findOne({ _id: new ObjectId(bookingId) })
       

@@ -25,7 +25,6 @@ export default function BookingMobileCard({ booking, onViewDetails, t, highlight
   const totalUsage = booking.bookingItems.reduce((sum, item) => sum + item.usage, 0)
   const usageUnit = booking.bookingItems[0]?.usageUnit || ""
   
-  // Translate usage unit
   const getTranslatedUnit = (unit: string) => {
     const unitMap: Record<string, string> = {
       'hours': tCommon('hour'),

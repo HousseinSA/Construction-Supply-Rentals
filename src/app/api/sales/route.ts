@@ -16,34 +16,32 @@ export async function GET(request: NextRequest) {
       pipeline.push({ $match: { buyerId: new ObjectId(buyerId) } })
     }
 
-    if (!buyerId) {
-      pipeline.push(
-        {
-          $lookup: {
-            from: "users",
-            localField: "buyerId",
-            foreignField: "_id",
-            as: "buyerInfo",
-          },
+    pipeline.push(
+      {
+        $lookup: {
+          from: "users",
+          localField: "buyerId",
+          foreignField: "_id",
+          as: "buyerInfo",
         },
-        {
-          $lookup: {
-            from: "users",
-            localField: "supplierId",
-            foreignField: "_id",
-            as: "supplierInfo",
-          },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "supplierId",
+          foreignField: "_id",
+          as: "supplierInfo",
         },
-        {
-          $lookup: {
-            from: "equipment",
-            localField: "equipmentId",
-            foreignField: "_id",
-            as: "equipmentInfo",
-          },
-        }
-      )
-    }
+      },
+      {
+        $lookup: {
+          from: "equipment",
+          localField: "equipmentId",
+          foreignField: "_id",
+          as: "equipmentInfo",
+        },
+      }
+    )
 
     pipeline.push({ $sort: { createdAt: -1 } })
 
@@ -65,7 +63,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { buyerId, equipmentId, buyerMessage } = body
+    const { buyerId, equipmentId, buyerMessage, transportDetails } = body
 
     if (!buyerId || !equipmentId) {
       return NextResponse.json(
@@ -94,7 +92,24 @@ export async function POST(request: NextRequest) {
     }
 
     const salePrice = equipment.pricing?.salePrice || 0
-    const commission = salePrice * 0.05 // 5% fixed commission
+    const commission = salePrice * 0.05
+    
+    let transportData = null
+    let transportCost = 0
+    if (transportDetails) {
+      transportData = {
+        porteCharId: new ObjectId(transportDetails.porteCharId),
+        porteCharName: transportDetails.porteCharName,
+        supplierId: transportDetails.supplierId ? new ObjectId(transportDetails.supplierId) : null,
+        supplierName: transportDetails.supplierName || null,
+        distance: transportDetails.distance,
+        ratePerKm: transportDetails.ratePerKm,
+        transportCost: transportDetails.transportCost,
+      }
+      transportCost = transportData.transportCost
+    }
+    
+    const grandTotal = salePrice + transportCost
     const referenceNumber = await generateReferenceNumber('sale')
 
     const result = await db.collection("sales").insertOne({
@@ -105,6 +120,8 @@ export async function POST(request: NextRequest) {
       equipmentName: equipment.name,
       salePrice,
       commission,
+      transportDetails: transportData,
+      grandTotal,
       status: "pending",
       buyerMessage: buyerMessage || "",
       createdAt: new Date(),
@@ -117,7 +134,6 @@ export async function POST(request: NextRequest) {
         .collection("users")
         .findOne({ _id: new ObjectId(buyerId) })
       
-      // Get supplier details if available
       let supplierName, supplierPhone;
       if (equipment.supplierId) {
         const supplier = await db.collection("users").findOne({ _id: equipment.supplierId })
@@ -169,7 +185,6 @@ export async function PUT(request: NextRequest) {
 
     const db = await connectDB()
     
-    // Validate cancellation policy: Only pending sales can be cancelled by buyers
     if (status === 'cancelled' && !adminId) {
       const sale = await db.collection('sales').findOne({ _id: new ObjectId(saleId) })
       if (sale && sale.status !== 'pending') {
@@ -183,7 +198,6 @@ export async function PUT(request: NextRequest) {
       }
     }
     
-    // If buyer is cancelling, send email to admin
     if (status === 'cancelled' && !adminId) {
       const sale = await db.collection('sales').findOne({ _id: new ObjectId(saleId) })
       

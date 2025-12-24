@@ -1,6 +1,6 @@
 import { useEffect, useCallback } from 'react'
 import { useUsersStore } from '@/src/stores/usersStore'
-import { useRealtime } from './useRealtime'
+import { useSSE } from './useSSE'
 
 export function useUsers() {
   const { users, loading, setUsers, setLoading, updateUser, shouldRefetch } = useUsersStore()
@@ -38,7 +38,7 @@ export function useUsers() {
     }
   }
 
-  useRealtime('user', useCallback(() => {
+  useSSE('user', useCallback(() => {
     fetchUsers()
   }, [fetchUsers]))
 

@@ -4,7 +4,14 @@ import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { PricingType } from "@/src/lib/types"
 
-export function useBookingModal(equipment: any, onSuccess?: () => void, onClose?: () => void, pricingType?: PricingType) {
+export function useBookingModal(
+  equipment: any,
+  onSuccess?: () => void,
+  onClose?: () => void,
+  pricingType?: PricingType,
+  selectedPorteChar?: any,
+  distance?: number
+) {
   const { data: session } = useSession()
   const t = useTranslations("booking")
   
@@ -23,14 +30,28 @@ export function useBookingModal(equipment: any, onSuccess?: () => void, onClose?
     
     setLoading(true)
     try {
+      const bookingData: any = {
+        renterId: session.user.id,
+        bookingItems: [{ equipmentId: equipment._id, usage, pricingType }],
+        renterMessage: message,
+      }
+
+      if (selectedPorteChar && distance && distance > 0) {
+        bookingData.transportDetails = {
+          porteCharId: selectedPorteChar._id,
+          porteCharName: selectedPorteChar.name,
+          supplierId: selectedPorteChar.supplierId,
+          supplierName: selectedPorteChar.supplierName,
+          distance,
+          ratePerKm: selectedPorteChar.pricing.kmRate,
+          transportCost: selectedPorteChar.pricing.kmRate * distance,
+        }
+      }
+
       const response = await fetch("/api/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          renterId: session.user.id,
-          bookingItems: [{ equipmentId: equipment._id, usage, pricingType }],
-          renterMessage: message,
-        }),
+        body: JSON.stringify(bookingData),
       })
       
       const data = await response.json()

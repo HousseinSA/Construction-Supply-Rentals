@@ -3,12 +3,11 @@ import { connectDB } from '@/src/lib/mongodb'
 import { ObjectId } from 'mongodb'
 import { triggerRealtimeUpdate } from '@/src/lib/realtime-trigger'
 
-// GET /api/users - Get all users
 export async function GET() {
   try {
     const db = await connectDB()
     const users = await db.collection('users').find({}, { 
-      projection: { password: 0 } // Exclude password from response
+      projection: { password: 0 } 
     }).toArray()
     
     return NextResponse.json({ 
@@ -24,7 +23,6 @@ export async function GET() {
   }
 }
 
-// PATCH /api/users - Update user status
 export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json()
@@ -70,12 +68,10 @@ export async function PATCH(request: NextRequest) {
   }
 }
 
-// POST /api/users - Create new user or check status
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     
-    // Handle status check for login
     if (body.action === 'checkStatus') {
       const { emailOrPhone, password } = body
       
@@ -107,7 +103,6 @@ export async function POST(request: NextRequest) {
       })
     }
     
-    // Handle user creation
     const { name, email, phone, role = 'customer' } = body
 
     if (!name || !email) {
@@ -119,7 +114,6 @@ export async function POST(request: NextRequest) {
 
     const db = await connectDB()
     
-    // Check if user already exists
     const existingUser = await db.collection('users').findOne({ email })
     if (existingUser) {
       return NextResponse.json({ 
@@ -132,7 +126,7 @@ export async function POST(request: NextRequest) {
       name,
       email,
       phone: phone || '',
-      role, // customer, admin
+      role,
       active: true,
       createdAt: new Date(),
       updatedAt: new Date()

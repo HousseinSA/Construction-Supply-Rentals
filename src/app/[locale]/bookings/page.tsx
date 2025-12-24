@@ -19,7 +19,7 @@ export default async function RenterBookingsPage({
     redirect(`/${locale}/auth/login`)
   }
 
-  if (session.user.userType !== "renter") {
+  if (session.user.role === "admin") {
     redirect(`/${locale}/dashboard`)
   }
 

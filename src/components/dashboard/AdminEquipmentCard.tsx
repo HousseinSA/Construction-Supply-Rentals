@@ -7,6 +7,7 @@ import { useCityData } from "@/src/hooks/useCityData"
 import Button from "../ui/Button"
 import { showToast } from "@/src/lib/toast"
 import Image from "next/image"
+import { getOptimizedCloudinaryUrl, getBlurDataURL } from "@/src/lib/cloudinary-url"
 
 interface EquipmentCardProps {
   equipment: {
@@ -34,6 +35,7 @@ interface EquipmentCardProps {
     isAvailable: boolean
     listingType: "forSale" | "forRent"
     createdBy: "admin" | "supplier"
+    hasActiveBookings?: boolean
     supplier?: {
       firstName: string
       lastName: string
@@ -129,12 +131,23 @@ export default function AdminEquipmentCard({ equipment }: EquipmentCardProps) {
         <div className="relative h-56 bg-gray-200">
           <Image
             src={
-              equipment.images[0] ||
-              "/equipement-images/default-fallback-image.png"
+              equipment.images[0]
+                ? getOptimizedCloudinaryUrl(equipment.images[0], {
+                    width: 600,
+                    height: 400,
+                    quality: 'auto:good',
+                    format: 'auto',
+                    crop: 'fill'
+                  })
+                : "/equipement-images/default-fallback-image.png"
             }
             fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             alt={equipment.name}
-            className="w-full h-full object-cover"
+            className="object-cover"
+            placeholder={equipment.images[0] ? "blur" : "empty"}
+            blurDataURL={equipment.images[0] ? getBlurDataURL(equipment.images[0]) : undefined}
+            loading="lazy"
           />
           {isAdminCreated && (
             <span className="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded">
@@ -231,14 +244,23 @@ export default function AdminEquipmentCard({ equipment }: EquipmentCardProps) {
             {/* Admin Created Equipment Actions */}
             {isAdminCreated && (
               <>
-                <Button
-                  variant="primary"
-                  size="card"
-                  className="w-full"
-                  onClick={handleEdit}
-                >
-                  {t("editEquipment")}
-                </Button>
+                <div className="relative group">
+                  <Button
+                    variant="primary"
+                    size="card"
+                    className="w-full"
+                    onClick={handleEdit}
+                    disabled={equipment.hasActiveBookings}
+                  >
+                    {t("editEquipment")}
+                  </Button>
+                  {equipment.hasActiveBookings && (
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                      {t("cannotEditActiveBooking")}
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+                    </div>
+                  )}
+                </div>
                 <div className="flex items-center justify-between bg-gray-50 p-2 rounded">
                   <span className="text-sm text-gray-700">
                     {t("availability")}:
@@ -318,7 +340,7 @@ export default function AdminEquipmentCard({ equipment }: EquipmentCardProps) {
 
       {/* Confirmation Modal */}
       {showConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/25 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl p-6 max-w-md w-full">
             <h3 className="text-lg font-semibold mb-4">{t("confirmAction")}</h3>
             <p className="text-gray-600 mb-6">

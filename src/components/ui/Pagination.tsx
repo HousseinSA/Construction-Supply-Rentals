@@ -69,16 +69,17 @@ export default function Pagination({
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 bg-white border-t border-gray-200">
       {showInfo && (
-        <div className="text-sm text-gray-700">
+        <div className="text-sm text-gray-700 order-2 sm:order-1">
           {getShowingText()}
         </div>
       )}
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 order-1 sm:order-2">
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="flex items-center justify-center w-8 h-8 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          aria-label="Previous page"
         >
           {isRTL ? (
             <ChevronRight className="w-4 h-4 text-gray-600" />
@@ -87,15 +88,15 @@ export default function Pagination({
           )}
         </button>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 flex-wrap justify-center">
           {getVisiblePages().map((page, index) => (
             <div key={index}>
               {page === "..." ? (
-                <span className="px-3 py-1 text-gray-500">...</span>
+                <span className="px-2 sm:px-3 py-1 text-gray-500 text-sm">...</span>
               ) : (
                 <button
                   onClick={() => onPageChange(page as number)}
-                  className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
+                  className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
                     currentPage === page
                       ? "bg-primary text-white"
                       : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
@@ -111,7 +112,8 @@ export default function Pagination({
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="flex items-center justify-center w-8 h-8 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          aria-label="Next page"
         >
           {isRTL ? (
             <ChevronLeft className="w-4 h-4 text-gray-600" />

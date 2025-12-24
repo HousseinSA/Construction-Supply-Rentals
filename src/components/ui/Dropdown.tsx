@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { ChevronDown } from "lucide-react"
+import { ChevronDown, Lock } from "lucide-react"
 import { useFontClass } from "@/src/hooks/useFontClass"
 
 interface DropdownOption {
@@ -62,7 +62,6 @@ export default function Dropdown({
     }
 
     const handleScroll = (event: Event) => {
-      // Don't close if scrolling inside the dropdown menu itself
       if (isOpen && menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsOpen(false)
       }
@@ -119,7 +118,7 @@ export default function Dropdown({
           transition-all duration-200 flex items-center justify-between
           ${
             disabled
-              ? "bg-gray-50 cursor-not-allowed"
+              ? "bg-gray-200 cursor-not-allowed text-gray-500 border-gray-300"
               : noBorder
               ? "cursor-pointer hover:bg-gray-50"
               : "hover:border-gray-400 cursor-pointer"
@@ -128,20 +127,26 @@ export default function Dropdown({
           ${noBorder && isOpen ? "bg-gray-50" : ""}
         `}
       >
-        <span className={selectedOption ? "text-gray-900" : "text-gray-500"}>
+        <span className={selectedOption && !disabled ? "text-gray-900" : "text-gray-500"}>
           {priceDisplay && selectedOption ? (
             <span dir="ltr">{selectedOption.label}</span>
           ) : (
             selectedOption ? selectedOption.label : placeholder
           )}
         </span>
-        <ChevronDown
-          className={`${
+        {disabled ? (
+          <Lock className={`${
             compact ? "h-4 w-4" : "h-5 w-5"
-          } text-gray-400 transition-transform duration-200 ${
-            isOpen ? "rotate-180" : ""
-          }`}
-        />
+          } text-gray-400`} />
+        ) : (
+          <ChevronDown
+            className={`${
+              compact ? "h-4 w-4" : "h-5 w-5"
+            } text-gray-400 transition-transform duration-200 ${
+              isOpen ? "rotate-180" : ""
+            }`}
+          />
+        )}
       </button>
 
       {isOpen && (

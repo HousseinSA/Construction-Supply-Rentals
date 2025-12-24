@@ -21,7 +21,8 @@
     "showingResults": "{start} من {total}",
     "admin": "الإدارة",
     "filters": "فلتر",
-    "applyFilters": "تطبيق الفلتر"
+    "applyFilters": "تطبيق الفلتر",
+    "clearFilters": "مسح الفلتر"
   },
   "quickSearch": {
     "button": "بحث",
@@ -216,7 +217,8 @@
       "selectDates": "اختر التواريخ"
     },
     "footer": {
-      "support": "الدعم والتواصل"
+      "support": "الدعم والتواصل",
+      "by": "من"
     },
     "whatsapp": {
       "tooltip": "تحتاج مساعدة؟ تواصل معنا!"
@@ -788,7 +790,8 @@
         "status": "الحالة",
         "date": "التاريخ",
         "actions": "الإجراءات",
-        "summary": "الملخص"
+        "summary": "الملخص",
+        "estimatedTotal": "الإجمالي المقدر"
       },
       "status": {
         "pending": "في الانتظار",
@@ -801,7 +804,9 @@
         "cancel": "إلغاء",
         "close": "إغلاق",
         "save": "حفظ التغييرات",
-        "saving": "جاري الحفظ..."
+        "saving": "جاري الحفظ...",
+        "update": "تحديث",
+        "updating": "جاري التحديث..."
       },
       "details": {
         "title": "تفاصيل الحجز",
@@ -977,6 +982,14 @@
     "days": "أيام",
     "months": "أشهر",
     "km": "كم",
-    "tons": "أطنان"
+    "tons": "أطنان",
+    "loading": "جاري التحميل...",
+    "hour": "ساعة",
+    "day": "يوم",
+    "month": "شهر",
+    "ton": "طن",
+    "ratePerKm": "السعر بالكيلومتر",
+    "transportCost": "تكلفة النقل",
+    "transport": "النقل"
   }
 }

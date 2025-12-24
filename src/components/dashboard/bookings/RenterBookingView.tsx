@@ -16,18 +16,15 @@ import { Eye, XCircle } from "lucide-react"
 import { Link } from "@/src/i18n/navigation"
 import EquipmentImage from "@/src/components/ui/EquipmentImage"
 import { toast } from "sonner"
-import type { BookingWithDetails } from "@/src/stores/bookingsStore"
 import ConfirmModal from "@/src/components/ui/ConfirmModal"
 import { AlertTriangle } from "lucide-react"
 import GenericMobileCard from "@/src/components/ui/GenericMobileCard"
-import { formatBookingId } from "@/src/lib/format"
 import { formatReferenceNumber } from "@/src/lib/format-reference"
 
 export default function RenterBookingView() {
   const t = useTranslations("dashboard.bookings")
   const tCommon = useTranslations("common")
   
-  // Translate usage unit
   const getTranslatedUnit = (unit: string) => {
     const unitMap: Record<string, string> = {
       'hours': tCommon('hour'),
@@ -144,7 +141,7 @@ export default function RenterBookingView() {
             {paginatedData.map((booking) => (
               <tr key={booking._id?.toString()}>
                 <TableCell className="w-24">
-                  <div className="font-semibold text-orange-600 text-xs" dir="ltr">
+                  <div className="font-semibold text-orange-600 text-sm" dir="ltr">
                     {formatReferenceNumber(booking.referenceNumber)}
                   </div>
                 </TableCell>
@@ -247,7 +244,7 @@ export default function RenterBookingView() {
                   value: `${totalUsage} ${getTranslatedUnit(booking.bookingItems[0]?.usageUnit || 'hours')}`,
                 },
                 {
-                  label: t("table.total"),
+                  label: t("table.estimatedTotal"),
                   value: booking.totalPrice,
                 },
               ]}

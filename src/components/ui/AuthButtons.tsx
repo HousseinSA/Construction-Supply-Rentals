@@ -35,7 +35,6 @@ export default function AuthButtons({
   const dropdownRef = useRef<HTMLDivElement>(null)
   const isRTL = locale === "ar"
 
-  // Generate user initials
   const getUserInitials = (name: string) => {
     const names = name.trim().split(" ")
     if (names.length >= 2) {
@@ -44,7 +43,6 @@ export default function AuthButtons({
     return name.substring(0, 2).toUpperCase()
   }
 
-  // Generate consistent color based on user name
   const getUserColor = (name: string) => {
     const colors = [
       "bg-blue-500",

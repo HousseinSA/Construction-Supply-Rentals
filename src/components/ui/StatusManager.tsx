@@ -26,7 +26,6 @@ export default function StatusManager({
   onStatusChange,
   labels,
 }: StatusManagerProps) {
-  // If cancelled, show read-only badge - can't change cancelled status
   if (currentStatus === 'cancelled') {
     return (
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
@@ -37,19 +36,14 @@ export default function StatusManager({
           </span>
         </div>
         <p className="text-xs text-gray-500 mt-2">
-          {/* Cancelled status is final and cannot be changed */}
         </p>
       </div>
     )
   }
 
-  // Get current status index for stage progression
   const currentIndex = STATUS_ORDER.indexOf(currentStatus)
 
-  // Build options with disabled logic
   const options = STATUS_ORDER.map((status, index) => {
-    // Disable if it's a previous stage (can't go backwards)
-    // Exception: can always select 'cancelled' from any stage
     const isDisabled = status !== 'cancelled' && index < currentIndex
 
     return {
@@ -57,34 +51,27 @@ export default function StatusManager({
       label: labels.statusOptions[status as keyof typeof labels.statusOptions],
       disabled: isDisabled,
     }
-  }).filter(opt => !opt.disabled) // Remove disabled options from dropdown
+  }).filter(opt => !opt.disabled) 
 
   return (
-    <div className="space-y-3">
-      {/* Current Status Badge */}
-      <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-gray-600">{labels.currentStatus}</span>
-          <span className={`font-semibold px-3 py-1 rounded-full text-xs ${
-            currentStatus === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-            currentStatus === 'paid' ? 'bg-blue-100 text-blue-800' :
-            currentStatus === 'completed' ? 'bg-green-100 text-green-800' :
-            'bg-red-100 text-red-800'
-          }`}>
-            {labels.statusOptions[currentStatus as keyof typeof labels.statusOptions]}
-          </span>
-        </div>
+    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-4">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium text-gray-600">{labels.currentStatus}</span>
+        <span className={`font-semibold px-3 py-1 rounded-full text-xs ${
+          currentStatus === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+          currentStatus === 'paid' ? 'bg-blue-100 text-blue-800' :
+          currentStatus === 'completed' ? 'bg-green-100 text-green-800' :
+          'bg-red-100 text-red-800'
+        }`}>
+          {labels.statusOptions[currentStatus as keyof typeof labels.statusOptions]}
+        </span>
       </div>
 
-      {/* Status Dropdown - only show if not cancelled */}
-      <div className="bg-white border border-gray-200 rounded-lg p-4">
-        <Dropdown
-          label={labels.title}
-          options={options}
-          value={selectedStatus}
-          onChange={onStatusChange}
-        />
-      </div>
+      <Dropdown
+        options={options}
+        value={selectedStatus}
+        onChange={onStatusChange}
+      />
     </div>
   )
 }

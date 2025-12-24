@@ -29,7 +29,6 @@ export default function BookingTableRow({
   )
   const usageUnit = booking.bookingItems[0]?.usageUnit || "hours"
   
-  // Translate usage unit
   const getTranslatedUnit = (unit: string) => {
     const unitMap: Record<string, string> = {
       'hours': tCommon('hour'),
@@ -44,7 +43,7 @@ export default function BookingTableRow({
   return (
     <TableRow className={highlight ? "animate-pulse bg-yellow-50" : ""}>
       <TableCell className="w-24">
-        <div className="font-semibold text-orange-600 text-xs" dir="ltr">
+        <div className="font-semibold text-primary text-sm">
           {formatReferenceNumber(booking.referenceNumber)}
         </div>
       </TableCell>

@@ -59,7 +59,7 @@ export default function SalesTable() {
       data: sales,
       searchFields: [],
       filterFunctions: {
-        status: (sale, value) => sale.status === value,
+        status: (sale, value) => value === "all" ? true : sale.status === value,
         date: (sale, value) => {
           const saleDate = new Date(sale.createdAt)
           const now = new Date()
@@ -70,7 +70,7 @@ export default function SalesTable() {
           return true
         },
       },
-      defaultFilters: { status: "pending", date: "all" },
+      defaultFilters: { status: "all", date: "all" },
     })
 
   const filteredData = useMemo(() => {
@@ -115,8 +115,7 @@ export default function SalesTable() {
                 <ArrowLeft className="h-5 w-5 text-gray-600" />
               </Link>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">{tPages("sales.title")}</h1>
-                <p className="text-gray-600 text-sm">{tPages("sales.subtitle")}</p>
+                <h1 className="text-2xl font-bold text-primary">{tPages("sales.title")}</h1>
               </div>
             </div>
             <HomeButton />
@@ -132,11 +131,11 @@ export default function SalesTable() {
                 key: "status",
                 label: t("filters.status"),
                 options: [
+                  { value: "all", label: t("filters.allStatus") },
                   { value: "pending", label: t("status.pending") },
                   { value: "paid", label: t("status.paid") },
                   { value: "completed", label: t("status.completed") },
                   { value: "cancelled", label: t("status.cancelled") },
-                  { value: "all", label: t("filters.allStatus") },
                 ],
               },
               {

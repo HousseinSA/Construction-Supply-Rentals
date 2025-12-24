@@ -116,7 +116,7 @@ export default function RegisterForm() {
       }
 
       showToast.success(tToast("registerSuccess"))
-      setTimeout(() => router.push("/auth/login"), 1500)
+      setTimeout(() => router.push("/auth/login?from=register"), 1500)
     } catch (error) {
       showToast.error(tToast("registerFailed"))
     } finally {

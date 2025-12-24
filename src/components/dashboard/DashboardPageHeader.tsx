@@ -6,13 +6,11 @@ import HomeButton from "../ui/HomeButton"
 
 interface DashboardPageHeaderProps {
   title: string
-  subtitle: string
   showBackButton?: boolean
 }
 
 export default function DashboardPageHeader({ 
   title,
-  subtitle,
   showBackButton = true 
 }: DashboardPageHeaderProps) {
   const router = useRouter()
@@ -29,12 +27,9 @@ export default function DashboardPageHeader({
           </button>
         )}
         <div className="flex-1">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-primary">
             {title}
           </h1>
-          <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
-            {subtitle}
-          </p>
         </div>
       </div>
       <HomeButton />

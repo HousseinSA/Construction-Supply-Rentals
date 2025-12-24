@@ -32,7 +32,6 @@ export const authOptions: AuthOptions = {
           return null
         }
         
-        // Check if user is blocked
         if (user.status === "blocked") {
           return null
         }
@@ -47,7 +46,7 @@ export const authOptions: AuthOptions = {
       },
     }),
   ],
-  session: { strategy: "jwt" as const, maxAge: 24 * 60 * 60 },
+  session: { strategy: "jwt" as const, maxAge: 30 * 24 * 60 * 60 },
   pages: { signIn: "/auth/login" },
   basePath: "/api/auth",
   callbacks: {

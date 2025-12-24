@@ -38,18 +38,22 @@ export default function CreateEquipmentForm() {
       className={`min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 ${fontClass}`}
     >
       <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <Link
-            href="/dashboard"
-            className="inline-flex items-center text-gray-600 hover:text-primary transition-colors mb-4"
-          >
-            <ArrowLeft className="h-5 w-5 mr-2 rtl:mr-0 rtl:ml-2" />
-            {t("backToDashboard")}
-          </Link>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            {t("createTitle")}
-          </h1>
-          <p className="text-gray-600">{t("createSubtitle")}</p>
+        <div className="mb-6 sm:mb-8">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4 flex-1">
+              <Link
+                href="/dashboard"
+                className="flex items-center justify-center w-10 h-10 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 transition-colors"
+              >
+                <ArrowLeft className="h-5 w-5 text-gray-600" />
+              </Link>
+              <div className="flex-1">
+                <h1 className="text-2xl font-bold text-primary">
+                  {t("createTitle")}
+                </h1>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="space-y-6">

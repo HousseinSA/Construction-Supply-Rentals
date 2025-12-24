@@ -26,7 +26,8 @@ export default function Header({ session: serverSession }: HeaderProps) {
   const t = useTranslations("common")
   const mobileMenuRef = useRef<HTMLDivElement>(null)
   const isRenter = session?.user?.userType === "renter"
-  const isAdminOrSupplier = session?.user?.role === "admin" || session?.user?.userType === "supplier"
+  const isSupplier = session?.user?.userType === "supplier"
+  const isAdminOrSupplier = session?.user?.role === "admin" || isSupplier
 
   const getFontClass = () => {
     switch (locale) {
@@ -103,7 +104,7 @@ export default function Header({ session: serverSession }: HeaderProps) {
                 <span className="text-sm font-medium">{t("dashboard")}</span>
               </Link>
             )}
-            {isRenter && (
+            {(isRenter || isSupplier) && (
               <Link
                 href="/bookings"
                 className="hidden lg:flex items-center gap-2 px-3 py-2 text-gray-700 hover:text-primary hover:bg-gray-50 rounded-lg transition-colors"
@@ -128,11 +129,19 @@ export default function Header({ session: serverSession }: HeaderProps) {
               phoneNumber="22245111111"
               displayText="222 45 11 11 11"
             />
-            <LanguageSwitcher
-              onLanguageChange={() => setIsMobileMenuOpen(false)}
-            />
             <div className="hidden lg:block">
               <AuthButtons session={session} />
+            </div>
+            <div className="hidden lg:block">
+              <LanguageSwitcher
+                onLanguageChange={() => setIsMobileMenuOpen(false)}
+              />
+            </div>
+
+            <div className="lg:hidden">
+              <LanguageSwitcher
+                onLanguageChange={() => setIsMobileMenuOpen(false)}
+              />
             </div>
 
             <button

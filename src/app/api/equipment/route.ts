@@ -9,7 +9,7 @@ import {
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/src/lib/auth"
 
-// GET /api/equipment
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
@@ -21,10 +21,10 @@ export async function GET(request: NextRequest) {
     const listingType = searchParams.get("listingType")
     const availableOnly = searchParams.get("available") === "true"
     const isAdmin = searchParams.get("admin") === "true"
+    const supplierId = searchParams.get("supplierId")
 
     const db = await connectDB()
 
-    // Get excluded category IDs
     const excludedCategories = [
       "Engins spécialisés",
       "Engins légers et auxiliaires",
@@ -39,16 +39,18 @@ export async function GET(request: NextRequest) {
       categoryId: { $nin: excludedCategoryIds.map((cat) => cat._id) },
     }
 
-    // For admin, show all equipment; for others, only approved
-    if (!isAdmin) {
+    if (!isAdmin && !supplierId) {
       query.status = "approved"
+    }
+
+    if (supplierId && ObjectId.isValid(supplierId)) {
+      query.supplierId = new ObjectId(supplierId)
     }
 
     if (status) query.status = status
     if (categoryId) query.categoryId = new ObjectId(categoryId)
     if (type) query.equipmentTypeId = new ObjectId(type)
     if (availableOnly) query.isAvailable = true
-    // Only filter by city if showing equipment for rent
     if (city && listingType !== "forSale")
       query.location = { $regex: new RegExp(city, "i") }
 
@@ -58,7 +60,6 @@ export async function GET(request: NextRequest) {
       query.listingType = listingType
     }
 
-    // Handle category name parameter
     if (category) {
       const categoryDoc = await db.collection("categories").findOne({
         $or: [
@@ -71,7 +72,6 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // For non-admin users, filter out equipment with active bookings
     if (!isAdmin) {
       const pipeline: any[] = [
         { $match: query },
@@ -115,17 +115,34 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // For admin, show all equipment without filtering bookings
     const equipment = await db
       .collection("equipment")
       .find(query)
       .sort({ createdAt: -1 })
       .toArray()
 
+    const equipmentWithBookingStatus = await Promise.all(
+      equipment.map(async (item) => {
+        const hasActiveBookings = await db.collection("bookings").findOne({
+          "bookingItems.equipmentId": item._id,
+          status: { $in: ["pending", "paid"] }
+        })
+        const hasPendingSale = await db.collection("sales").findOne({
+          equipmentId: item._id,
+          status: { $in: ["pending", "paid"] }
+        })
+        return {
+          ...item,
+          hasActiveBookings: !!hasActiveBookings,
+          hasPendingSale: !!hasPendingSale
+        }
+      })
+    )
+
     return NextResponse.json({
       success: true,
-      data: equipment,
-      count: equipment.length,
+      data: equipmentWithBookingStatus,
+      count: equipmentWithBookingStatus.length,
     })
   } catch (error) {
     return NextResponse.json(
@@ -138,7 +155,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/equipment - Create sophisticated equipment
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -155,7 +171,6 @@ export async function POST(request: NextRequest) {
       listingType,
     } = body
 
-    // Validate required fields
     if (!categoryId || !equipmentTypeId || !pricing || !location) {
       return NextResponse.json(
         {
@@ -167,7 +182,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate ObjectId format
     if (!ObjectId.isValid(categoryId) || !ObjectId.isValid(equipmentTypeId)) {
       return NextResponse.json(
         {
@@ -180,7 +194,6 @@ export async function POST(request: NextRequest) {
 
     const db = await connectDB()
 
-    // Get equipment type to determine usage category
     const equipmentType = await db
       .collection("equipmentTypes")
       .findOne({ _id: new ObjectId(equipmentTypeId) })
@@ -194,7 +207,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate images (minimum 1, maximum 5)
     if (!images || !Array.isArray(images) || images.length === 0) {
       return NextResponse.json(
         {
@@ -205,17 +217,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (images.length > 5) {
+    if (images.length > 10) {
       return NextResponse.json(
         {
           success: false,
-          error: "Maximum 5 images allowed",
+          error: "Maximum 10 images allowed",
         },
         { status: 400 }
       )
     }
 
-    // Get session to determine user role and ID
     const session = await getServerSession(authOptions)
     if (!session?.user?.id) {
       return NextResponse.json(
@@ -231,7 +242,6 @@ export async function POST(request: NextRequest) {
     const userRole = session.user.role || "user"
     const userType = session.user.userType || "supplier"
 
-    // Validate user ID format
     if (!ObjectId.isValid(userId)) {
       return NextResponse.json(
         {
@@ -274,7 +284,6 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date(),
     })
 
-    // Send email to admin only if supplier created equipment (not admin)
     if (userRole !== "admin" && userType === "supplier") {
       const adminEmail = process.env.ADMIN_EMAIL
       if (adminEmail) {
@@ -346,18 +355,29 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// PUT /api/equipment - Update equipment status
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json()
     const { equipmentId, status, adminId } = body
+    const session = await getServerSession(authOptions)
+
+    if (!session || session.user.role !== "admin") {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized - Admin only" },
+        { status: 401 }
+      )
+    }
 
     if (!equipmentId || !status) {
       return NextResponse.json(
-        {
-          success: false,
-          error: "Missing required fields: equipmentId, status",
-        },
+        { success: false, error: "Missing required fields: equipmentId, status" },
+        { status: 400 }
+      )
+    }
+
+    if (!ObjectId.isValid(equipmentId)) {
+      return NextResponse.json(
+        { success: false, error: "Invalid equipment ID" },
         { status: 400 }
       )
     }
@@ -370,9 +390,16 @@ export async function PUT(request: NextRequest) {
       updateData.approvedAt = new Date()
     }
 
-    await db
+    const result = await db
       .collection("equipment")
       .updateOne({ _id: new ObjectId(equipmentId) }, { $set: updateData })
+
+    if (result.matchedCount === 0) {
+      return NextResponse.json(
+        { success: false, error: "Equipment not found" },
+        { status: 404 }
+      )
+    }
 
     await triggerRealtimeUpdate("equipment")
 
@@ -381,11 +408,9 @@ export async function PUT(request: NextRequest) {
       message: "Equipment status updated successfully",
     })
   } catch (error) {
+    console.error("Equipment status update error:", error)
     return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to update equipment status",
-      },
+      { success: false, error: "Failed to update equipment status" },
       { status: 500 }
     )
   }

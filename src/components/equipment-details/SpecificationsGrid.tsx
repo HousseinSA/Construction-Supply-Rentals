@@ -52,27 +52,27 @@ export default function SpecificationsGrid({
   }
 
   return (
-    <div className="mb-4 sm:mb-6">
-      <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2">
+    <div>
+      <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
         <Wrench className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
         {t("specifications")}
       </h3>
-      <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:gap-4">
-        <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
-          <div className="text-xs text-gray-500 mb-1">{t("brand")}</div>
-          <div className="font-semibold text-sm sm:text-base text-gray-900">
+      <div className="grid grid-cols-2 gap-3">
+        <div className="bg-gray-50 rounded-lg p-3">
+          <div className="text-xs sm:text-sm text-gray-500 mb-1">{t("brand")}</div>
+          <div className="font-semibold text-sm sm:text-base text-gray-900 break-words">
             {specifications.brand || "-"}
           </div>
         </div>
-        <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
-          <div className="text-xs text-gray-500 mb-1">{t("model")}</div>
-          <div className="font-semibold text-sm sm:text-base text-gray-900">
+        <div className="bg-gray-50 rounded-lg p-3">
+          <div className="text-xs sm:text-sm text-gray-500 mb-1">{t("model")}</div>
+          <div className="font-semibold text-sm sm:text-base text-gray-900 break-words">
             {specifications.model || "-"}
           </div>
         </div>
         {isForSale && (
-          <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
-            <div className="text-xs text-gray-500 mb-1">{t("condition")}</div>
+          <div className="bg-gray-50 rounded-lg p-3">
+            <div className="text-xs sm:text-sm text-gray-500 mb-1">{t("condition")}</div>
             <div className="font-semibold text-sm sm:text-base text-gray-900">
               {specifications.condition
                 ? getConditionLabel(specifications.condition)
@@ -81,8 +81,8 @@ export default function SpecificationsGrid({
           </div>
         )}
         {(specifications.usageValue || specifications.hoursUsed) && (
-          <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
-            <div className="text-xs text-gray-500 mb-1 flex items-center gap-1">
+          <div className="bg-gray-50 rounded-lg p-3">
+            <div className="text-xs sm:text-sm text-gray-500 mb-1 flex items-center gap-1">
               <Clock className="w-3 h-3" />
               {t("equipmentUsage")}
             </div>
@@ -99,8 +99,8 @@ export default function SpecificationsGrid({
           </div>
         )}
         {specifications.kilometersUsed && (
-          <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
-            <div className="text-xs text-gray-500 mb-1 flex items-center gap-1">
+          <div className="bg-gray-50 rounded-lg p-3">
+            <div className="text-xs sm:text-sm text-gray-500 mb-1 flex items-center gap-1">
               <Gauge className="w-3 h-3" />
               {t("kilometersUsed")}
             </div>
@@ -109,8 +109,8 @@ export default function SpecificationsGrid({
             </div>
           </div>
         )}
-        <div className="bg-gray-50 rounded-lg p-2 sm:p-3">
-          <div className="text-xs text-gray-500 mb-1 flex items-center gap-1">
+        <div className="bg-gray-50 rounded-lg p-3">
+          <div className="text-xs sm:text-sm text-gray-500 mb-1 flex items-center gap-1">
             <Weight className="w-3 h-3" />
             {t("weight")}
           </div>

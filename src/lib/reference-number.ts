@@ -1,8 +1,12 @@
 import { connectDB } from './mongodb';
 
-export async function generateReferenceNumber(type: 'booking' | 'sale'): Promise<string> {
+export async function generateReferenceNumber(type: 'booking' | 'sale' | 'equipment'): Promise<string> {
   const db = await connectDB();
-  const collection = type === 'booking' ? db.collection('bookings') : db.collection('sales');
+  const collection = type === 'booking' 
+    ? db.collection('bookings') 
+    : type === 'sale' 
+    ? db.collection('sales')
+    : db.collection('equipment');
   
   let referenceNumber: string;
   let exists = true;

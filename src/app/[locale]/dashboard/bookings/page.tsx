@@ -17,7 +17,6 @@ export default async function BookingsPage({
     redirect(`/${locale}/auth/login`)
   }
 
-  // Only admin can access dashboard bookings
   if (session.user.role !== "admin") {
     redirect(`/${locale}/dashboard`)
   }

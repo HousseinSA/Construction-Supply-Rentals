@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from "react"
 import { Equipment } from "@/src/lib/models/equipment"
 import { User } from "@/src/lib/models/user"
 import { useEquipmentStore, EquipmentWithSupplier } from "@/src/stores/equipmentStore"
-import { useRealtime } from './useRealtime'
+import { useSSE } from './useSSE'
 import { useTableFilters } from './useTableFilters'
 import { usePagination } from './usePagination'
 
@@ -52,16 +52,20 @@ export function useManageEquipment({ convertToLocalized, supplierId }: UseManage
     }
   }, [setEquipment, setLoading, supplierId])
 
-  const handleStatusChange = async (id: string, newStatus: string) => {
+  const handleStatusChange = async (id: string, newStatus: string, rejectionReason?: string) => {
     setUpdating(id)
     try {
+      const body: any = { status: newStatus }
+      if (newStatus === "rejected" && rejectionReason) {
+        body.rejectionReason = rejectionReason
+      }
       const response = await fetch(`/api/equipment/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify(body),
       })
       if (response.ok) {
-        updateEquipment(id, { status: newStatus })
+        updateEquipment(id, { status: newStatus, ...(rejectionReason && { rejectionReason }) })
         return true
       }
       return false
@@ -152,7 +156,7 @@ export function useManageEquipment({ convertToLocalized, supplierId }: UseManage
     itemsPerPage,
   } = usePagination({ data: filteredData, itemsPerPage: 10 })
 
-  useRealtime('equipment', useCallback(() => {
+  useSSE('equipment', useCallback(() => {
     fetchEquipment()
   }, [fetchEquipment]))
 

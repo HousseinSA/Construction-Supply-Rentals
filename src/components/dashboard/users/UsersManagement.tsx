@@ -11,6 +11,7 @@ import {
   Shield,
   ShieldOff,
   AlertTriangle,
+  X,
 } from "lucide-react"
 import { User } from "@/src/lib/types"
 import { useUsers } from "@/src/hooks/useUsers"
@@ -57,7 +58,6 @@ export default function UsersManagement() {
     return matchesSearch && matchesRole
   })
 
-  // Also filter stats to exclude admins
   const nonAdminUsers = users.filter((user) => user.role !== "admin")
 
   const {
@@ -179,17 +179,31 @@ export default function UsersManagement() {
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
             />
           </div>
-          <Dropdown
-            options={[
-              { value: "all", label: t("users.allRoles") },
-              { value: "supplier", label: t("users.roles.supplier") },
-              { value: "renter", label: t("users.roles.renter") },
-            ]}
-            value={filterRole}
-            onChange={setFilterRole}
-            placeholder={t("users.allRoles")}
-            compact
-          />
+          <div className="flex gap-2">
+            <Dropdown
+              options={[
+                { value: "all", label: t("users.allRoles") },
+                { value: "supplier", label: t("users.roles.supplier") },
+                { value: "renter", label: t("users.roles.renter") },
+              ]}
+              value={filterRole}
+              onChange={setFilterRole}
+              placeholder={t("users.allRoles")}
+              compact
+            />
+            {(searchTerm || filterRole !== "all") && (
+              <button
+                onClick={() => {
+                  setSearchTerm("")
+                  setFilterRole("all")
+                }}
+                className="flex items-center gap-1 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X className="w-4 h-4" />
+                {tCommon("clearFilters")}
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

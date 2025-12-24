@@ -17,7 +17,7 @@ export default function SalesTableRow({ sale, onViewDetails, t, highlight = fals
   return (
     <TableRow className={highlight ? "animate-pulse bg-yellow-50" : ""}>
       <TableCell className="w-24">
-        <div className="font-semibold text-orange-600 text-xs" dir="ltr">
+        <div className="font-semibold text-primary text-sm" >
           {formatReferenceNumber(sale.referenceNumber)}
         </div>
       </TableCell>

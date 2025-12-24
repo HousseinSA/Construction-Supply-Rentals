@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Search, SlidersHorizontal } from "lucide-react"
+import { Search, SlidersHorizontal, X } from "lucide-react"
 import { useTranslations } from "next-intl"
 import Dropdown from "./Dropdown"
 import MobileFilterDrawer from "./MobileFilterDrawer"
@@ -33,6 +33,13 @@ export default function TableFilters({
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const t = useTranslations("common")
 
+  const hasActiveFilters = searchValue || Object.values(filterValues).some(v => v !== "all")
+
+  const handleClearAll = () => {
+    onSearchChange("")
+    filters.forEach(filter => onFilterChange(filter.key, "all"))
+  }
+
   return (
     <>
       <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 mb-4">
@@ -60,7 +67,7 @@ export default function TableFilters({
           </div>
 
           {/* Desktop Filters */}
-          <div className="hidden lg:flex gap-2 flex-wrap">
+          <div className="hidden lg:flex gap-2 flex-wrap items-center">
             {filters.map((filter) => (
               <div key={filter.key} className="min-w-[140px] flex-1 max-w-[200px]">
                 <Dropdown
@@ -72,6 +79,15 @@ export default function TableFilters({
                 />
               </div>
             ))}
+            {hasActiveFilters && (
+              <button
+                onClick={handleClearAll}
+                className="flex items-center gap-1 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
+              >
+                <X className="w-4 h-4" />
+                {t("clearFilters")}
+              </button>
+            )}
           </div>
         </div>
       </div>

@@ -24,7 +24,6 @@ export default async function middleware(request: NextRequest) {
   ) {
     const pathWithoutLocale = pathname.replace(/^\/(ar|fr|en)/, "")
     const newUrl = new URL(`/${cookieLocale}${pathWithoutLocale}`, request.url)
-    // Preserve query parameters
     newUrl.search = request.nextUrl.search
     const response = NextResponse.redirect(newUrl)
     response.headers.set("Cache-Control", "no-store, must-revalidate")
@@ -47,7 +46,9 @@ export default async function middleware(request: NextRequest) {
   }
 
   if (!token && pathname.match(/\/(ar|fr|en)\/dashboard/)) {
-    const response = NextResponse.redirect(new URL(`/${locale}/auth/login`, request.url))
+    const loginUrl = new URL(`/${locale}/auth/login`, request.url)
+    loginUrl.searchParams.set("callbackUrl", pathname)
+    const response = NextResponse.redirect(loginUrl)
     response.headers.set("Cache-Control", "no-store, must-revalidate")
     return response
   }

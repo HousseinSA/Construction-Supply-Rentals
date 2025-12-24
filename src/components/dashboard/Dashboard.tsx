@@ -13,7 +13,6 @@ import {
   Package,
   ClipboardCheck,
   User,
-  Receipt,
 } from "lucide-react"
 import DashboardSkeleton from "./DashboardSkeleton"
 import HomeButton from "../ui/HomeButton"
@@ -82,7 +81,6 @@ export default function Dashboard() {
       ]
     }
 
-    // Supplier dashboard cards
     return [
       {
         title: t("supplier.myEquipment"),
@@ -101,7 +99,7 @@ export default function Dashboard() {
       {
         title: t("renter.myBookings"),
         description: t("renter.myTransactionsDesc"),
-        icon: Receipt,
+        icon: ClipboardList,
         href: "/bookings",
         color: "bg-orange-500",
       },
@@ -127,12 +125,9 @@ export default function Dashboard() {
         <div className="mb-6 sm:mb-8">
           <div className="flex items-center justify-between gap-4">
             <div className="flex-1">
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+              <h1 className="text-2xl sm:text-3xl font-bold text-primary">
                 {t(`${userRole}.title`)}
               </h1>
-              <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
-                {t(`${userRole}.subtitle`)}
-              </p>
             </div>
             <HomeButton />
           </div>

@@ -4,10 +4,11 @@ import { ArrowLeft } from "lucide-react"
 import { Link } from "@/src/i18n/navigation"
 import { useTranslations } from "next-intl"
 import HomeButton from "@/src/components/ui/HomeButton"
-import ProfileManagement from "@/src/components/dashboard/settings/ProfileManagement"
+import ProfileSettings from "@/src/components/dashboard/settings/ProfileSettings"
 
 export default function ProfilePageClient() {
   const t = useTranslations("dashboard.pages.profile")
+  const tSettings = useTranslations("dashboard")
   
   return (
     <div className="min-h-screen bg-gray-50">
@@ -22,19 +23,21 @@ export default function ProfilePageClient() {
                 <ArrowLeft className="h-5 w-5 text-gray-600" />
               </Link>
               <div className="flex-1">
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                <h1 className="text-2xl font-bold text-primary">
                   {t("title")}
                 </h1>
-                <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
-                  {t("subtitle")}
-                </p>
               </div>
             </div>
             <HomeButton />
           </div>
         </div>
         
-        <ProfileManagement />
+        <ProfileSettings
+          apiEndpoint="/api/settings"
+          titleKey="settings.profileInfo.title"
+          phoneLabel={tSettings("settings.profileInfo.phone")}
+          passwordLabel={tSettings("settings.profileInfo.password")}
+        />
       </div>
     </div>
   )

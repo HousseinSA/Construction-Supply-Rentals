@@ -36,7 +36,6 @@ export async function GET(
       )
     }
 
-    // Fetch supplier info if admin is viewing
     let supplierInfo = null
     if (isAdmin && equipment.supplierId) {
       supplierInfo = await db.collection("users").findOne(
@@ -45,7 +44,6 @@ export async function GET(
       )
     }
 
-    // Check for pending bookings for this equipment
     const session = await getServerSession(authOptions)
     let userBookingStatus = null
     
@@ -61,10 +59,14 @@ export async function GET(
       }
     }
     
-    // Check if equipment has any pending bookings (to make it unavailable for others)
     const hasPendingBookings = await db.collection("bookings").findOne({
       "bookingItems.equipmentId": new ObjectId(id),
       status: "pending"
+    })
+
+    const hasActiveBookings = await db.collection("bookings").findOne({
+      "bookingItems.equipmentId": new ObjectId(id),
+      status: { $in: ["pending", "paid"] }
     })
 
     return NextResponse.json({ 
@@ -73,6 +75,7 @@ export async function GET(
         ...equipment,
         userBookingStatus,
         hasPendingBookings: !!hasPendingBookings,
+        hasActiveBookings: !!hasActiveBookings,
         ...(isAdmin && { supplierInfo })
       }
     })
@@ -92,6 +95,14 @@ export async function PATCH(
   try {
     const { id } = await params
     const body = await request.json()
+    const session = await getServerSession(authOptions)
+
+    if (!session) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      )
+    }
 
     if (!ObjectId.isValid(id)) {
       return NextResponse.json(
@@ -101,16 +112,98 @@ export async function PATCH(
     }
 
     const db = await connectDB()
-    const updateData: any = { updatedAt: new Date() }
+    const isAdmin = session.user.role === "admin"
+    const userId = session.user.id
 
-    if (body.hasOwnProperty("isAvailable")) {
-      updateData.isAvailable = body.isAvailable
+    const equipment = await db.collection("equipment").findOne({ _id: new ObjectId(id) })
+    if (!equipment) {
+      return NextResponse.json(
+        { success: false, error: "Equipment not found" },
+        { status: 404 }
+      )
     }
 
-    if (body.status) {
+    if (!isAdmin && equipment.supplierId?.toString() !== userId) {
+      return NextResponse.json(
+        { success: false, error: "You don't own this equipment" },
+        { status: 403 }
+      )
+    }
+
+    const updateData: any = { updatedAt: new Date() }
+
+    if (body.action === "resubmit" && !isAdmin) {
+      if (equipment.status !== "rejected") {
+        return NextResponse.json(
+          { success: false, error: "Only rejected equipment can be resubmitted" },
+          { status: 400 }
+        )
+      }
+      if (!equipment.lastEditedAt || !equipment.rejectedAt || 
+          new Date(equipment.lastEditedAt) <= new Date(equipment.rejectedAt)) {
+        return NextResponse.json(
+          { success: false, error: "Please edit equipment before resubmitting" },
+          { status: 400 }
+        )
+      }
+      updateData.status = "pending"
+      updateData.rejectionReason = null
+      updateData.rejectedAt = null
+    }
+
+    if (body.hasOwnProperty("isAvailable")) {
+      const hasActiveBookings = await db.collection("bookings").findOne({
+        "bookingItems.equipmentId": new ObjectId(id),
+        status: { $in: ["pending", "paid"] }
+      })
+      const hasPendingSale = await db.collection("sales").findOne({
+        equipmentId: new ObjectId(id),
+        status: { $in: ["pending", "paid"] }
+      })
+      
+      if (hasActiveBookings || hasPendingSale) {
+        return NextResponse.json(
+          { success: false, error: "Cannot change availability - equipment has active bookings or pending sales" },
+          { status: 400 }
+        )
+      }
+      
+      updateData.isAvailable = body.isAvailable
+      if (!isAdmin && equipment.status === "approved") {
+        updateData.status = "approved"
+      }
+    }
+
+    if (isAdmin && body.status) {
       updateData.status = body.status
       if (body.status === "approved") {
         updateData.approvedAt = new Date()
+        updateData.approvedBy = new ObjectId(userId)
+        updateData.rejectionReason = null
+        updateData.rejectedAt = null
+        
+        // Send approval email to supplier
+        try {
+          const supplier = await db.collection("users").findOne({ _id: equipment.supplierId })
+          if (supplier?.email) {
+            const { sendEquipmentApprovalEmail } = await import("@/src/lib/email")
+            await sendEquipmentApprovalEmail(supplier.email, {
+              equipmentName: equipment.name,
+              supplierName: `${supplier.firstName} ${supplier.lastName}`
+            })
+          }
+        } catch (emailError) {
+          console.error("Email error:", emailError)
+        }
+      } else if (body.status === "rejected") {
+        if (!body.rejectionReason || body.rejectionReason.trim() === "") {
+          return NextResponse.json(
+            { success: false, error: "Rejection reason is required" },
+            { status: 400 }
+          )
+        }
+        updateData.rejectionReason = body.rejectionReason
+        updateData.rejectedAt = new Date()
       }
     }
 
@@ -133,6 +226,14 @@ export async function PUT(
   try {
     const { id } = await params
     const body = await request.json()
+    const session = await getServerSession(authOptions)
+
+    if (!session) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      )
+    }
 
     if (!ObjectId.isValid(id)) {
       return NextResponse.json(
@@ -142,21 +243,82 @@ export async function PUT(
     }
 
     const db = await connectDB()
-    const updateData: any = {
-      description: body.description,
-      categoryId: new ObjectId(body.categoryId),
-      equipmentTypeId: new ObjectId(body.equipmentTypeId),
-      pricing: body.pricing,
-      location: body.location,
-      images: body.images,
-      specifications: body.specifications,
-      listingType: body.listingType,
-      updatedAt: new Date()
+    const isAdmin = session.user.role === "admin"
+    const userId = session.user.id
+
+    const equipment = await db.collection("equipment").findOne({ _id: new ObjectId(id) })
+    if (!equipment) {
+      return NextResponse.json(
+        { success: false, error: "Equipment not found" },
+        { status: 404 }
+      )
+    }
+
+    if (!isAdmin && equipment.supplierId?.toString() !== userId) {
+      return NextResponse.json(
+        { success: false, error: "You don't own this equipment" },
+        { status: 403 }
+      )
+    }
+
+    const updateData: any = { updatedAt: new Date() }
+
+    if (isAdmin) {
+      if (body.description !== undefined) updateData.description = body.description
+      if (body.images !== undefined) updateData.images = body.images
+      if (body.specifications !== undefined) updateData.specifications = body.specifications
+      if (body.pricing !== undefined) {
+        updateData.pricing = body.pricing
+        updateData.pendingPricing = null 
+        updateData.pricingRejectionReason = null 
+      }
+      if (body.isAvailable !== undefined) updateData.isAvailable = body.isAvailable
+      
+      const lockedFields = ['categoryId', 'equipmentTypeId', 'location', 'listingType', 'usageCategory']
+      for (const field of lockedFields) {
+        if (body[field] !== undefined && body[field] !== equipment[field]?.toString()) {
+          return NextResponse.json(
+            { success: false, error: `Cannot modify locked field: ${field}` },
+            { status: 400 }
+          )
+        }
+      }
+      
+      updateData.lastEditedAt = new Date()
+    } else {
+      if (body.description !== undefined) updateData.description = body.description
+      if (body.images !== undefined) updateData.images = body.images
+      if (body.specifications !== undefined) updateData.specifications = body.specifications
+      
+      updateData.lastEditedAt = new Date()
+      
+      if (body.pricing !== undefined) {
+        const pricingChanged = JSON.stringify(equipment.pricing) !== JSON.stringify(body.pricing)
+        
+        if (pricingChanged) {
+          if (equipment.pendingPricing) {
+            return NextResponse.json(
+              { success: false, error: "You already have a pending pricing change request. Please wait for admin review." },
+              { status: 400 }
+            )
+          }
+          
+          updateData.pendingPricing = {
+            ...body.pricing,
+            requestedAt: new Date()
+          }
+          updateData.pricingRejectionReason = null
+        }
+      }
     }
 
     await db.collection("equipment").updateOne({ _id: new ObjectId(id) }, { $set: updateData })
     await triggerRealtimeUpdate('equipment')
-    return NextResponse.json({ success: true })
+    
+    return NextResponse.json({ 
+      success: true,
+      hasPendingPricing: !!updateData.pendingPricing
+    })
   } catch (error) {
     console.error("Error updating equipment:", error)
     return NextResponse.json(

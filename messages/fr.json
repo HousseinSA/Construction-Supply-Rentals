@@ -22,7 +22,8 @@
     "showingResults": "{start} sur {total}",
     "admin": "Admin",
     "filters": "Filtres",
-    "applyFilters": "Appliquer les Filtres"
+    "applyFilters": "Appliquer les Filtres",
+    "clearFilters": "Effacer les Filtres"
   },
   "quickSearch": {
     "button": "Recherche",
@@ -108,6 +109,7 @@
     "optional": "optionnel",
     "messagePlaceholder": "Des questions ou demandes spéciales...",
     "sending": "Envoi...",
+    "pricingRejected": "Mise à Jour Tarifaire Rejetée",
     "imageModal": {
       "close": "Fermer",
       "previous": "Précédent",
@@ -215,7 +217,8 @@
       "selectDates": "Sélectionnez les dates"
     },
     "footer": {
-      "support": "Support et Contact"
+      "support": "Support et Contact",
+      "by": "par"
     },
     "whatsapp": {
       "tooltip": "Besoin d'Aide? Contactez-Nous!"
@@ -420,7 +423,7 @@
       }
     },
     "admin": {
-      "title": "Tableau de Bord Admin",
+      "title": "Tableau de Bord",
       "subtitle": "Gérez votre plateforme de location d'équipement de construction",
       "createEquipment": "Créer Matériel",
       "createEquipmentDesc": "Ajouter un nouveau matériel à la plateforme",
@@ -438,9 +441,8 @@
       "settingsDesc": "Configurer les paramètres de la plateforme"
     },
     "supplier": {
-      "title": "Tableau de Bord Partenaire",
-      "subtitle": "Gérez vos équipements et votre activité de location",
-      "myEquipment": "Mon Matériel",
+      "title": "Tableau de Bord",
+      "myEquipment": "Matériel",
       "myEquipmentDesc": "Voir et gérer votre matériel listé",
       "addEquipment": "Ajouter Matériel",
       "addEquipmentDesc": "Lister un nouveau matériel pour location",
@@ -464,7 +466,6 @@
     },
     "equipment": {
       "createTitle": "Créer Nouveau Matériel",
-      "createSubtitle": "Ajouter du matériel pour le rendre disponible à la location",
       "backToDashboard": "Retour au Tableau de Bord",
       "category": "Catégorie",
       "selectCategory": "Sélectionner Catégorie",
@@ -498,7 +499,7 @@
       "dropHere": "Déposez les images ici",
       "uploadHint": "Ou glissez / collez",
       "selectImages": "Sélectionner Images",
-      "imageConstraints": "(Min: 1, Max: 5)",
+      "imageConstraints": "(Min: 1, Max: 10)",
       "imagesUploaded": "{count} sur {max} images téléchargées",
       "uploading": "Téléchargement...",
       "creatingEquipment": "Création du matériel...",
@@ -520,7 +521,7 @@
       "brandPlaceholder": "ex: Caterpillar, Komatsu, Volvo",
       "model": "Modèle",
       "modelPlaceholder": "ex: 320D, PC200",
-      "year": "Année",
+      "year": "Année de Fabrication",
       "yearPlaceholder": "ex: 2020",
       "usage": "Utilisation",
       "equipmentUsage": "Utilisation Totale",
@@ -552,14 +553,24 @@
       "manageSubtitle": "Voir et gérer toutes les annonces de matériel",
       "createdByAdmin": "Créé par l'Admin",
       "pending": "En attente",
+      "pendingVerification": "En attente de vérification admin",
       "approved": "Approuvé",
       "rejected": "Rejeté",
+      "rejectionReason": "Raison du rejet",
+      "resubmit": "Resoumettre pour approbation",
+      "resubmitting": "Resoumission...",
+      "editBeforeResubmit": "Veuillez modifier l'équipement avant de le resoumettre",
+      "cannotEditCoreFields": "Impossible de modifier l'emplacement, la catégorie ou le type d'équipement. Ce sont des champs verrouillés.",
+      "provideRejectionReason": "Veuillez fournir une raison pour le rejet",
+      "rejectionReasonPlaceholder": "Expliquez pourquoi cet équipement est rejeté...",
+      "resubmitSuccess": "Équipement resoumis avec succès",
+      "resubmitFailed": "Échec de la resoumission de l'équipement",
+      "retired": "Retiré",
       "status": "Statut",
       "actions": "Actions",
       "createdAt": "Date de création",
       "loading": "Chargement...",
       "editTitle": "Modifier le Matériel",
-      "editSubtitle": "Mettre à jour les détails du matériel",
       "updateEquipment": "Mettre à Jour",
       "updatingEquipment": "Mise à jour...",
       "supplierInfo": " Fournisseur",
@@ -586,19 +597,37 @@
       "equipmentApproved": "Matériel approuvé avec succès",
       "equipmentRejected": "Matériel rejeté avec succès",
       "availabilityUpdated": "Disponibilité mise à jour avec succès",
+      "cannotEditActiveBooking": "Impossible de modifier - le matériel a des réservations actives ou une vente en attente",
       "confirmApproveTitle": "Approuver le Matériel",
       "confirmApproveMessage": "Approuver ce matériel ?",
       "confirmRejectTitle": "Rejeter le Matériel",
-      "confirmRejectMessage": "Rejeter ce matériel ?",
+      "confirmRejectMessage": "Fournir une raison pour rejeter cet équipement",
       "sold": "Vendu",
+      "retired": "Retiré",
+      "pricingUpdateRequest": "Mise à jour tarifaire",
+      "pricingPendingApproval": "Mise à jour tarifaire en attente d'approbation",
+      "reviewPricingRequest": "Examiner la demande tarifaire",
+      "currentPricing": "Tarification actuelle",
+      "requestedPricing": "Tarification demandée",
+      "rejectPricing": "Rejeter",
+      "confirmReject": "Confirmer le Rejet",
+      "approvePricing": "Approuver et mettre à jour",
+      "pricingApproved": "Tarification approuvée",
+      "pricingRejected": "Tarification Rejetée",
+      "pricingRejectionReason": "Raison du Rejet de Tarification",
+      "viewRejectionReason": "Voir la Raison du Rejet",
+      "pricingUpdateRejectedMessage": "Votre mise à jour tarifaire a été rejetée pour la raison suivante :",
+      "processingRequest": "Traitement...",
       "noEquipmentFound": "Aucun matériel trouvé",
       "searchPlaceholder": "Rechercher par nom ou localisation...",
       "filters": {
         "allStatus": "Tous les Statuts",
         "allTypes": "Tous les Types",
         "allAvailability": "Tout",
-        "allLocations": "Toutes les Localisations"
-      }
+        "allLocations": "Localisations"
+      },
+      "activeBookingWarning": "Avertissement Réservations Actives",
+      "activeBookingWarningMessage": "Cet équipement a des réservations actives. La modification peut affecter les locations en cours. Veuillez procéder avec prudence."
     },
     "pages": {
       "equipment": {
@@ -606,32 +635,25 @@
         "subtitle": "Voir et gérer toutes les annonces de matériel"
       },
       "analytics": {
-        "title": "Analyses",
-        "subtitle": "Voir les statistiques et métriques"
+        "title": "Analyses"
       },
       "bookings": {
-        "title": "Réservations",
-        "subtitle": "Gérer les réservations et demandes de location"
+        "title": "Réservations"
       },
       "sales": {
-        "title": "Commandes de Vente",
-        "subtitle": "Gérer les ventes et achats de matériel"
+        "title": "Commandes de Vente"
       },
       "users": {
-        "title": "Utilisateurs",
-        "subtitle": "Gérer les utilisateurs et fournisseurs de la plateforme"
+        "title": "Utilisateurs"
       },
       "profile": {
-        "title": "Profil",
-        "subtitle": "Gérer les paramètres et informations de votre compte"
+        "title": "Profil"
       },
       "requests": {
-        "title": "Demandes de Location",
-        "subtitle": "Suivre vos demandes de location et leur statut"
+        "title": "Demandes de Location"
       },
       "settings": {
-        "title": "Paramètres",
-        "subtitle": "Configurer les paramètres et préférences de la plateforme"
+        "title": "Paramètres"
       }
     },
     "users": {
@@ -793,7 +815,8 @@
         "equipment": "Matériel",
         "usage": "Usage",
         "total": "Total",
-        "commission": "Commission",
+        "estimatedTotal": "Total Estimé",
+        "commission": "Commission (10%)",
         "status": "Statut",
         "date": "Date",
         "actions": "Actions"
@@ -809,7 +832,9 @@
         "cancel": "Annuler",
         "close": "Fermer",
         "save": "Sauvegarder",
-        "saving": "Sauvegarde..."
+        "saving": "Sauvegarde...",
+        "update":"Mettre à Jour",
+        "updating":"Mise à Jour..."
       },
       "details": {
         "title": "Détails de la Réservation",
@@ -890,7 +915,10 @@
         "cancel": "Annuler",
         "close": "Fermer",
         "save": "Sauvegarder",
-        "saving": "Sauvegarde..."
+        "saving": "Sauvegarde...",
+        "update": "Mettre à Jour",
+        "updating": "Mise à Jour...",
+        "updateSale": "Mettre à Jour la Vente"
       },
       "details": {
         "title": "Détails de la Commande",
@@ -980,10 +1008,32 @@
     "successPending": "Réservation réussie ! En attente d'approbation. Consultez Mes Réservations ou contactez-nous.",
     "viewBookings": "Voir Mes Réservations",
     "error": "Échec de l'envoi de la demande de réservation. Veuillez réessayer.",
+    "hour": "heure",
     "hours": "heures",
+    "day": "jour",
     "days": "jours",
+    "month": "mois",
     "months": "mois",
     "km": "km",
-    "tons": "tonnes"
+    "ton": "tonne",
+    "tons": "tonnes",
+    "transportRequired": "Transport Requis",
+    "transportOptional": "Transport (Optionnel)",
+    "addTransport": "Ajouter service de transport",
+    "porteChar": "Porte-Char",
+    "viewDetails": "Voir Détails",
+    "changePorteChar": "Changer Porte-Char",
+    "selectPorteChar": "Sélectionner Porte-Char",
+    "otherSuppliers": "Autres Fournisseurs",
+    "estimatedDistance": "Distance Estimée",
+    "ratePerKm": "par km",
+    "transportCost": "Coût Transport",
+    "costBreakdown": "Détail des Coûts",
+    "equipment": "Équipement",
+    "transport": "Transport",
+    "noTransportAvailable": "Aucun transport disponible",
+    "contactPlatform": "Veuillez contacter la plateforme pour assistance",
+    "confirmSelection": "Confirmer la Sélection",
+    "loading": "Chargement..."
   }
 }

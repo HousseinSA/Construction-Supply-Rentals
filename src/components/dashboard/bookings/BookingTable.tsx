@@ -66,7 +66,6 @@ export default function BookingTable() {
     },
   })
 
-  // Apply custom search for nested arrays
   const filteredData = useMemo(() => {
     if (!searchValue.trim()) return baseFiltered
     const searchLower = searchValue.toLowerCase()
@@ -128,12 +127,9 @@ export default function BookingTable() {
                 <ArrowLeft className="h-5 w-5 text-gray-600" />
               </Link>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">
+                <h1 className="text-2xl font-bold text-primary">
                   {tPages("bookings.title")}
                 </h1>
-                <p className="text-gray-600 text-sm">
-                  {tPages("bookings.subtitle")}
-                </p>
               </div>
             </div>
             <HomeButton />

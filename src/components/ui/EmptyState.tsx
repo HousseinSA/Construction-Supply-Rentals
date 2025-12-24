@@ -25,14 +25,12 @@ export default function EmptyState({
       const isForSale = listingType === 'forSale'
       
       if (isForSale) {
-        // For equipment for sale, don't show city-specific messages since we show all equipment for sale
         return {
           icon: icon || <Search size={64} className="text-gray-400" />,
           title: equipmentT("noEquipmentForSaleFound"),
           description: equipmentT("noEquipmentForSaleFoundDesc"),
         }
       } else {
-        // For regular equipment (for rent), show city-specific messages if city is selected
         const baseTitle = equipmentT("noEquipmentFound")
         const baseTitleWithCity = equipmentT("noEquipmentInCity")
         const baseDesc = equipmentT("noEquipmentFoundDesc")

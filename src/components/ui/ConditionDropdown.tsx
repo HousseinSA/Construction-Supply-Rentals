@@ -4,11 +4,13 @@ import Dropdown from "./Dropdown"
 interface ConditionDropdownProps {
   value: string
   onChange: (value: string) => void
+  required?: boolean
 }
 
 export default function ConditionDropdown({
   value,
   onChange,
+  required = true,
 }: ConditionDropdownProps) {
   const t = useTranslations("dashboard.equipment")
 
@@ -26,7 +28,7 @@ export default function ConditionDropdown({
       value={value}
       onChange={onChange}
       placeholder={t("selectCondition")}
-      required
+      required={required}
     />
   )
 }

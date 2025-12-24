@@ -17,7 +17,6 @@ import { Link } from "@/src/i18n/navigation"
 import ConfirmModal from "@/src/components/ui/ConfirmModal"
 import { AlertTriangle } from "lucide-react"
 import GenericMobileCard from "@/src/components/ui/GenericMobileCard"
-import { formatBookingId } from "@/src/lib/format"
 import { formatReferenceNumber } from "@/src/lib/format-reference"
 import { useTransactionCancel } from "@/src/hooks/useTransactionCancel"
 
@@ -129,7 +128,7 @@ export default function RenterPurchasesView() {
             {paginatedData.map((purchase) => (
               <tr key={purchase._id}>
                 <TableCell className="w-24">
-                  <div className="font-semibold text-orange-600 text-xs" dir="ltr">
+                  <div className="font-semibold text-orange-600 text-sm" dir="ltr">
                     {formatReferenceNumber(purchase.referenceNumber)}
                   </div>
                 </TableCell>

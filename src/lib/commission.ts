@@ -9,5 +9,5 @@ export function calculateBookingCommission(bookingItems: any[]): number {
 }
 
 export function calculateSaleCommission(salePrice: number): number {
-  return salePrice * 0.05 // 5% fixed for sales
+  return salePrice * 0.05 
 }

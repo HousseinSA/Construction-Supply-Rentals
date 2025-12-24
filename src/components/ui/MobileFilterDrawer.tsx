@@ -43,6 +43,11 @@ export default function MobileFilterDrawer({
     onClose()
   }
 
+  const handleClear = () => {
+    const clearedFilters = Object.keys(tempFilters).reduce((acc, key) => ({ ...acc, [key]: "all" }), {})
+    setTempFilters(clearedFilters)
+  }
+
   return (
     <>
       {/* Backdrop */}
@@ -89,12 +94,18 @@ export default function MobileFilterDrawer({
           </div>
 
           {/* Footer */}
-          <div className="p-4 border-t border-gray-200">
+          <div className="p-4 border-t border-gray-200 space-y-2">
             <button
               onClick={handleApply}
               className="w-full px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium"
             >
               {t("applyFilters")}
+            </button>
+            <button
+              onClick={handleClear}
+              className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+            >
+              {t("clearFilters")}
             </button>
           </div>
         </div>

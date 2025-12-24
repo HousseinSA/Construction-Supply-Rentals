@@ -1,18 +1,18 @@
 "use client"
 
-import { useRef, useState, useMemo } from "react"
+import { useMemo, useState, useRef } from "react"
 import { useTranslations } from "next-intl"
+import { useParams } from "next/navigation"
 import { Send } from "lucide-react"
 import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
 import { useBookingModal } from "@/src/hooks/useBookingModal"
-import { useModalClose } from "@/src/hooks/useModalClose"
-import Button from "@/src/components/ui/Button"
+import BaseRequestModal from "@/src/components/shared/BaseRequestModal"
 import Input from "@/src/components/ui/Input"
 import Dropdown from "@/src/components/ui/Dropdown"
-import ModalHeader from "./ModalHeader"
-import EquipmentInfo from "./EquipmentInfo"
 import PriceCalculation from "./PriceCalculation"
+import TransportSection from "./TransportSection"
 import { PricingType } from "@/src/lib/types"
+import { requiresTransport } from "@/src/lib/constants/transport"
 
 interface BookingModalProps {
   isOpen: boolean
@@ -68,19 +68,19 @@ export default function BookingModal({
     return types
   }, [equipment, tCommon])
 
+  const params = useParams()
+  const locale = params?.locale as string || 'fr'
+  
   const [selectedPricingType, setSelectedPricingType] = useState<PricingType>(
     availablePricingTypes[0]?.type || "daily"
   )
+  const [selectedPorteChar, setSelectedPorteChar] = useState<any>(null)
+  const [distance, setDistance] = useState(0)
+
+  const needsTransport = requiresTransport(equipment?.name || '')
 
   const { usage, setUsage, message, setMessage, loading, handleSubmit, resetForm } =
-    useBookingModal(equipment, onBookingSuccess, onClose, selectedPricingType)
-
-  const handleClose = () => {
-    resetForm()
-    onClose()
-  }
-
-  useModalClose(isOpen, handleClose, modalRef)
+    useBookingModal(equipment, onBookingSuccess, onClose, selectedPricingType, selectedPorteChar, distance)
 
   if (!isOpen || !equipment) return null
 
@@ -91,86 +91,91 @@ export default function BookingModal({
   const unit = selectedPricing?.label || ""
   const subtotal = rate * usage
   const usageLabel = unit
+  
+  const transportCost = selectedPorteChar && distance > 0
+    ? selectedPorteChar.pricing.kmRate * distance
+    : 0
+  const grandTotal = subtotal + transportCost
 
   return (
-    <div
-      ref={modalRef}
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60] p-4 animate-in fade-in duration-150"
+    <BaseRequestModal
+      isOpen={isOpen}
+      onClose={() => {
+        resetForm()
+        onClose()
+      }}
+      title={t("title")}
+      equipmentName={equipment.name}
+      equipmentLocation={equipment.location}
+      message={message}
+      onMessageChange={setMessage}
+      onSubmit={handleSubmit}
+      loading={loading}
+      submitLabel={t("sendRequest")}
+      submittingLabel={t("sending")}
+      messageLabel={t("message")}
+      optionalLabel={t("optional")}
+      messagePlaceholder={t("messagePlaceholder")}
+      submitIcon={<Send className="w-4 h-4" />}
     >
-      <div className="bg-white rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom-4 duration-200">
-        <div className="p-6">
-          <ModalHeader title={t("title")} onClose={handleClose} />
-          <EquipmentInfo name={equipment.name} location={equipment.location} />
+      {availablePricingTypes.length > 1 && (
+        <Dropdown
+          label={t("pricingType")}
+          options={availablePricingTypes.map((pricing) => {
+            return {
+              value: pricing.type,
+              label: `${pricing.rate.toLocaleString()} MRU / ${pricing.label}`,
+            }
+          })}
+          value={selectedPricingType}
+          onChange={(value) => {
+            setSelectedPricingType(value as PricingType)
+            setUsage(0)
+          }}
+          useAbsolutePosition
+          priceDisplay
+        />
+      )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {availablePricingTypes.length > 1 && (
-              <Dropdown
-                label={t("pricingType")}
-                options={availablePricingTypes.map((pricing) => {
-                  return {
-                    value: pricing.type,
-                    label: `${pricing.rate.toLocaleString()} MRU / ${pricing.label}`,
-                  }
-                })}
-                value={selectedPricingType}
-                onChange={(value) => {
-                  setSelectedPricingType(value as PricingType)
-                  setUsage(0)
-                }}
-                useAbsolutePosition
-                priceDisplay
-              />
-            )}
+      <Input
+        type="text"
+        label={`${t("usage")} (${usageLabel})`}
+        value={usage}
+        onChange={(e) => {
+          const val = e.target.value.replace(/\D/g, "")
+          setUsage(val ? Number(val) : 0)
+        }}
+        required
+      />
 
-            <Input
-              type="text"
-              label={`${t("usage")} (${usageLabel})`}
-              value={usage}
-              onChange={(e) => {
-                const val = e.target.value.replace(/\D/g, "")
-                setUsage(val ? Number(val) : 0)
-              }}
-              required
-            />
+      {needsTransport && (
+        <TransportSection
+          isRequired={true}
+          selectedPorteChar={selectedPorteChar}
+          distance={distance}
+          onPorteCharChange={setSelectedPorteChar}
+          onDistanceChange={setDistance}
+          locale={locale}
+        />
+      )}
 
-            <PriceCalculation
-              rate={rate}
-              unit={unit}
-              usage={usage}
-              usageLabel={usageLabel}
-              subtotal={subtotal}
-              labels={{
-                calculation: t("calculation"),
-                rate: t("rate"),
-                usage: t("usage"),
-                total: t("estimatedTotal"),
-              }}
-            />
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t("message")} ({t("optional")})
-              </label>
-              <textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                rows={3}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition-all duration-200"
-                placeholder={t("messagePlaceholder")}
-              />
-            </div>
-
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full flex items-center justify-center gap-2"
-            >
-              <Send className="w-4 h-4" />
-              {loading ? t("sending") : t("sendRequest")}
-            </Button>
-          </form>
+      <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+        <p className="text-sm font-semibold text-gray-700">{t("costBreakdown")}</p>
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-600">{t("equipment")}:</span>
+          <span className="font-medium" dir="ltr">{subtotal.toLocaleString()} MRU</span>
+        </div>
+        {transportCost > 0 && (
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-600">{t("transport")}:</span>
+            <span className="font-medium" dir="ltr">{transportCost.toLocaleString()} MRU</span>
+          </div>
+        )}
+        <div className="border-t pt-2 flex justify-between">
+          <span className="font-semibold">{t("estimatedTotal")}:</span>
+          <span className="font-bold text-primary text-lg" dir="ltr">{grandTotal.toLocaleString()} MRU</span>
         </div>
       </div>
-    </div>
+    </BaseRequestModal>
   )
 }

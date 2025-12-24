@@ -25,7 +25,6 @@ export async function GET(request: Request) {
     if (categoryId) {
       query.categoryId = new ObjectId(categoryId)
     } else if (category) {
-      // First try to find by slug, then fallback to name matching
       const categoryDoc = await db.collection("categories").findOne({
         $or: [
           { slug: category },
@@ -41,13 +40,11 @@ export async function GET(request: Request) {
       query.categoryId = { $nin: excludedCategoryIds.map((cat) => cat._id) }
     }
 
-    // Get active bookings (pending or paid)
     const activeBookings = await db
       .collection("bookings")
       .find({ status: { $in: ["pending", "paid"] } })
       .toArray()
 
-    // Extract equipment IDs from active bookings
     const bookedEquipmentIds = new Set(
       activeBookings.flatMap((booking) =>
         booking.bookingItems.map((item: any) => item.equipmentId.toString())
@@ -92,9 +89,7 @@ export async function GET(request: Request) {
       ])
       .toArray()
 
-    // Filter out booked equipment from the count
     const equipmentTypesWithAvailableCount = equipmentTypes.map((type: any) => {
-      // Count only forRent equipment that is not currently booked
       const forRentEquipment = type.equipment?.filter((eq: any) => 
         eq.listingType !== "forSale"
       ) || []

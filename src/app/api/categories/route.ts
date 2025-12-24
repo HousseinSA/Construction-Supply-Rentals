@@ -5,7 +5,6 @@ export async function GET() {
   try {
     const db = await connectDB()
     
-    // Get all categories with equipment type counts (excluding specific categories)
     const excludedCategories = ['Engins spécialisés', 'Engins légers et auxiliaires']
     
     const categories = await db.collection('categories').aggregate([

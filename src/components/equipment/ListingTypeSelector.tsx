@@ -3,11 +3,13 @@ import { useTranslations } from "next-intl"
 interface ListingTypeSelectorProps {
   value: "forSale" | "forRent"
   onChange: (value: "forSale" | "forRent") => void
+  disabled?: boolean
 }
 
 export default function ListingTypeSelector({
   value,
   onChange,
+  disabled = false,
 }: ListingTypeSelectorProps) {
   const t = useTranslations("dashboard.equipment")
 
@@ -20,11 +22,12 @@ export default function ListingTypeSelector({
         <button
           type="button"
           onClick={() => onChange("forRent")}
+          disabled={disabled}
           className={`p-4 border-2 rounded-xl transition-all duration-200 ${
             value === "forRent"
               ? "border-primary bg-primary/5"
               : "border-gray-200 hover:border-gray-300"
-          }`}
+          } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
         >
           <div className="flex items-center gap-3">
             <div
@@ -45,11 +48,12 @@ export default function ListingTypeSelector({
         <button
           type="button"
           onClick={() => onChange("forSale")}
+          disabled={disabled}
           className={`p-4 border-2 rounded-xl transition-all duration-200 ${
             value === "forSale"
               ? "border-primary bg-primary/5"
               : "border-gray-200 hover:border-gray-300"
-          }`}
+          } ${disabled ? "opacity-50 cursor-not-allowed" : ""}` }
         >
           <div className="flex items-center gap-3">
             <div

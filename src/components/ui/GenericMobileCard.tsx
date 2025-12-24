@@ -55,7 +55,7 @@ export default function GenericMobileCard({
       {title && (
         <div className="flex gap-3">
           {image && <div className="flex-shrink-0">{image}</div>}
-          <div className="flex-1">
+          <div className="flex items-center ">
             <div className="text-sm font-medium text-gray-900">{title}</div>
           </div>
         </div>

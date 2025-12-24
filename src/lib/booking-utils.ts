@@ -68,11 +68,9 @@ export async function checkEquipmentAvailability(
 export async function validateReferences(db: Db, booking: any): Promise<string[]> {
   const errors: string[] = [];
 
-  // Check renter exists
   const renter = await db.collection('users').findOne({ _id: new ObjectId(booking.renterId) });
   if (!renter) errors.push('Renter not found');
 
-  // Check equipment exists, is approved, and available
   for (const item of booking.bookingItems) {
     const equipmentId = new ObjectId(item.equipmentId);
     const equipment = await db.collection('equipment').findOne({ _id: equipmentId });

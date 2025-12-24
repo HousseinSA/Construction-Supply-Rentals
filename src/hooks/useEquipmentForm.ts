@@ -35,6 +35,10 @@ export function useEquipmentForm(equipmentId?: string) {
   const tToast = useTranslations("toast")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [images, setImages] = useState<UploadedImage[]>([])
+  const [equipment, setEquipment] = useState<any>(null)
+  const [hasActiveBookings, setHasActiveBookings] = useState(false)
+  const [ownershipError, setOwnershipError] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [formData, setFormData] = useState<FormData>({
     category: "",
     type: "",
@@ -60,10 +64,19 @@ export function useEquipmentForm(equipmentId?: string) {
   const loadEquipment = async () => {
     if (!equipmentId) return
     try {
+      setLoading(true)
       const response = await fetch(`/api/equipment/${equipmentId}?admin=true`)
       const data = await response.json()
-      if (data.success) {
-        const eq = data.data
+      
+      if (!data.success) {
+        setOwnershipError(true)
+        setLoading(false)
+        return
+      }
+      
+      const eq = data.data
+      setEquipment(eq)
+      setHasActiveBookings(eq.hasActiveBookings || false)
         const usageValue = eq.specifications?.hoursUsed
           ? String(eq.specifications.hoursUsed)
           : eq.specifications?.kilometersUsed
@@ -104,9 +117,11 @@ export function useEquipmentForm(equipmentId?: string) {
             return { url, public_id }
           })
         )
-      }
+      setLoading(false)
     } catch (error) {
       console.error("Error loading equipment:", error)
+      setOwnershipError(true)
+      setLoading(false)
     }
   }
 
@@ -179,7 +194,7 @@ export function useEquipmentForm(equipmentId?: string) {
         formData.kmRate ||
         formData.tonRate
       if (!hasAnyPrice) {
-        toast.error("Au moins un prix doit être renseigné")
+        toast.error(tToast("priceRequired"))
         return false
       }
     }
@@ -207,7 +222,6 @@ export function useEquipmentForm(equipmentId?: string) {
           pricing.hourlyRate = parseFloat(formData.hourlyRate)
         if (formData.dailyRate) {
           pricing.dailyRate = parseFloat(formData.dailyRate)
-          // Auto-calculate monthly rate: dailyRate × 30 days
           pricing.monthlyRate = parseFloat(formData.dailyRate) * 30
         }
         if (formData.kmRate) pricing.kmRate = parseFloat(formData.kmRate)
@@ -225,7 +239,6 @@ export function useEquipmentForm(equipmentId?: string) {
         }),
       }
 
-      // Add usage based on user's selected unit
       if (formData.usageValue) {
         const usageNum = parseInt(formData.usageValue)
         specifications.usageUnit = formData.usageUnit
@@ -239,15 +252,39 @@ export function useEquipmentForm(equipmentId?: string) {
         }
       }
 
-      const equipmentData = {
+      const equipmentData: any = {
         description: formData.description.trim(),
         categoryId: formData.category,
         equipmentTypeId: formData.type,
-        pricing,
         location: formData.location,
         images: images.map((img) => img.url),
         specifications,
         listingType: formData.listingType,
+      }
+
+      // Only include pricing if it changed (for edit mode)
+      if (equipmentId && equipment) {
+        // Normalize pricing objects for comparison
+        const normalizePricing = (p: any) => {
+          const normalized: any = {}
+          if (p.hourlyRate) normalized.hourlyRate = parseFloat(String(p.hourlyRate))
+          if (p.dailyRate) normalized.dailyRate = parseFloat(String(p.dailyRate))
+          if (p.kmRate) normalized.kmRate = parseFloat(String(p.kmRate))
+          if (p.tonRate) normalized.tonRate = parseFloat(String(p.tonRate))
+          if (p.salePrice) normalized.salePrice = parseFloat(String(p.salePrice))
+          return normalized
+        }
+        
+        const currentPricing = normalizePricing(equipment.pricing)
+        const newPricing = normalizePricing(pricing)
+        const pricingChanged = JSON.stringify(currentPricing) !== JSON.stringify(newPricing)
+        
+        if (pricingChanged) {
+          equipmentData.pricing = pricing
+        }
+      } else {
+        // Always include pricing for new equipment
+        equipmentData.pricing = pricing
       }
 
       const url = equipmentId
@@ -290,6 +327,10 @@ export function useEquipmentForm(equipmentId?: string) {
     formData,
     images,
     isSubmitting,
+    equipment,
+    hasActiveBookings,
+    ownershipError,
+    loading,
     setImages,
     handleInputChange,
     handleNumericInputChange,

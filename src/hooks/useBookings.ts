@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { useBookingsStore, BookingWithDetails } from '@/src/stores/bookingsStore'
-import { useRealtime } from './useRealtime'
+import { useSSE } from './useSSE'
 
 export function useBookings() {
   const { data: session } = useSession()
@@ -13,15 +13,7 @@ export function useBookings() {
       setLoading(true)
       setError(null)
       
-      // Build URL with filters based on user type
-      let url = '/api/bookings'
-      if (session?.user?.userType === 'renter' && session?.user?.id) {
-        url += `?renterId=${session.user.id}`
-      } else if (session?.user?.userType === 'supplier' && session?.user?.id) {
-        url += `?supplierId=${session.user.id}`
-      }
-      
-      const response = await fetch(url)
+      const response = await fetch('/api/bookings')
       const data = await response.json()
       if (data.success) {
         setBookings(data.data || [])
@@ -56,7 +48,7 @@ export function useBookings() {
     }
   }
 
-  useRealtime('booking', useCallback(() => {
+  useSSE('booking', useCallback(() => {
     fetchBookings()
   }, [fetchBookings]))
 

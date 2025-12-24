@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react"
-import { useRealtime } from './useRealtime'
+import { useSSE } from './useSSE'
 
 interface Pricing {
   dailyRate?: number
@@ -47,7 +47,7 @@ export function useEquipment(selectedCity?: string | null, selectedType?: string
     }
   }, [selectedCity, selectedType, listingType])
 
-  useRealtime('equipment', useCallback(() => {
+  useSSE('equipment', useCallback(() => {
     fetchEquipment()
   }, [fetchEquipment]))
 

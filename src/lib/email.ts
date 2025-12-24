@@ -240,66 +240,62 @@ export async function sendNewEquipmentEmail(
   });
 }
 
-export async function sendSaleCancellationEmail(
-  adminEmail: string,
-  cancellationDetails: { 
-    referenceNumber: string;
-    equipmentName: string; 
-    salePrice: number; 
-    buyerName: string; 
-    buyerPhone: string;
-    buyerLocation?: string;
-    cancellationDate: Date;
-    supplierName?: string;
-    supplierPhone?: string;
+export async function sendPricingApprovalEmail(
+  supplierEmail: string,
+  details: {
+    equipmentName: string;
+    supplierName: string;
   }
 ) {
   await transporter.sendMail({
     from: `"Kriliy Engin" <${process.env.EMAIL_USER}>`,
-    to: adminEmail,
-    subject: 'Annulation d\'achat - Kriliy Engin',
+    to: supplierEmail,
+    subject: 'Tarification approuvée - Kriliy Engin',
     html: `
       <!DOCTYPE html>
       <html>
         <head>
           <meta charset="utf-8">
         </head>
-        <body style="font-family: Arial, sans-serif; line-height: 1.5; color: #111; max-width: 600px; margin: 0 auto; padding: 0;">
-          <div style="padding: 20px 0; border-bottom: 1px solid #ddd;">
-            <h2 style="margin: 0; font-size: 18px; font-weight: 600;">Kriliy Engin</h2>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background: #f0fdf4; border-left: 4px solid #22c55e; padding: 15px; margin-bottom: 20px;">
+            <h2 style="margin: 0; color: #16a34a;">✓ Tarification Approuvée</h2>
           </div>
-          <div style="padding: 24px 0;">
-            <div style="background: #fef2f2; border-left: 4px solid #dc2626; padding: 12px 16px; margin: 0 0 20px 0;">
-              <h1 style="font-size: 20px; font-weight: 600; margin: 0 0 4px 0; color: #dc2626;">Annulation d'achat</h1>
-              <p style="margin: 0; font-size: 13px; color: #991b1b;">Un client a annulé sa demande d'achat</p>
-            </div>
-            <p style="margin: 0 0 20px 0; font-size: 13px; color: #565959;">Référence: ${cancellationDetails.referenceNumber}</p>
-            
-            <div style="border: 1px solid #ddd; border-radius: 4px; padding: 16px; margin: 16px 0;">
-              <h3 style="font-size: 14px; font-weight: 600; margin: 0 0 12px 0;">Informations acheteur</h3>
-              <table style="width: 100%; font-size: 13px;">
-                <tr><td style="padding: 4px 0; color: #565959;">Nom</td><td style="padding: 4px 0;">${cancellationDetails.buyerName}</td></tr>
-                <tr><td style="padding: 4px 0; color: #565959;">Téléphone</td><td style="padding: 4px 0;">${cancellationDetails.buyerPhone}</td></tr>
-                ${cancellationDetails.buyerLocation ? `<tr><td style="padding: 4px 0; color: #565959;">Localisation</td><td style="padding: 4px 0;">${cancellationDetails.buyerLocation}</td></tr>` : ''}
-                <tr><td style="padding: 4px 0; color: #565959;">Date d'annulation</td><td style="padding: 4px 0;">${new Date(cancellationDetails.cancellationDate).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td></tr>
-              </table>
-            </div>
+          <p>Bonjour ${details.supplierName},</p>
+          <p>Votre demande de modification de tarification pour <strong>${details.equipmentName}</strong> a été approuvée.</p>
+        </body>
+      </html>
+    `,
+  });
+}
 
-            <div style="border: 1px solid #ddd; border-radius: 4px; padding: 16px; margin: 16px 0;">
-              <h3 style="font-size: 14px; font-weight: 600; margin: 0 0 12px 0;">Équipement annulé</h3>
-              <p style="margin: 0 0 8px 0; font-size: 13px;">${cancellationDetails.equipmentName}</p>
-              <p style="margin: 0; font-size: 16px; font-weight: 700; color: #dc2626;">${cancellationDetails.salePrice.toLocaleString('fr-FR')} MRU</p>
-            </div>
-
-            ${cancellationDetails.supplierName ? `<div style="border: 1px solid #ddd; border-radius: 4px; padding: 16px; margin: 16px 0;">
-              <h3 style="font-size: 14px; font-weight: 600; margin: 0 0 12px 0;">Fournisseur concerné</h3>
-              <p style="margin: 0 0 4px 0; font-size: 13px;"><strong>${cancellationDetails.supplierName === 'admin' ? 'Administrateur' : cancellationDetails.supplierName}</strong></p>
-              ${cancellationDetails.supplierName !== 'admin' && cancellationDetails.supplierPhone ? `<p style="margin: 0; font-size: 13px; color: #565959;">${cancellationDetails.supplierPhone}</p>` : ''}
-            </div>` : ''}
-
-            <div style="margin: 24px 0;">
-              <a href="${process.env.NEXTAUTH_URL}/fr/dashboard/sales" style="background: #f97316; color: white; padding: 8px 16px; text-decoration: none; border-radius: 3px; display: inline-block; font-size: 13px;">Voir les détails</a>
-            </div>
+export async function sendPricingRejectionEmail(
+  supplierEmail: string,
+  details: {
+    equipmentName: string;
+    supplierName: string;
+    rejectionReason: string;
+  }
+) {
+  await transporter.sendMail({
+    from: `"Kriliy Engin" <${process.env.EMAIL_USER}>`,
+    to: supplierEmail,
+    subject: 'Tarification refusée - Kriliy Engin',
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+        </head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; margin-bottom: 20px;">
+            <h2 style="margin: 0; color: #dc2626;">Tarification Refusée</h2>
+          </div>
+          <p>Bonjour ${details.supplierName},</p>
+          <p>Votre demande de modification de tarification pour <strong>${details.equipmentName}</strong> a été refusée.</p>
+          <div style="background: #f9fafb; padding: 15px; border-radius: 5px; margin: 20px 0;">
+            <strong>Raison:</strong><br>
+            ${details.rejectionReason}
           </div>
         </body>
       </html>
@@ -307,75 +303,29 @@ export async function sendSaleCancellationEmail(
   });
 }
 
-export async function sendBookingCancellationEmail(
-  adminEmail: string,
-  cancellationDetails: { 
-    referenceNumber: string;
-    equipmentNames: string[]; 
-    totalPrice: number; 
-    renterName: string; 
-    renterPhone: string;
-    renterLocation?: string;
-    cancellationDate: Date;
-    suppliers: Array<{ name: string; phone: string; equipment: string; duration: string }>;
+export async function sendEquipmentApprovalEmail(
+  supplierEmail: string,
+  details: {
+    equipmentName: string;
+    supplierName: string;
   }
 ) {
-  const equipmentList = cancellationDetails.equipmentNames.map(name => `<li style="margin: 5px 0;">${name}</li>`).join('');
-  const suppliersList = cancellationDetails.suppliers.map(s => 
-    `<div style="border-top: 1px solid #e7e7e7; padding: 12px 0; font-size: 13px;">
-      <p style="margin: 0 0 4px 0;"><strong>${s.name === 'admin' ? 'Fournisseur: Administrateur' : s.name}</strong></p>
-      ${s.name !== 'admin' ? `<p style="margin: 0 0 4px 0; color: #565959;">${s.phone}</p>` : ''}
-      <p style="margin: 0 0 4px 0;">${s.equipment}</p>
-      <p style="margin: 0; color: #565959;">${s.duration}</p>
-    </div>`
-  ).join('');
-  
   await transporter.sendMail({
     from: `"Kriliy Engin" <${process.env.EMAIL_USER}>`,
-    to: adminEmail,
-    subject: 'Annulation de location - Kriliy Engin',
+    to: supplierEmail,
+    subject: 'Matériel approuvé - Kriliy Engin',
     html: `
       <!DOCTYPE html>
       <html>
         <head>
           <meta charset="utf-8">
         </head>
-        <body style="font-family: Arial, sans-serif; line-height: 1.5; color: #111; max-width: 600px; margin: 0 auto; padding: 0;">
-          <div style="padding: 20px 0; border-bottom: 1px solid #ddd;">
-            <h2 style="margin: 0; font-size: 18px; font-weight: 600;">Kriliy Engin</h2>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background: #f0fdf4; border-left: 4px solid #22c55e; padding: 15px; margin-bottom: 20px;">
+            <h2 style="margin: 0; color: #16a34a;">✓ Matériel Approuvé</h2>
           </div>
-          <div style="padding: 24px 0;">
-            <div style="background: #fef2f2; border-left: 4px solid #dc2626; padding: 12px 16px; margin: 0 0 20px 0;">
-              <h1 style="font-size: 20px; font-weight: 600; margin: 0 0 4px 0; color: #dc2626;">Annulation de location</h1>
-              <p style="margin: 0; font-size: 13px; color: #991b1b;">Un client a annulé sa demande de location</p>
-            </div>
-            <p style="margin: 0 0 20px 0; font-size: 13px; color: #565959;">Référence: ${cancellationDetails.referenceNumber}</p>
-            
-            <div style="border: 1px solid #ddd; border-radius: 4px; padding: 16px; margin: 16px 0;">
-              <h3 style="font-size: 14px; font-weight: 600; margin: 0 0 12px 0;">Informations client</h3>
-              <table style="width: 100%; font-size: 13px;">
-                <tr><td style="padding: 4px 0; color: #565959;">Nom</td><td style="padding: 4px 0;">${cancellationDetails.renterName}</td></tr>
-                <tr><td style="padding: 4px 0; color: #565959;">Téléphone</td><td style="padding: 4px 0;">${cancellationDetails.renterPhone}</td></tr>
-                ${cancellationDetails.renterLocation ? `<tr><td style="padding: 4px 0; color: #565959;">Localisation</td><td style="padding: 4px 0;">${cancellationDetails.renterLocation}</td></tr>` : ''}
-                <tr><td style="padding: 4px 0; color: #565959;">Date d'annulation</td><td style="padding: 4px 0;">${new Date(cancellationDetails.cancellationDate).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td></tr>
-              </table>
-            </div>
-
-            <div style="border: 1px solid #ddd; border-radius: 4px; padding: 16px; margin: 16px 0;">
-              <h3 style="font-size: 14px; font-weight: 600; margin: 0 0 12px 0;">Équipements annulés</h3>
-              <ul style="margin: 0; padding-left: 20px; font-size: 13px;">${equipmentList}</ul>
-              <p style="margin: 12px 0 0 0; font-size: 16px; font-weight: 700; color: #dc2626;">Montant annulé: ${cancellationDetails.totalPrice.toLocaleString('fr-FR')} MRU</p>
-            </div>
-
-            ${suppliersList ? `<div style="border: 1px solid #ddd; border-radius: 4px; padding: 16px; margin: 16px 0;">
-              <h3 style="font-size: 14px; font-weight: 600; margin: 0 0 12px 0;">Fournisseurs concernés</h3>
-              ${suppliersList}
-            </div>` : ''}
-
-            <div style="margin: 24px 0;">
-              <a href="${process.env.NEXTAUTH_URL}/fr/dashboard/bookings" style="background: #f97316; color: white; padding: 8px 16px; text-decoration: none; border-radius: 3px; display: inline-block; font-size: 13px;">Voir les détails</a>
-            </div>
-          </div>
+          <p>Bonjour ${details.supplierName},</p>
+          <p>Votre matériel <strong>${details.equipmentName}</strong> a été approuvé et est maintenant visible sur la plateforme.</p>
         </body>
       </html>
     `,

@@ -13,11 +13,13 @@ interface EquipmentListProps {
   totalPages: number
   totalItems: number
   itemsPerPage: number
-  onStatusChange: (id: string, action: "approve" | "reject") => void
+  onStatusChange: (id: string, action: "approve" | "reject", reason?: string) => void
   onAvailabilityChange: (id: string, isAvailable: boolean) => void
   onNavigate: (url: string, id: string) => void
   onPageChange: (page: number) => void
-  t: any
+  onPricingReview?: (item: EquipmentWithSupplier) => void
+  onResubmit?: (id: string) => void
+  t:any
   isSupplier?: boolean
 }
 
@@ -33,6 +35,8 @@ export default function EquipmentList({
   onAvailabilityChange,
   onNavigate,
   onPageChange,
+  onPricingReview,
+  onResubmit,
   t,
   isSupplier = false,
 }: EquipmentListProps) {
@@ -47,7 +51,7 @@ export default function EquipmentList({
               <TableHead>{t("name")}</TableHead>
               <TableHead>{t("location")}</TableHead>
               <TableHead>{t("price")}</TableHead>
-              <TableHead>{t("supplierInfo")}</TableHead>
+              {!isSupplier && <TableHead>{t("supplierInfo")}</TableHead>}
               <TableHead align="center">{t("createdAt")}</TableHead>
               <TableHead align="center">{t("status")}</TableHead>
               <TableHead align="center">{t("availability")}</TableHead>
@@ -64,6 +68,8 @@ export default function EquipmentList({
                 onStatusChange={onStatusChange}
                 onAvailabilityChange={onAvailabilityChange}
                 onNavigate={onNavigate}
+                onPricingReview={onPricingReview}
+                onResubmit={onResubmit}
                 isSupplier={isSupplier}
               />
             ))}
@@ -93,6 +99,8 @@ export default function EquipmentList({
               onStatusChange={onStatusChange}
               onAvailabilityChange={onAvailabilityChange}
               onNavigate={onNavigate}
+              onPricingReview={onPricingReview}
+              onResubmit={onResubmit}
               t={t}
               isSupplier={isSupplier}
             />

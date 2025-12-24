@@ -80,7 +80,6 @@ export default function ProfileSettings({
   if (isInitialLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
         <span className="mr-3 text-gray-600">{t("equipment.loading")}</span>
       </div>
     )
@@ -93,8 +92,7 @@ export default function ProfileSettings({
           <Shield className="h-6 w-6 text-green-600" />
           <h2 className="text-xl font-semibold">{t(titleKey)}</h2>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6"  >
           <Input
             label={phoneLabel}
             type="text"
@@ -102,7 +100,6 @@ export default function ProfileSettings({
             onChange={(e) => setSettings({...settings, phone: e.target.value})}
             placeholder="+222 XX XXXXXX"
           />
-          
           <PasswordInput
             label={passwordLabel}
             value={settings.password}
