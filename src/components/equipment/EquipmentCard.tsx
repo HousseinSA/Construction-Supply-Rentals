@@ -13,7 +13,7 @@ import { getEquipmentImage } from "@/src/lib/equipment-images"
 import Button from "../ui/Button"
 import BookingModal from "../booking/BookingModal"
 import SaleModal from "../booking/SaleModal"
-import { MapPin, Tag, Clock, Gauge } from "lucide-react"
+import { MapPin, Tag, Clock, Gauge, Loader2 } from "lucide-react"
 
 interface Pricing {
   type?: string
@@ -62,6 +62,7 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
   const { getPriceData, formatPrice } = usePriceFormatter()
   const [showBookingModal, setShowBookingModal] = useState(false)
   const [showSaleModal, setShowSaleModal] = useState(false)
+  const [isNavigating, setIsNavigating] = useState(false)
   const isForSale = equipment.listingType === "forSale" || equipment.forSale
   const { rate, unit } = getPriceData(equipment.pricing, isForSale)
   const { displayPrice, displayUnit } = formatPrice(rate, unit)
@@ -91,6 +92,11 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
 
 
 
+  const handleNavigate = () => {
+    setIsNavigating(true)
+    router.push(`/equipment/${equipment._id}`)
+  }
+
   return (
     <div
       className={`bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full border ${
@@ -99,11 +105,11 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
           : isForSale
           ? "border-amber-400 ring-2 ring-amber-400/30"
           : "border-gray-100 hover:border-primary/20"
-      } group ${fontClass}`}
+      } group ${fontClass} ${isNavigating ? 'pointer-events-none opacity-75' : ''}`}
     >
       <div
         className="h-48 sm:h-52 relative overflow-hidden cursor-pointer"
-        onClick={() => router.push(`/equipment/${equipment._id}`)}
+        onClick={handleNavigate}
       >
         <Image
           src={
@@ -205,10 +211,18 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
             className="w-full"
             onClick={(e) => {
               e.stopPropagation()
-              router.push(`/equipment/${equipment._id}`)
+              handleNavigate()
             }}
+            disabled={isNavigating}
           >
-            {t("viewDetails")}
+            {isNavigating ? (
+              <div className="flex items-center justify-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>{t("loading")}</span>
+              </div>
+            ) : (
+              t("viewDetails")
+            )}
           </Button>
         </div>
       </div>
