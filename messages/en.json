@@ -7,6 +7,7 @@
     "dashboard": "Dashboard",
     "myBookings": "My Orders",
     "myTransactions": "My Orders",
+    "myOrders": "My Orders",
     "day": "day",
     "hour": "hour",
     "month": "month",
@@ -590,7 +591,6 @@
       "confirmAction": "Confirm Action",
       "confirmAvailability": "Mark this equipment as {status}?",
       "confirmApprove": "Approve this equipment?",
-      "confirmReject": "Reject this equipment?",
       "processing": "Processing...",
       "confirm": "Confirm",
       "equipmentUpdated": "Equipment updated successfully",
@@ -598,15 +598,14 @@
       "equipmentApproved": "Equipment approved successfully",
       "equipmentRejected": "Equipment rejected successfully",
       "availabilityUpdated": "Availability updated successfully",
-      "cannotEditActiveBooking": "Cannot edit - equipment has active bookings or pending sale",
+      "cannotEditActiveBooking": "equipment has active bookings or pending sale",
       "confirmApproveTitle": "Approve Equipment",
       "confirmApproveMessage": "Approve this equipment?",
       "confirmRejectTitle": "Reject Equipment",
       "confirmRejectMessage": "Provide a reason for rejecting this equipment",
       "sold": "Sold",
-      "retired": "Retired",
       "pricingUpdateRequest": "Pricing Update",
-      "pricingPendingApproval": "Pricing update pending admin approval",
+      "pricingPendingApproval": "Pricing pending approval",
       "reviewPricingRequest": "Review Pricing Request",
       "currentPricing": "Current Pricing",
       "requestedPricing": "Requested Pricing",
@@ -794,6 +793,7 @@
     },
     "bookings": {
       "admin": "Admin",
+      "adminOwned": "Admin Owned",
       "searchPlaceholder": "Search by renter, supplier, equipment...",
       "filters": {
         "status": "Status",
@@ -860,7 +860,8 @@
         "renterMessage": "Renter Message",
         "adminNotes": "Admin Notes",
         "adminNotesPlaceholder": "Add notes about arrangements, payment details, etc...",
-        "call": "Call"
+        "call": "Call",
+        "adminOwned": "Admin Owned Equipment"
       },
       "items": "Equipment",
       "more": "more",
@@ -900,7 +901,8 @@
         "supplier": "Supplier",
         "equipment": "Equipment",
         "price": "Sale Price",
-        "commission": "Commission (5%)",
+        "commission": "Commission",
+        "total": "Total",
         "status": "Status",
         "date": "Date",
         "actions": "Actions"
@@ -923,9 +925,11 @@
       },
       "details": {
         "title": "Sale Order Details",
+                "reference": "Reference",
         "saleInfo": "Sale Information",
         "saleId": "Sale ID",
         "equipment": "Equipment",
+        
         "salePrice": "Sale Price",
         "commission": "Commission (5%)",
         "createdAt": "Created Date",
@@ -935,7 +939,9 @@
         "email": "Email",
         "phone": "Phone",
         "status": "Status",
-        "buyerMessage": "Buyer Message"
+        "buyerMessage": "Buyer Message",
+        "adminOwned": "Admin Owned Equipment"
+
       },
       "noSales": "No Sales Found",
       "noResults": "No sales found matching your search",
@@ -946,9 +952,11 @@
       "loading": "Loading...",
       "statusUpdated": "Sale status updated successfully",
       "statusUpdateFailed": "Failed to update sale status",
+      "adminOwned": "Admin Owned",
       "equipment": {
         "createdByAdmin": "Created by Admin"
       }
+
     }
   },
   "toast": {

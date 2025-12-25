@@ -67,9 +67,9 @@ export default function TableFilters({
           </div>
 
           {/* Desktop Filters */}
-          <div className="hidden lg:flex gap-2 flex-wrap items-center">
+          <div className="hidden lg:flex gap-2 items-center flex-shrink-0">
             {filters.map((filter) => (
-              <div key={filter.key} className="min-w-[140px] flex-1 max-w-[200px]">
+              <div key={filter.key} className="min-w-[160px]">
                 <Dropdown
                   options={filter.options}
                   value={filterValues[filter.key] || "all"}
@@ -82,10 +82,10 @@ export default function TableFilters({
             {hasActiveFilters && (
               <button
                 onClick={handleClearAll}
-                className="flex items-center gap-1 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
+                className="flex items-center justify-center p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
+                title={t("clearFilters")}
               >
                 <X className="w-4 h-4" />
-                {t("clearFilters")}
               </button>
             )}
           </div>

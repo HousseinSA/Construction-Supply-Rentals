@@ -112,23 +112,23 @@ export default function RenterPurchasesView() {
 
   return (
     <>
-      <div className="hidden lg:block">
+      <div className="hidden lg:block overflow-x-auto">
         <Table>
           <TableHeader>
             <tr>
-              <TableHead>{t("table.reference")}</TableHead>
-              <TableHead>{t("table.equipment")}</TableHead>
-              <TableHead>{t("table.price")}</TableHead>
-              <TableHead align="center">{t("table.status")}</TableHead>
-              <TableHead align="center">{t("table.date")}</TableHead>
-              <TableHead align="center">{t("table.actions")}</TableHead>
+              <TableHead className="whitespace-nowrap">{t("table.reference")}</TableHead>
+              <TableHead className="whitespace-nowrap">{t("table.equipment")}</TableHead>
+              <TableHead className="whitespace-nowrap">{t("table.price")}</TableHead>
+              <TableHead align="center" className="whitespace-nowrap">{t("table.status")}</TableHead>
+              <TableHead align="center" className="whitespace-nowrap">{t("table.date")}</TableHead>
+              <TableHead align="center" className="whitespace-nowrap">{t("table.actions")}</TableHead>
             </tr>
           </TableHeader>
           <TableBody>
             {paginatedData.map((purchase) => (
               <tr key={purchase._id}>
                 <TableCell className="w-24">
-                  <div className="font-semibold text-orange-600 text-sm" dir="ltr">
+                  <div className="font-semibold text-primary text-sm whitespace-nowrap" dir="ltr">
                     {formatReferenceNumber(purchase.referenceNumber)}
                   </div>
                 </TableCell>
@@ -139,13 +139,13 @@ export default function RenterPurchasesView() {
                       alt={purchase.equipmentName}
                       size="lg"
                     />
-                    <div className="text-sm font-medium">
+                    <div className="text-sm font-medium text-gray-900 whitespace-nowrap">
                       {purchase.equipmentName}
                     </div>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <span className="font-semibold" dir="ltr">
+                  <span className="text-sm font-semibold text-gray-900 whitespace-nowrap" dir="ltr">
                     {purchase.salePrice.toLocaleString()} MRU
                   </span>
                 </TableCell>
@@ -153,7 +153,7 @@ export default function RenterPurchasesView() {
                   {getStatusBadge(purchase.status)}
                 </TableCell>
                 <TableCell align="center">
-                  <span className="text-sm text-gray-600">
+                  <span className="text-sm text-gray-600 whitespace-nowrap">
                     {new Date(purchase.createdAt).toLocaleDateString()}
                   </span>
                 </TableCell>
@@ -163,7 +163,7 @@ export default function RenterPurchasesView() {
                       href={`/equipment/${purchase.equipmentId}`}
                       className="inline-block p-2 hover:bg-gray-100 rounded-lg transition-colors"
                     >
-                      <Eye className="h-4 w-4 text-gray-600" />
+                      <Eye className="h-5 w-5 text-gray-600" />
                     </Link>
                     {purchase.status === "pending" && (
                       <button

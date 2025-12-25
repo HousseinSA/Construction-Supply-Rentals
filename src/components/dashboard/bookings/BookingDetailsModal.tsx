@@ -136,7 +136,9 @@ export default function BookingDetailsModal({
     },
     {
       label: t("details.commission"),
-      value: `${totalCommission.toLocaleString()} MRU`,
+      value: booking.hasAdminCreatedEquipment 
+        ? t("details.adminOwned")
+        : `${totalCommission.toLocaleString()} MRU`,
       highlight: true,
       dir: "ltr",
     },
@@ -157,7 +159,9 @@ export default function BookingDetailsModal({
       },
       {
         label: t("details.commission"),
-        value: `${totalCommission.toLocaleString()} MRU`,
+        value: booking.hasAdminCreatedEquipment 
+          ? t("details.adminOwned")
+          : `${totalCommission.toLocaleString()} MRU`,
         highlight: true,
         dir: "ltr",
       },

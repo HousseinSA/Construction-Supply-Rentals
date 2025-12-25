@@ -95,11 +95,31 @@ export async function GET(request: NextRequest) {
           },
         },
         {
-          $match: {
-            activeBookings: { $size: 0 },
+          $lookup: {
+            from: "sales",
+            let: { equipmentId: "$_id" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ["$equipmentId", "$$equipmentId"] },
+                      { $in: ["$status", ["pending", "paid"]] },
+                    ],
+                  },
+                },
+              },
+            ],
+            as: "activeSales",
           },
         },
-        { $project: { activeBookings: 0 } },
+        {
+          $match: {
+            activeBookings: { $size: 0 },
+            activeSales: { $size: 0 },
+          },
+        },
+        { $project: { activeBookings: 0, activeSales: 0 } },
         { $sort: { createdAt: -1 } },
       ]
 

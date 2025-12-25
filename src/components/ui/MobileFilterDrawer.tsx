@@ -48,6 +48,8 @@ export default function MobileFilterDrawer({
     setTempFilters(clearedFilters)
   }
 
+  const hasActiveFilters = Object.values(tempFilters).some(v => v !== "all")
+
   return (
     <>
       {/* Backdrop */}
@@ -101,12 +103,14 @@ export default function MobileFilterDrawer({
             >
               {t("applyFilters")}
             </button>
-            <button
-              onClick={handleClear}
-              className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
-            >
-              {t("clearFilters")}
-            </button>
+            {hasActiveFilters && (
+              <button
+                onClick={handleClear}
+                className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+              >
+                {t("clearFilters")}
+              </button>
+            )}
           </div>
         </div>
       </div>

@@ -105,6 +105,7 @@ export function useManageEquipment({ convertToLocalized, supplierId }: UseManage
   } = useTableFilters({
     data: equipment,
     searchFields: ["name", "location"],
+    persistKey: "equipment",
     customSearchFilter: (item, search) => {
       const searchLower = search.toLowerCase()
       const equipmentName = item.name?.toLowerCase() || ""
@@ -119,7 +120,10 @@ export function useManageEquipment({ convertToLocalized, supplierId }: UseManage
       )
     },
     filterFunctions: {
-      status: (item, value) => item.status === value,
+      status: (item, value) => {
+        if (value === "pendingPricing") return !!item.pendingPricing
+        return item.status === value
+      },
       listingType: (item, value) => item.listingType === value,
       availability: (item, value) => {
         if (value === "sold")

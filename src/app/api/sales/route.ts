@@ -40,6 +40,17 @@ export async function GET(request: NextRequest) {
           foreignField: "_id",
           as: "equipmentInfo",
         },
+      },
+      {
+        $addFields: {
+          isAdminOwned: {
+            $cond: {
+              if: { $eq: [{ $arrayElemAt: ["$equipmentInfo.createdBy", 0] }, "admin"] },
+              then: true,
+              else: false
+            }
+          }
+        }
       }
     )
 
@@ -116,10 +127,10 @@ export async function POST(request: NextRequest) {
       referenceNumber,
       buyerId: new ObjectId(buyerId),
       equipmentId: new ObjectId(equipmentId),
-      supplierId: equipment.supplierId || null,
+      supplierId: equipment.supplierId && equipment.createdBy !== "admin" ? equipment.supplierId : null,
       equipmentName: equipment.name,
       salePrice,
-      commission,
+      commission: equipment.createdBy === "admin" ? 0 : commission,
       transportDetails: transportData,
       grandTotal,
       status: "pending",

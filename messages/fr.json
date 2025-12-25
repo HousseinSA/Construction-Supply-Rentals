@@ -7,6 +7,7 @@
     "dashboard": "Tableau de Bord",
     "myBookings": "Mes Réservations",
     "myTransactions": "Mes Transactions",
+    "myOrders": "Mes Commandes",
     "day": "jour",
     "hour": "heure",
     "month": "mois",
@@ -589,7 +590,6 @@
       "confirmAction": "Confirmer l'Action",
       "confirmAvailability": "Marquer ce matériel comme {status} ?",
       "confirmApprove": "Approuver ce matériel ?",
-      "confirmReject": "Rejeter ce matériel ?",
       "processing": "Traitement...",
       "confirm": "Confirmer",
       "equipmentUpdated": "Matériel mis à jour avec succès",
@@ -597,7 +597,7 @@
       "equipmentApproved": "Matériel approuvé avec succès",
       "equipmentRejected": "Matériel rejeté avec succès",
       "availabilityUpdated": "Disponibilité mise à jour avec succès",
-      "cannotEditActiveBooking": "Impossible de modifier - le matériel a des réservations actives ou une vente en attente",
+      "cannotEditActiveBooking": "le matériel a des réservations actives ou une vente en attente",
       "confirmApproveTitle": "Approuver le Matériel",
       "confirmApproveMessage": "Approuver ce matériel ?",
       "confirmRejectTitle": "Rejeter le Matériel",
@@ -793,6 +793,7 @@
     },
     "bookings": {
       "admin": "Admin",
+      "adminOwned": "Propriété Admin",
       "searchPlaceholder": "Rechercher par locataire, fournisseur, matériel...",
       "filters": {
         "status": "Statut",
@@ -859,7 +860,8 @@
         "renterMessage": "Message du Locataire",
         "adminNotes": "Notes Admin",
         "adminNotesPlaceholder": "Ajouter des notes sur les arrangements, détails de paiement, etc...",
-        "call": "Appeler"
+        "call": "Appeler",
+        "adminOwned": "Équipement Propriété Admin"
       },
       "items": "Matériel",
       "more": "de plus",
@@ -899,7 +901,8 @@
         "supplier": "Fournisseur",
         "equipment": "Matériel",
         "price": "Prix de Vente",
-        "commission": "Commission (5%)",
+        "commission": "Commission",
+        "total": "Total",
         "status": "Statut",
         "date": "Date",
         "actions": "Actions"
@@ -935,7 +938,9 @@
         "email": "Email",
         "phone": "Téléphone",
         "status": "Statut",
-        "buyerMessage": "Message de l'Acheteur"
+        "buyerMessage": "Message de l'Acheteur",
+ "adminOwned": "Équipement Propriété Admin"
+
       },
       "noSales": "Aucune Vente Trouvée",
       "noResults": "Aucune vente trouvée correspondant à votre recherche",
@@ -946,9 +951,11 @@
       "loading": "Chargement...",
       "statusUpdated": "Statut de vente mis à jour avec succès",
       "statusUpdateFailed": "Échec de la mise à jour du statut de vente",
+      "adminOwned": "Propriété Admin",
       "equipment": {
         "createdByAdmin": "Créé par l'Admin"
       }
+     
     }
   },
   "toast": {

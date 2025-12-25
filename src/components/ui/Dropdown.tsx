@@ -115,7 +115,7 @@ export default function Dropdown({
               ? ""
               : "focus:ring-2 focus:ring-primary focus:border-primary"
           } focus:outline-none
-          transition-all duration-200 flex items-center justify-between
+          transition-all duration-200 flex items-center justify-between gap-2
           ${
             disabled
               ? "bg-gray-200 cursor-not-allowed text-gray-500 border-gray-300"
@@ -127,7 +127,7 @@ export default function Dropdown({
           ${noBorder && isOpen ? "bg-gray-50" : ""}
         `}
       >
-        <span className={selectedOption && !disabled ? "text-gray-900" : "text-gray-500"}>
+        <span className={`flex-1 ${selectedOption && !disabled ? "text-gray-900" : "text-gray-500"}`}>
           {priceDisplay && selectedOption ? (
             <span dir="ltr">{selectedOption.label}</span>
           ) : (
@@ -137,12 +137,12 @@ export default function Dropdown({
         {disabled ? (
           <Lock className={`${
             compact ? "h-4 w-4" : "h-5 w-5"
-          } text-gray-400`} />
+          } text-gray-400 flex-shrink-0`} />
         ) : (
           <ChevronDown
             className={`${
               compact ? "h-4 w-4" : "h-5 w-5"
-            } text-gray-400 transition-transform duration-200 ${
+            } text-gray-400 flex-shrink-0 transition-transform duration-200 ${
               isOpen ? "rotate-180" : ""
             }`}
           />

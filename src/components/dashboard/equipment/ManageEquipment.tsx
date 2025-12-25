@@ -111,6 +111,7 @@ export default function ManageEquipment() {
                   { value: "pending", label: t("pending") },
                   { value: "approved", label: t("approved") },
                   { value: "rejected", label: t("rejected") },
+                  { value: "pendingPricing", label: t("pricingUpdateRequest") },
                 ],
               },
               {

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 
 export interface UseTableFiltersConfig<T> {
   data: T[]
@@ -6,6 +6,7 @@ export interface UseTableFiltersConfig<T> {
   customSearchFilter?: (item: T, search: string) => boolean
   filterFunctions?: Record<string, (item: T, value: string) => boolean>
   defaultFilters?: Record<string, string>
+  persistKey?: string
 }
 
 export function useTableFilters<T>({
@@ -14,9 +15,28 @@ export function useTableFilters<T>({
   customSearchFilter,
   filterFunctions = {},
   defaultFilters = {},
+  persistKey,
 }: UseTableFiltersConfig<T>) {
   const [searchValue, setSearchValue] = useState("")
-  const [filterValues, setFilterValues] = useState<Record<string, string>>(defaultFilters)
+  const [filterValues, setFilterValues] = useState<Record<string, string>>(() => {
+    if (persistKey && typeof window !== "undefined") {
+      const saved = localStorage.getItem(`filters_${persistKey}`)
+      if (saved) {
+        try {
+          return JSON.parse(saved)
+        } catch {
+          return defaultFilters
+        }
+      }
+    }
+    return defaultFilters
+  })
+
+  useEffect(() => {
+    if (persistKey && typeof window !== "undefined") {
+      localStorage.setItem(`filters_${persistKey}`, JSON.stringify(filterValues))
+    }
+  }, [filterValues, persistKey])
 
   const filteredData = useMemo(() => {
     let result = [...data]

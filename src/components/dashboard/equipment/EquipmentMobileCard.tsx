@@ -1,4 +1,4 @@
-import { MapPin, Edit, Eye, Tag, Loader2, DollarSign, AlertCircle } from "lucide-react"
+import { MapPin, Edit, Eye, Tag, Loader2, RefreshCw, AlertCircle } from "lucide-react"
 import EquipmentImage from "@/src/components/ui/EquipmentImage"
 import Dropdown from "@/src/components/ui/Dropdown"
 import MessageModal from "@/src/components/ui/MessageModal"
@@ -85,9 +85,15 @@ export default function EquipmentMobileCard({
               </span>
             )}
             {item.pendingPricing && (
-              <span className="inline-flex px-2 py-0.5 text-xs bg-orange-100 text-orange-700 rounded">
+              <button
+                onClick={() => !isSupplier && onPricingReview?.(item)}
+                disabled={isSupplier}
+                className="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-orange-100 text-orange-700 rounded hover:bg-orange-200 transition-colors disabled:hover:bg-orange-100 disabled:cursor-default"
+                title={!isSupplier ? t("reviewPricingRequest") : ""}
+              >
+                <RefreshCw className="w-3 h-3" />
                 {isSupplier ? t("pricingPendingApproval") : t("pricingUpdateRequest")}
-              </span>
+              </button>
             )}
             {item.status === "rejected" && item.rejectionReason && (
               <button
@@ -257,15 +263,6 @@ export default function EquipmentMobileCard({
         </div>
       )}
       <div className="flex items-stretch gap-2">
-        {!isSupplier && item.pendingPricing && (
-          <button
-            onClick={() => onPricingReview?.(item)}
-            className="px-3 py-2 text-orange-600 bg-orange-50 hover:bg-orange-100 rounded-lg text-sm font-medium flex items-center justify-center gap-1.5"
-            title={t("reviewPricingRequest")}
-          >
-            <DollarSign className="w-4 h-4" />
-          </button>
-        )}
         {!isSupplier && item.createdBy === "admin" && (
           <div className="relative group">
             <button

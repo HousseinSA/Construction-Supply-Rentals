@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useTranslations, useLocale } from "next-intl"
 import { useSession } from "next-auth/react"
 import { usePathname } from "next/navigation"
@@ -22,12 +22,13 @@ export default function WhatsAppFloat({
   const isRTL = locale === "ar"
   const [isHovered, setIsHovered] = useState(false)
   const [showTooltip, setShowTooltip] = useState(true)
-  useState(() => {
+  
+  useEffect(() => {
     const timer = setTimeout(() => {
       setShowTooltip(false)
     }, 8000)
     return () => clearTimeout(timer)
-  })
+  }, [])
 
   const shouldHide = 
     session?.user?.role === "admin" ||

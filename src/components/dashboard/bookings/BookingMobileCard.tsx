@@ -38,12 +38,15 @@ export default function BookingMobileCard({ booking, onViewDetails, t, highlight
   
   const supplierDisplay = booking.supplierInfo && booking.supplierInfo.length > 0 && !booking.hasAdminCreatedEquipment
     ? (
-        <div className="flex items-center gap-2">
-          <span>{booking.supplierInfo[0].firstName} {booking.supplierInfo[0].lastName}</span>
-          <CopyButton text={booking.supplierInfo[0].phone} size="sm" />
+        <div className="space-y-1">
+          <div className="text-sm">{booking.supplierInfo[0].firstName} {booking.supplierInfo[0].lastName}</div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm" dir="ltr">{formatPhoneNumber(booking.supplierInfo[0].phone)}</span>
+            <CopyButton text={booking.supplierInfo[0].phone} size="sm" />
+          </div>
         </div>
       )
-    : tCommon("admin")
+    : t("admin")
 
   return (
     <div className={highlight ? "animate-pulse" : ""}>
@@ -68,9 +71,9 @@ export default function BookingMobileCard({ booking, onViewDetails, t, highlight
           },
           {
             label: t("table.commission"),
-            value: commission,
-            icon: <Coins className="w-3.5 h-3.5 text-green-600" />,
-            highlight: true,
+            value: booking.hasAdminCreatedEquipment ? t("adminOwned") : commission,
+            icon: !booking.hasAdminCreatedEquipment ? <Coins className="w-3.5 h-3.5 text-green-600" /> : undefined,
+            highlight: !booking.hasAdminCreatedEquipment,
           },
         ]}
         onViewDetails={() => onViewDetails(booking)}

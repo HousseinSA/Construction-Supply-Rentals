@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react"
 import { useTranslations, useLocale } from "next-intl"
-import { Menu, X, ClipboardList, TagIcon, LayoutDashboard } from "lucide-react"
+import { Menu, X, ClipboardList, TagIcon, LayoutDashboard, Search } from "lucide-react"
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher"
 import AuthButtons from "@/components/ui/AuthButtons"
 import WhatsAppLink from "@/components/ui/WhatsAppLink"
@@ -27,7 +27,8 @@ export default function Header({ session: serverSession }: HeaderProps) {
   const mobileMenuRef = useRef<HTMLDivElement>(null)
   const isRenter = session?.user?.userType === "renter"
   const isSupplier = session?.user?.userType === "supplier"
-  const isAdminOrSupplier = session?.user?.role === "admin" || isSupplier
+  const isAdmin = session?.user?.role === "admin"
+  const isAdminOrSupplier = isAdmin || isSupplier
 
   const getFontClass = () => {
     switch (locale) {
@@ -78,7 +79,7 @@ export default function Header({ session: serverSession }: HeaderProps) {
     >
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16">
-          <div className="flex items-center gap-2">
+          <div className="flex mt-2 items-center gap-2">
             <Link
               href="/"
               className="flex items-center justify-center rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
@@ -104,7 +105,16 @@ export default function Header({ session: serverSession }: HeaderProps) {
                 <span className="text-sm font-medium">{t("dashboard")}</span>
               </Link>
             )}
-            {(isRenter || isSupplier) && (
+            {isSupplier && (
+              <Link
+                href="/bookings"
+                className="hidden lg:flex items-center gap-2 px-3 py-2 text-gray-700 hover:text-primary hover:bg-gray-50 rounded-lg transition-colors"
+              >
+                <ClipboardList className="w-4 h-4" />
+                <span className="text-sm font-medium">{t("myOrders")}</span>
+              </Link>
+            )}
+            {isRenter && (
               <Link
                 href="/bookings"
                 className="hidden lg:flex items-center gap-2 px-3 py-2 text-gray-700 hover:text-primary hover:bg-gray-50 rounded-lg transition-colors"
@@ -137,6 +147,19 @@ export default function Header({ session: serverSession }: HeaderProps) {
                 onLanguageChange={() => setIsMobileMenuOpen(false)}
               />
             </div>
+
+            {session?.user?.role === "admin" && (
+              <button
+                onClick={() => {
+                  const searchButton = document.querySelector('[data-search-button]') as HTMLButtonElement
+                  searchButton?.click()
+                }}
+                className="lg:hidden p-1.5 sm:p-2 rounded-lg hover:bg-gray-100 text-gray-700"
+                title="Search"
+              >
+                <Search size={20} />
+              </button>
+            )}
 
             <div className="lg:hidden">
               <LanguageSwitcher
@@ -179,6 +202,16 @@ export default function Header({ session: serverSession }: HeaderProps) {
                   <span>222 45 11 11 11</span>
                 </a>
               </div>
+              {isSupplier && (
+                <Link
+                  href="/bookings"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm text-gray-700 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors font-medium"
+                >
+                  <ClipboardList size={16} />
+                  {t("myOrders")}
+                </Link>
+              )}
               <div className="pt-2 border-t border-gray-200">
                 <AuthButtons
                   session={session}

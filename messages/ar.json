@@ -7,6 +7,7 @@
     "dashboard": "لوحة التحكم",
     "myBookings": "الطلبات",
     "myTransactions": "الطلبات",
+    "myOrders": "طلباتي",
     "day": "يوم",
     "hour": "ساعة",
     "month": "شهر",
@@ -473,6 +474,13 @@
       "selectPriceType": "اختر نوع التسعير",
       "hourly": "ساعة",
       "daily": "يوم",
+      "pricingPendingApproval": "التسعير بانتظار الموافقة",
+      "reviewPricingRequest": "مراجعة طلب تحديث السعر",
+      "pricingUpdateRequest": "تحديث السعر",
+           "currentPricing": "التسعير الحالي",
+            "requestedPricing": "التسعير المطلوب",
+            "rejectPricing": "رفض",
+            "approvePricing": "موافقة",
       "monthly": "شهر",
       "perKm": "كيلومتر",
       "price": "السعر",
@@ -547,6 +555,8 @@
       "pending": "قيد الانتظار",
       "approved": "موافق عليه",
       "rejected": "مرفوض",
+      "rejectionReason": "سبب الرفض",
+      "rejectionReasonPlaceholder": "اشرح لماذا يتم رفض هذه المعدة...",
       "status": "الحالة",
       "actions": "الإجراءات",
       "createdAt": "تاريخ الإنشاء",
@@ -571,7 +581,9 @@
       "confirmAction": "تأكيد الإجراء",
       "confirmAvailability": "متأكد من تحديد هذه المعدة كـ {status}؟",
       "confirmApprove": "متأكد من الموافقة على هذه المعدة؟",
-      "confirmReject": "متأكد من رفض هذه المعدة؟",
+      "confirmReject": "رفض المعدة",
+            "processingRequest": "جاري المعالجة...",
+
       "processing": "جاري المعالجة...",
       "confirm": "تأكيد",
       "equipmentUpdated": "تم تحديث المعدة بنجاح",
@@ -579,6 +591,7 @@
       "equipmentApproved": "تمت الموافقة على المعدة بنجاح",
       "equipmentRejected": "تم رفض المعدة بنجاح",
       "availabilityUpdated": "تم تحديث التوفر بنجاح",
+      "cannotEditActiveBooking": "المعدة لديها حجوزات نشطة أو عملية بيع معلقة",
       "confirmApproveTitle": "الموافقة على المعدة",
       "confirmApproveMessage": "متأكد من الموافقة على هذه المعدة؟",
       "confirmRejectTitle": "رفض المعدة",
@@ -764,6 +777,7 @@
     },
     "bookings": {
       "admin": "الإدارة",
+      "adminOwned": "ملك الإدارة",
       "searchPlaceholder": "البحث بالمستأجر، المورد، المعدات...",
       "filters": {
         "status": "الحالة",
@@ -832,7 +846,8 @@
         "renterMessage": "رسالة المستأجر",
         "adminNotes": "ملاحظات الإدارة",
         "adminNotesPlaceholder": "إضافة ملاحظات حول الترتيبات، تفاصيل الدفع، إلخ...",
-        "call": "اتصال"
+        "call": "اتصال",
+        "adminOwned": "معدات ملك الإدارة"
       },
       "items": "معدات",
       "more": "أكثر",
@@ -872,7 +887,8 @@
         "supplier": "المورد",
         "equipment": "المعدات",
         "price": "سعر البيع",
-        "commission": "العمولة (5%)",
+        "commission": "العمولة",
+        "total": "المجموع",
         "status": "الحالة",
         "date": "التاريخ",
         "actions": "الإجراءات"
@@ -888,7 +904,10 @@
         "cancel": "إلغاء",
         "close": "إغلاق",
         "save": "حفظ التغييرات",
-        "saving": "جاري الحفظ..."
+        "saving": "جاري الحفظ...",
+        "update": "تحديث",
+        "updating": "جاري التحديث...",
+        "updateSale": "تحديث البيع"
       },
       "details": {
         "title": "تفاصيل طلب البيع",
@@ -905,7 +924,9 @@
         "email": "البريد الإلكتروني",
         "phone": "الهاتف",
         "status": "الحالة",
-        "buyerMessage": "رسالة المشتري"
+        "buyerMessage": "رسالة المشتري",
+        "adminOwned": "معدات ملك الإدارة"
+
       },
       "noSales": "لم يتم العثور على مبيعات",
       "noResults": "لم يتم العثور على مبيعات مطابقة للبحث",
@@ -916,6 +937,7 @@
       "loading": "جاري التحميل...",
       "statusUpdated": "تم تحديث حالة البيع بنجاح",
       "statusUpdateFailed": "فشل في تحديث حالة البيع",
+      "adminOwned": "ملك الإدارة",
       "equipment": {
         "createdByAdmin": "تم الإنشاء بواسطة الإدارة"
       }

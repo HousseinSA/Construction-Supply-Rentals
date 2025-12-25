@@ -14,6 +14,8 @@ interface SalesTableRowProps {
 }
 
 export default function SalesTableRow({ sale, onViewDetails, t, highlight = false }: SalesTableRowProps) {
+  const isAdminOwned = sale.isAdminOwned || (!sale.supplierInfo || sale.supplierInfo.length === 0)
+  
   return (
     <TableRow className={highlight ? "animate-pulse bg-yellow-50" : ""}>
       <TableCell className="w-24">
@@ -43,12 +45,20 @@ export default function SalesTableRow({ sale, onViewDetails, t, highlight = fals
         </span>
       </TableCell>
       <TableCell>
-        <span className="text-sm font-semibold text-green-600" dir="ltr">
-          {sale.commission.toLocaleString()} MRU
-        </span>
+        {isAdminOwned ? (
+          <span className="text-sm text-gray-500">
+            {t("adminOwned")}
+          </span>
+        ) : (
+          <span className="text-sm font-semibold text-green-600" dir="ltr">
+            {sale.commission.toLocaleString()} MRU
+          </span>
+        )}
       </TableCell>
       <TableCell>
-        {sale.supplierInfo && sale.supplierInfo.length > 0 ? (
+        {isAdminOwned ? (
+          <span className="text-sm text-gray-400">{t("admin")}</span>
+        ) : (
           <div className="space-y-1.5">
             <div className="text-sm font-medium text-gray-900">
               {sale.supplierInfo[0]?.firstName} {sale.supplierInfo[0]?.lastName}
@@ -60,8 +70,6 @@ export default function SalesTableRow({ sale, onViewDetails, t, highlight = fals
               <CopyButton text={sale.supplierInfo[0]?.phone} size="sm" />
             </div>
           </div>
-        ) : (
-          <span className="text-sm text-gray-400">{t("admin")}</span>
         )}
       </TableCell>
       <TableCell align="center"><BookingStatusBadge status={sale.status} /></TableCell>

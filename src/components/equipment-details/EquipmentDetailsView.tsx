@@ -117,7 +117,7 @@ export default function EquipmentDetailsView({ equipmentId }: EquipmentDetailsVi
               />
               <SpecificationsGrid specifications={equipment.specifications} isForSale={isForSale} />
               </div>
-              {isAdminView && equipment.supplierInfo && equipment.createdBy !== "admin" && (
+              {isAdminView && equipment.supplierInfo && equipment.createdBy !== "admin" && session?.user?.role === "admin" && (
                 <SupplierInfo supplier={equipment.supplierInfo} />
               )}
               {!isAdminView && session?.user?.role === "renter" && equipment.supplierInfo && equipment.createdBy !== "admin" && (

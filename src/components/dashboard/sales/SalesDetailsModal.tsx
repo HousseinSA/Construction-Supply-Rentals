@@ -23,12 +23,18 @@ export default function SalesDetailsModal({
   onClose,
   onStatusUpdate,
 }: SalesDetailsModalProps) {
-  const t = useTranslations("dashboard.sales")
+  const t = useTranslations("dashboard.sales.details")
+  const tStatus = useTranslations("dashboard.sales.status")
+  const tActions = useTranslations("dashboard.sales.actions")
+  const tTable = useTranslations("dashboard.sales.table")
+  const tSales = useTranslations("dashboard.sales")
   const tBooking = useTranslations("booking")
   const tDashboard = useTranslations("dashboard")
   const { data: session } = useSession()
   const [status, setStatus] = useState(sale.status)
   const [loading, setLoading] = useState(false)
+  
+  const isAdminOwned = sale.isAdminOwned || (!sale.supplierInfo || sale.supplierInfo.length === 0)
 
   const handleStatusUpdate = async (adminId?: string) => {
     setLoading(true)
@@ -40,14 +46,14 @@ export default function SalesDetailsModal({
       })
 
       if (response.ok) {
-        toast.success(t("statusUpdated"))
+        toast.success(tSales("statusUpdated"))
         onStatusUpdate()
         onClose()
       } else {
-        toast.error(t("statusUpdateFailed"))
+        toast.error(tSales("statusUpdateFailed"))
       }
     } catch (error) {
-      toast.error(t("statusUpdateFailed"))
+      toast.error(tSales("statusUpdateFailed"))
     } finally {
       setLoading(false)
     }
@@ -57,25 +63,25 @@ export default function SalesDetailsModal({
     <BaseDetailsModal
       isOpen={isOpen}
       onClose={onClose}
-      title={t("details.title")}
+      title={t("title")}
       referenceNumber={sale.referenceNumber}
-      referenceLabel={t("details.reference")}
+      referenceLabel={t("reference")}
       onUpdate={() => handleStatusUpdate(session?.user?.id)}
       updateDisabled={loading || status === sale.status}
       updateLoading={loading}
-      updateLabel={t("actions.updateSale")}
-      updatingLabel={t("actions.updating")}
-      closeLabel={t("actions.close")}
+      updateLabel={tActions("updateSale")}
+      updatingLabel={tActions("updating")}
+      closeLabel={tActions("close")}
     >
       <TransactionInfoCard
-        title={t("details.saleInfo")}
+        title={t("saleInfo")}
         rows={[
           {
-            label: t("details.equipment"),
+            label: t("equipment"),
             value: sale.equipmentName,
           },
           {
-            label: t("details.salePrice"),
+            label: t("salePrice"),
             value: `${sale.salePrice.toLocaleString()} MRU`,
             dir: "ltr",
             highlight: true,
@@ -99,19 +105,21 @@ export default function SalesDetailsModal({
             },
           ] : []),
           {
-            label: t("table.total"),
+            label: tTable("total"),
             value: `${(sale.grandTotal || sale.salePrice).toLocaleString()} MRU`,
             dir: "ltr",
             highlight: true,
           },
           {
-            label: `${t("details.commission")} (5%)`,
-            value: `${sale.commission.toLocaleString()} MRU`,
+            label: t("commission"),
+            value: isAdminOwned
+              ? t("adminOwned")
+              : `${sale.commission.toLocaleString()} MRU (5%)`,
             highlight: true,
             dir: "ltr",
           },
           {
-            label: t("details.createdAt"),
+            label: t("createdAt"),
             value: new Date(sale.createdAt).toLocaleDateString(),
           },
         ]}
@@ -122,13 +130,13 @@ export default function SalesDetailsModal({
         selectedStatus={status}
         onStatusChange={setStatus}
         labels={{
-          title: t("details.status"),
-          currentStatus: t("details.status"),
+          title: t("status"),
+          currentStatus: t("status"),
           statusOptions: {
-            pending: t("status.pending"),
-            paid: t("status.paid"),
-            completed: t("status.completed"),
-            cancelled: t("status.cancelled"),
+            pending: tStatus("pending"),
+            paid: tStatus("paid"),
+            completed: tStatus("completed"),
+            cancelled: tStatus("cancelled"),
           },
         }}
       />
@@ -136,14 +144,14 @@ export default function SalesDetailsModal({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <ContactCard
           user={sale.buyerInfo?.[0]}
-          title={t("details.buyerInfo")}
+          title={t("buyerInfo")}
           variant="buyer"
         />
         <ContactCard
           user={sale.supplierInfo?.[0]}
-          title={t("details.supplierInfo")}
+          title={t("supplierInfo")}
           variant="supplier"
-          adminCreated={!sale.supplierInfo?.[0]}
+          adminCreated={isAdminOwned}
           adminLabel={tDashboard("equipment.createdByAdmin")}
         />
       </div>
@@ -151,7 +159,7 @@ export default function SalesDetailsModal({
       {sale.buyerMessage && (
         <MessageSection
           message={sale.buyerMessage}
-          title={t("details.buyerMessage")}
+          title={t("buyerMessage")}
           variant="buyer"
         />
       )}

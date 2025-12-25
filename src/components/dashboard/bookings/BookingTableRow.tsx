@@ -81,9 +81,15 @@ export default function BookingTableRow({
         </span>
       </TableCell>
       <TableCell>
-        <span className="text-sm font-semibold text-green-600" dir="ltr">
-          {commission.toLocaleString()} MRU
-        </span>
+        {booking.hasAdminCreatedEquipment ? (
+          <span className="text-sm text-gray-500">
+            {t("adminOwned")}
+          </span>
+        ) : (
+          <span className="text-sm font-semibold text-green-600" dir="ltr">
+            {commission.toLocaleString()} MRU
+          </span>
+        )}
       </TableCell>
       <TableCell>
         {booking.supplierInfo &&

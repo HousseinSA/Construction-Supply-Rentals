@@ -124,24 +124,24 @@ export default function RenterBookingView() {
 
   return (
     <>
-      <div className="hidden lg:block">
+      <div className="hidden lg:block overflow-x-auto">
         <Table>
           <TableHeader>
             <tr>
-              <TableHead>{t("table.reference")}</TableHead>
-              <TableHead>{t("table.equipment")}</TableHead>
-              <TableHead>{t("table.usage")}</TableHead>
-              <TableHead>{t("table.estimatedTotal")}</TableHead>
-              <TableHead align="center">{t("table.status")}</TableHead>
-              <TableHead align="center">{t("table.date")}</TableHead>
-              <TableHead align="center">{t("table.actions")}</TableHead>
+              <TableHead className="whitespace-nowrap">{t("table.reference")}</TableHead>
+              <TableHead className="whitespace-nowrap">{t("table.equipment")}</TableHead>
+              <TableHead className="whitespace-nowrap">{t("table.usage")}</TableHead>
+              <TableHead className="whitespace-nowrap">{t("table.estimatedTotal")}</TableHead>
+              <TableHead align="center" className="whitespace-nowrap">{t("table.status")}</TableHead>
+              <TableHead align="center" className="whitespace-nowrap">{t("table.date")}</TableHead>
+              <TableHead align="center" className="whitespace-nowrap">{t("table.actions")}</TableHead>
             </tr>
           </TableHeader>
           <TableBody>
             {paginatedData.map((booking) => (
               <tr key={booking._id?.toString()}>
                 <TableCell className="w-24">
-                  <div className="font-semibold text-orange-600 text-sm" dir="ltr">
+                  <div className="font-semibold text-primary text-sm whitespace-nowrap" dir="ltr">
                     {formatReferenceNumber(booking.referenceNumber)}
                   </div>
                 </TableCell>
@@ -154,7 +154,7 @@ export default function RenterBookingView() {
                     />
                     <div className="space-y-1">
                       {booking.bookingItems?.map((item, idx) => (
-                        <div key={idx} className="text-sm font-medium">
+                        <div key={idx} className="text-sm font-medium text-gray-900 whitespace-nowrap">
                           {item.equipmentName}
                         </div>
                       ))}
@@ -164,14 +164,14 @@ export default function RenterBookingView() {
                 <TableCell>
                   <div className="space-y-1">
                     {booking.bookingItems?.map((item, idx) => (
-                      <div key={idx} className="text-sm text-gray-600">
+                      <div key={idx} className="text-sm font-medium text-gray-700 whitespace-nowrap" dir="ltr">
                         {item.usage} {getTranslatedUnit(item.usageUnit || 'hours')}
                       </div>
                     ))}
                   </div>
                 </TableCell>
                 <TableCell>
-                  <span className="font-semibold" dir="ltr">
+                  <span className="text-sm font-semibold text-gray-900 whitespace-nowrap" dir="ltr">
                     {booking.totalPrice.toLocaleString()} MRU
                   </span>
                 </TableCell>
@@ -179,7 +179,7 @@ export default function RenterBookingView() {
                   {getStatusBadge(booking.status)}
                 </TableCell>
                 <TableCell align="center">
-                  <span className="text-sm text-gray-600">
+                  <span className="text-sm text-gray-600 whitespace-nowrap">
                     {new Date(booking.createdAt).toLocaleDateString()}
                   </span>
                 </TableCell>
@@ -189,7 +189,7 @@ export default function RenterBookingView() {
                       href={`/equipment/${booking.bookingItems[0]?.equipmentId}`}
                       className="inline-block p-2 hover:bg-gray-100 rounded-lg transition-colors"
                     >
-                      <Eye className="h-4 w-4 text-gray-600" />
+                      <Eye className="h-5 w-5 text-gray-600" />
                     </Link>
                     {booking.status === "pending" && (
                       <button
