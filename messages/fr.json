@@ -1002,6 +1002,8 @@
     "title": "Réserver Matériel",
     "pricingType": "Type de Tarification",
     "usage": "Usage Requis",
+    "startDate": "Date de Début",
+    "selectDate": "Sélectionner une date",
     "calculation": "Calcul du Prix",
     "rate": "Tarif",
     "total": "Total",
@@ -1042,5 +1044,17 @@
     "contactPlatform": "Veuillez contacter la plateforme pour assistance",
     "confirmSelection": "Confirmer la Sélection",
     "loading": "Chargement..."
+  },
+  "bookingSuccess": {
+    "title": "Réservation Réussie!",
+    "bookingMessage": "Votre demande de réservation a été soumise avec succès. Notre équipe l'examinera et vous contactera bientôt avec plus de détails.",
+    "saleMessage": "Votre demande d'achat a été soumise avec succès. Notre équipe l'examinera et vous contactera bientôt avec plus de détails.",
+    "transportTitle": "Besoin de Transport?",
+    "transportSubtitle": "Parcourez les équipements de transport disponibles pour déplacer votre matériel loué",
+    "noTransportAvailable": "Aucun équipement de transport actuellement disponible",
+    "myBookings": "Mes Réservations",
+    "viewBookings": "Voir et suivre vos réservations",
+    "moreEquipment": "Parcourir Plus de Matériel",
+    "browseEquipment": "Explorer le matériel disponible"
   }
 }

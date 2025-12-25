@@ -205,7 +205,6 @@ export async function POST(request: NextRequest) {
 
     const bookingItems: BookingItem[] = []
     let totalPrice = 0
-    let transportCost = 0
 
     for (const item of body.bookingItems) {
       const equipmentId = new ObjectId(item.equipmentId)
@@ -238,21 +237,7 @@ export async function POST(request: NextRequest) {
       totalPrice += subtotal
     }
 
-    let transportDetails = null
-    if (body.transportDetails) {
-      transportDetails = {
-        porteCharId: new ObjectId(body.transportDetails.porteCharId),
-        porteCharName: body.transportDetails.porteCharName,
-        supplierId: body.transportDetails.supplierId ? new ObjectId(body.transportDetails.supplierId) : null,
-        supplierName: body.transportDetails.supplierName || null,
-        distance: body.transportDetails.distance,
-        ratePerKm: body.transportDetails.ratePerKm,
-        transportCost: body.transportDetails.transportCost,
-      }
-      transportCost = transportDetails.transportCost
-    }
-
-    const grandTotal = totalPrice + transportCost
+    const grandTotal = totalPrice
 
     const referenceNumber = await generateReferenceNumber('booking')
     const result = await db.collection("bookings").insertOne({
@@ -260,10 +245,11 @@ export async function POST(request: NextRequest) {
       renterId: new ObjectId(body.renterId),
       bookingItems,
       totalPrice,
-      transportDetails,
       grandTotal,
       status: "pending",
       renterMessage: body.renterMessage || "",
+      startDate: body.startDate ? new Date(body.startDate) : undefined,
+      endDate: body.endDate ? new Date(body.endDate) : undefined,
       createdAt: new Date(),
       updatedAt: new Date(),
     })

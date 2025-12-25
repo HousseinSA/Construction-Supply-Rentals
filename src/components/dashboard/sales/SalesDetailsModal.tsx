@@ -28,7 +28,6 @@ export default function SalesDetailsModal({
   const tActions = useTranslations("dashboard.sales.actions")
   const tTable = useTranslations("dashboard.sales.table")
   const tSales = useTranslations("dashboard.sales")
-  const tBooking = useTranslations("booking")
   const tDashboard = useTranslations("dashboard")
   const { data: session } = useSession()
   const [status, setStatus] = useState(sale.status)
@@ -86,24 +85,6 @@ export default function SalesDetailsModal({
             dir: "ltr",
             highlight: true,
           },
-          ...(sale.transportDetails ? [
-            {
-              label: `🚛 ${sale.transportDetails.porteCharName}`,
-              value: `${sale.transportDetails.distance} ${tBooking("km")}`,
-              dir: "ltr" as const,
-            },
-            {
-              label: tBooking("ratePerKm"),
-              value: `${sale.transportDetails.ratePerKm.toLocaleString()} MRU/${tBooking("km")}`,
-              dir: "ltr" as const,
-            },
-            {
-              label: tBooking("transportCost"),
-              value: `${sale.transportDetails.transportCost.toLocaleString()} MRU`,
-              dir: "ltr" as const,
-              highlight: true,
-            },
-          ] : []),
           {
             label: tTable("total"),
             value: `${(sale.grandTotal || sale.salePrice).toLocaleString()} MRU`,

@@ -1,26 +1,31 @@
 import { useState } from "react"
 import { useSession } from "next-auth/react"
 import { useTranslations } from "next-intl"
-import { toast } from "sonner"
 import { PricingType } from "@/src/lib/types"
+import { requiresTransport } from "@/src/lib/constants/transport"
+import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 
 export function useBookingModal(
   equipment: any,
   onSuccess?: () => void,
   onClose?: () => void,
   pricingType?: PricingType,
-  selectedPorteChar?: any,
-  distance?: number
+  router?: AppRouterInstance,
+  locale?: string
 ) {
   const { data: session } = useSession()
   const t = useTranslations("booking")
   
   const [usage, setUsage] = useState(0)
+  const [startDate, setStartDate] = useState("")
+  const [endDate, setEndDate] = useState("")
   const [message, setMessage] = useState("")
   const [loading, setLoading] = useState(false)
 
   const resetForm = () => {
     setUsage(0)
+    setStartDate("")
+    setEndDate("")
     setMessage("")
   }
 
@@ -34,18 +39,8 @@ export function useBookingModal(
         renterId: session.user.id,
         bookingItems: [{ equipmentId: equipment._id, usage, pricingType }],
         renterMessage: message,
-      }
-
-      if (selectedPorteChar && distance && distance > 0) {
-        bookingData.transportDetails = {
-          porteCharId: selectedPorteChar._id,
-          porteCharName: selectedPorteChar.name,
-          supplierId: selectedPorteChar.supplierId,
-          supplierName: selectedPorteChar.supplierName,
-          distance,
-          ratePerKm: selectedPorteChar.pricing.kmRate,
-          transportCost: selectedPorteChar.pricing.kmRate * distance,
-        }
+        startDate: startDate || undefined,
+        endDate: endDate || undefined,
       }
 
       const response = await fetch("/api/bookings", {
@@ -56,14 +51,22 @@ export function useBookingModal(
       
       const data = await response.json()
       if (data.success) {
-        toast.success(t("successPending"))
+        const needsTransport = requiresTransport(equipment?.name || '')
+        if (needsTransport && router && locale) {
+          router.push(`/${locale}/booking-success?equipment=${encodeURIComponent(equipment.name)}&type=booking`)
+        } else {
+          const { toast } = await import("sonner")
+          toast.success(t("successPending"))
+        }
         resetForm()
         onSuccess?.()
         onClose?.()
       } else {
+        const { toast } = await import("sonner")
         toast.error(data.error || t("error"))
       }
     } catch {
+      const { toast } = await import("sonner")
       toast.error(t("error"))
     } finally {
       setLoading(false)
@@ -73,6 +76,10 @@ export function useBookingModal(
   return {
     usage,
     setUsage,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
     message,
     setMessage,
     loading,

@@ -82,55 +82,11 @@ export default function BookingDetailsModal({
     )
   })
 
-  // If transport exists, show equipment and transport in separate columns
-  const equipmentRows = booking.transportDetails ? [...transactionRows] : []
-  const transportRows: Array<{
-    label: string
-    value: string | number
-    highlight?: boolean
-    dir?: "ltr" | "rtl"
-  }> = []
-
-  if (booking.transportDetails) {
-    // Equipment total
-    equipmentRows.push({
+  // Add summary
+  transactionRows.push(
+    {
       label: t("table.total"),
       value: `${booking.totalPrice.toLocaleString()} MRU`,
-      dir: "ltr",
-      highlight: true,
-    })
-
-    // Transport details
-    transportRows.push(
-      {
-        label: booking.transportDetails.porteCharName,
-        value: `${booking.transportDetails.distance} ${tBooking("km")}`,
-        dir: "ltr",
-      },
-      {
-        label: tBooking("ratePerKm"),
-        value: `${booking.transportDetails.ratePerKm.toLocaleString()} MRU/${tBooking("km")}`,
-        dir: "ltr",
-      },
-      {
-        label: t("table.total"),
-        value: `${booking.transportDetails.transportCost.toLocaleString()} MRU`,
-        dir: "ltr",
-        highlight: true,
-      }
-    )
-  }
-
-  // Summary rows (only when transport exists)
-  const summaryRows: Array<{
-    label: string
-    value: string | number
-    highlight?: boolean
-    dir?: "ltr" | "rtl"
-  }> = booking.transportDetails ? [
-    {
-      label: t("table.estimatedTotal"),
-      value: `${(booking.grandTotal || booking.totalPrice).toLocaleString()} MRU`,
       dir: "ltr",
       highlight: true,
     },
@@ -146,31 +102,7 @@ export default function BookingDetailsModal({
       label: t("details.createdAt"),
       value: new Date(booking.createdAt).toLocaleDateString(),
     }
-  ] : []
-
-  // When no transport, add summary to transaction rows
-  if (!booking.transportDetails) {
-    transactionRows.push(
-      {
-        label: t("table.total"),
-        value: `${booking.totalPrice.toLocaleString()} MRU`,
-        dir: "ltr",
-        highlight: true,
-      },
-      {
-        label: t("details.commission"),
-        value: booking.hasAdminCreatedEquipment 
-          ? t("details.adminOwned")
-          : `${totalCommission.toLocaleString()} MRU`,
-        highlight: true,
-        dir: "ltr",
-      },
-      {
-        label: t("details.createdAt"),
-        value: new Date(booking.createdAt).toLocaleDateString(),
-      }
-    )
-  }
+  )
 
   return (
     <BaseDetailsModal
@@ -186,29 +118,10 @@ export default function BookingDetailsModal({
       updatingLabel={t("actions.updating")}
       closeLabel={t("actions.close")}
     >
-      {booking.transportDetails ? (
-        <>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <TransactionInfoCard
-              title={t("table.equipment")}
-              rows={equipmentRows}
-            />
-            <TransactionInfoCard
-              title={tBooking("transport")}
-              rows={transportRows}
-            />
-          </div>
-          <TransactionInfoCard
-            title={t("table.summary")}
-            rows={summaryRows}
-          />
-        </>
-      ) : (
-        <TransactionInfoCard
-          title={t("details.bookingInfo")}
-          rows={transactionRows}
-        />
-      )}
+      <TransactionInfoCard
+        title={t("details.bookingInfo")}
+        rows={transactionRows}
+      />
 
       <StatusManager
         currentStatus={booking.status}

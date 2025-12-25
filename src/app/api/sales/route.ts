@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { buyerId, equipmentId, buyerMessage, transportDetails } = body
+    const { buyerId, equipmentId, buyerMessage } = body
 
     if (!buyerId || !equipmentId) {
       return NextResponse.json(
@@ -104,23 +104,7 @@ export async function POST(request: NextRequest) {
 
     const salePrice = equipment.pricing?.salePrice || 0
     const commission = salePrice * 0.05
-    
-    let transportData = null
-    let transportCost = 0
-    if (transportDetails) {
-      transportData = {
-        porteCharId: new ObjectId(transportDetails.porteCharId),
-        porteCharName: transportDetails.porteCharName,
-        supplierId: transportDetails.supplierId ? new ObjectId(transportDetails.supplierId) : null,
-        supplierName: transportDetails.supplierName || null,
-        distance: transportDetails.distance,
-        ratePerKm: transportDetails.ratePerKm,
-        transportCost: transportDetails.transportCost,
-      }
-      transportCost = transportData.transportCost
-    }
-    
-    const grandTotal = salePrice + transportCost
+    const grandTotal = salePrice
     const referenceNumber = await generateReferenceNumber('sale')
 
     const result = await db.collection("sales").insertOne({
@@ -131,7 +115,6 @@ export async function POST(request: NextRequest) {
       equipmentName: equipment.name,
       salePrice,
       commission: equipment.createdBy === "admin" ? 0 : commission,
-      transportDetails: transportData,
       grandTotal,
       status: "pending",
       buyerMessage: buyerMessage || "",

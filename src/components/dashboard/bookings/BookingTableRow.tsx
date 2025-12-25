@@ -73,6 +73,11 @@ export default function BookingTableRow({
       <TableCell>
         <span className="text-sm font-medium text-gray-700" dir="ltr">
           {totalUsage} {getTranslatedUnit(usageUnit)}
+          {booking.startDate && booking.endDate && (
+            <span className="block text-xs text-gray-500 mt-0.5">
+              {new Date(booking.startDate).toLocaleDateString()} - {new Date(booking.endDate).toLocaleDateString()}
+            </span>
+          )}
         </span>
       </TableCell>
       <TableCell>

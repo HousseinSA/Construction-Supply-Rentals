@@ -1003,6 +1003,8 @@
     "title": "Book Equipment",
     "pricingType": "Pricing Type",
     "usage": "Usage Required",
+    "startDate": "Start Date",
+    "selectDate": "Select a date",
     "calculation": "Price Calculation",
     "rate": "Rate",
     "total": "Total",
@@ -1042,5 +1044,17 @@
     "noTransportAvailable": "No transport available",
     "contactPlatform": "Please contact the platform for assistance",
     "confirmSelection": "Confirm Selection"
+  },
+  "bookingSuccess": {
+    "title": "Booking Successful!",
+    "bookingMessage": "Your booking request has been submitted successfully. Our team will review it and contact you soon with further details.",
+    "saleMessage": "Your purchase request has been submitted successfully. Our team will review it and contact you soon with further details.",
+    "transportTitle": "Need Transport?",
+    "transportSubtitle": "Browse available transport equipment to move your rented equipment",
+    "noTransportAvailable": "No transport equipment currently available",
+    "myBookings": "My Bookings",
+    "viewBookings": "View and track your bookings",
+    "moreEquipment": "Browse More Equipment",
+    "browseEquipment": "Explore available equipment"
   }
 }
