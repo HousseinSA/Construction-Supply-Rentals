@@ -51,9 +51,8 @@ export function useBookingModal(
       
       const data = await response.json()
       if (data.success) {
-        const needsTransport = requiresTransport(equipment?.name || '')
-        if (needsTransport && router && locale) {
-          router.push(`/${locale}/booking-success?equipment=${encodeURIComponent(equipment.name)}&type=booking`)
+        if (router && locale) {
+          router.push(`/${locale}/booking-success?equipment=${encodeURIComponent(equipment.name)}&equipmentId=${equipment._id}&type=booking`)
         } else {
           const { toast } = await import("sonner")
           toast.success(t("successPending"))

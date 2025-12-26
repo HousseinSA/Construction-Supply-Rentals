@@ -211,12 +211,13 @@ export default function BookingTable() {
                       <TableHead>{t("table.reference")}</TableHead>
                       <TableHead>{t("table.renter")}</TableHead>
                       <TableHead>{t("table.equipment")}</TableHead>
+                      <TableHead>{t("table.rentalPeriod")}</TableHead>
                       <TableHead>{t("table.usage")}</TableHead>
                       <TableHead>{t("table.total")}</TableHead>
                       <TableHead>{t("table.commission")}</TableHead>
                       <TableHead>{t("table.supplier")}</TableHead>
                       <TableHead align="center">{t("table.status")}</TableHead>
-                      <TableHead align="center">{t("table.date")}</TableHead>
+                      <TableHead align="center">{t("table.created")}</TableHead>
                       <TableHead align="center">{t("table.actions")}</TableHead>
                     </tr>
                   </TableHeader>

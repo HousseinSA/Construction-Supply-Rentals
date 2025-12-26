@@ -6,6 +6,7 @@ import CopyButton from "@/src/components/ui/CopyButton"
 import BookingStatusBadge from "./BookingStatusBadge"
 import { TableRow, TableCell } from "@/src/components/ui/Table"
 import { useTranslations } from "next-intl"
+import { useLocale } from "next-intl"
 import type { BookingWithDetails } from "@/src/stores/bookingsStore"
 
 interface BookingTableRowProps {
@@ -22,6 +23,8 @@ export default function BookingTableRow({
   highlight = false,
 }: BookingTableRowProps) {
   const tCommon = useTranslations('common')
+  const locale = useLocale()
+  const isArabic = locale === 'ar'
   const commission = calculateBookingCommission(booking.bookingItems)
   const totalUsage = booking.bookingItems.reduce(
     (sum, item) => sum + item.usage,
@@ -38,6 +41,28 @@ export default function BookingTableRow({
       'tons': tCommon('ton')
     }
     return unitMap[unit] || unit
+  }
+
+  const formatDate = (date: string | Date) => {
+    const d = new Date(date)
+    const day = String(d.getDate()).padStart(2, '0')
+    const month = String(d.getMonth() + 1).padStart(2, '0')
+    const year = d.getFullYear()
+    return `${day}/${month}/${year}`
+  }
+
+  const getRentalPeriod = () => {
+    if (booking.startDate && booking.endDate) {
+      return `${formatDate(booking.startDate)} - ${formatDate(booking.endDate)}`
+    } else if (booking.startDate) {
+      return formatDate(booking.startDate)
+    }
+    return '-'
+  }
+
+  const getUsageDisplay = () => {
+    const unit = getTranslatedUnit(usageUnit)
+    return isArabic ? `${totalUsage} ${unit}` : `${totalUsage} ${unit}`
   }
 
   return (
@@ -72,12 +97,12 @@ export default function BookingTableRow({
       </TableCell>
       <TableCell>
         <span className="text-sm font-medium text-gray-700" dir="ltr">
-          {totalUsage} {getTranslatedUnit(usageUnit)}
-          {booking.startDate && booking.endDate && (
-            <span className="block text-xs text-gray-500 mt-0.5">
-              {new Date(booking.startDate).toLocaleDateString()} - {new Date(booking.endDate).toLocaleDateString()}
-            </span>
-          )}
+          {getRentalPeriod()}
+        </span>
+      </TableCell>
+      <TableCell>
+        <span className="text-sm font-medium text-gray-700" dir="ltr">
+          {getUsageDisplay()}
         </span>
       </TableCell>
       <TableCell>
@@ -120,8 +145,8 @@ export default function BookingTableRow({
         <BookingStatusBadge status={booking.status} />
       </TableCell>
       <TableCell align="center">
-        <span className="text-sm text-gray-600">
-          {new Date(booking.createdAt).toLocaleDateString()}
+        <span className="text-sm text-gray-600" dir="ltr">
+          {formatDate(booking.createdAt)}
         </span>
       </TableCell>
       <TableCell align="center">

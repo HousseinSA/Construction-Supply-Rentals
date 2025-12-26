@@ -51,13 +51,7 @@ export default function SaleModal({
       const data = await response.json()
 
       if (data.success) {
-        const needsTransport = requiresTransport(equipment?.name || '')
-        if (needsTransport) {
-          router.push(`/${locale}/booking-success?equipment=${encodeURIComponent(equipment.name)}&type=sale`)
-        } else {
-          const { toast } = await import("sonner")
-          toast.success(t("saleRequestSuccess"))
-        }
+        router.push(`/${locale}/booking-success?equipment=${encodeURIComponent(equipment.name)}&equipmentId=${equipment._id}&type=sale`)
         onSaleSuccess?.()
         onClose()
         setMessage("")

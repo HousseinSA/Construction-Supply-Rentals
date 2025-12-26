@@ -170,7 +170,7 @@ export default function BookingModal({
           />
           <Input
             type="text"
-            label={`${t("usage")} (${usageLabel})`}
+            label={`${selectedPricingType === 'per_km' ? t("estimatedDistance") : t("usage")} (${usageLabel})`}
             value={usage}
             onChange={(e) => {
               const val = e.target.value.replace(/\D/g, "")
@@ -178,12 +178,17 @@ export default function BookingModal({
             }}
             required
           />
+          {selectedPricingType === 'per_km' && (
+            <div className="-mt-2 text-sm text-gray-600">
+              {t("rate")}: <span dir="ltr">{rate.toLocaleString()} MRU/{usageLabel}</span>
+            </div>
+          )}
         </>
       )}
 
       <div className="bg-gray-50 rounded-lg p-4 space-y-2">
         <div className="flex justify-between text-sm">
-          <span className="text-gray-600">{usage} {usageLabel} × {rate.toLocaleString()} MRU</span>
+          <span className="text-gray-600" dir="ltr">{usage} {usageLabel} × {rate.toLocaleString()} MRU</span>
           <span className="font-medium" dir="ltr">{subtotal.toLocaleString()} MRU</span>
         </div>
         <div className="border-t border-gray-200 pt-2 flex justify-between">
