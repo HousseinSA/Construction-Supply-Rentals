@@ -46,6 +46,10 @@ export default function MobileFilterDrawer({
   const handleClear = () => {
     const clearedFilters = Object.keys(tempFilters).reduce((acc, key) => ({ ...acc, [key]: "all" }), {})
     setTempFilters(clearedFilters)
+    Object.entries(clearedFilters).forEach(([key, value]) => {
+      onFilterChange(key, value)
+    })
+    onClose()
   }
 
   const hasActiveFilters = Object.values(tempFilters).some(v => v !== "all")

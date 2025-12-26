@@ -45,12 +45,20 @@ export default async function middleware(request: NextRequest) {
     return response
   }
 
-  if (!token && pathname.match(/\/(ar|fr|en)\/dashboard/)) {
-    const loginUrl = new URL(`/${locale}/auth/login`, request.url)
-    loginUrl.searchParams.set("callbackUrl", pathname)
-    const response = NextResponse.redirect(loginUrl)
-    response.headers.set("Cache-Control", "no-store, must-revalidate")
-    return response
+  if (pathname.match(/\/(ar|fr|en)\/dashboard/)) {
+    if (!token) {
+      const loginUrl = new URL(`/${locale}/auth/login`, request.url)
+      loginUrl.searchParams.set("callbackUrl", pathname)
+      const response = NextResponse.redirect(loginUrl)
+      response.headers.set("Cache-Control", "no-store, must-revalidate")
+      return response
+    }
+    
+    if (token.role === "user" && token.userType === "renter") {
+      const response = NextResponse.redirect(new URL(`/${locale}`, request.url))
+      response.headers.set("Cache-Control", "no-store, must-revalidate")
+      return response
+    }
   }
 
   const response = createMiddleware({

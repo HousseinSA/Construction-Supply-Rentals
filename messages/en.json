@@ -24,7 +24,8 @@
     "admin": "Admin",
     "filters": "Filters",
     "applyFilters": "Apply Filters",
-    "clearFilters": "Clear Filters"
+    "clearFilters": "Clear Filters",
+    "loading": "Loading..."
   },
   "quickSearch": {
     "button": "Search",
@@ -86,7 +87,6 @@
       "tons": "tons",
       "kg": "kg"
     },
-    "requestRental": "Request Rental",
     "contactForPurchase": "Contact to Purchase",
     "sendBookingRequest": "Booking Request",
     "sendSaleRequest": "Send Sale Request",
@@ -861,7 +861,7 @@
         "adminNotes": "Admin Notes",
         "adminNotesPlaceholder": "Add notes about arrangements, payment details, etc...",
         "call": "Call",
-        "adminOwned": "Admin Owned Equipment"
+        "adminOwned": "Admin Owned"
       },
       "items": "Equipment",
       "more": "more",
@@ -940,7 +940,7 @@
         "phone": "Phone",
         "status": "Status",
         "buyerMessage": "Buyer Message",
-        "adminOwned": "Admin Owned Equipment"
+        "adminOwned": "Admin Owned"
 
       },
       "noSales": "No Sales Found",
@@ -1004,7 +1004,11 @@
     "pricingType": "Pricing Type",
     "usage": "Usage Required",
     "startDate": "Start Date",
+    "rentalPeriod": "Rental Period",
     "selectDate": "Select a date",
+    "from": "From",
+    "to": "To",
+    "apply": "Apply",
     "calculation": "Price Calculation",
     "rate": "Rate",
     "total": "Total",

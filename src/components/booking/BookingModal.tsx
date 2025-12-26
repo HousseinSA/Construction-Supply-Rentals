@@ -110,22 +110,33 @@ export default function BookingModal({
       submitIcon={<Send className="w-4 h-4" />}
     >
       {availablePricingTypes.length > 1 && (
-        <Dropdown
-          label={t("pricingType")}
-          options={availablePricingTypes.map((pricing) => {
-            return {
-              value: pricing.type,
-              label: `${pricing.rate.toLocaleString()} MRU / ${pricing.label}`,
-            }
-          })}
-          value={selectedPricingType}
-          onChange={(value) => {
-            setSelectedPricingType(value as PricingType)
-            setUsage(0)
-          }}
-          useAbsolutePosition
-          priceDisplay
-        />
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-3">
+            {t("pricingType")} <span className="text-red-500">*</span>
+          </label>
+          <div className="flex gap-3">
+            {availablePricingTypes.map((pricing) => (
+              <button
+                key={pricing.type}
+                type="button"
+                onClick={() => {
+                  if (selectedPricingType !== pricing.type) {
+                    setSelectedPricingType(pricing.type)
+                    setUsage(0)
+                  }
+                }}
+                className={`flex-1 p-4 rounded-xl border-2 transition-all text-left ${
+                  selectedPricingType === pricing.type
+                    ? 'border-primary bg-primary/5'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="font-semibold text-gray-900" dir="ltr">{pricing.rate.toLocaleString()} MRU</div>
+                <div className="text-sm text-gray-600 mt-1">/ {pricing.label}</div>
+              </button>
+            ))}
+          </div>
+        </div>
       )}
 
       {selectedPricingType === 'daily' ? (
@@ -140,7 +151,7 @@ export default function BookingModal({
               setUsage(days)
             }
           }}
-          label={t("startDate")}
+          label={t("rentalPeriod")}
           required
           showRange
         />

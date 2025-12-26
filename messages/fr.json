@@ -24,7 +24,8 @@
     "admin": "Admin",
     "filters": "Filtres",
     "applyFilters": "Appliquer les Filtres",
-    "clearFilters": "Effacer les Filtres"
+    "clearFilters": "Effacer les Filtres",
+    "loading": "Chargement..."
   },
   "quickSearch": {
     "button": "Recherche",
@@ -861,7 +862,7 @@
         "adminNotes": "Notes Admin",
         "adminNotesPlaceholder": "Ajouter des notes sur les arrangements, détails de paiement, etc...",
         "call": "Appeler",
-        "adminOwned": "Équipement Propriété Admin"
+        "adminOwned": "Propriété Admin"
       },
       "items": "Matériel",
       "more": "de plus",
@@ -939,7 +940,7 @@
         "phone": "Téléphone",
         "status": "Statut",
         "buyerMessage": "Message de l'Acheteur",
- "adminOwned": "Équipement Propriété Admin"
+        "adminOwned": "Propriété Admin"
 
       },
       "noSales": "Aucune Vente Trouvée",
@@ -1003,7 +1004,11 @@
     "pricingType": "Type de Tarification",
     "usage": "Usage Requis",
     "startDate": "Date de Début",
+    "rentalPeriod": "Période de Location",
     "selectDate": "Sélectionner une date",
+    "from": "Du",
+    "to": "Au",
+    "apply": "Appliquer",
     "calculation": "Calcul du Prix",
     "rate": "Tarif",
     "total": "Total",

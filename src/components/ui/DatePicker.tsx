@@ -94,11 +94,11 @@ export default function DatePicker({ startDate, endDate, onDateChange, label, re
       return `${day}/${month}/${year}`
     }
     if (!showRange || !end) return formatShort(start)
-    return `${formatShort(start)} - ${formatShort(end)}`
+    return `${t('from')}: ${formatShort(start)} ${t('to')}: ${formatShort(end)}`
   }
 
   return (
-    <div ref={ref}>
+    <div ref={ref} className="relative">
       <label className="block text-sm font-medium text-gray-700 mb-2">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
@@ -110,10 +110,9 @@ export default function DatePicker({ startDate, endDate, onDateChange, label, re
         <span className={start ? 'text-gray-900' : 'text-gray-500'}>{format()}</span>
         <Calendar className="w-5 h-5 text-gray-400" />
       </button>
-
       {isOpen && (
-        <div className="mt-2 bg-white border border-gray-200 rounded-xl shadow-xl p-3 max-w-sm">
-          <div className="flex justify-between items-center mb-3">
+        <div className="absolute z-50 mt-1 bg-white border border-gray-200 rounded-xl shadow-xl p-4 w-80">
+          <div className="flex justify-between items-center mb-1">
             <button 
               type="button" 
               onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1))} 
@@ -133,15 +132,15 @@ export default function DatePicker({ startDate, endDate, onDateChange, label, re
             </button>
           </div>
 
-          <div className="grid grid-cols-7 gap-1 mb-1">
+          <div className="grid grid-cols-7 gap-1.5 mb-2">
             {dayNames[locale as keyof typeof dayNames].map((d, i) => (
-              <div key={i} className="text-center text-xs font-semibold text-gray-600 py-1">
+              <div key={i} className="text-center text-sm font-semibold text-gray-600 py-1">
                 {d}
               </div>
             ))}
           </div>
 
-          <div className="grid grid-cols-7 gap-1 mb-3">
+          <div className="grid grid-cols-7 gap-1.5 mb-1">
             {getDays().map((date, i) => (
               <div key={i}>
                 {date ? (
@@ -149,7 +148,7 @@ export default function DatePicker({ startDate, endDate, onDateChange, label, re
                     type="button"
                     onClick={() => handleClick(date)}
                     disabled={isPast(date)}
-                    className={`w-full h-8 text-xs rounded-lg font-medium transition-all ${
+                    className={`w-full h-8 text-sm rounded-lg font-medium transition-all ${
                       isSelected(date) 
                         ? 'bg-primary text-white shadow-md' 
                         : isInRange(date) 
@@ -181,7 +180,7 @@ export default function DatePicker({ startDate, endDate, onDateChange, label, re
                 disabled={!start || !end}
                 className="px-4 py-1.5 bg-primary text-white text-sm rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
               >
-                Apply
+                {t('apply')}
               </button>
             </div>
           )}

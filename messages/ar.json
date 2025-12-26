@@ -23,7 +23,8 @@
     "admin": "الإدارة",
     "filters": "فلتر",
     "applyFilters": "تطبيق الفلتر",
-    "clearFilters": "مسح الفلتر"
+    "clearFilters": "مسح الفلتر",
+    "loading": "جاري التحميل..."
   },
   "quickSearch": {
     "button": "بحث",
@@ -435,7 +436,7 @@
     "supplier": {
       "title": "لوحة تحكم الشريك",
       "subtitle": "إدارة معداتك وعملك في الإيجار",
-      "myEquipment": "معداتي",
+      "myEquipment": "المعدات",
       "myEquipmentDesc": "عرض وإدارة معداتك المدرجة",
       "addEquipment": "إضافة معدة",
       "addEquipmentDesc": "إدراج معدة جديدة للإيجار",
@@ -847,7 +848,7 @@
         "adminNotes": "ملاحظات الإدارة",
         "adminNotesPlaceholder": "إضافة ملاحظات حول الترتيبات، تفاصيل الدفع، إلخ...",
         "call": "اتصال",
-        "adminOwned": "معدات ملك الإدارة"
+        "adminOwned": "ملك الإدارة"
       },
       "items": "معدات",
       "more": "أكثر",
@@ -925,7 +926,7 @@
         "phone": "الهاتف",
         "status": "الحالة",
         "buyerMessage": "رسالة المشتري",
-        "adminOwned": "معدات ملك الإدارة"
+        "adminOwned": "ملك الإدارة"
 
       },
       "noSales": "لم يتم العثور على مبيعات",
@@ -988,7 +989,11 @@
     "pricingType": "نوع التسعير",
     "usage": "الاستخدام المطلوب",
     "startDate": "تاريخ البدء",
+    "rentalPeriod": "فترة الإيجار",
     "selectDate":" اختر التاريخ",
+    "from": "من",
+    "to": "إلى",
+    "apply": "تطبيق",
     "calculation": "حساب السعر",
     "rate": "السعر",
     "total": "المجموع",
