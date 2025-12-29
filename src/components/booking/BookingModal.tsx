@@ -1,22 +1,21 @@
 "use client"
 
-import { useMemo, useState, useRef } from "react"
+import { useMemo, useState } from "react"
 import { useTranslations } from "next-intl"
 import { useParams, useRouter } from "next/navigation"
 import { Send } from "lucide-react"
-import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
 import { useBookingModal } from "@/src/hooks/useBookingModal"
 import BaseRequestModal from "@/src/components/shared/BaseRequestModal"
 import Input from "@/src/components/ui/Input"
-import Dropdown from "@/src/components/ui/Dropdown"
 import DatePicker from "@/src/components/ui/DatePicker"
 import PriceCalculation from "./PriceCalculation"
 import { PricingType } from "@/src/lib/types"
+import { Equipment } from "@/src/lib/models/equipment"
 
 interface BookingModalProps {
   isOpen: boolean
   onClose: () => void
-  equipment: any
+  equipment: Equipment
   onBookingSuccess?: () => void
 }
 
@@ -28,8 +27,6 @@ export default function BookingModal({
 }: BookingModalProps) {
   const t = useTranslations("booking")
   const tCommon = useTranslations("common")
-  const modalRef = useRef<HTMLDivElement>(null)
-  const { formatPrice } = usePriceFormatter()
   const params = useParams()
   const router = useRouter()
   const locale = params?.locale as string || 'fr'
@@ -74,7 +71,7 @@ export default function BookingModal({
     availablePricingTypes[0]?.type || "daily"
   )
 
-  const { usage, setUsage, startDate, setStartDate, endDate, setEndDate, message, setMessage, loading, handleSubmit, resetForm } =
+  const { usage, setUsage, startDate, setStartDate, endDate, setEndDate, message, setMessage, loading, handleSubmit, resetForm, validateBooking } =
     useBookingModal(equipment, onBookingSuccess, onClose, selectedPricingType, router, locale)
 
   if (!isOpen || !equipment) return null
@@ -86,7 +83,8 @@ export default function BookingModal({
   const unit = selectedPricing?.label || ""
   const subtotal = rate * usage
   const usageLabel = unit
-  const grandTotal = subtotal
+  const validation = validateBooking(selectedPricingType)
+  const isFormValid = validation.valid
 
   return (
     <BaseRequestModal
@@ -108,13 +106,14 @@ export default function BookingModal({
       optionalLabel={t("optional")}
       messagePlaceholder={t("messagePlaceholder")}
       submitIcon={<Send className="w-4 h-4" />}
+      isSubmitDisabled={!isFormValid}
     >
       {availablePricingTypes.length > 1 && (
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-3">
             {t("pricingType")} <span className="text-red-500">*</span>
           </label>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-2">
             {availablePricingTypes.map((pricing) => (
               <button
                 key={pricing.type}
@@ -125,14 +124,19 @@ export default function BookingModal({
                     setUsage(0)
                   }
                 }}
-                className={`flex-1 p-4 rounded-xl border-2 transition-all text-left ${
+                className={`flex-1 min-w-[100px] p-3 rounded-xl border-2 transition-all ${
                   selectedPricingType === pricing.type
                     ? 'border-primary bg-primary/5'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
-                <div className="font-semibold text-gray-900" dir="ltr">{pricing.rate.toLocaleString()} MRU</div>
-                <div className="text-sm text-gray-600 mt-1">/ {pricing.label}</div>
+                <div className="flex flex-col items-center gap-0.5" dir="ltr">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-lg font-bold text-gray-900">{pricing.rate.toLocaleString()}</span>
+                    <span className="text-xs font-medium text-gray-500">MRU</span>
+                  </div>
+                  <span className="text-xs font-medium text-gray-500">/ {pricing.label}</span>
+                </div>
               </button>
             ))}
           </div>
@@ -186,16 +190,12 @@ export default function BookingModal({
         </>
       )}
 
-      <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-600" dir="ltr">{usage} {usageLabel} × {rate.toLocaleString()} MRU</span>
-          <span className="font-medium" dir="ltr">{subtotal.toLocaleString()} MRU</span>
-        </div>
-        <div className="border-t border-gray-200 pt-2 flex justify-between">
-          <span className="font-semibold text-gray-900">{t("estimatedTotal")}:</span>
-          <span className="font-bold text-primary text-lg" dir="ltr">{grandTotal.toLocaleString()} MRU</span>
-        </div>
-      </div>
+      <PriceCalculation
+        rate={rate}
+        unit={usageLabel}
+        usage={usage}
+        subtotal={subtotal}
+      />
     </BaseRequestModal>
   )
 }

@@ -1,8 +1,8 @@
 import { Coins } from "lucide-react"
 import { useTranslations } from "next-intl"
-import { formatBookingId } from "@/src/lib/format"
 import { formatReferenceNumber } from "@/src/lib/format-reference"
 import { formatPhoneNumber } from "@/src/lib/format"
+import { formatDate, getTranslatedUnit } from "@/src/lib/table-utils"
 import { calculateBookingCommission } from "@/src/lib/commission"
 import GenericMobileCard from "@/src/components/ui/GenericMobileCard"
 import CopyButton from "@/src/components/ui/CopyButton"
@@ -25,17 +25,6 @@ export default function BookingMobileCard({ booking, onViewDetails, t, highlight
   const totalUsage = booking.bookingItems.reduce((sum, item) => sum + item.usage, 0)
   const usageUnit = booking.bookingItems[0]?.usageUnit || ""
   
-  const getTranslatedUnit = (unit: string) => {
-    const unitMap: Record<string, string> = {
-      'hours': tCommon('hour'),
-      'days': tCommon('day'),
-      'months': tCommon('month'),
-      'km': tCommon('km'),
-      'tons': tCommon('ton')
-    }
-    return unitMap[unit] || unit
-  }
-  
   const supplierDisplay = booking.supplierInfo && booking.supplierInfo.length > 0 && !booking.hasAdminCreatedEquipment
     ? (
         <div className="space-y-1">
@@ -51,15 +40,15 @@ export default function BookingMobileCard({ booking, onViewDetails, t, highlight
   return (
     <div className={highlight ? "animate-pulse" : ""}>
       <GenericMobileCard
-        id={formatReferenceNumber(booking.referenceNumber)}
-        title={equipmentTitle}
+        id={equipmentTitle}
+        title={<span className="text-primary font-medium" dir="ltr">{formatReferenceNumber(booking.referenceNumber)}</span>}
         subtitle={renterName}
-        date={new Date(booking.createdAt).toLocaleDateString()}
+        date={formatDate(booking.createdAt)}
         status={booking.status}
         fields={[
           {
             label: t("table.usage"),
-            value: `${totalUsage} ${getTranslatedUnit(usageUnit)}`,
+            value: `${totalUsage} ${getTranslatedUnit(usageUnit, tCommon)}`,
           },
           {
             label: t("table.supplier"),

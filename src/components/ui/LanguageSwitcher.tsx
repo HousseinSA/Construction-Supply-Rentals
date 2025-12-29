@@ -51,7 +51,7 @@ export default function LanguageSwitcher({
             alt={currentLanguage?.name || ""}
             fill
             sizes="(max-width: 768px) 24px, 32px"
-            className="object-cover rounded-sm"
+            className="object-cover rounded-sm no-shimmer"
           />
         </div>
         <span className="hidden sm:block text-sm font-medium">
@@ -83,7 +83,7 @@ export default function LanguageSwitcher({
                   alt={lang.name}
                   fill
                   sizes="24px"
-                  className="object-cover rounded-sm"
+                  className="object-cover rounded-sm no-shimmer"
                 />
               </div>
               <span className="font-medium">{lang.name}</span>

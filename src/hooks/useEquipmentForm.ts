@@ -187,6 +187,10 @@ export function useEquipmentForm(equipmentId?: string) {
         toast.error(tToast("priceRequired"))
         return false
       }
+      if (!formData.condition) {
+        toast.error(tToast("conditionRequired"))
+        return false
+      }
     } else {
       const hasAnyPrice =
         formData.hourlyRate ||

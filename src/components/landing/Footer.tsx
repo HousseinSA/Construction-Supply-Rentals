@@ -28,7 +28,7 @@ export default function Footer() {
           </div>
           <div className="text-sm text-white text-center sm:text-right">
             <p>© {new Date().getFullYear()} Kriliy Engin</p>
-            <p className="text-xs text-gray-100 mt-1">{t("footer.by")} <a href="https://technotrans-sarl.com/" target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline transition-all">TECHNO-TRANS</a></p>
+            <p className="text-xs text-gray-100 mt-1">by <a href="https://technotrans-sarl.com/" target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline transition-all">TECHNO-TRANS</a></p>
           </div>
         </div>
       </div>

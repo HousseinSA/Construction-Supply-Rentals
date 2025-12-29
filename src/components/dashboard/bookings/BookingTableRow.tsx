@@ -2,6 +2,7 @@ import { Eye } from "lucide-react"
 import { formatPhoneNumber } from "@/src/lib/format"
 import { formatReferenceNumber } from "@/src/lib/format-reference"
 import { calculateBookingCommission } from "@/src/lib/commission"
+import { formatDate, getTranslatedUnit } from "@/src/lib/table-utils"
 import CopyButton from "@/src/components/ui/CopyButton"
 import BookingStatusBadge from "./BookingStatusBadge"
 import { TableRow, TableCell } from "@/src/components/ui/Table"
@@ -31,25 +32,6 @@ export default function BookingTableRow({
     0
   )
   const usageUnit = booking.bookingItems[0]?.usageUnit || "hours"
-  
-  const getTranslatedUnit = (unit: string) => {
-    const unitMap: Record<string, string> = {
-      'hours': tCommon('hour'),
-      'days': tCommon('day'),
-      'months': tCommon('month'),
-      'km': tCommon('km'),
-      'tons': tCommon('ton')
-    }
-    return unitMap[unit] || unit
-  }
-
-  const formatDate = (date: string | Date) => {
-    const d = new Date(date)
-    const day = String(d.getDate()).padStart(2, '0')
-    const month = String(d.getMonth() + 1).padStart(2, '0')
-    const year = d.getFullYear()
-    return `${day}/${month}/${year}`
-  }
 
   const getRentalPeriod = () => {
     if (booking.startDate && booking.endDate) {
@@ -61,15 +43,28 @@ export default function BookingTableRow({
   }
 
   const getUsageDisplay = () => {
-    const unit = getTranslatedUnit(usageUnit)
+    const unit = getTranslatedUnit(usageUnit, tCommon)
     return isArabic ? `${totalUsage} ${unit}` : `${totalUsage} ${unit}`
   }
 
   return (
     <TableRow className={highlight ? "animate-pulse bg-yellow-50" : ""}>
-      <TableCell className="w-24">
-        <div className="font-semibold text-primary text-sm">
-          {formatReferenceNumber(booking.referenceNumber)}
+      <TableCell>
+        <div className="space-y-0.5">
+          <div className="font-semibold text-sm text-gray-900">
+            {booking.bookingItems[0]?.equipmentName}
+            {booking.bookingItems.length > 1 && (
+              <span className="text-gray-600 text-xs">
+                {" "}+{booking.bookingItems.length - 1} {t("more")}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-primary" dir="ltr">
+              {booking.referenceNumber && formatReferenceNumber(booking.referenceNumber)}
+            </span>
+            {booking.referenceNumber && <CopyButton text={booking.referenceNumber} size="sm" />}
+          </div>
         </div>
       </TableCell>
       <TableCell>
@@ -86,17 +81,7 @@ export default function BookingTableRow({
         </div>
       </TableCell>
       <TableCell>
-        <div className="text-sm font-medium text-gray-900">
-          {booking.bookingItems[0]?.equipmentName}
-          {booking.bookingItems.length > 1 && (
-            <span className="text-gray-600">
-              +{booking.bookingItems.length - 1} {t("more")}
-            </span>
-          )}
-        </div>
-      </TableCell>
-      <TableCell>
-        <span className="text-sm font-medium text-gray-700" dir="ltr">
+        <span className="text-xs font-medium text-gray-700" dir="ltr">
           {getRentalPeriod()}
         </span>
       </TableCell>
@@ -145,7 +130,7 @@ export default function BookingTableRow({
         <BookingStatusBadge status={booking.status} />
       </TableCell>
       <TableCell align="center">
-        <span className="text-sm text-gray-600" dir="ltr">
+        <span className="text-xs text-gray-600" dir="ltr">
           {formatDate(booking.createdAt)}
         </span>
       </TableCell>

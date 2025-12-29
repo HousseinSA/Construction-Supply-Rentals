@@ -64,13 +64,15 @@ export default function SpecificationsGrid({
             {specifications.brand || "-"}
           </div>
         </div>
-        <div className="bg-gray-50 rounded-lg p-3">
-          <div className="text-xs sm:text-sm text-gray-500 mb-1">{t("model")}</div>
-          <div className="font-semibold text-sm sm:text-base text-gray-900 break-words">
-            {specifications.model || "-"}
+        {specifications.model && (
+          <div className="bg-gray-50 rounded-lg p-3">
+            <div className="text-xs sm:text-sm text-gray-500 mb-1">{t("model")}</div>
+            <div className="font-semibold text-sm sm:text-base text-gray-900 break-words">
+              {specifications.model}
+            </div>
           </div>
-        </div>
-        {isForSale && (
+        )}
+        {isForSale ? (
           <div className="bg-gray-50 rounded-lg p-3">
             <div className="text-xs sm:text-sm text-gray-500 mb-1">{t("condition")}</div>
             <div className="font-semibold text-sm sm:text-base text-gray-900">
@@ -79,6 +81,15 @@ export default function SpecificationsGrid({
                 : "-"}
             </div>
           </div>
+        ) : (
+          specifications.condition && (
+            <div className="bg-gray-50 rounded-lg p-3">
+              <div className="text-xs sm:text-sm text-gray-500 mb-1">{t("condition")}</div>
+              <div className="font-semibold text-sm sm:text-base text-gray-900">
+                {getConditionLabel(specifications.condition)}
+              </div>
+            </div>
+          )
         )}
         {(specifications.usageValue || specifications.hoursUsed) && (
           <div className="bg-gray-50 rounded-lg p-3">
@@ -109,20 +120,20 @@ export default function SpecificationsGrid({
             </div>
           </div>
         )}
-        <div className="bg-gray-50 rounded-lg p-3">
-          <div className="text-xs sm:text-sm text-gray-500 mb-1 flex items-center gap-1">
-            <Weight className="w-3 h-3" />
-            {t("weight")}
+        {specifications.weight && (
+          <div className="bg-gray-50 rounded-lg p-3">
+            <div className="text-xs sm:text-sm text-gray-500 mb-1 flex items-center gap-1">
+              <Weight className="w-3 h-3" />
+              {t("weight")}
+            </div>
+            <div className="font-semibold text-sm sm:text-base text-gray-900">
+              {formatWeight(
+                specifications.weight,
+                specifications.weightUnit || "kg"
+              )}
+            </div>
           </div>
-          <div className="font-semibold text-sm sm:text-base text-gray-900">
-            {specifications.weight
-              ? formatWeight(
-                  specifications.weight,
-                  specifications.weightUnit || "kg"
-                )
-              : "-"}
-          </div>
-        </div>
+        )}
       </div>
     </div>
   )

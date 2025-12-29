@@ -33,6 +33,13 @@ export default function SaleModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!buyerId) {
+      const { toast } = await import("sonner")
+      toast.error(t("saleRequestFailed"))
+      return
+    }
+    
     setLoading(true)
 
     try {
@@ -70,6 +77,7 @@ export default function SaleModal({
   if (!isOpen || !equipment) return null
 
   const { rate } = getPriceData(equipment.pricing, true)
+  const isFormValid = !!buyerId
 
   return (
     <BaseRequestModal
@@ -91,6 +99,7 @@ export default function SaleModal({
       optionalLabel={t("optional")}
       messagePlaceholder={t("messagePlaceholder")}
       submitIcon={<FileText className="w-4 h-4" />}
+      isSubmitDisabled={!isFormValid}
     >
       <div className="bg-gray-50 rounded-lg p-4">
         <div className="flex justify-between items-center">

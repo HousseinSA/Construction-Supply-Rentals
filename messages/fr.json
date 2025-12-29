@@ -219,8 +219,7 @@
       "selectDates": "Sélectionnez les dates"
     },
     "footer": {
-      "support": "Support et Contact",
-      "by": "par"
+      "support": "Support et Contact"
     },
     "whatsapp": {
       "tooltip": "Besoin d'Aide? Contactez-Nous!"
@@ -1056,7 +1055,7 @@
     "bookingMessage": "Votre demande de réservation a été soumise avec succès. Notre équipe l'examinera et vous contactera bientôt.",
     "saleMessage": "Votre demande d'achat a été soumise avec succès. Notre équipe l'examinera et vous contactera bientôt.",
     "transportTitle": "Besoin de Transport?",
-    "transportSubtitle": "Parcourez les équipements de transport disponibles pour déplacer votre matériel loué",
+    "transportSubtitle": "Parcourez les équipements de transport disponibles pour déplacer votre matériel",
     "noTransportAvailable": "Aucun équipement de transport actuellement disponible",
     "noEquipmentAvailable": "Aucun matériel actuellement disponible",
     "myBookings": "Mes Réservations",

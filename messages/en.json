@@ -221,8 +221,7 @@
       "selectDates": "Select dates"
     },
     "footer": {
-      "support": "Support & Contact",
-      "by": "by"
+      "support": "Support & Contact"
     },
     "whatsapp": {
       "tooltip": "Need Help? Contact Us!"
@@ -1056,7 +1055,7 @@
     "bookingMessage": "Your booking request has been submitted successfully. Our team will review it and contact you soon.",
     "saleMessage": "Your purchase request has been submitted successfully. Our team will review it and contact you soon.",
     "transportTitle": "Need Transport?",
-    "transportSubtitle": "Browse available transport equipment to move your rented equipment",
+    "transportSubtitle": "Browse available transport equipment to move your equipment",
     "noTransportAvailable": "No transport equipment currently available",
     "noEquipmentAvailable": "No equipment currently available",
     "myBookings": "My Bookings",

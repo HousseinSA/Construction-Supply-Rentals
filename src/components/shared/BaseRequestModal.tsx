@@ -23,6 +23,7 @@ interface BaseRequestModalProps {
   optionalLabel: string
   messagePlaceholder: string
   submitIcon: ReactNode
+  isSubmitDisabled?: boolean
 }
 
 export default function BaseRequestModal({
@@ -42,6 +43,7 @@ export default function BaseRequestModal({
   optionalLabel,
   messagePlaceholder,
   submitIcon,
+  isSubmitDisabled = false,
 }: BaseRequestModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
   useModalClose(isOpen, onClose, modalRef)
@@ -71,7 +73,7 @@ export default function BaseRequestModal({
               />
             </div>
 
-            <Button type="submit" disabled={loading} className="w-full flex items-center justify-center gap-2">
+            <Button type="submit" disabled={loading || isSubmitDisabled} className="w-full flex items-center justify-center gap-2">
               {submitIcon}
               {loading ? submittingLabel : submitLabel}
             </Button>

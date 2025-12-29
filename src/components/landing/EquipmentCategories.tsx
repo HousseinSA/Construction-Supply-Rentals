@@ -27,7 +27,7 @@ export default function EquipmentCategories() {
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 sm:mb-10 md:mb-12 text-gray-900">
           {t("categories.title")}
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 min-[500px]:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 max-w-6xl mx-auto">
           {categories.map((category) => {
             const categorySlug = getCategoryKey(category.name)
             const { image, translationKey } = getCategoryInfo(categorySlug)

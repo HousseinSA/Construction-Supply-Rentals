@@ -8,6 +8,7 @@ import { useSearchParams } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { usePagination } from "@/src/hooks/usePagination"
 import { useTableFilters } from "@/src/hooks/useTableFilters"
+import { getDateFilterMatch } from "@/src/lib/table-utils"
 import SalesTableRow from "./SalesTableRow"
 import SalesMobileCard from "./SalesMobileCard"
 import SalesDetailsModal from "./SalesDetailsModal"
@@ -60,15 +61,7 @@ export default function SalesTable() {
       searchFields: [],
       filterFunctions: {
         status: (sale, value) => value === "all" ? true : sale.status === value,
-        date: (sale, value) => {
-          const saleDate = new Date(sale.createdAt)
-          const now = new Date()
-          const daysDiff = Math.floor((now.getTime() - saleDate.getTime()) / (1000 * 60 * 60 * 24))
-          if (value === "today") return daysDiff === 0
-          if (value === "week") return daysDiff <= 7
-          if (value === "month") return daysDiff <= 30
-          return true
-        },
+        date: (sale, value) => getDateFilterMatch(sale.createdAt, value),
       },
       defaultFilters: { status: "all", date: "all" },
     })
@@ -164,9 +157,8 @@ export default function SalesTable() {
                 <Table>
                   <TableHeader>
                     <tr>
-                      <TableHead>{t("table.reference")}</TableHead>
-                      <TableHead>{t("table.buyer")}</TableHead>
                       <TableHead>{t("table.equipment")}</TableHead>
+                      <TableHead>{t("table.buyer")}</TableHead>
                       <TableHead>{t("table.price")}</TableHead>
                       <TableHead>{t("table.commission")}</TableHead>
                       <TableHead>{t("table.supplier")}</TableHead>

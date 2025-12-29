@@ -1,55 +1,31 @@
-import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
+import { useLocale, useTranslations } from "next-intl"
 
 interface PriceCalculationProps {
   rate: number
   unit: string
   usage: number
-  usageLabel: string
   subtotal: number
-  labels: {
-    calculation: string
-    rate: string
-    usage: string
-    total: string
-  }
 }
 
 export default function PriceCalculation({
   rate,
   unit,
   usage,
-  usageLabel,
   subtotal,
-  labels,
 }: PriceCalculationProps) {
-  const { formatPrice } = usePriceFormatter()
-  const { displayPrice: rateDisplay, displayUnit } = formatPrice(rate, unit)
-  const { displayPrice: totalDisplay } = formatPrice(subtotal, "")
-
+const t  = useTranslations("booking")
+const locale = useLocale()
+const isRTL = locale === 'ar'
   return (
-    <div className="p-4 bg-blue-50 rounded-lg">
-      <div className="mb-3">
-        <span className="font-medium text-blue-900">{labels.calculation}</span>
+    <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+      <div className="flex justify-between text-sm items-center">
+        <div className="text-gray-600" dir="ltr">
+         <span dir={`${isRTL && 'rtl'}`}>{usage} {unit}</span>   × {rate.toLocaleString()} MRU
+        </div>
       </div>
-      <div className="text-sm space-y-1">
-        <div className="flex justify-between">
-          <span>{labels.rate}</span>
-          <span dir="ltr">
-            {rateDisplay} / {usageLabel}
-          </span>
-        </div>
-        <div className="flex justify-between">
-          <span>{labels.usage}</span>
-          <span>
-            {usage} {usageLabel}
-          </span>
-        </div>
-        <div className="flex justify-between font-semibold text-blue-900 pt-2 border-t">
-          <span>{labels.total}</span>
-          <span className="text-lg" dir="ltr">
-            {totalDisplay}
-          </span>
-        </div>
+      <div className="border-t border-gray-200 pt-2 flex justify-between">
+        <span className="font-semibold text-gray-900">{t("estimatedTotal")}:</span>
+        <span className="font-bold text-primary text-lg"  dir="ltr">{subtotal.toLocaleString()} MRU</span>
       </div>
     </div>
   )

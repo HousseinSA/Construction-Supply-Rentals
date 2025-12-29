@@ -112,10 +112,8 @@ export default function EquipmentTableRow({
               </div>
             )}
           </div>
-          <div>
-            <div className="font-medium text-gray-900 text-sm mb-1 whitespace-nowrap">
-              {item.name}
-            </div>
+          <div className="space-y-2">
+            <div className="font-semibold text-sm text-gray-900">{item.name}</div>
             <div className="flex flex-col gap-2">
               {item.createdBy === "admin" && (
                 <span className="inline-block px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 rounded w-fit">

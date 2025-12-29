@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { useBookings } from "@/src/hooks/useBookings"
 import { usePagination } from "@/src/hooks/usePagination"
+import { formatDate, getTranslatedUnit } from "@/src/lib/table-utils"
 import {
   Table,
   TableHeader,
@@ -20,21 +21,11 @@ import ConfirmModal from "@/src/components/ui/ConfirmModal"
 import { AlertTriangle } from "lucide-react"
 import GenericMobileCard from "@/src/components/ui/GenericMobileCard"
 import { formatReferenceNumber } from "@/src/lib/format-reference"
+import CopyButton from "@/src/components/ui/CopyButton"
 
 export default function RenterBookingView() {
   const t = useTranslations("dashboard.bookings")
   const tCommon = useTranslations("common")
-  
-  const getTranslatedUnit = (unit: string) => {
-    const unitMap: Record<string, string> = {
-      'hours': tCommon('hour'),
-      'days': tCommon('day'),
-      'months': tCommon('month'),
-      'km': tCommon('km'),
-      'tons': tCommon('ton')
-    }
-    return unitMap[unit] || unit
-  }
   const { bookings, loading, fetchBookings } = useBookings()
   const [cancellingId, setCancellingId] = useState<string | null>(null)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
@@ -128,34 +119,37 @@ export default function RenterBookingView() {
         <Table>
           <TableHeader>
             <tr>
-              <TableHead className="whitespace-nowrap">{t("table.reference")}</TableHead>
-              <TableHead className="whitespace-nowrap">{t("table.equipment")}</TableHead>
-              <TableHead className="whitespace-nowrap">{t("table.usage")}</TableHead>
-              <TableHead className="whitespace-nowrap">{t("table.estimatedTotal")}</TableHead>
-              <TableHead align="center" className="whitespace-nowrap">{t("table.status")}</TableHead>
-              <TableHead align="center" className="whitespace-nowrap">{t("table.date")}</TableHead>
-              <TableHead align="center" className="whitespace-nowrap">{t("table.actions")}</TableHead>
+              <TableHead>{t("table.equipment")}</TableHead>
+              <TableHead>{t("table.rentalPeriod")}</TableHead>
+              <TableHead>{t("table.usage")}</TableHead>
+              <TableHead>{t("table.estimatedTotal")}</TableHead>
+              <TableHead align="center">{t("table.status")}</TableHead>
+              <TableHead align="center">{t("table.date")}</TableHead>
+              <TableHead align="center">{t("table.actions")}</TableHead>
             </tr>
           </TableHeader>
           <TableBody>
             {paginatedData.map((booking) => (
               <tr key={booking._id?.toString()}>
-                <TableCell className="w-24">
-                  <div className="font-semibold text-primary text-sm whitespace-nowrap" dir="ltr">
-                    {formatReferenceNumber(booking.referenceNumber)}
-                  </div>
-                </TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
                     <EquipmentImage
                       src={booking.bookingItems[0]?.equipmentImage || "/equipement-images/default-fallback-image.png"}
                       alt={booking.bookingItems[0]?.equipmentName || "Equipment"}
                       size="lg"
                     />
-                    <div className="space-y-1">
+                    <div className="space-y-1 flex-1">
                       {booking.bookingItems?.map((item, idx) => (
-                        <div key={idx} className="text-sm font-medium text-gray-900 whitespace-nowrap">
-                          {item.equipmentName}
+                        <div key={idx} className="space-y-0.5">
+                          <div className="text-sm font-semibold text-gray-900 whitespace-nowrap">
+                            {item.equipmentName}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-medium text-primary" dir="ltr">
+                              {booking.referenceNumber && formatReferenceNumber(booking.referenceNumber)}
+                            </span>
+                            {booking.referenceNumber && <CopyButton text={booking.referenceNumber} size="sm" />}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -163,9 +157,21 @@ export default function RenterBookingView() {
                 </TableCell>
                 <TableCell>
                   <div className="space-y-1">
+                    {booking.startDate && (
+                      <div className="text-xs font-medium text-gray-700 whitespace-nowrap" dir="ltr">
+                        {booking.endDate 
+                          ? `${formatDate(booking.startDate)} - ${formatDate(booking.endDate)}`
+                          : formatDate(booking.startDate)
+                        }
+                      </div>
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="space-y-1">
                     {booking.bookingItems?.map((item, idx) => (
                       <div key={idx} className="text-sm font-medium text-gray-700 whitespace-nowrap" dir="ltr">
-                        {item.usage} {getTranslatedUnit(item.usageUnit || 'hours')}
+                        {item.usage} {getTranslatedUnit(item.usageUnit || 'hours', tCommon)}
                       </div>
                     ))}
                   </div>
@@ -179,8 +185,8 @@ export default function RenterBookingView() {
                   {getStatusBadge(booking.status)}
                 </TableCell>
                 <TableCell align="center">
-                  <span className="text-sm text-gray-600 whitespace-nowrap">
-                    {new Date(booking.createdAt).toLocaleDateString()}
+                  <span className="text-sm text-gray-600 whitespace-nowrap" dir="ltr">
+                    {formatDate(booking.createdAt)}
                   </span>
                 </TableCell>
                 <TableCell align="center">
@@ -226,7 +232,7 @@ export default function RenterBookingView() {
           return (
             <GenericMobileCard
               key={booking._id?.toString()}
-              id={formatReferenceNumber(booking.referenceNumber)}
+              id={<><span className="text-gray-500">#</span><span className="text-primary">{formatReferenceNumber(booking.referenceNumber)}</span></>}
               title={equipmentTitle}
               date={new Date(booking.createdAt).toLocaleDateString()}
               status={booking.status}
@@ -241,7 +247,7 @@ export default function RenterBookingView() {
               fields={[
                 {
                   label: t("table.usage"),
-                  value: `${totalUsage} ${getTranslatedUnit(booking.bookingItems[0]?.usageUnit || 'hours')}`,
+                  value: `${totalUsage} ${getTranslatedUnit(booking.bookingItems[0]?.usageUnit || 'hours', tCommon)}`,
                 },
                 {
                   label: t("table.estimatedTotal"),

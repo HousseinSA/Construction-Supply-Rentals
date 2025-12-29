@@ -21,7 +21,12 @@ export default function DatePicker({ startDate, endDate, onDateChange, label, re
   const [month, setMonth] = useState(new Date())
   const [start, setStart] = useState<Date | null>(startDate ? new Date(startDate) : null)
   const [end, setEnd] = useState<Date | null>(endDate ? new Date(endDate) : null)
-  const ref = useClickOutside<HTMLDivElement>(() => setIsOpen(false))
+  const ref = useClickOutside<HTMLDivElement>(() => {
+    if (showRange && start && !end) {
+      return 
+    }
+    setIsOpen(false)
+  })
 
   const monthNames = {
     en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],

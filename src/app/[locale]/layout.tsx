@@ -11,6 +11,7 @@ import SessionProvider from "@/src/components/providers/SessionProvider"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import WhatsAppFloat from "@/src/components/ui/WhatsAppFloat"
+import ImageLoadHandler from "@/src/components/ui/ImageLoadHandler"
 
 import { routing } from "@/i18n/routing"
 import { inter, cairo, poppins } from "@/lib/fonts"
@@ -76,6 +77,7 @@ export default async function LocaleLayout({
       <body className={`${baseFont} antialiased`}>
         <SessionProvider session={session}>
           <NextIntlClientProvider messages={messages} locale={locale}>
+            <ImageLoadHandler />
             <Header session={session} />
             {children}
             <Analytics />

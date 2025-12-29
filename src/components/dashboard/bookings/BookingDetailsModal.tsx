@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl"
 import { useSession } from "next-auth/react"
 import { useBookingDetails } from "@/src/hooks/useBookingDetails"
+import { formatDate } from "@/src/lib/table-utils"
 import BaseDetailsModal from "@/src/components/shared/BaseDetailsModal"
 import ContactCard from "@/src/components/shared/ContactCard"
 import MessageSection from "@/src/components/shared/MessageSection"
@@ -57,6 +58,15 @@ export default function BookingDetailsModal({
     return unitMap[unit] || unit
   }
 
+  const getRentalPeriod = () => {
+    if (booking.startDate && booking.endDate) {
+      return `${formatDate(booking.startDate)} - ${formatDate(booking.endDate)}`
+    } else if (booking.startDate) {
+      return formatDate(booking.startDate)
+    }
+    return '-'
+  }
+
   const transactionRows: Array<{
     label: string
     value: string | number
@@ -97,10 +107,6 @@ export default function BookingDetailsModal({
         : `${totalCommission.toLocaleString()} MRU`,
       highlight: true,
       dir: "ltr",
-    },
-    {
-      label: t("details.createdAt"),
-      value: new Date(booking.createdAt).toLocaleDateString(),
     }
   )
 
@@ -118,6 +124,24 @@ export default function BookingDetailsModal({
       updatingLabel={t("actions.updating")}
       closeLabel={t("actions.close")}
     >
+      {/* Created At and Rental Period Info */}
+      <div className="bg-gray-50 -mx-6 -mt-6 px-6 py-4 border-b border-gray-200">
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="text-xs font-medium text-gray-600 mb-1">{t("details.createdAt")}</div>
+            <div className="text-sm font-semibold text-gray-900" dir="ltr">
+              {new Date(booking.createdAt).toLocaleDateString()}
+            </div>
+          </div>
+          <div>
+            <div className="text-xs font-medium text-gray-600 mb-1">{t("table.rentalPeriod")}</div>
+            <div className="text-sm font-semibold text-gray-900" dir="ltr">
+              {getRentalPeriod()}
+            </div>
+          </div>
+        </div>
+      </div>
+
       <TransactionInfoCard
         title={t("details.bookingInfo")}
         rows={transactionRows}

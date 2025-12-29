@@ -202,6 +202,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    if (listingType === "forSale" && (!specifications || !specifications.condition)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Condition is required for sale equipment",
+        },
+        { status: 400 }
+      )
+    }
+
     if (!ObjectId.isValid(categoryId) || !ObjectId.isValid(equipmentTypeId)) {
       return NextResponse.json(
         {

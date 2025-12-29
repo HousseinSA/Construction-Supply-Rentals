@@ -89,6 +89,7 @@ export default function Header({ session: serverSession }: HeaderProps) {
                 height={100}
                 src={"/Kriliy-engin-logo.png"}
                 alt="krilly engin logo"
+                className="no-shimmer"
               />
             </Link>
           </div>

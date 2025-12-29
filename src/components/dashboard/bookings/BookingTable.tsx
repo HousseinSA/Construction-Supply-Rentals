@@ -9,6 +9,7 @@ import { useSearchParams } from "next/navigation"
 import { usePagination } from "@/src/hooks/usePagination"
 import { useBookings } from "@/src/hooks/useBookings"
 import { useTableFilters } from "@/src/hooks/useTableFilters"
+import { getDateFilterMatch } from "@/src/lib/table-utils"
 import BookingDetailsModal from "./BookingDetailsModal"
 import BookingTableRow from "./BookingTableRow"
 import BookingMobileCard from "./BookingMobileCard"
@@ -48,17 +49,7 @@ export default function BookingTable() {
     searchFields: [],
     filterFunctions: {
       status: (booking, value) => booking.status === value,
-      date: (booking, value) => {
-        const bookingDate = new Date(booking.createdAt)
-        const now = new Date()
-        const daysDiff = Math.floor(
-          (now.getTime() - bookingDate.getTime()) / (1000 * 60 * 60 * 24)
-        )
-        if (value === "today") return daysDiff === 0
-        if (value === "week") return daysDiff <= 7
-        if (value === "month") return daysDiff <= 30
-        return true
-      },
+      date: (booking, value) => getDateFilterMatch(booking.createdAt, value),
     },
     defaultFilters: {
       status: "all",
@@ -208,9 +199,8 @@ export default function BookingTable() {
                 <Table>
                   <TableHeader>
                     <tr>
-                      <TableHead>{t("table.reference")}</TableHead>
-                      <TableHead>{t("table.renter")}</TableHead>
                       <TableHead>{t("table.equipment")}</TableHead>
+                      <TableHead>{t("table.renter")}</TableHead>
                       <TableHead>{t("table.rentalPeriod")}</TableHead>
                       <TableHead>{t("table.usage")}</TableHead>
                       <TableHead>{t("table.total")}</TableHead>

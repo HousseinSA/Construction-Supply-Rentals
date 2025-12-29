@@ -1,7 +1,8 @@
 import { Eye } from "lucide-react"
 import Image from "next/image"
-import { formatBookingId, formatPhoneNumber } from "@/src/lib/format"
+import { formatPhoneNumber } from "@/src/lib/format"
 import { formatReferenceNumber } from "@/src/lib/format-reference"
+import { formatDate } from "@/src/lib/table-utils"
 import CopyButton from "@/src/components/ui/CopyButton"
 import BookingStatusBadge from "../bookings/BookingStatusBadge"
 import { TableRow, TableCell } from "@/src/components/ui/Table"
@@ -18,9 +19,15 @@ export default function SalesTableRow({ sale, onViewDetails, t, highlight = fals
   
   return (
     <TableRow className={highlight ? "animate-pulse bg-yellow-50" : ""}>
-      <TableCell className="w-24">
-        <div className="font-semibold text-primary text-sm" >
-          {formatReferenceNumber(sale.referenceNumber)}
+      <TableCell>
+        <div className="space-y-0.5">
+          <div className="text-sm font-semibold text-gray-900">{sale.equipmentName}</div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-primary" dir="ltr">
+              {formatReferenceNumber(sale.referenceNumber)}
+            </span>
+            <CopyButton text={sale.referenceNumber} size="sm" />
+          </div>
         </div>
       </TableCell>
       <TableCell>
@@ -35,9 +42,6 @@ export default function SalesTableRow({ sale, onViewDetails, t, highlight = fals
             <CopyButton text={sale.buyerInfo[0]?.phone} size="sm" />
           </div>
         </div>
-      </TableCell>
-      <TableCell>
-        <div className="text-sm font-medium text-gray-900">{sale.equipmentName}</div>
       </TableCell>
       <TableCell>
         <span className="text-sm font-semibold text-gray-900" dir="ltr">
@@ -74,8 +78,8 @@ export default function SalesTableRow({ sale, onViewDetails, t, highlight = fals
       </TableCell>
       <TableCell align="center"><BookingStatusBadge status={sale.status} /></TableCell>
       <TableCell align="center">
-        <span className="text-sm text-gray-600">
-          {new Date(sale.createdAt).toLocaleDateString()}
+        <span className="text-sm text-gray-600" dir="ltr">
+          {formatDate(sale.createdAt)}
         </span>
       </TableCell>
       <TableCell align="center">

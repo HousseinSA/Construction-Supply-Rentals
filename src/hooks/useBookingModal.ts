@@ -29,9 +29,32 @@ export function useBookingModal(
     setMessage("")
   }
 
+  const validateBooking = (type: PricingType): { valid: boolean; error?: string } => {
+    if (type === "daily") {
+      if (!startDate || !endDate) {
+        return { valid: false, error: "Please select both start and end dates" }
+      }
+    } else {
+      if (!startDate) {
+        return { valid: false, error: "Start date is required" }
+      }
+      if (usage <= 0) {
+        return { valid: false, error: "Usage must be greater than 0" }
+      }
+    }
+    return { valid: true }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!session?.user?.id) return
+
+    const validation = validateBooking(pricingType || "daily")
+    if (!validation.valid) {
+      const { toast } = await import("sonner")
+      toast.error(validation.error || t("error"))
+      return
+    }
     
     setLoading(true)
     try {
@@ -84,5 +107,6 @@ export function useBookingModal(
     loading,
     handleSubmit,
     resetForm,
+    validateBooking,
   }
 }

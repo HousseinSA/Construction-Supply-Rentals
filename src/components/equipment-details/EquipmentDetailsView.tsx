@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useSession } from "next-auth/react"
 import { useTranslations } from "next-intl"
 import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
@@ -33,6 +33,7 @@ export default function EquipmentDetailsView({ equipmentId }: EquipmentDetailsVi
   const fontClass = useFontClass()
   const { convertToLocalized } = useCityData()
   const { formatPrice } = usePriceFormatter()
+  const hasFetchedRef = useRef(false)
 
   const getAllFormattedPrices = (pricing: any, isForSale: boolean) => {
     const prices = []
@@ -81,6 +82,10 @@ export default function EquipmentDetailsView({ equipmentId }: EquipmentDetailsVi
   }
 
   useEffect(() => {
+    hasFetchedRef.current = false
+    setLoading(true)
+    if (hasFetchedRef.current) return
+    hasFetchedRef.current = true
     fetchEquipment()
   }, [equipmentId])
   
