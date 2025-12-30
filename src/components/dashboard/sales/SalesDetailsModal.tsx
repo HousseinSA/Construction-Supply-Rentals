@@ -71,6 +71,7 @@ export default function SalesDetailsModal({
       updateLabel={tActions("updateSale")}
       updatingLabel={tActions("updating")}
       closeLabel={tActions("close")}
+      createdAt={new Date(sale.createdAt).toLocaleDateString()}
     >
       <TransactionInfoCard
         title={t("saleInfo")}
@@ -98,10 +99,6 @@ export default function SalesDetailsModal({
               : `${sale.commission.toLocaleString()} MRU (5%)`,
             highlight: true,
             dir: "ltr",
-          },
-          {
-            label: t("createdAt"),
-            value: new Date(sale.createdAt).toLocaleDateString(),
           },
         ]}
       />

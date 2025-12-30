@@ -156,7 +156,7 @@ export default function ManageUsers() {
             </div>
           ) : (
             <>
-              <div className="hidden lg:block">
+              <div className="hidden xl:block">
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead className="bg-gray-50">
@@ -220,6 +220,41 @@ export default function ManageUsers() {
                     </tbody>
                   </table>
                 </div>
+              </div>
+
+              <div className="xl:hidden divide-y divide-gray-200 space-y-4 p-4">
+                {paginatedUsers.map((user) => (
+                  <div key={user._id?.toString()} className="p-4 border rounded-lg">
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <h3 className="font-medium text-gray-900">
+                          {user.firstName} {user.lastName}
+                        </h3>
+                        {user.companyName && (
+                          <p className="text-sm text-gray-500">{user.companyName}</p>
+                        )}
+                      </div>
+                      <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getRoleBadge(user.role)}`}>
+                        {getRoleIcon(user.role)}
+                        {user.role}
+                      </span>
+                    </div>
+                    <div className="space-y-1 text-sm text-gray-600">
+                      <div className="flex items-center gap-1">
+                        <Phone className="w-3 h-3" />
+                        {user.phone}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <MapPin className="w-3 h-3" />
+                        {user.location}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
+                        {new Date(user.createdAt).toLocaleDateString()}
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
 
               <div className="lg:hidden divide-y divide-gray-200">

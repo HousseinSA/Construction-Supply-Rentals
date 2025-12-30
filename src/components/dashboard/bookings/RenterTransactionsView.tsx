@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useTranslations } from "next-intl"
 import RenterBookingView from "./RenterBookingView"
 import RenterPurchasesView from "./RenterPurchasesView"
@@ -9,11 +9,30 @@ export default function RenterTransactionsView() {
   const t = useTranslations("dashboard.transactions")
   const [activeTab, setActiveTab] = useState<"rentals" | "purchases">("rentals")
 
+  // Read saved tab after mount to avoid SSR/client hydration mismatch
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("renterTransactionsTab")
+      if (saved === "rentals" || saved === "purchases") setActiveTab(saved)
+    } catch (e) {
+      /* ignore */
+    }
+  }, [])
+
+  const handleTabChange = (tab: "rentals" | "purchases") => {
+    setActiveTab(tab)
+    try {
+      localStorage.setItem("renterTransactionsTab", tab)
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex gap-2 border-b border-gray-200">
         <button
-          onClick={() => setActiveTab("rentals")}
+          onClick={() => handleTabChange("rentals")}
           className={`px-6 py-3 font-medium text-sm transition-colors relative ${
             activeTab === "rentals"
               ? "text-primary border-b-2 border-primary"
@@ -26,7 +45,7 @@ export default function RenterTransactionsView() {
           )}
         </button>
         <button
-          onClick={() => setActiveTab("purchases")}
+          onClick={() => handleTabChange("purchases")}
           className={`px-6 py-3 font-medium text-sm transition-colors relative ${
             activeTab === "purchases"
               ? "text-primary border-b-2 border-primary"

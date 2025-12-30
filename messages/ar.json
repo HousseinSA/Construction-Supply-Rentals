@@ -94,6 +94,8 @@
     "currentlyUnavailable": "غير متاح حالياً",
     "bookingPending": "لديك بالفعل طلب حجز في انتظار الموافقة لهذه المعدة",
     "equipmentUnavailable": "هذه المعدة غير متاحة حالياً بسبب وجود حجوزات في الانتظار",
+    "equipmentAlreadyBooked": "هذه المعدة محجوزة بالفعل للتواريخ المختارة",
+    "bookedDatesConflict": "{equipmentName} محجوزة بالفعل من {startDate} إلى {endDate}. يرجى اختيار تواريخ مختلفة.",
     "adminCannotBook": "لا يمكن للإدارة إجراء حجوزات أو طلبات شراء",
     "yourEquipment": "معداتك",
     "editEquipment": "تعديل المعدة",
@@ -1025,6 +1027,7 @@
   },
   "bookingSuccess": {
     "title": "تم الحجز بنجاح!",
+    "saleTitle": "تم إرسال طلب الشراء!",
     "bookingMessage": "تم إرسال طلب الحجز بنجاح. سيقوم فريقنا بمراجعته والتواصل معك قريباً.",
     "saleMessage": "تم إرسال طلب الشراء بنجاح. سيقوم فريقنا بمراجعته والتواصل معك قريباً.",
     "transportTitle": "تحتاج نقل؟",

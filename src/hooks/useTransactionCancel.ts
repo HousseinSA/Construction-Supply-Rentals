@@ -33,9 +33,12 @@ export function useTransactionCancel(
         toast.success(translations.cancelSuccess)
         onSuccess()
       } else {
-        toast.error(translations.cancelFailed)
+        const errorData = await response.json().catch(() => ({}))
+        console.error("Cancel error:", { status: response.status, error: errorData })
+        toast.error(errorData.error || translations.cancelFailed)
       }
     } catch (error) {
+      console.error("Cancel request error:", error)
       toast.error(translations.cancelFailed)
     } finally {
       setCancellingId(null)

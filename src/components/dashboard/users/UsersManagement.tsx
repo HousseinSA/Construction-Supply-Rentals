@@ -220,7 +220,7 @@ export default function UsersManagement() {
         ) : (
           <>
             {/* Desktop Table */}
-            <div className="hidden lg:block">
+            <div className="hidden xl:block">
               <Table>
                 <TableHeader>
                   <tr>
@@ -327,7 +327,102 @@ export default function UsersManagement() {
               </Table>
             </div>
 
-            {/* Mobile Cards */}
+            {/* Mobile/Tablet Cards */}
+            <div className="xl:hidden divide-y divide-gray-200 space-y-4 p-4">
+              {paginatedUsers.map((user) => (
+                <div key={user._id} className="p-4 hover:bg-gray-50 border rounded-lg">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                        <Users className="h-5 w-5 text-blue-600" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-sm font-medium text-gray-900">
+                          {user.firstName} {user.lastName}
+                        </h3>
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full mt-1 ${
+                            user.role === "admin"
+                              ? "bg-purple-100 text-purple-800"
+                              : user.userType === "supplier"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-blue-100 text-blue-800"
+                          }`}
+                        >
+                          {getRoleText(user)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-500">{t("equipment.phone")}:</span>
+                      <span className="text-sm text-gray-900 dir-ltr">{formatPhoneNumber(user.phone)}</span>
+                      <CopyButton text={user.phone} size="sm" />
+                    </div>
+                    {user.userType === "supplier" && user.companyName && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-gray-500">Company:</span>
+                        <span className="text-sm text-gray-900">{user.companyName}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-500">{t("users.status")}:</span>
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          user.status === "blocked"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-green-100 text-green-800"
+                        }`}
+                      >
+                        {user.status === "blocked"
+                          ? t("users.blocked")
+                          : t("users.active")}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-500">{t("equipment.createdAt")}:</span>
+                      <span className="text-sm text-gray-900">
+                        {formatDate(user.createdAt || new Date())}
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() =>
+                      openConfirmModal(
+                        user._id?.toString() || "",
+                        user.status === "blocked" ? "unblock" : "block",
+                        `${user.firstName} ${user.lastName}`
+                      )
+                    }
+                    disabled={updating === user._id?.toString()}
+                    className={`w-full inline-flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium disabled:opacity-50 ${
+                      user.status === "blocked"
+                        ? "bg-green-100 text-green-700 hover:bg-green-200"
+                        : "bg-red-100 text-red-700 hover:bg-red-200"
+                    }`}
+                  >
+                    {user.status === "blocked" ? (
+                      <>
+                        <Shield className="h-4 w-4 mr-1" />
+                        {updating === user._id?.toString()
+                          ? "Processing..."
+                          : t("users.unblockUser")}
+                      </>
+                    ) : (
+                      <>
+                        <ShieldOff className="h-4 w-4 mr-1" />
+                        {updating === user._id?.toString()
+                          ? "Processing..."
+                          : t("users.blockUser")}
+                      </>
+                    )}
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            {/* Mobile Cards - Screen below lg */}
             <div className="lg:hidden divide-y divide-gray-200">
               {paginatedUsers.map((user) => (
                 <div key={user._id} className="p-4 hover:bg-gray-50">

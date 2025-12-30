@@ -94,6 +94,8 @@
     "currentlyUnavailable": "Currently Unavailable",
     "bookingPending": "You already have a pending booking for this equipment",
     "equipmentUnavailable": "This equipment is currently unavailable due to pending bookings",
+    "equipmentAlreadyBooked": "Equipment is already booked for selected dates",
+    "bookedDatesConflict": "{equipmentName} is already booked for {startDate} - {endDate}. Please select different dates.",
     "adminCannotBook": "Admins cannot make bookings or purchase requests",
     "cannotBookOwnEquipment": "You cannot book your own equipment",
     "yourEquipment": "Your Equipment",

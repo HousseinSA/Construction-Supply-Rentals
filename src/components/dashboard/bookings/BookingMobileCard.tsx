@@ -1,11 +1,8 @@
 import { Coins } from "lucide-react"
 import { useTranslations } from "next-intl"
-import { formatReferenceNumber } from "@/src/lib/format-reference"
-import { formatPhoneNumber } from "@/src/lib/format"
 import { formatDate, getTranslatedUnit } from "@/src/lib/table-utils"
 import { calculateBookingCommission } from "@/src/lib/commission"
 import GenericMobileCard from "@/src/components/ui/GenericMobileCard"
-import CopyButton from "@/src/components/ui/CopyButton"
 import type { BookingWithDetails } from "@/src/stores/bookingsStore"
 
 interface BookingMobileCardProps {
@@ -21,27 +18,21 @@ export default function BookingMobileCard({ booking, onViewDetails, t, highlight
   const equipmentTitle = `${booking.bookingItems[0]?.equipmentName}${
     booking.bookingItems.length > 1 ? ` +${booking.bookingItems.length - 1}` : ""
   }`
-  const renterName = `${booking.renterInfo[0]?.firstName} ${booking.renterInfo[0]?.lastName}`
+  const renterName = booking.renterInfo && booking.renterInfo.length > 0
+    ? `${booking.renterInfo[0]?.firstName} ${booking.renterInfo[0]?.lastName}`
+    : "Unknown"
   const totalUsage = booking.bookingItems.reduce((sum, item) => sum + item.usage, 0)
   const usageUnit = booking.bookingItems[0]?.usageUnit || ""
   
-  const supplierDisplay = booking.supplierInfo && booking.supplierInfo.length > 0 && !booking.hasAdminCreatedEquipment
-    ? (
-        <div className="space-y-1">
-          <div className="text-sm">{booking.supplierInfo[0].firstName} {booking.supplierInfo[0].lastName}</div>
-          <div className="flex items-center gap-2">
-            <span className="text-sm" dir="ltr">{formatPhoneNumber(booking.supplierInfo[0].phone)}</span>
-            <CopyButton text={booking.supplierInfo[0].phone} size="sm" />
-          </div>
-        </div>
-      )
+  const supplierName = booking.supplierInfo && booking.supplierInfo.length > 0
+    ? `${booking.supplierInfo[0].firstName} ${booking.supplierInfo[0].lastName}`
     : t("admin")
 
   return (
     <div className={highlight ? "animate-pulse" : ""}>
       <GenericMobileCard
-        id={equipmentTitle}
-        title={<span className="text-primary font-medium" dir="ltr">{formatReferenceNumber(booking.referenceNumber)}</span>}
+        id={`#${booking.referenceNumber || ""}`}
+        title={equipmentTitle}
         subtitle={renterName}
         date={formatDate(booking.createdAt)}
         status={booking.status}
@@ -52,7 +43,7 @@ export default function BookingMobileCard({ booking, onViewDetails, t, highlight
           },
           {
             label: t("table.supplier"),
-            value: supplierDisplay,
+            value: supplierName,
           },
           {
             label: t("table.total"),
@@ -60,9 +51,9 @@ export default function BookingMobileCard({ booking, onViewDetails, t, highlight
           },
           {
             label: t("table.commission"),
-            value: booking.hasAdminCreatedEquipment ? t("adminOwned") : commission,
-            icon: !booking.hasAdminCreatedEquipment ? <Coins className="w-3.5 h-3.5 text-green-600" /> : undefined,
-            highlight: !booking.hasAdminCreatedEquipment,
+            value: commission,
+            icon: <Coins className="w-3.5 h-3.5 text-green-600" />,
+            highlight: true,
           },
         ]}
         onViewDetails={() => onViewDetails(booking)}

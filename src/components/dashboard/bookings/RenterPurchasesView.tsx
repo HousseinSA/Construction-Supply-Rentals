@@ -17,9 +17,8 @@ import { Link } from "@/src/i18n/navigation"
 import ConfirmModal from "@/src/components/ui/ConfirmModal"
 import { AlertTriangle } from "lucide-react"
 import GenericMobileCard from "@/src/components/ui/GenericMobileCard"
-import { formatReferenceNumber } from "@/src/lib/format-reference"
+import ReferenceNumber from "@/src/components/ui/ReferenceNumber"
 import { useTransactionCancel } from "@/src/hooks/useTransactionCancel"
-import CopyButton from "@/src/components/ui/CopyButton"
 import { formatDate } from "@/src/lib/table-utils"
 
 interface SaleOrder {
@@ -141,10 +140,7 @@ export default function RenterPurchasesView() {
                         {purchase.equipmentName}
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-medium text-primary" dir="ltr">
-                          {purchase.referenceNumber && formatReferenceNumber(purchase.referenceNumber)}
-                        </span>
-                        {purchase.referenceNumber && <CopyButton text={purchase.referenceNumber} size="sm" />}
+                        <ReferenceNumber referenceNumber={purchase.referenceNumber} size="md" />
                       </div>
                     </div>
                   </div>
@@ -192,7 +188,7 @@ export default function RenterPurchasesView() {
         {paginatedData.map((purchase) => (
           <GenericMobileCard
             key={purchase._id}
-            id={formatReferenceNumber(purchase.referenceNumber)}
+            id={<ReferenceNumber referenceNumber={purchase.referenceNumber} size="md" />}
             title={purchase.equipmentName}
             date={new Date(purchase.createdAt).toLocaleDateString()}
             status={purchase.status}

@@ -95,6 +95,8 @@
     "currentlyUnavailable": "Actuellement Indisponible",
     "bookingPending": "Vous avez déjà une demande de réservation en attente pour cet équipement",
     "equipmentUnavailable": "Cet équipement est actuellement indisponible en raison de réservations en attente",
+    "equipmentAlreadyBooked": "Cet équipement est déjà réservé pour les dates sélectionnées",
+    "bookedDatesConflict": "{equipmentName} est déjà réservé pour {startDate} - {endDate}. Veuillez sélectionner d'autres dates.",
     "adminCannotBook": "Les administrateurs ne peuvent pas faire de réservations ou de demandes d'achat",
     "yourEquipment": "Votre Matériel",
     "editEquipment": "Modifier Matériel",

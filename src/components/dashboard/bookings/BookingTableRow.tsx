@@ -1,9 +1,9 @@
 import { Eye } from "lucide-react"
 import { formatPhoneNumber } from "@/src/lib/format"
-import { formatReferenceNumber } from "@/src/lib/format-reference"
 import { calculateBookingCommission } from "@/src/lib/commission"
 import { formatDate, getTranslatedUnit } from "@/src/lib/table-utils"
 import CopyButton from "@/src/components/ui/CopyButton"
+import ReferenceNumber from "@/src/components/ui/ReferenceNumber"
 import BookingStatusBadge from "./BookingStatusBadge"
 import { TableRow, TableCell } from "@/src/components/ui/Table"
 import { useTranslations } from "next-intl"
@@ -60,10 +60,7 @@ export default function BookingTableRow({
             )}
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-primary" dir="ltr">
-              {booking.referenceNumber && formatReferenceNumber(booking.referenceNumber)}
-            </span>
-            {booking.referenceNumber && <CopyButton text={booking.referenceNumber} size="sm" />}
+            <ReferenceNumber referenceNumber={booking.referenceNumber} size="md" />
           </div>
         </div>
       </TableCell>

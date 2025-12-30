@@ -22,6 +22,8 @@ export async function GET(request: NextRequest) {
     const availableOnly = searchParams.get("available") === "true"
     const isAdmin = searchParams.get("admin") === "true"
     const supplierId = searchParams.get("supplierId")
+    const startDate = searchParams.get("startDate")
+    const endDate = searchParams.get("endDate")
 
     const db = await connectDB()
 
@@ -41,6 +43,7 @@ export async function GET(request: NextRequest) {
 
     if (!isAdmin && !supplierId) {
       query.status = "approved"
+      query.isAvailable = true
     }
 
     if (supplierId && ObjectId.isValid(supplierId)) {
@@ -86,6 +89,9 @@ export async function GET(request: NextRequest) {
                     $and: [
                       { $in: ["$$equipmentId", "$bookingItems.equipmentId"] },
                       { $in: ["$status", ["pending", "paid"]] },
+                      // Check if booking dates include TODAY
+                      { $lte: ["$startDate", new Date()] },
+                      { $gte: ["$endDate", new Date()] }
                     ],
                   },
                 },
@@ -115,8 +121,12 @@ export async function GET(request: NextRequest) {
         },
         {
           $match: {
-            activeBookings: { $size: 0 },
-            activeSales: { $size: 0 },
+            $expr: {
+              $and: [
+                { $eq: [{ $size: "$activeBookings" }, 0] },
+                { $eq: [{ $size: "$activeSales" }, 0] },
+              ],
+            },
           },
         },
         { $project: { activeBookings: 0, activeSales: 0 } },

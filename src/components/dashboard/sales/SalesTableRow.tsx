@@ -1,9 +1,9 @@
 import { Eye } from "lucide-react"
 import Image from "next/image"
 import { formatPhoneNumber } from "@/src/lib/format"
-import { formatReferenceNumber } from "@/src/lib/format-reference"
 import { formatDate } from "@/src/lib/table-utils"
 import CopyButton from "@/src/components/ui/CopyButton"
+import ReferenceNumber from "@/src/components/ui/ReferenceNumber"
 import BookingStatusBadge from "../bookings/BookingStatusBadge"
 import { TableRow, TableCell } from "@/src/components/ui/Table"
 
@@ -23,10 +23,7 @@ export default function SalesTableRow({ sale, onViewDetails, t, highlight = fals
         <div className="space-y-0.5">
           <div className="text-sm font-semibold text-gray-900">{sale.equipmentName}</div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-primary" dir="ltr">
-              {formatReferenceNumber(sale.referenceNumber)}
-            </span>
-            <CopyButton text={sale.referenceNumber} size="sm" />
+            <ReferenceNumber referenceNumber={sale.referenceNumber} size="md" />
           </div>
         </div>
       </TableCell>

@@ -3,6 +3,7 @@ import { useSession } from "next-auth/react"
 import { useTranslations } from "next-intl"
 import { PricingType } from "@/src/lib/types"
 import { requiresTransport } from "@/src/lib/constants/transport"
+import { useBookingSuccessStore } from "@/src/stores/bookingSuccessStore"
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 
 export function useBookingModal(
@@ -74,6 +75,9 @@ export function useBookingModal(
       
       const data = await response.json()
       if (data.success) {
+        if (data.data.equipment) {
+          useBookingSuccessStore.setState({ equipment: data.data.equipment })
+        }
         if (router && locale) {
           router.push(`/${locale}/booking-success?equipment=${encodeURIComponent(equipment.name)}&equipmentId=${equipment._id}&type=booking`)
         } else {

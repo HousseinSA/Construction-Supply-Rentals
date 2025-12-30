@@ -59,14 +59,22 @@ export async function GET(
       }
     }
     
+    const now = new Date()
+    
     const hasPendingBookings = await db.collection("bookings").findOne({
       "bookingItems.equipmentId": new ObjectId(id),
-      status: "pending"
+      status: "pending",
+      // Only show as unavailable if booking is happening NOW (today is within the booking date range)
+      startDate: { $lte: now },
+      endDate: { $gte: now }
     })
 
     const hasActiveBookings = await db.collection("bookings").findOne({
       "bookingItems.equipmentId": new ObjectId(id),
-      status: { $in: ["pending", "paid"] }
+      status: { $in: ["pending", "paid"] },
+      // Only show as unavailable if booking is happening NOW
+      startDate: { $lte: now },
+      endDate: { $gte: now }
     })
 
     return NextResponse.json({ 

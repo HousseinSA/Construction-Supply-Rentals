@@ -1,12 +1,13 @@
 "use client"
 
 import { useState } from 'react'
+import { FileText } from 'lucide-react'
 import { useTranslations } from "next-intl"
 import { useParams, useRouter } from "next/navigation"
-import { FileText } from "lucide-react"
 import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
+import { useBookingSuccessStore } from "@/src/stores/bookingSuccessStore"
 import BaseRequestModal from "@/src/components/shared/BaseRequestModal"
-import { requiresTransport } from "@/src/lib/constants/transport"
+import Input from "@/src/components/ui/Input"
 
 interface SaleModalProps {
   isOpen: boolean
@@ -58,6 +59,9 @@ export default function SaleModal({
       const data = await response.json()
 
       if (data.success) {
+        if (data.data.equipment) {
+          useBookingSuccessStore.setState({ equipment: data.data.equipment })
+        }
         router.push(`/${locale}/booking-success?equipment=${encodeURIComponent(equipment.name)}&equipmentId=${equipment._id}&type=sale`)
         onSaleSuccess?.()
         onClose()

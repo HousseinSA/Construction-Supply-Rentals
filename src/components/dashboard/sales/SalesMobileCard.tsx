@@ -1,8 +1,8 @@
 import { Coins } from "lucide-react"
 import { formatPhoneNumber } from "@/src/lib/format"
-import { formatReferenceNumber } from "@/src/lib/format-reference"
 import { formatDate } from "@/src/lib/table-utils"
 import GenericMobileCard from "@/src/components/ui/GenericMobileCard"
+import ReferenceNumber from "@/src/components/ui/ReferenceNumber"
 import CopyButton from "@/src/components/ui/CopyButton"
 
 interface SalesMobileCardProps {
@@ -33,7 +33,7 @@ export default function SalesMobileCard({ sale, onViewDetails, t, highlight = fa
   return (
     <div className={highlight ? "animate-pulse" : ""}>
       <GenericMobileCard
-        id={<span className="text-primary font-medium" dir="ltr">{formatReferenceNumber(sale.referenceNumber)}</span>}
+        id={<ReferenceNumber referenceNumber={sale.referenceNumber} size="md" />}
         title={sale.equipmentName}
         subtitle={buyerName}
         date={formatDate(sale.createdAt)}

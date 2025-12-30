@@ -195,7 +195,7 @@ export default function BookingTable() {
           ) : (
             <>
               {/* Desktop Table */}
-              <div className="hidden lg:block">
+              <div className="hidden xl:block">
                 <Table>
                   <TableHeader>
                     <tr>
@@ -225,8 +225,21 @@ export default function BookingTable() {
                 </Table>
               </div>
 
-              {/* Mobile Cards */}
-              <div className="lg:hidden space-y-4">
+              {/* Mobile/Tablet Cards */}
+              <div className="xl:hidden space-y-4 p-4">
+                {paginatedBookings.map((booking) => (
+                  <BookingMobileCard
+                    key={booking._id}
+                    booking={booking}
+                    onViewDetails={handleViewDetails}
+                    t={t}
+                    highlight={highlightId === booking._id}
+                  />
+                ))}
+              </div>
+
+              {/* Mobile Cards - Screen below lg */}
+              <div className="lg:hidden space-y-4 p-4">
                 {paginatedBookings.map((booking) => (
                   <BookingMobileCard
                     key={booking._id}

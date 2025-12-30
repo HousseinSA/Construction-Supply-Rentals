@@ -10,6 +10,8 @@ import {
   calculateSubtotal,
   validateReferences,
   checkEquipmentAvailability,
+  calculateBookingEndDate,
+  getConflictingBooking,
 } from "@/src/lib/booking-utils"
 import { BookingItem } from "@/src/lib/models/booking"
 
@@ -197,7 +199,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: refErrors.join(", "),
+          errors: refErrors,
         },
         { status: 400 }
       )
@@ -205,16 +207,39 @@ export async function POST(request: NextRequest) {
 
     const bookingItems: BookingItem[] = []
     let totalPrice = 0
+    let calculatedEndDate: Date | undefined
 
     for (const item of body.bookingItems) {
       const equipmentId = new ObjectId(item.equipmentId)
 
-      const available = await checkEquipmentAvailability(db, equipmentId)
+      const available = await checkEquipmentAvailability(
+        db, 
+        equipmentId, 
+        body.startDate, 
+        body.endDate
+      )
       if (!available) {
+        // Get the conflicting booking dates
+        const conflictingBooking = await getConflictingBooking(
+          db,
+          equipmentId,
+          body.startDate,
+          body.endDate
+        )
+        
+        const equipment = await db.collection('equipment').findOne({ _id: equipmentId })
+        const startDateStr = conflictingBooking?.startDate 
+          ? new Date(conflictingBooking.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+          : ''
+        const endDateStr = conflictingBooking?.endDate
+          ? new Date(conflictingBooking.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+          : ''
+        
         return NextResponse.json(
           {
             success: false,
-            error: `Equipment ${item.equipmentId} is currently unavailable`,
+            error: `Equipment ${equipment?.name} is already booked for ${startDateStr} - ${endDateStr}. Please select different dates.`,
+            conflictingDates: conflictingBooking ? { startDate: conflictingBooking.startDate, endDate: conflictingBooking.endDate } : null
           },
           { status: 409 }
         )
@@ -222,6 +247,14 @@ export async function POST(request: NextRequest) {
 
       const { rate, subtotal, equipmentName, supplierId, usageUnit, pricingType } =
         await calculateSubtotal(db, equipmentId, item.usage, item.pricingType)
+
+      if (body.startDate && !calculatedEndDate) {
+        if (body.endDate && pricingType === 'daily') {
+          calculatedEndDate = new Date(body.endDate)
+        } else if (pricingType === 'hourly' || pricingType === 'per_km' || pricingType === 'monthly') {
+          calculatedEndDate = calculateBookingEndDate(body.startDate, item.usage, pricingType)
+        }
+      }
 
       bookingItems.push({
         equipmentId,
@@ -249,7 +282,7 @@ export async function POST(request: NextRequest) {
       status: "pending",
       renterMessage: body.renterMessage || "",
       startDate: body.startDate ? new Date(body.startDate) : undefined,
-      endDate: body.endDate ? new Date(body.endDate) : undefined,
+      endDate: calculatedEndDate || (body.endDate ? new Date(body.endDate) : undefined),
       createdAt: new Date(),
       updatedAt: new Date(),
     })
@@ -286,6 +319,10 @@ export async function POST(request: NextRequest) {
 
     await triggerRealtimeUpdate('booking')
 
+    const equipment = await db.collection('equipment').findOne({
+      _id: bookingItems[0]?.equipmentId
+    })
+
     return NextResponse.json(
       {
         success: true,
@@ -300,6 +337,7 @@ export async function POST(request: NextRequest) {
             rate: item.rate,
             subtotal: item.subtotal,
           })),
+          equipment: equipment || null,
         },
       },
       { status: 201 }
@@ -331,10 +369,26 @@ export async function PUT(request: NextRequest) {
     }
 
     const db = await connectDB()
+
+    if (!ObjectId.isValid(bookingId)) {
+      return NextResponse.json(
+        { success: false, error: "Invalid booking ID" },
+        { status: 400 }
+      )
+    }
+
+    const bookingObjectId = new ObjectId(bookingId)
     
-    if (status === 'cancelled' && !adminId) {
-      const booking = await db.collection('bookings').findOne({ _id: new ObjectId(bookingId) })
-      if (booking && booking.status !== 'pending') {
+    // Always validate cancellation
+    if (status === 'cancelled') {
+      const booking = await db.collection('bookings').findOne({ _id: bookingObjectId })
+      if (!booking) {
+        return NextResponse.json(
+          { success: false, error: "Booking not found" },
+          { status: 404 }
+        )
+      }
+      if (booking.status !== 'pending') {
         return NextResponse.json(
           {
             success: false,
@@ -343,55 +397,52 @@ export async function PUT(request: NextRequest) {
           { status: 400 }
         )
       }
-    }
-    
-    if (status === 'cancelled' && !adminId) {
-      const booking = await db.collection('bookings').findOne({ _id: new ObjectId(bookingId) })
-      
-      if (booking) {
+
+      // Send notification email for non-admin cancellations
+      if (!adminId) {
         const adminEmail = process.env.ADMIN_EMAIL
         if (adminEmail) {
           const renter = await db.collection('users').findOne({ _id: booking.renterId })
-          
-          const suppliers = await Promise.all(
-            booking.bookingItems.map(async (item: any) => {
-              if (!item.supplierId) return null;
-              const supplier = await db.collection('users').findOne({ _id: item.supplierId })
-              return {
-                name: supplier ? `${supplier.firstName} ${supplier.lastName}` : 'N/A',
-                phone: supplier?.phone || 'N/A',
-                equipment: item.equipmentName,
-                duration: `${item.usage} ${item.usageUnit || ''}`
-              }
-            })
-          )
-          
-          const { sendBookingCancellationEmail } = await import('@/src/lib/email')
-          await sendBookingCancellationEmail(adminEmail, {
-            referenceNumber: booking.referenceNumber,
-            equipmentNames: booking.bookingItems.map((item: any) => item.equipmentName),
-            totalPrice: booking.totalPrice,
-            renterName: renter ? `${renter.firstName} ${renter.lastName}` : 'Unknown',
-            renterPhone: renter?.phone || 'N/A',
-            renterLocation: renter?.city || undefined,
-            cancellationDate: new Date(),
-            suppliers: suppliers.filter(s => s !== null) as Array<{ name: string; phone: string; equipment: string; duration: string }>
-          }).catch(err => console.error('Email error:', err))
-        }
+        
+        const suppliers = await Promise.all(
+          booking.bookingItems.map(async (item: any) => {
+            if (!item.supplierId) return null;
+            const supplier = await db.collection('users').findOne({ _id: item.supplierId })
+            return {
+              name: supplier ? `${supplier.firstName} ${supplier.lastName}` : 'N/A',
+              phone: supplier?.phone || 'N/A',
+              equipment: item.equipmentName,
+              duration: `${item.usage} ${item.usageUnit || ''}`
+            }
+          })
+        )
+        
+        const { sendBookingCancellationEmail } = await import('@/src/lib/email')
+        await sendBookingCancellationEmail(adminEmail, {
+          referenceNumber: booking.referenceNumber,
+          equipmentNames: booking.bookingItems.map((item: any) => item.equipmentName),
+          totalPrice: booking.totalPrice,
+          renterName: renter ? `${renter.firstName} ${renter.lastName}` : 'Unknown',
+          renterPhone: renter?.phone || 'N/A',
+          renterLocation: renter?.city || undefined,
+          cancellationDate: new Date(),
+          suppliers: suppliers.filter(s => s !== null) as Array<{ name: string; phone: string; equipment: string; duration: string }>
+        }).catch((err: any) => console.error('Email error:', err))
+      }
       }
     }
-    
     const { updateBookingStatus } = await import("@/src/lib/booking-service")
 
     await updateBookingStatus(
       db,
-      new ObjectId(bookingId),
+      bookingObjectId,
       status,
       adminId ? new ObjectId(adminId) : undefined,
       adminNotes
     )
 
     await triggerRealtimeUpdate('booking')
+    await triggerRealtimeUpdate('equipment')
 
     return NextResponse.json({
       success: true,

@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, ReactNode } from "react"
+import { useRef, ReactNode, RefObject } from "react"
 import { useModalClose } from "@/src/hooks/useModalClose"
 import ModalHeader from "@/src/components/booking/ModalHeader"
 import ReferenceBadge from "./ReferenceBadge"
@@ -20,6 +20,7 @@ interface BaseDetailsModalProps {
   updateLabel?: string
   updatingLabel?: string
   closeLabel?: string
+  createdAt?: string
 }
 
 export default function BaseDetailsModal({
@@ -35,9 +36,10 @@ export default function BaseDetailsModal({
   updateLabel,
   updatingLabel,
   closeLabel,
+  createdAt,
 }: BaseDetailsModalProps) {
-  const modalRef = useRef<HTMLDivElement>(null)
-  useModalClose(isOpen, onClose, modalRef)
+  const modalRef = useRef<HTMLDivElement | null>(null)
+  useModalClose(isOpen, onClose, modalRef as RefObject<HTMLElement>)
 
   if (!isOpen) return null
 
@@ -48,7 +50,7 @@ export default function BaseDetailsModal({
         <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom-4 duration-200">
           <div className="p-6">
             <ModalHeader title={title} onClose={onClose} />
-            <ReferenceBadge referenceNumber={referenceNumber} label={referenceLabel} />
+            <ReferenceBadge referenceNumber={referenceNumber} label={referenceLabel} createdAt={createdAt} />
             
             <div className="space-y-6">{children}</div>
 

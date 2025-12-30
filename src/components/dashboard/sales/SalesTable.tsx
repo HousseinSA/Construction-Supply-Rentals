@@ -153,7 +153,7 @@ export default function SalesTable() {
             </div>
           ) : (
             <>
-              <div className="hidden lg:block">
+              <div className="hidden xl:block">
                 <Table>
                   <TableHeader>
                     <tr>
@@ -188,7 +188,18 @@ export default function SalesTable() {
                   </TableBody>
                 </Table>
               </div>
-              <div className="lg:hidden space-y-4">
+              <div className="xl:hidden space-y-4 p-4">
+                {sales.length === 0 ? (
+                  <div className="p-12 text-center text-gray-500 font-medium">{t("noSales")}</div>
+                ) : filteredData.length === 0 ? (
+                  <div className="p-12 text-center text-gray-500 font-medium">{filterValues.status === "all" ? t("noResults") : t(`no${filterValues.status.charAt(0).toUpperCase()}${filterValues.status.slice(1)}Sales`)}</div>
+                ) : (
+                  paginatedData.map((sale) => (
+                    <SalesMobileCard key={sale._id} sale={sale} onViewDetails={handleViewDetails} t={t} highlight={highlightId === sale._id} />
+                  ))
+                )}
+              </div>
+              <div className="lg:hidden space-y-4 p-4">
                 {sales.length === 0 ? (
                   <div className="p-12 text-center text-gray-500 font-medium">{t("noSales")}</div>
                 ) : filteredData.length === 0 ? (
