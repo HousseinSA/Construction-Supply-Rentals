@@ -115,10 +115,10 @@ export default function BookingSuccessPage() {
                 <div className="mb-4 flex justify-center lg:justify-start">
                   <CheckCircle className="w-20 sm:w-24 lg:w-28 h-20 sm:h-24 lg:h-28 text-green-500" />
                 </div>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-start text-gray-900 mb-3">
                 {type === "sale" ? t("saleTitle") : t("title")}
               </h1>
-              <p className="text-base sm:text-lg text-gray-600 mb-6">
+              <p  className="text-base sm:text-lg text-gray-600 mb-6 text-start">
                 {type === "sale" ? t("saleMessage") : t("bookingMessage")}
               </p>
               {mainEquipment || equipmentName ? (

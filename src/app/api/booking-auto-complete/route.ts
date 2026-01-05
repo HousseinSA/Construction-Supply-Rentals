@@ -8,23 +8,19 @@ import { processBookingAutoCompletion } from '@/src/lib/booking-auto-complete';
 // POST: Trigger booking auto-completion job
 export async function POST(req: NextRequest) {
   try {
-    // Check authentication - only admin can trigger this
-    const session = await getServerSession(authOptions);
-    
-    if (!session || session.user?.role !== 'admin') {
-      return NextResponse.json(
-        { error: 'Unauthorized - admin access required' },
-        { status: 401 }
-      );
-    }
-
-    // Verify the request has the correct secret if provided
+    // Verify the request has the correct secret if provided (for automated/testing)
     const secret = req.headers.get('x-auto-complete-secret');
-    if (process.env.AUTO_COMPLETE_SECRET && secret !== process.env.AUTO_COMPLETE_SECRET) {
-      return NextResponse.json(
-        { error: 'Invalid secret' },
-        { status: 403 }
-      );
+    const hasValidSecret = process.env.AUTO_COMPLETE_SECRET && secret === process.env.AUTO_COMPLETE_SECRET;
+
+    // Check authentication - only admin can trigger this, OR valid secret
+    if (!hasValidSecret) {
+      const session = await getServerSession(authOptions);
+      if (!session || session.user?.role !== 'admin') {
+        return NextResponse.json(
+          { error: 'Unauthorized - admin access required or invalid secret' },
+          { status: 401 }
+        );
+      }
     }
 
     const db = await connectDB();

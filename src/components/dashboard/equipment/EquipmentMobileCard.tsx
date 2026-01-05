@@ -186,13 +186,14 @@ export default function EquipmentMobileCard({
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 pb-3 border-b border-gray-200 h-32">
-        <div className="w-full sm:w-40 md:w-44 lg:w-48 relative overflow-hidden rounded-lg bg-gray-100 flex-shrink-0 h-32">
+      <div className="flex gap-4 pb-3 border-b border-gray-200">
+        <div className="w-32 sm:w-40 md:w-44 lg:w-48 h-32 relative rounded-lg flex-shrink-0 overflow-hidden">
           <EquipmentImage
             src={item.images[0] || "/equipement-images/default-fallback-image.png"}
             alt={item.name}
             size="lg"
-            className="!w-full !h-full object-contain"
+            
+            className="!w-full !h-full object-cover"
             onClick={() =>
               onNavigate(
                 `/equipment/${item._id?.toString()}?admin=true`,

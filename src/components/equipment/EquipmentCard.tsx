@@ -110,7 +110,7 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
       } group ${fontClass} ${isNavigating ? 'pointer-events-none' : ''}`}
     >
       <div
-        className="h-48 sm:h-52 relative overflow-hidden cursor-pointer"
+        className="h-56 sm:h-60 relative overflow-hidden cursor-pointer bg-gradient-to-br from-gray-50 to-gray-100"
         onClick={handleNavigate}
       >
         <Image
@@ -121,14 +121,14 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
                   height: 400,
                   quality: 'auto:good',
                   format: 'auto',
-                  crop: 'fill'
+                  crop: 'fit'
                 })
               : getEquipmentImage(equipment.name)
           }
           alt={equipment.name}
           fill
           sizes="(max-width: 500px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-scale-down bg-gray-50"
+          className="object-center"
           placeholder={equipment.images?.length > 0 ? "blur" : "empty"}
           blurDataURL={equipment.images?.length > 0 ? getBlurDataURL(equipment.images[0]) : undefined}
           loading="lazy"
