@@ -1,3 +1,5 @@
+import ReferenceNumber from "@/src/components/ui/ReferenceNumber"
+
 interface ReferenceBadgeProps {
   referenceNumber: string
   label: string
@@ -9,9 +11,7 @@ export default function ReferenceBadge({ referenceNumber, label, createdAt }: Re
     <div className="mb-4 px-3 py-2 bg-orange-50 border border-orange-200 rounded-lg">
       <div className="flex items-center justify-between">
         <div className="text-xl font-bold text-gray-600">{label}</div>
-        <div className="text-xl font-bold text-primary" dir="ltr">
-          {referenceNumber?.slice(0, 3)}-{referenceNumber?.slice(3)}
-        </div>
+        <ReferenceNumber referenceNumber={referenceNumber} size="lg" />
       </div>
       {createdAt && (
         <div className="mt-2 text-sm text-gray-600 border-t border-orange-200 pt-2">

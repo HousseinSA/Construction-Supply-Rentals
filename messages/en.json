@@ -13,6 +13,7 @@
     "month": "month",
     "km": "km",
     "ton": "ton",
+    "sale": "sale",
     "currency": "MRU",
     "phone": "+222 11 11 11 11",
     "equipment": "Equipment",
@@ -455,19 +456,6 @@
       "profile": "Profile",
       "profileDesc": "Manage your business profile"
     },
-    "renter": {
-      "title": "Renter Dashboard",
-      "subtitle": "Find and rent construction equipment",
-      "browseEquipment": "Browse Equipment",
-      "browseEquipmentDesc": "Find equipment for your projects",
-      "myBookings": "My Bookings",
-      "myBookingsDesc": "View your current and past rentals",
-      "myTransactionsDesc": "View and manage all your transactions including rentals and purchases",
-      "requests": "Rental Requests",
-      "requestsDesc": "Track your rental requests status",
-      "profile": "Profile",
-      "profileDesc": "Manage your account settings"
-    },
     "equipment": {
       "createTitle": "Create New Equipment",
       "backToDashboard": "Back to Dashboard",
@@ -628,7 +616,9 @@
         "allLocations": "All Locations"
       },
       "activeBookingWarning": "Active Bookings Warning",
-      "activeBookingWarningMessage": "This equipment has active bookings. Editing may affect ongoing rentals. Please proceed with caution."
+      "activeBookingWarningMessage": "This equipment has active bookings. Editing may affect ongoing rentals. Please proceed with caution.",
+        "equipmentMustBeApproved":"Equipment must be approved before it becomes available",
+      "equipmentSold":"This equipment has been sold"
     },
     "pages": {
       "equipment": {
@@ -846,7 +836,7 @@
         "reference": "Reference",
         "bookingId": "Booking ID",
         "totalAmount": "Total Amount",
-        "commission": "Commission",
+        "commissionBooking": "Commission (10%)",
         "createdAt": "Created Date",
         "renterInfo": "Renter ",
         "supplierInfo": "Supplier ",
@@ -932,9 +922,8 @@
         "saleInfo": "Sale Information",
         "saleId": "Sale ID",
         "equipment": "Equipment",
-        
         "salePrice": "Sale Price",
-        "commission": "Commission (5%)",
+        "commissionSale": "Commission (5%)",
         "createdAt": "Created Date",
         "buyerInfo": "Buyer ",
         "supplierInfo": "Supplier",
@@ -1054,6 +1043,7 @@
   },
   "bookingSuccess": {
     "title": "Booking Successful!",
+    "saleTitle": "Purchase request sent!",
     "bookingMessage": "Your booking request has been submitted successfully. Our team will review it and contact you soon.",
     "saleMessage": "Your purchase request has been submitted successfully. Our team will review it and contact you soon.",
     "transportTitle": "Need Transport?",

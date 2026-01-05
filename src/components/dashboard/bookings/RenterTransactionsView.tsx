@@ -59,7 +59,7 @@ export default function RenterTransactionsView() {
         </button>
       </div>
 
-      <div className="lg:bg-white lg:rounded-lg lg:shadow-sm lg:border lg:border-gray-200 overflow-hidden">
+      <div className="xl:bg-white xl:rounded-xl xl:shadow-sm xl:border xl:border-gray-200 overflow-hidden">
         {activeTab === "rentals" ? <RenterBookingView /> : <RenterPurchasesView />}
       </div>
     </div>

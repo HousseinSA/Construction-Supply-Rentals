@@ -116,7 +116,7 @@ export default function BookingSuccessPage() {
                   <CheckCircle className="w-20 sm:w-24 lg:w-28 h-20 sm:h-24 lg:h-28 text-green-500" />
                 </div>
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
-                {t("title")}
+                {type === "sale" ? t("saleTitle") : t("title")}
               </h1>
               <p className="text-base sm:text-lg text-gray-600 mb-6">
                 {type === "sale" ? t("saleMessage") : t("bookingMessage")}
@@ -132,7 +132,6 @@ export default function BookingSuccessPage() {
             </div>
           </div>
         </div>
-
         {relatedEquipment.length > 0 && (
         <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
           <div className="flex items-center gap-3 mb-6">

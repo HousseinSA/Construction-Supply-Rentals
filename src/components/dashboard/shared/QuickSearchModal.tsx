@@ -1,12 +1,16 @@
 "use client"
 
-import { useState, useRef } from "react"
-import { X, Search } from "lucide-react"
+import { useState, useRef, RefObject } from "react"
+import { X, Search, Loader2 } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { useModalClose } from "@/src/hooks/useModalClose"
 import BookingDetailsModal from "../bookings/BookingDetailsModal"
 import SalesDetailsModal from "../sales/SalesDetailsModal"
+
+import type { BookingWithDetails } from "@/src/stores/bookingsStore"
+
+type SearchResult = BookingWithDetails | Record<string, unknown>
 
 interface QuickSearchModalProps {
   isOpen: boolean
@@ -21,7 +25,7 @@ export default function QuickSearchModal({
   const tToast = useTranslations("toast")
   const [refNumber, setRefNumber] = useState("")
   const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState<any>(null)
+  const [result, setResult] = useState<SearchResult | null>(null)
   const [resultType, setResultType] = useState<"booking" | "sale" | null>(null)
   const modalRef = useRef<HTMLDivElement>(null)
 
@@ -58,7 +62,7 @@ export default function QuickSearchModal({
         toast.error(t("notFound"))
       }
     } catch (error) {
-      if (error instanceof TypeError || error.message === 'Failed to fetch' || !navigator.onLine) {
+      if (error instanceof TypeError || (error instanceof Error && error.message === 'Failed to fetch') || !navigator.onLine) {
         toast.error(tToast("networkError"))
       } else {
         toast.error(t("notFound"))
@@ -75,7 +79,7 @@ export default function QuickSearchModal({
     onClose()
   }
 
-  useModalClose(isOpen, handleClose, modalRef)
+  useModalClose(isOpen, handleClose, modalRef as unknown as RefObject<HTMLElement>)
 
   if (!isOpen) return null
 
@@ -124,9 +128,9 @@ export default function QuickSearchModal({
                 <button
                   onClick={handleSearch}
                   disabled={loading || refNumber.length < 6}
-                  className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-colors"
+                  className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-colors flex items-center justify-center"
                 >
-                  {loading ? "..." : <Search className="h-5 w-5" />}
+                  {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Search className="h-5 w-5" />}
                 </button>
               </div>
             </div>
@@ -136,7 +140,7 @@ export default function QuickSearchModal({
 
       {result && resultType === "booking" && (
         <BookingDetailsModal
-          booking={result}
+          booking={result as BookingWithDetails}
           isOpen={true}
           onClose={() => {
             setResult(null)
@@ -149,7 +153,7 @@ export default function QuickSearchModal({
 
       {result && resultType === "sale" && (
         <SalesDetailsModal
-          sale={result}
+          sale={result as Record<string, unknown>}
           isOpen={true}
           onClose={() => {
             setResult(null)

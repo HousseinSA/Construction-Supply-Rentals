@@ -4,6 +4,7 @@ import { formatPhoneNumber } from "@/src/lib/format"
 import { formatDate } from "@/src/lib/table-utils"
 import CopyButton from "@/src/components/ui/CopyButton"
 import ReferenceNumber from "@/src/components/ui/ReferenceNumber"
+import PriceDisplay from "@/src/components/ui/PriceDisplay"
 import BookingStatusBadge from "../bookings/BookingStatusBadge"
 import { TableRow, TableCell } from "@/src/components/ui/Table"
 
@@ -41,20 +42,10 @@ export default function SalesTableRow({ sale, onViewDetails, t, highlight = fals
         </div>
       </TableCell>
       <TableCell>
-        <span className="text-sm font-semibold text-gray-900" dir="ltr">
-          {sale.salePrice.toLocaleString()} MRU
-        </span>
+        <PriceDisplay amount={sale.salePrice} />
       </TableCell>
       <TableCell>
-        {isAdminOwned ? (
-          <span className="text-sm text-gray-500">
-            {t("adminOwned")}
-          </span>
-        ) : (
-          <span className="text-sm font-semibold text-green-600" dir="ltr">
-            {sale.commission.toLocaleString()} MRU
-          </span>
-        )}
+        <PriceDisplay amount={sale.commission} variant="commission" />
       </TableCell>
       <TableCell>
         {isAdminOwned ? (

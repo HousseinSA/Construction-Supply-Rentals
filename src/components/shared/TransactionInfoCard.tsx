@@ -1,6 +1,8 @@
+import React from "react"
+
 interface TransactionInfoRow {
   label: string
-  value: string | number
+  value: string | number | React.ReactNode
   highlight?: boolean
   dir?: "ltr" | "rtl"
 }
@@ -24,7 +26,7 @@ export default function TransactionInfoCard({ title, rows }: TransactionInfoCard
           >
             <span className="text-sm text-gray-600">{row.label}</span>
             <span
-              className={`text-sm font-${row.highlight ? "bold" : "semibold"} ${
+              className={`text-sm ${
                 row.highlight ? "text-green-600" : "text-gray-900"
               }`}
               dir={row.dir || "auto"}

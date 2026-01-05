@@ -1,4 +1,9 @@
+'use client'
+
+import { useState } from 'react'
 import { formatReferenceNumber } from "@/src/lib/format-reference"
+import { Copy, Check } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 
 interface ReferenceNumberProps {
   referenceNumber?: string
@@ -13,6 +18,9 @@ export default function ReferenceNumber({
   showHashPrefix = false,
   className = ""
 }: ReferenceNumberProps) {
+  const { data: session } = useSession()
+  const [copied, setCopied] = useState(false)
+
   if (!referenceNumber) return null
 
   const sizeClasses = {
@@ -22,14 +30,38 @@ export default function ReferenceNumber({
   }
 
   const formatted = formatReferenceNumber(referenceNumber)
+  const isAdmin = session?.user?.role === 'admin'
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(referenceNumber)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  const iconSize = size === 'sm' ? 'w-3 h-3' : size === 'md' ? 'w-3.5 h-3.5' : 'w-4 h-4'
 
   return (
-    <span
-      className={`text-primary ${sizeClasses[size]} ${className}`}
-      dir="ltr"
-    >
-      {showHashPrefix && <span className="text-gray-500">#</span>}
-      {formatted}
-    </span>
+    <div className="flex items-center gap-1">
+      <span
+        className={`text-primary ${sizeClasses[size]} ${className}`}
+        dir="ltr"
+      >
+        {showHashPrefix && <span className="text-gray-500">#</span>}
+        {formatted}
+      </span>
+      {!isAdmin && (
+        <button
+          onClick={handleCopy}
+          className="p-1 hover:bg-gray-100 rounded transition-colors"
+          title="Copy"
+        >
+          {copied ? (
+            <Check className={`${iconSize} text-green-600`} />
+          ) : (
+            <Copy className={`${iconSize} text-gray-500`} />
+          )}
+        </button>
+      )}
+    </div>
   )
 }

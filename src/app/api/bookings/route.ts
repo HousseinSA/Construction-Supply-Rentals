@@ -22,6 +22,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
     }
     
+    const { searchParams } = new URL(request.url)
+    const skip = parseInt(searchParams.get("skip") || "0")
+    const limit = parseInt(searchParams.get("limit") || "50")
+    
     const db = await connectDB()
 
     const pipeline: any[] = []
@@ -154,7 +158,9 @@ export async function GET(request: NextRequest) {
         },
       },
       { $project: { equipmentDetails: 0, equipmentIds: 0 } },
-      { $sort: { createdAt: -1 } }
+      { $sort: { createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limit }
     )
 
     const bookings = await db
@@ -162,10 +168,18 @@ export async function GET(request: NextRequest) {
       .aggregate(pipeline)
       .toArray()
 
+    // Get total count for pagination info (exclude skip/limit)
+    const countPipeline = pipeline.slice(0, -2) // Remove $skip and $limit
+    const totalCountResult = await db.collection("bookings").aggregate([...countPipeline, { $count: "total" }]).toArray()
+    const total = totalCountResult[0]?.total || 0
+
     return NextResponse.json({
       success: true,
       data: bookings,
       count: bookings.length,
+      total,
+      skip,
+      limit,
     })
   } catch (error) {
     return NextResponse.json(

@@ -9,6 +9,7 @@ import ContactCard from "@/src/components/shared/ContactCard"
 import MessageSection from "@/src/components/shared/MessageSection"
 import TransactionInfoCard from "@/src/components/shared/TransactionInfoCard"
 import StatusManager from "@/src/components/ui/StatusManager"
+import PriceDisplay from "@/src/components/ui/PriceDisplay"
 import type { BookingWithDetails } from "@/src/stores/bookingsStore"
 
 interface BookingDetailsModalProps {
@@ -33,7 +34,6 @@ export default function BookingDetailsModal({
     setStatus,
     loading,
     handleStatusUpdate,
-    calculateCommission,
     totalCommission,
     originalStatus,
   } = useBookingDetails(booking, onStatusUpdate, onClose)
@@ -74,7 +74,6 @@ export default function BookingDetailsModal({
     dir?: "ltr" | "rtl"
   }> = []
 
-  // Equipment items
   booking.bookingItems?.forEach((item: any) => {
     const usageLabel = getUsageUnitLabel(item.usageUnit)
     const singularLabel = getSingularUnitLabel(item.usageUnit)
@@ -82,7 +81,6 @@ export default function BookingDetailsModal({
       {
         label: item.equipmentName,
         value: `${item.usage} ${usageLabel}`,
-        dir: "ltr",
       },
       {
         label: `${tBooking("rate")}`,
@@ -92,19 +90,16 @@ export default function BookingDetailsModal({
     )
   })
 
-  // Add summary
   transactionRows.push(
     {
       label: t("table.total"),
-      value: `${booking.totalPrice.toLocaleString()} MRU`,
+      value: <PriceDisplay amount={booking.totalPrice} />,
       dir: "ltr",
       highlight: true,
     },
     {
-      label: t("details.commission"),
-      value: booking.hasAdminCreatedEquipment 
-        ? t("details.adminOwned")
-        : `${totalCommission.toLocaleString()} MRU`,
+      label: t("details.commissionBooking"),
+      value: <PriceDisplay amount={totalCommission} suffix="/(10%)" variant="commission" />,
       highlight: true,
       dir: "ltr",
     }
@@ -115,7 +110,7 @@ export default function BookingDetailsModal({
       isOpen={isOpen}
       onClose={onClose}
       title={t("details.title")}
-      referenceNumber={booking.referenceNumber}
+      referenceNumber={booking.referenceNumber || ""}
       referenceLabel={t("details.reference")}
       onUpdate={() => handleStatusUpdate(session?.user?.id)}
       updateDisabled={loading || status === originalStatus}
@@ -124,18 +119,17 @@ export default function BookingDetailsModal({
       updatingLabel={t("actions.updating")}
       closeLabel={t("actions.close")}
     >
-      {/* Created At and Rental Period Info */}
-      <div className="bg-gray-50 -mx-6 -mt-6 px-6 py-4 border-b border-gray-200">
+      <div className="bg-gray-50 py-4 border-b border-gray-200 -mx-6 px-6">
         <div className="grid grid-cols-2 gap-6">
           <div>
-            <div className="text-xs font-medium text-gray-600 mb-1">{t("details.createdAt")}</div>
-            <div className="text-sm font-semibold text-gray-900" dir="ltr">
+            <div className="text-xs font-medium text-gray-600 mb-2">{t("details.createdAt")}</div>
+            <div className="text-sm font-semibold text-gray-900" >
               {new Date(booking.createdAt).toLocaleDateString()}
             </div>
           </div>
           <div>
-            <div className="text-xs font-medium text-gray-600 mb-1">{t("table.rentalPeriod")}</div>
-            <div className="text-sm font-semibold text-gray-900" dir="ltr">
+            <div className="text-xs font-medium text-gray-600 mb-2">{t("table.rentalPeriod")}</div>
+            <div className="text-sm font-semibold text-gray-900" >
               {getRentalPeriod()}
             </div>
           </div>

@@ -9,6 +9,7 @@ import ContactCard from "@/src/components/shared/ContactCard"
 import MessageSection from "@/src/components/shared/MessageSection"
 import TransactionInfoCard from "@/src/components/shared/TransactionInfoCard"
 import StatusManager from "@/src/components/ui/StatusManager"
+import PriceDisplay from "@/src/components/ui/PriceDisplay"
 
 interface SalesDetailsModalProps {
   sale: any
@@ -71,8 +72,15 @@ export default function SalesDetailsModal({
       updateLabel={tActions("updateSale")}
       updatingLabel={tActions("updating")}
       closeLabel={tActions("close")}
-      createdAt={new Date(sale.createdAt).toLocaleDateString()}
     >
+      <div className="bg-gray-50 py-4 border-b border-gray-200 -mx-6 px-6">
+        <div>
+          <div className="text-xs font-medium text-gray-600 mb-2">{t("createdAt")}</div>
+          <div className="text-sm font-semibold text-gray-900">
+            {new Date(sale.createdAt).toLocaleDateString()}
+          </div>
+        </div>
+      </div>
       <TransactionInfoCard
         title={t("saleInfo")}
         rows={[
@@ -82,21 +90,19 @@ export default function SalesDetailsModal({
           },
           {
             label: t("salePrice"),
-            value: `${sale.salePrice.toLocaleString()} MRU`,
+            value: <PriceDisplay amount={sale.salePrice} />,
             dir: "ltr",
             highlight: true,
           },
           {
             label: tTable("total"),
-            value: `${(sale.grandTotal || sale.salePrice).toLocaleString()} MRU`,
+            value: <PriceDisplay amount={sale.grandTotal || sale.salePrice} />,
             dir: "ltr",
             highlight: true,
           },
           {
             label: t("commission"),
-            value: isAdminOwned
-              ? t("adminOwned")
-              : `${sale.commission.toLocaleString()} MRU (5%)`,
+            value: <PriceDisplay amount={sale.commission} suffix="/(5%)" variant="commission" />,
             highlight: true,
             dir: "ltr",
           },

@@ -1,6 +1,8 @@
-import { useRef } from "react"
+'use client'
+import { useRef, RefObject } from "react"
 import { X, AlertCircle } from "lucide-react"
 import { useModalClose } from "@/src/hooks/useModalClose"
+import { useTranslations } from "next-intl"
 
 interface MessageModalProps {
   isOpen: boolean
@@ -18,8 +20,8 @@ export default function MessageModal({
   type = "error"
 }: MessageModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
-  useModalClose(isOpen, onClose, modalRef)
-
+  useModalClose(isOpen, onClose, modalRef as unknown as RefObject<HTMLElement>)
+  const t = useTranslations("common")
   if (!isOpen) return null
 
   const typeStyles = {
@@ -68,7 +70,7 @@ export default function MessageModal({
                 onClick={onClose}
                 className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors"
               >
-                Close
+               { t('close')}
               </button>
             </div>
           </div>

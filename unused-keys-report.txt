@@ -1,7 +1,0 @@
-Analyzing translation keys with improved detection...
-
-Total translation keys: 858
-
-Potentially unused keys: 0
-
-All translation keys are being used!

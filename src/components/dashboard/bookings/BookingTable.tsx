@@ -161,7 +161,7 @@ export default function BookingTable() {
           />
         )}
 
-        <div className="lg:bg-white lg:rounded-lg lg:shadow-sm lg:border lg:border-gray-200 overflow-hidden">
+        <div className="xl:bg-white xl:rounded-lg xl:shadow-sm xl:border xl:border-gray-200 overflow-hidden">
           {session?.user?.userType === "renter" ? (
             <RenterBookingView />
           ) : loading ? (
@@ -225,21 +225,7 @@ export default function BookingTable() {
                 </Table>
               </div>
 
-              {/* Mobile/Tablet Cards */}
-              <div className="xl:hidden space-y-4 p-4">
-                {paginatedBookings.map((booking) => (
-                  <BookingMobileCard
-                    key={booking._id}
-                    booking={booking}
-                    onViewDetails={handleViewDetails}
-                    t={t}
-                    highlight={highlightId === booking._id}
-                  />
-                ))}
-              </div>
-
-              {/* Mobile Cards - Screen below lg */}
-              <div className="lg:hidden space-y-4 p-4">
+              <div className="xl:hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {paginatedBookings.map((booking) => (
                   <BookingMobileCard
                     key={booking._id}

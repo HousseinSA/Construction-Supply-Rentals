@@ -20,6 +20,7 @@ import GenericMobileCard from "@/src/components/ui/GenericMobileCard"
 import ReferenceNumber from "@/src/components/ui/ReferenceNumber"
 import { useTransactionCancel } from "@/src/hooks/useTransactionCancel"
 import { formatDate } from "@/src/lib/table-utils"
+import PriceDisplay from "@/src/components/ui/PriceDisplay"
 
 interface SaleOrder {
   _id: string
@@ -146,9 +147,7 @@ export default function RenterPurchasesView() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm font-semibold text-gray-900 whitespace-nowrap" dir="ltr">
-                    {purchase.salePrice.toLocaleString()} MRU
-                  </span>
+                    <PriceDisplay amount={purchase.salePrice}/>
                 </TableCell>
                 <TableCell align="center">
                   {getStatusBadge(purchase.status)}
@@ -184,13 +183,13 @@ export default function RenterPurchasesView() {
         </Table>
       </div>
 
-      <div className="lg:hidden space-y-4">
+      <div className="lg:hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {paginatedData.map((purchase) => (
           <GenericMobileCard
             key={purchase._id}
-            id={<ReferenceNumber referenceNumber={purchase.referenceNumber} size="md" />}
+            id={purchase.referenceNumber || ""}
             title={purchase.equipmentName}
-            date={new Date(purchase.createdAt).toLocaleDateString()}
+            date={formatDate(purchase.createdAt)}
             status={purchase.status}
             image={
               <EquipmentImage
@@ -200,7 +199,12 @@ export default function RenterPurchasesView() {
                 onClick={() => { window.location.href = `/equipment/${purchase.equipmentId}` }}
               />
             }
-            fields={[{ label: t("table.price"), value: purchase.salePrice }]}
+            fields={[
+              {
+                label: t("table.price"),
+                value: <PriceDisplay amount={purchase.salePrice} />,
+              },
+            ]}
             onViewDetails={() => {
               window.location.href = `/equipment/${purchase.equipmentId}`
             }}

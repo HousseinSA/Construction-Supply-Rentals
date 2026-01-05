@@ -77,7 +77,7 @@ export default function EquipmentList({
         </Table>
       </div>
 
-      <div className="xl:hidden grid grid-cols-1 gap-4 p-4">
+      <div className="xl:hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
         {equipment.map((item) => {
           const priceData = getPriceData(
             item.pricing,
@@ -94,39 +94,6 @@ export default function EquipmentList({
               item={item}
               updating={updating}
               navigating={navigating}
-              displayPrice={displayPrice}
-              displayUnit={displayUnit}
-              onStatusChange={onStatusChange}
-              onAvailabilityChange={onAvailabilityChange}
-              onNavigate={onNavigate}
-              onPricingReview={onPricingReview}
-              onResubmit={onResubmit}
-              t={t}
-              isSupplier={isSupplier}
-            />
-          )
-        })}
-      </div>
-
-      <div className="lg:hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {equipment.map((item) => {
-          const priceData = getPriceData(
-            item.pricing,
-            item.listingType === "forSale"
-          )
-          const { displayPrice, displayUnit } = formatPrice(
-            priceData.rate,
-            priceData.unit
-          )
-
-          return (
-            <EquipmentMobileCard
-              key={item._id?.toString()}
-              item={item}
-              updating={updating}
-              navigating={navigating}
-              displayPrice={displayPrice}
-              displayUnit={displayUnit}
               onStatusChange={onStatusChange}
               onAvailabilityChange={onAvailabilityChange}
               onNavigate={onNavigate}

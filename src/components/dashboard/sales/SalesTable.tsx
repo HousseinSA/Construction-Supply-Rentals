@@ -1,5 +1,4 @@
-"use client"
-
+'use client'
 import { useState, useMemo, useEffect } from "react"
 import { useTranslations } from "next-intl"
 import { ArrowLeft } from "lucide-react"
@@ -8,6 +7,8 @@ import { useSearchParams } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { usePagination } from "@/src/hooks/usePagination"
 import { useTableFilters } from "@/src/hooks/useTableFilters"
+import { useSales } from "@/src/hooks/useSales"
+import { SaleWithDetails } from "@/src/stores/salesStore"
 import { getDateFilterMatch } from "@/src/lib/table-utils"
 import SalesTableRow from "./SalesTableRow"
 import SalesMobileCard from "./SalesMobileCard"
@@ -16,7 +17,6 @@ import Pagination from "@/src/components/ui/Pagination"
 import HomeButton from "@/src/components/ui/HomeButton"
 import TableFilters from "@/src/components/ui/TableFilters"
 import { Table, TableHeader, TableBody, TableHead } from "@/src/components/ui/Table"
-import { toast } from "sonner"
 
 export default function SalesTable() {
   const { data: session } = useSession()
@@ -24,36 +24,16 @@ export default function SalesTable() {
   const highlightRef = searchParams.get("highlight")
   const t = useTranslations("dashboard.sales")
   const tPages = useTranslations("dashboard.pages")
-  const [sales, setSales] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [selectedSale, setSelectedSale] = useState<any>(null)
+  const { sales, loading, fetchSales } = useSales()
+  const [selectedSale, setSelectedSale] = useState<SaleWithDetails | null>(null)
   const [showDetailsModal, setShowDetailsModal] = useState(false)
   const [highlightId, setHighlightId] = useState<string | null>(null)
-
-  const fetchSales = async () => {
-    try {
-      setLoading(true)
-      let url = "/api/sales"
-      if (session?.user?.userType === "supplier" && session?.user?.id) {
-        url += `?supplierId=${session.user.id}`
-      }
-      const response = await fetch(url)
-      const data = await response.json()
-      if (data.success) {
-        setSales(data.data)
-      }
-    } catch (error) {
-      toast.error("Failed to fetch sales")
-    } finally {
-      setLoading(false)
-    }
-  }
 
   useEffect(() => {
     if (session?.user) {
       fetchSales()
     }
-  }, [session?.user])
+  }, [session?.user, fetchSales])
 
   const { searchValue, setSearchValue, filterValues, handleFilterChange, filteredData: baseFiltered } = 
     useTableFilters({
@@ -87,13 +67,16 @@ export default function SalesTable() {
       if (index !== -1) {
         const page = Math.floor(index / itemsPerPage) + 1
         goToPage(page)
-        setHighlightId(filteredData[index]._id)
-        setTimeout(() => setHighlightId(null), 3000)
+        const saleId = filteredData[index]._id
+        if (saleId) {
+          setHighlightId(saleId)
+          setTimeout(() => setHighlightId(null), 3000)
+        }
       }
     }
   }, [highlightRef, sales, filteredData, itemsPerPage, goToPage])
 
-  const handleViewDetails = (sale: any) => {
+  const handleViewDetails = (sale: SaleWithDetails) => {
     setSelectedSale(sale)
     setShowDetailsModal(true)
   }
@@ -146,7 +129,7 @@ export default function SalesTable() {
             onFilterChange={handleFilterChange}
           />
         )}
-        <div className="lg:bg-white lg:rounded-lg lg:shadow-sm lg:border lg:border-gray-200 overflow-hidden">
+        <div className="xl:bg-white xl:rounded-lg xl:shadow-sm xl:border xl:border-gray-200 overflow-hidden">
           {loading ? (
             <div className="p-12 text-center">
               <div className="animate-pulse text-gray-600 font-medium">{t("loading")}</div>
@@ -188,22 +171,11 @@ export default function SalesTable() {
                   </TableBody>
                 </Table>
               </div>
-              <div className="xl:hidden space-y-4 p-4">
+              <div className="xl:hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {sales.length === 0 ? (
-                  <div className="p-12 text-center text-gray-500 font-medium">{t("noSales")}</div>
+                  <div className="p-12 text-center text-gray-500 font-medium col-span-full">{t("noSales")}</div>
                 ) : filteredData.length === 0 ? (
-                  <div className="p-12 text-center text-gray-500 font-medium">{filterValues.status === "all" ? t("noResults") : t(`no${filterValues.status.charAt(0).toUpperCase()}${filterValues.status.slice(1)}Sales`)}</div>
-                ) : (
-                  paginatedData.map((sale) => (
-                    <SalesMobileCard key={sale._id} sale={sale} onViewDetails={handleViewDetails} t={t} highlight={highlightId === sale._id} />
-                  ))
-                )}
-              </div>
-              <div className="lg:hidden space-y-4 p-4">
-                {sales.length === 0 ? (
-                  <div className="p-12 text-center text-gray-500 font-medium">{t("noSales")}</div>
-                ) : filteredData.length === 0 ? (
-                  <div className="p-12 text-center text-gray-500 font-medium">{filterValues.status === "all" ? t("noResults") : t(`no${filterValues.status.charAt(0).toUpperCase()}${filterValues.status.slice(1)}Sales`)}</div>
+                  <div className="p-12 text-center text-gray-500 font-medium col-span-full">{filterValues.status === "all" ? t("noResults") : t(`no${filterValues.status.charAt(0).toUpperCase()}${filterValues.status.slice(1)}Sales`)}</div>
                 ) : (
                   paginatedData.map((sale) => (
                     <SalesMobileCard key={sale._id} sale={sale} onViewDetails={handleViewDetails} t={t} highlight={highlightId === sale._id} />

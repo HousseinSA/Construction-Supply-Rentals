@@ -1,57 +1,59 @@
 import { Coins } from "lucide-react"
-import { formatPhoneNumber } from "@/src/lib/format"
 import { formatDate } from "@/src/lib/table-utils"
+import { SaleWithDetails } from "@/src/stores/salesStore"
 import GenericMobileCard from "@/src/components/ui/GenericMobileCard"
 import ReferenceNumber from "@/src/components/ui/ReferenceNumber"
-import CopyButton from "@/src/components/ui/CopyButton"
+import PriceDisplay from "@/src/components/ui/PriceDisplay"
 
 interface SalesMobileCardProps {
-  sale: any
-  onViewDetails: (sale: any) => void
+  sale: SaleWithDetails
+  onViewDetails: (sale: SaleWithDetails) => void
   t: (key: string) => string
   highlight?: boolean
+  isAdminView?: boolean
 }
 
-export default function SalesMobileCard({ sale, onViewDetails, t, highlight = false }: SalesMobileCardProps) {
+export default function SalesMobileCard({ sale, onViewDetails, t, highlight = false, isAdminView = true }: SalesMobileCardProps) {
   const buyerName = sale.buyerInfo?.[0] 
     ? `${sale.buyerInfo[0].firstName} ${sale.buyerInfo[0].lastName}`
     : "N/A"
+  const buyerPhone = sale.buyerInfo?.[0]?.phone
   const isAdminOwned = sale.isAdminOwned || (!sale.supplierInfo || sale.supplierInfo.length === 0)
   
-  const supplierDisplay = isAdminOwned
+  const supplierName = isAdminOwned
     ? t("admin")
-    : (
-        <div className="space-y-1">
-          <div className="text-sm">{sale.supplierInfo[0].firstName} {sale.supplierInfo[0].lastName}</div>
-          <div className="flex items-center gap-2">
-            <span className="text-sm" dir="ltr">{formatPhoneNumber(sale.supplierInfo[0].phone)}</span>
-            <CopyButton text={sale.supplierInfo[0].phone} size="sm" />
-          </div>
-        </div>
-      )
+    : sale.supplierInfo?.[0] ? `${sale.supplierInfo[0].firstName} ${sale.supplierInfo[0].lastName}` : "N/A"
+  const supplierPhone = !isAdminOwned && sale.supplierInfo?.[0]?.phone ? sale.supplierInfo[0].phone : undefined
 
   return (
     <div className={highlight ? "animate-pulse" : ""}>
       <GenericMobileCard
-        id={<ReferenceNumber referenceNumber={sale.referenceNumber} size="md" />}
+        id={ 
+          <ReferenceNumber referenceNumber={sale.referenceNumber} size="md" />
+        }
         title={sale.equipmentName}
         subtitle={buyerName}
+        phoneNumber={buyerPhone}
+        supplierNumber={supplierPhone}
+        supplierName={supplierName}
         date={formatDate(sale.createdAt)}
         status={sale.status}
+        isAdminView={isAdminView}
         fields={[
           {
-            label: t("table.supplier"),
-            value: supplierDisplay,
-          },
-          {
             label: t("table.price"),
-            value: sale.salePrice,
+            value: <PriceDisplay amount={sale.salePrice} />,
           },
           {
             label: t("table.commission"),
-            value: isAdminOwned ? t("adminOwned") : sale.commission,
-            icon: !isAdminOwned ? <Coins className="w-3.5 h-3.5 text-green-600" /> : undefined,
-            highlight: !isAdminOwned,
+            value: <PriceDisplay amount={sale.commission} variant="commission" />,
+            icon: <Coins className="w-3.5 h-3.5 text-green-600" />,
+            highlight: true,
+          },
+          {
+            label: t("table.supplier"),
+            value: supplierName,
+            secondaryValue: supplierPhone && supplierName !== t("admin") ? supplierPhone : undefined,
           },
         ]}
         onViewDetails={() => onViewDetails(sale)}

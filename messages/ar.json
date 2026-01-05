@@ -13,6 +13,7 @@
     "month": "شهر",
     "km": "KM",
     "ton": "طن",
+    "sale": "بيع",
     "phone": "+222 45 111111",
     "equipment": "المعدات",
     "equipmentForSale": "معدات للبيع",
@@ -446,19 +447,6 @@
       "profile": "الملف الشخصي",
       "profileDesc": "إدارة ملف شركتك"
     },
-    "renter": {
-      "title": "لوحة تحكم المستأجر",
-      "subtitle": "ابحث واستأجر معدات البناء",
-      "browseEquipment": "تصفح المعدات",
-      "browseEquipmentDesc": "ابحث عن معدات لمشاريعك",
-      "myBookings": "الطلبات",
-      "myBookingsDesc": "عرض إيجاراتك الحالية والسابقة",
-      "myTransactionsDesc": "عرض وإدارة جميع معاملاتك من إيجارات ومشتريات",
-      "requests": "طلبات الإيجار",
-      "requestsDesc": "تتبع حالة طلبات الإيجار",
-      "profile": "الملف الشخصي",
-      "profileDesc": "إدارة إعدادات حسابك"
-    },
     "equipment": {
       "createTitle": "إضافة معدة جديد",
       "createSubtitle": "إضافة معدة لجعلها متاحة للإيجار",
@@ -556,9 +544,17 @@
       "createdByAdmin": "تم الإنشاء بواسطة الإدارة",
       "pending": "قيد الانتظار",
       "approved": "موافق عليه",
+      "pendingVerification": "قيد التحقق",
       "rejected": "مرفوض",
       "rejectionReason": "سبب الرفض",
       "rejectionReasonPlaceholder": "اشرح لماذا يتم رفض هذه المعدة...",
+       "resubmit": "إعادة الإرسال",
+      "resubmitting": "جاري إعادة الإرسال...",
+      "editBeforeResubmit": "يجب تعديل المعدة قبل إعادة إرسالها",
+      "cannotEditCoreFields": "لا يمكن تعديل الفئات الأساسية أثناء إعادة الإرسال",
+      "provideRejectionReason": "يرجى تقديم سبب الرفض",
+      "resubmitSuccess": "تمت إعادة إرسال المعدة بنجاح",
+      "resubmitFailed": "فشل إعادة إرسال المعدة",
       "status": "الحالة",
       "actions": "الإجراءات",
       "createdAt": "تاريخ الإنشاء",
@@ -606,7 +602,10 @@
         "allTypes": "جميع الأنواع",
         "allAvailability": "الكل",
         "allLocations": "جميع المواقع"
-      }
+      },
+      "equipmentMustBeApproved":"يجب الموافقة على المعدة قبل أن تصبح متاحة ",
+      "equipmentSold":"تم بيع هذه المعدة"
+
     },
     "pages": {
       "equipment": {
@@ -832,8 +831,9 @@
         "reference": "المرجع",
         "bookingId": "رقم الحجز",
         "totalAmount": "المبلغ الإجمالي",
-        "commission": "العمولة",
-        "createdAt": "تاريخ الإنشاء",
+        "commissionBooking": "العمولة (10%)",
+                "createdAt": "تاريخ الإنشاء",
+
         "renterInfo": "المستأجر",
         "supplierInfo": "المورد",
         "equipmentItems": "المعدات",
@@ -920,7 +920,7 @@
         "saleId": "رقم البيع",
         "equipment": "المعدات",
         "salePrice": "سعر البيع",
-        "commission": "العمولة (5%)",
+        "commissionSale": "العمولة (5%)",
         "createdAt": "تاريخ الإنشاء",
         "buyerInfo": "المشتري",
         "supplierInfo": "المورد",

@@ -1,18 +1,24 @@
 "use client"
 
 import { useState } from 'react'
-import { FileText } from 'lucide-react'
+import { Tag } from 'lucide-react'
 import { useTranslations } from "next-intl"
 import { useParams, useRouter } from "next/navigation"
 import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
 import { useBookingSuccessStore } from "@/src/stores/bookingSuccessStore"
 import BaseRequestModal from "@/src/components/shared/BaseRequestModal"
-import Input from "@/src/components/ui/Input"
+
+interface Equipment {
+  _id: string
+  name: string
+  location: string
+  pricing: Record<string, unknown>
+}
 
 interface SaleModalProps {
   isOpen: boolean
   onClose: () => void
-  equipment: any
+  equipment: Equipment
   onSaleSuccess?: () => void
   buyerId: string
 }
@@ -44,7 +50,7 @@ export default function SaleModal({
     setLoading(true)
 
     try {
-      const saleData: any = {
+      const saleData: { buyerId: string; equipmentId: string; buyerMessage: string } = {
         buyerId,
         equipmentId: equipment._id,
         buyerMessage: message,
@@ -70,7 +76,7 @@ export default function SaleModal({
         const { toast } = await import("sonner")
         toast.error(data.error || t("saleRequestFailed"))
       }
-    } catch (error) {
+    } catch {
       const { toast } = await import("sonner")
       toast.error(t("saleRequestFailed"))
     } finally {
@@ -102,7 +108,7 @@ export default function SaleModal({
       messageLabel={t("message")}
       optionalLabel={t("optional")}
       messagePlaceholder={t("messagePlaceholder")}
-      submitIcon={<FileText className="w-4 h-4" />}
+      submitIcon={<Tag className="w-4 h-4" />}
       isSubmitDisabled={!isFormValid}
     >
       <div className="bg-gray-50 rounded-lg p-4">

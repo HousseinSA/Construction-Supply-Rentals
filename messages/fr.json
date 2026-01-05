@@ -13,6 +13,7 @@
     "month": "mois",
     "km": "km",
     "ton": "tonne",
+    "sale": "vente",
     "currency": "MRU",
     "phone": "+222 11 11 11 11",
     "equipment": "Matériel",
@@ -454,19 +455,6 @@
       "profile": "Profil",
       "profileDesc": "Gérer votre profil d'entreprise"
     },
-    "renter": {
-      "title": "Tableau de Bord Locataire",
-      "subtitle": "Trouvez et louez des équipements de construction",
-      "browseEquipment": "Parcourir Matériel",
-      "browseEquipmentDesc": "Trouvez du matériel pour vos projets",
-      "myBookings": "Mes Réservations",
-      "myBookingsDesc": "Voir vos locations actuelles et passées",
-      "myTransactionsDesc": "Voir et gérer toutes vos transactions incluant locations et achats",
-      "requests": "Demandes de Location",
-      "requestsDesc": "Suivre le statut de vos demandes de location",
-      "profile": "Profil",
-      "profileDesc": "Gérer les paramètres de votre compte"
-    },
     "equipment": {
       "createTitle": "Créer Nouveau Matériel",
       "backToDashboard": "Retour au Tableau de Bord",
@@ -628,7 +616,9 @@
         "allLocations": "Localisations"
       },
       "activeBookingWarning": "Avertissement Réservations Actives",
-      "activeBookingWarningMessage": "Cet équipement a des réservations actives. La modification peut affecter les locations en cours. Veuillez procéder avec prudence."
+      "activeBookingWarningMessage": "Cet équipement a des réservations actives. La modification peut affecter les locations en cours. Veuillez procéder avec prudence.",
+        "equipmentMustBeApproved":"Le matériel doit être approuvé avant d'être disponible",
+      "equipmentSold":"Ce matériel a été vendu"
     },
     "pages": {
       "equipment": {
@@ -846,7 +836,7 @@
         "reference": "Référence",
         "bookingId": "ID Réservation",
         "totalAmount": "Montant Total",
-        "commission": "Commission",
+     "commissionBooking": "Commission (10%)",
         "createdAt": "Date de Création",
         "renterInfo": "Locataire",
         "supplierInfo": "Fournisseur",
@@ -933,7 +923,7 @@
         "saleId": "ID Vente",
         "equipment": "Matériel",
         "salePrice": "Prix de Vente",
-        "commission": "Commission (5%)",
+        "commissionSale": "Commission (5%)",
         "createdAt": "Date de Création",
         "buyerInfo": "Acheteur",
         "supplierInfo": "Fournisseur",
@@ -1054,6 +1044,7 @@
   },
   "bookingSuccess": {
     "title": "Réservation Réussie!",
+    "saleTitle": "Demande d’achat envoyée !",
     "bookingMessage": "Votre demande de réservation a été soumise avec succès. Notre équipe l'examinera et vous contactera bientôt.",
     "saleMessage": "Votre demande d'achat a été soumise avec succès. Notre équipe l'examinera et vous contactera bientôt.",
     "transportTitle": "Besoin de Transport?",

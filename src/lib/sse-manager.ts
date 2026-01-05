@@ -1,4 +1,4 @@
-export type UpdateType = 'booking' | 'equipment' | 'user'
+export type UpdateType = 'booking' | 'equipment' | 'user' | 'sales'
 
 class SSEManager {
   private clients = new Map<string, ReadableStreamDefaultController>()

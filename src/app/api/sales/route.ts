@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/src/lib/auth"
 import { connectDB } from "@/src/lib/mongodb"
 import { ObjectId } from "mongodb"
 import { triggerRealtimeUpdate } from "@/src/lib/realtime-trigger"
@@ -6,14 +8,27 @@ import { generateReferenceNumber } from "@/src/lib/reference-number"
 
 export async function GET(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+    }
+
     const { searchParams } = new URL(request.url)
-    const buyerId = searchParams.get("buyerId")
+    const skip = parseInt(searchParams.get("skip") || "0")
+    const limit = parseInt(searchParams.get("limit") || "50")
 
     const db = await connectDB()
     const pipeline: any[] = []
 
-    if (buyerId) {
-      pipeline.push({ $match: { buyerId: ObjectId.createFromHexString(buyerId) } })
+    // Role-based filtering for sales
+    if (session.user.role === 'admin') {
+      // Admin sees all sales
+    } else if (session.user.userType === 'supplier') {
+      // Suppliers see sales of their own equipment
+      pipeline.push({ $match: { supplierId: new ObjectId(session.user.id) } })
+    } else {
+      // Renters see sales they made as buyers
+      pipeline.push({ $match: { buyerId: new ObjectId(session.user.id) } })
     }
 
     pipeline.push(
@@ -51,17 +66,26 @@ export async function GET(request: NextRequest) {
             }
           }
         }
-      }
+      },
+      { $sort: { createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limit }
     )
 
-    pipeline.push({ $sort: { createdAt: -1 } })
-
     const sales = await db.collection("sales").aggregate(pipeline).toArray()
+
+    // Get total count for pagination info
+    const countPipeline = pipeline.slice(0, -2) // Remove $skip and $limit for count
+    const totalCountResult = await db.collection("sales").aggregate([...pipeline.slice(0, pipeline.length - 2), { $count: "total" }]).toArray()
+    const total = totalCountResult[0]?.total || 0
 
     return NextResponse.json({
       success: true,
       data: sales,
       count: sales.length,
+      total,
+      skip,
+      limit,
     })
   } catch (error) {
     return NextResponse.json(
@@ -298,7 +322,7 @@ export async function PUT(request: NextRequest) {
       }
     }
 
-    await triggerRealtimeUpdate("booking")
+    await triggerRealtimeUpdate("sales")
     await triggerRealtimeUpdate("equipment")
 
     return NextResponse.json({ success: true, message: "Sale status updated" })

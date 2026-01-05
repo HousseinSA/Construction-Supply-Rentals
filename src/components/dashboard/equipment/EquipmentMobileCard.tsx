@@ -3,6 +3,7 @@ import EquipmentImage from "@/src/components/ui/EquipmentImage"
 import Dropdown from "@/src/components/ui/Dropdown"
 import MessageModal from "@/src/components/ui/MessageModal"
 import CopyButton from "@/src/components/ui/CopyButton"
+import PriceDisplay from "@/src/components/ui/PriceDisplay"
 import { EquipmentWithSupplier } from "@/src/stores/equipmentStore"
 import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
 import { useCityData } from "@/src/hooks/useCityData"
@@ -14,14 +15,12 @@ interface EquipmentMobileCardProps {
   item: EquipmentWithSupplier & { hasActiveBookings?: boolean; hasPendingSale?: boolean }
   updating: string | null
   navigating: string | null
-  displayPrice: string
-  displayUnit: string
   onStatusChange: (id: string, action: "approve" | "reject") => void
   onAvailabilityChange: (id: string, isAvailable: boolean) => void
   onNavigate: (url: string, id: string) => void
   onPricingReview?: (item: EquipmentWithSupplier) => void
   onResubmit?: (id: string) => void
-  t: any
+  t: (key: string) => string
   isSupplier?: boolean
 }
 
@@ -29,8 +28,6 @@ export default function EquipmentMobileCard({
   item,
   updating,
   navigating,
-  displayPrice,
-  displayUnit,
   onStatusChange,
   onAvailabilityChange,
   onNavigate,
@@ -39,7 +36,7 @@ export default function EquipmentMobileCard({
   t,
   isSupplier = false,
 }: EquipmentMobileCardProps) {
-  const { formatPrice } = usePriceFormatter()
+  const { formatPrice: _ } = usePriceFormatter()
   const { convertToLocalized } = useCityData()
   const tCommon = useTranslations("common")
   const [showRejectionModal, setShowRejectionModal] = useState(false)
@@ -47,21 +44,21 @@ export default function EquipmentMobileCard({
   
   const getPricesList = () => {
     const prices = []
-    if (item.pricing.hourlyRate) {
-      const { displayPrice, displayUnit } = formatPrice(item.pricing.hourlyRate, 'hour')
-      prices.push({ displayPrice, displayUnit })
-    }
-    if (item.pricing.dailyRate) {
-      const { displayPrice, displayUnit } = formatPrice(item.pricing.dailyRate, 'day')
-      prices.push({ displayPrice, displayUnit })
-    }
-    if (item.pricing.kmRate) {
-      const { displayPrice, displayUnit } = formatPrice(item.pricing.kmRate, 'km')
-      prices.push({ displayPrice, displayUnit })
-    }
-    if (item.pricing.salePrice) {
-      const { displayPrice, displayUnit } = formatPrice(item.pricing.salePrice, 'sale')
-      prices.push({ displayPrice, displayUnit })
+    if (item.listingType === "forSale" && item.pricing.salePrice) {
+      prices.push({ amount: item.pricing.salePrice, suffix: "" })
+    } else {
+      if (item.pricing.hourlyRate) {
+        prices.push({ amount: item.pricing.hourlyRate, suffix: ` / ${tCommon("hour")}` })
+      }
+      if (item.pricing.dailyRate) {
+        prices.push({ amount: item.pricing.dailyRate, suffix: ` / ${tCommon("day")}` })
+      }
+      if (item.pricing.kmRate) {
+        prices.push({ amount: item.pricing.kmRate, suffix: ` / ${tCommon("km")}` })
+      }
+      if (item.pricing.tonRate) {
+        prices.push({ amount: item.pricing.tonRate, suffix: ` / ${tCommon("ton")}` })
+      }
     }
     return prices
   }
@@ -74,7 +71,7 @@ export default function EquipmentMobileCard({
 
   return (
     <>
-    <div className="p-4 space-y-3 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all">
+    <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all grid grid-rows-[minmax(50px,auto)_auto_auto] gap-2">
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1">
           <div className="font-semibold text-gray-900 text-sm mb-1">{item.name}</div>
@@ -189,34 +186,33 @@ export default function EquipmentMobileCard({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-3 border-b border-gray-200">
-         
-          <div className="relative h-32 overflow-hidden rounded-lg bg-gray-100">
-            <EquipmentImage
-              src={item.images[0] || "/equipement-images/default-fallback-image.png"}
-              alt={item.name}
-              size="lg"
-              className="!w-full !h-full object-contain"
-              onClick={() =>
-                onNavigate(
-                  `/equipment/${item._id?.toString()}?admin=true`,
-                  item._id?.toString() || ""
-                )
-              }
-            />
-            {navigating === item._id?.toString() && (
-              <div className="absolute inset-0 bg-black/25 rounded-lg flex items-center justify-center">
-                <Loader2 className="w-6 h-6 text-white animate-spin" />
-              </div>
-            )}
-          </div>
-        <div className="flex flex-col justify-center space-y-2">
+      <div className="flex flex-col sm:flex-row gap-4 pb-3 border-b border-gray-200 h-32">
+        <div className="w-full sm:w-40 md:w-44 lg:w-48 relative overflow-hidden rounded-lg bg-gray-100 flex-shrink-0 h-32">
+          <EquipmentImage
+            src={item.images[0] || "/equipement-images/default-fallback-image.png"}
+            alt={item.name}
+            size="lg"
+            className="!w-full !h-full object-contain sm:object-cover"
+            onClick={() =>
+              onNavigate(
+                `/equipment/${item._id?.toString()}?admin=true`,
+                item._id?.toString() || ""
+              )
+            }
+          />
+          {navigating === item._id?.toString() && (
+            <div className="absolute inset-0 bg-black/25 rounded-lg flex items-center justify-center">
+              <Loader2 className="w-6 h-6 text-white animate-spin" />
+            </div>
+          )}
+        </div>
+        <div className="flex-1 flex flex-col justify-start space-y-2 overflow-hidden">
           <div >
             <div className="text-xs text-gray-500 mb-1">{t("price")}</div>
             <div className="space-y-0.5">
               {getPricesList().map((price, idx) => (
-                <div key={idx} className="font-semibold text-sm text-gray-900" >
-                 <span dir="ltr">{price.displayPrice}</span>  {price.displayUnit}
+                <div key={idx}>
+                  <PriceDisplay amount={price.amount} suffix={price.suffix} />
                 </div>
               ))}
             </div>
@@ -238,7 +234,7 @@ export default function EquipmentMobileCard({
         </div>
       </div>
 
-{item.status === "approved" && !(item.listingType === "forSale" && !item.isAvailable) && (
+      <div className="space-y-2">
         <div className="w-full relative group">
           <Dropdown
             options={[
@@ -247,23 +243,36 @@ export default function EquipmentMobileCard({
             ]}
             value={item.isAvailable ? "available" : "unavailable"}
             onChange={(val) =>
+              item.status === "approved" && !(item.listingType === "forSale" && !item.isAvailable) && !item.hasActiveBookings && !item.hasPendingSale &&
               onAvailabilityChange(
                 item._id?.toString() || "",
                 val === "available"
               )
             }
-            disabled={item.hasActiveBookings || item.hasPendingSale}
+            disabled={item.status !== "approved" || (item.listingType === "forSale" && !item.isAvailable) || item.hasActiveBookings || item.hasPendingSale}
           />
-          {(item.hasActiveBookings || item.hasPendingSale) && (
+          {item.status !== "approved" && (
+            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+              {t("equipmentMustBeApproved")}
+              <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+            </div>
+          )}
+          {item.status === "approved" && (item.hasActiveBookings || item.hasPendingSale) && (
             <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
               {t("cannotEditActiveBooking")}
               <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
             </div>
           )}
+          {item.status === "approved" && item.listingType === "forSale" && !item.isAvailable && (
+            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+              {t("equipmentSold")}
+              <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+            </div>
+          )}
         </div>
-      )}
-      <div className="flex items-stretch gap-2">
-        {!isSupplier && item.createdBy === "admin" && (
+
+        <div className="flex gap-2">
+        {!isSupplier && item.createdBy === "admin" && !(item.listingType === "forSale" && !item.isAvailable) && (
           <div className="relative group">
             <button
               onClick={() =>
@@ -294,7 +303,7 @@ export default function EquipmentMobileCard({
             )}
           </div>
         )}
-        {isSupplier && (item.status === "approved" || item.status === "pending" || item.status === "rejected") && (
+        {isSupplier && (item.status === "approved" || item.status === "pending" || item.status === "rejected") && !(item.listingType === "forSale" && !item.isAvailable) && (
           <div className="relative group">
             <button
               onClick={() =>
@@ -338,6 +347,7 @@ export default function EquipmentMobileCard({
           <Eye className="w-4 h-4" />
           {t("viewDetails")}
         </button>
+        </div>
       </div>
     </div>
     {showRejectionModal && (

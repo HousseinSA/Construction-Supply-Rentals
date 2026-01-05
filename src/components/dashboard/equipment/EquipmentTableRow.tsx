@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl"
 import { useRouter } from "@/src/i18n/navigation"
-import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
 import { useCityData } from "@/src/hooks/useCityData"
+import { useEquipmentPrices } from "@/src/hooks/useEquipmentPrices"
 import { MapPin, Edit, Eye, Tag, Loader2, RefreshCw, AlertCircle } from "lucide-react"
 import Image from "next/image"
 import { useState } from "react"
@@ -13,6 +13,7 @@ import { User } from "@/src/lib/models/user"
 import CopyButton from "../../ui/CopyButton"
 import { formatPhoneNumber } from "@/src/lib/format"
 import { getOptimizedCloudinaryUrl } from "@/src/lib/cloudinary-url"
+import PriceDisplay from "../../ui/PriceDisplay"
 
 interface EquipmentWithSupplier extends Equipment {
   supplier?: User
@@ -46,38 +47,10 @@ export default function EquipmentTableRow({
   const t = useTranslations("dashboard.equipment")
   const tCommon = useTranslations("common")
   const router = useRouter()
-  const { getPriceData, formatPrice } = usePriceFormatter()
   const { convertToLocalized } = useCityData()
   const [showRejectionModal, setShowRejectionModal] = useState(false)
   const [showPricingRejectionModal, setShowPricingRejectionModal] = useState(false)
-
-  const getAllPrices = () => {
-    const prices = []
-    if (item.listingType === "forSale" && item.pricing.salePrice) {
-      const { displayPrice, displayUnit } = formatPrice(item.pricing.salePrice, "sale")
-      prices.push({ displayPrice, displayUnit })
-    } else {
-      if (item.pricing.hourlyRate) {
-        const { displayPrice, displayUnit } = formatPrice(item.pricing.hourlyRate, "hour")
-        prices.push({ displayPrice, displayUnit })
-      }
-      if (item.pricing.dailyRate) {
-        const { displayPrice, displayUnit } = formatPrice(item.pricing.dailyRate, "day")
-        prices.push({ displayPrice, displayUnit })
-      }
-      if (item.pricing.kmRate) {
-        const { displayPrice, displayUnit } = formatPrice(item.pricing.kmRate, "km")
-        prices.push({ displayPrice, displayUnit })
-      }
-      if (item.pricing.tonRate) {
-        const { displayPrice, displayUnit } = formatPrice(item.pricing.tonRate, "ton")
-        prices.push({ displayPrice, displayUnit })
-      }
-    }
-    return prices
-  }
-  
-  const allPrices = getAllPrices()
+  const allPrices = useEquipmentPrices(item)
   return (
     <>
       <tr className="hover:bg-gray-50 transition-colors">
@@ -176,9 +149,9 @@ export default function EquipmentTableRow({
       <td className="px-6 py-4">
         <div className="space-y-1">
           {allPrices.map((price, index) => (
-            <div key={index} className="text-sm font-semibold text-gray-900">
-              <span dir="ltr">{price.displayPrice}</span>
-              {price.displayUnit && ` ${price.displayUnit}`}
+            <div key={index}>
+              <PriceDisplay amount={price.amount} suffix={price.suffix} />
+             
             </div>
           ))}
         </div>
@@ -275,68 +248,103 @@ export default function EquipmentTableRow({
       </td>
       <td className="px-6 py-4">
         <div className="flex justify-center">
-          {item.status === "approved" ? (
+          <div className="relative group">
+            <Dropdown
+              options={[
+                { value: "available", label: t("available") },
+                { value: "unavailable", label: t("unavailable") },
+              ]}
+              value={item.isAvailable ? "available" : "unavailable"}
+              onChange={(val) =>
+                item.status === "approved" && !(item.listingType === "forSale" && !item.isAvailable) && !item.hasActiveBookings && !item.hasPendingSale &&
+                onAvailabilityChange(
+                  item._id?.toString() || "",
+                  val === "available"
+                )
+              }
+              compact
+              disabled={item.status !== "approved" || (item.listingType === "forSale" && !item.isAvailable) || item.hasActiveBookings || item.hasPendingSale}
+            />
+            {item.status !== "approved" && (
+              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                {t("equipmentMustBeApproved")}
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+              </div>
+            )}
+            {item.status === "approved" && (item.hasActiveBookings || item.hasPendingSale) && (
+              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                {t("cannotEditActiveBooking")}
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+              </div>
+            )}
+            {item.status === "approved" && item.listingType === "forSale" && !item.isAvailable && (
+              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                {t("equipmentSold")}
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+              </div>
+            )}
+          </div>
+        </div>
+      </td>
+      <td className="px-6 py-4">
+        <div className="flex items-center justify-center gap-2">
+          {!isSupplier && item.createdBy === "admin" && !(item.listingType === "forSale" && !item.isAvailable) && (
             <div className="relative group">
-              <Dropdown
-                options={[
-                  { value: "available", label: t("available") },
-                  { value: "unavailable", label: t("unavailable") },
-                ]}
-                value={item.isAvailable ? "available" : "unavailable"}
-                onChange={(val) =>
-                  onAvailabilityChange(
-                    item._id?.toString() || "",
-                    val === "available"
-                  )
+              <button
+                onClick={() =>
+                  !item.hasActiveBookings &&
+                  (onNavigate ? onNavigate(`/dashboard/equipment/edit/${item._id?.toString()}`, `edit-${item._id?.toString()}`) : router.push(`/dashboard/equipment/edit/${item._id?.toString()}`))
                 }
-                compact
-                disabled={item.hasActiveBookings || item.hasPendingSale}
-              />
-              {(item.hasActiveBookings || item.hasPendingSale) && (
+                disabled={navigating === `edit-${item._id?.toString()}` || item.hasActiveBookings}
+                className={`p-2 font-medium transition-colors ${
+                  item.hasActiveBookings
+                    ? "text-gray-400 cursor-not-allowed"
+                    : "text-blue-600 hover:bg-blue-50"
+                }`}
+                title={t("editEquipment")}
+              >
+                {navigating === `edit-${item._id?.toString()}` ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <Edit className="w-5 h-5" />
+                )}
+              </button>
+              {item.hasActiveBookings && (
                 <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
                   {t("cannotEditActiveBooking")}
                   <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
                 </div>
               )}
             </div>
-          ) : (
-            <span className="text-sm text-gray-400">-</span>
           )}
-        </div>
-      </td>
-      <td className="px-6 py-4">
-        <div className="flex items-center justify-center gap-2">
-          {!isSupplier && (
-            <button
-              onClick={() =>
-                onNavigate ? onNavigate(`/dashboard/equipment/edit/${item._id?.toString()}`, `edit-${item._id?.toString()}`) : router.push(`/dashboard/equipment/edit/${item._id?.toString()}`)
-              }
-              disabled={navigating === `edit-${item._id?.toString()}`}
-              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50"
-              title={t("editEquipment")}
-            >
-              {navigating === `edit-${item._id?.toString()}` ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <Edit className="w-5 h-5" />
+          {isSupplier && (item.status === "approved" || item.status === "pending" || item.status === "rejected") && !(item.listingType === "forSale" && !item.isAvailable) && (
+            <div className="relative group">
+              <button
+                onClick={() =>
+                  !item.hasActiveBookings &&
+                  (onNavigate ? onNavigate(`/dashboard/equipment/edit/${item._id?.toString()}`, `edit-${item._id?.toString()}`) : router.push(`/dashboard/equipment/edit/${item._id?.toString()}`))
+                }
+                disabled={navigating === `edit-${item._id?.toString()}` || item.hasActiveBookings}
+                className={`p-2 font-medium transition-colors ${
+                  item.hasActiveBookings
+                    ? "text-gray-400 cursor-not-allowed"
+                    : "text-blue-600 hover:bg-blue-50"
+                }`}
+                title={t("editEquipment")}
+              >
+                {navigating === `edit-${item._id?.toString()}` ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <Edit className="w-5 h-5" />
+                )}
+              </button>
+              {item.hasActiveBookings && (
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                  {t("cannotEditActiveBooking")}
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+                </div>
               )}
-            </button>
-          )}
-          {isSupplier && (
-            <button
-              onClick={() =>
-                onNavigate ? onNavigate(`/dashboard/equipment/edit/${item._id?.toString()}`, `edit-${item._id?.toString()}`) : router.push(`/dashboard/equipment/edit/${item._id?.toString()}`)
-              }
-              disabled={navigating === `edit-${item._id?.toString()}`}
-              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50"
-              title={t("editEquipment")}
-            >
-              {navigating === `edit-${item._id?.toString()}` ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <Edit className="w-5 h-5" />
-              )}
-            </button>
+            </div>
           )}
           <button
             onClick={() =>

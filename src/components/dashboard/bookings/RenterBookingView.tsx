@@ -21,6 +21,7 @@ import ConfirmModal from "@/src/components/ui/ConfirmModal"
 import { AlertTriangle } from "lucide-react"
 import GenericMobileCard from "@/src/components/ui/GenericMobileCard"
 import ReferenceNumber from "@/src/components/ui/ReferenceNumber"
+import PriceDisplay from "@/src/components/ui/PriceDisplay"
 
 export default function RenterBookingView() {
   const t = useTranslations("dashboard.bookings")
@@ -66,7 +67,7 @@ export default function RenterBookingView() {
       } else {
         toast.error(t("cancelFailed"))
       }
-    } catch (error) {
+    } catch {
       toast.error(t("cancelFailed"))
     } finally {
       setCancellingId(null)
@@ -112,7 +113,7 @@ export default function RenterBookingView() {
     )
   }
 
-  return (
+  return (  
     <>
       <div className="hidden xl:block overflow-x-auto">
         <Table>
@@ -133,7 +134,7 @@ export default function RenterBookingView() {
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <EquipmentImage
-                      src={"/equipement-images/default-fallback-image.png"}
+                      src={booking.bookingItems[0]?.equipmentImage || "/equipement-images/default-fallback-image.png"}
                       alt={booking.bookingItems[0]?.equipmentName || "Equipment"}
                       size="lg"
                     />
@@ -143,7 +144,7 @@ export default function RenterBookingView() {
                           <div className="text-sm font-semibold text-gray-900 whitespace-nowrap">
                             {item.equipmentName}
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center">
                             <ReferenceNumber referenceNumber={booking.referenceNumber} size="md" />
                           </div>
                         </div>
@@ -154,7 +155,7 @@ export default function RenterBookingView() {
                 <TableCell>
                   <div className="space-y-1">
                     {booking.startDate && (
-                      <div className="text-xs font-medium text-gray-700 whitespace-nowrap" dir="ltr">
+                      <div className="text-xs font-medium text-gray-700 whitespace-nowrap">
                         {booking.endDate 
                           ? `${formatDate(booking.startDate)} - ${formatDate(booking.endDate)}`
                           : formatDate(booking.startDate)
@@ -166,16 +167,14 @@ export default function RenterBookingView() {
                 <TableCell>
                   <div className="space-y-1">
                     {booking.bookingItems?.map((item, idx) => (
-                      <div key={idx} className="text-sm font-medium text-gray-700 whitespace-nowrap" dir="ltr">
+                      <div key={idx} className="text-sm font-medium text-gray-700 whitespace-nowrap" >
                         {item.usage} {getTranslatedUnit(item.usageUnit || 'hours', tCommon)}
                       </div>
                     ))}
                   </div>
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm font-semibold text-gray-900 whitespace-nowrap" dir="ltr">
-                    {booking.totalPrice.toLocaleString()} MRU
-                  </span>
+                    <PriceDisplay amount={booking.totalPrice} />
                 </TableCell>
                 <TableCell align="center">
                   {getStatusBadge(booking.status)}
@@ -212,8 +211,7 @@ export default function RenterBookingView() {
           </TableBody>
         </Table>
       </div>
-
-      <div className="xl:hidden space-y-4 p-4">
+      <div className="xl:hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 ">
         {paginatedData.map((booking) => {
           const equipmentTitle = `${booking.bookingItems[0]?.equipmentName}${
             booking.bookingItems.length > 1
@@ -224,16 +222,17 @@ export default function RenterBookingView() {
             (sum, item) => sum + item.usage,
             0
           )
-
+         
           return (
             <GenericMobileCard
               key={booking._id?.toString()}
               id={booking.referenceNumber || ""}
               title={equipmentTitle}
+              isAdminView={false}
               date={new Date(booking.createdAt).toLocaleDateString()}
               image={
                 <EquipmentImage
-                  src={"/equipement-images/default-fallback-image.png"}
+                  src={booking.bookingItems[0]?.equipmentImage}
                   alt={booking.bookingItems[0]?.equipmentName || "Equipment"}
                   size="lg"
                   onClick={() => { window.location.href = `/equipment/${booking.bookingItems[0]?.equipmentId}` }}
@@ -246,69 +245,15 @@ export default function RenterBookingView() {
                   value: `${totalUsage} ${getTranslatedUnit(booking.bookingItems[0]?.usageUnit || 'hours', tCommon)}`,
                 },
                 {
-                  label: t("table.estimatedTotal"),
-                  value: booking.totalPrice,
-                },
-              ]}
-              onViewDetails={() => {
-                window.location.href = `/equipment/${booking.bookingItems[0]?.equipmentId}`
-              }}
-              viewButtonText={t("actions.view")}
-              actionButton={
-                booking.status === "pending" ? (
-                  <button
-                    onClick={() =>
-                      handleCancelClick(booking._id?.toString() || "")
-                    }
-                    disabled={cancellingId === booking._id?.toString()}
-                    className="p-2 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 group"
-                    title={t("cancelBooking")}
-                  >
-                    <XCircle className="h-5 w-5 text-red-600 group-hover:text-red-700" />
-                  </button>
-                ) : undefined
-              }
-            />
-          )
-        })}
-      </div>
-
-      <div className="lg:hidden space-y-4">
-        {paginatedData.map((booking) => {
-          const equipmentTitle = `${booking.bookingItems[0]?.equipmentName}${
-            booking.bookingItems.length > 1
-              ? ` +${booking.bookingItems.length - 1}`
-              : ""
-          }`
-          const totalUsage = booking.bookingItems.reduce(
-            (sum, item) => sum + item.usage,
-            0
-          )
-
-          return (
-            <GenericMobileCard
-              key={booking._id?.toString()}
-              id={booking.referenceNumber || ""}
-              title={equipmentTitle}
-              date={new Date(booking.createdAt).toLocaleDateString()}
-              image={
-                <EquipmentImage
-                  src={"/equipement-images/default-fallback-image.png"}
-                  alt={booking.bookingItems[0]?.equipmentName || "Equipment"}
-                  size="lg"
-                  onClick={() => { window.location.href = `/equipment/${booking.bookingItems[0]?.equipmentId}` }}
-                />
-              }
-              status={booking.status}
-              fields={[
-                {
-                  label: t("table.usage"),
-                  value: `${totalUsage} ${getTranslatedUnit(booking.bookingItems[0]?.usageUnit || 'hours', tCommon)}`,
+                  label: t("table.total"),
+                  value: <PriceDisplay amount={booking.totalPrice} /> 
                 },
                 {
-                  label: t("table.estimatedTotal"),
-                  value: booking.totalPrice,
+                  label: t("table.rentalPeriod"),
+                  value: booking.startDate && booking.endDate ? `${new Date(booking.startDate).toLocaleDateString()} - ${new Date(booking.endDate).toLocaleDateString()}` : "-",
+                  valueClassName: "text-xs font-medium text-gray-700"
                 },
+
               ]}
               onViewDetails={() => {
                 window.location.href = `/equipment/${booking.bookingItems[0]?.equipmentId}`

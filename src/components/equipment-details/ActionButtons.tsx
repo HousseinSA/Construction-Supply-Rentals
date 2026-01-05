@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Phone, ArrowLeft, ShoppingCart, Calendar, Clock } from "lucide-react"
+import {  ArrowLeft, Tag, Calendar, Clock } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
@@ -63,7 +63,7 @@ export default function ActionButtons({ isForSale, equipment, onBookingSuccess }
     }
     
     return {
-      icon: isForSale ? <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" /> : <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />,
+      icon: isForSale ? <Tag className="w-4 h-4 sm:w-5 sm:h-5" /> : <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />,
       text: isForSale ? t('sendSaleRequest') : t('sendBookingRequest'),
       className: 'bg-primary hover:bg-primary/90'
     }
