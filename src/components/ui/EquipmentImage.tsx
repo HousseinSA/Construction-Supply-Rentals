@@ -26,7 +26,7 @@ export default function EquipmentImage({ src, alt, size = "md", onClick, classNa
       alt={alt}
       width={width}
       height={height}
-      className={`${sizeClass} object-cover rounded-lg shadow-sm ${onClick ? "cursor-pointer hover:opacity-80 transition-opacity" : ""} ${className || ""}`}
+      className={`${sizeClass} object-scale-down rounded-lg shadow-sm ${onClick ? "cursor-pointer hover:opacity-80 transition-opacity" : ""} ${className || ""}`}
       onClick={onClick}
     />
   ) : (

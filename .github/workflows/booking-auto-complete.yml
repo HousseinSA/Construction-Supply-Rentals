@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Trigger booking auto-completion
         run: |
-          curl -X POST https://construction-supply-rentals.vercel.app/api/booking-auto-complete \
+          curl -X POST http://localhost:3000/api/booking-auto-complete \
             -H "x-auto-complete-secret: ${{ secrets.AUTO_COMPLETE_SECRET }}" \
             -H "Content-Type: application/json" \
             -d '{}'

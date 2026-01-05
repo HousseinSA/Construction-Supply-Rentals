@@ -192,7 +192,7 @@ export default function EquipmentMobileCard({
             src={item.images[0] || "/equipement-images/default-fallback-image.png"}
             alt={item.name}
             size="lg"
-            className="!w-full !h-full object-contain sm:object-cover"
+            className="!w-full !h-full object-contain"
             onClick={() =>
               onNavigate(
                 `/equipment/${item._id?.toString()}?admin=true`,

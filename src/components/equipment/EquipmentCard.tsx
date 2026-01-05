@@ -128,7 +128,7 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
           alt={equipment.name}
           fill
           sizes="(max-width: 500px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-cover bg-gray-50"
+          className="object-scale-down bg-gray-50"
           placeholder={equipment.images?.length > 0 ? "blur" : "empty"}
           blurDataURL={equipment.images?.length > 0 ? getBlurDataURL(equipment.images[0]) : undefined}
           loading="lazy"

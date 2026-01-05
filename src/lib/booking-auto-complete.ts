@@ -6,15 +6,41 @@ export async function processBookingAutoCompletion(db: Db): Promise<{ completed:
   let cancelled = 0;
   let reminders = 0;
 
-  const tomorrowDate = new Date(now);
-  tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+  // 1. Send WARNING email for bookings ending in 1 minute (before cancellation)
+  const warningDate = new Date(now);
+  warningDate.setMinutes(warningDate.getMinutes() + 1);
 
-  const endingBookings = await db.collection('bookings').find({
+  const warningBookings = await db.collection('bookings').find({
+    endDate: { $gt: now, $lte: warningDate },
+    status: 'pending'
+  }).toArray();
+
+  for (const booking of warningBookings) {
+    try {
+      const adminEmail = process.env.ADMIN_EMAIL;
+      if (adminEmail) {
+        const { sendBookingPendingReminderEmail } = await import('@/src/lib/email');
+        const equipmentNames = (booking.bookingItems || []).map((item: { equipmentName: string }) => item.equipmentName);
+        await sendBookingPendingReminderEmail(adminEmail, {
+          referenceNumber: booking.referenceNumber,
+          equipmentNames,
+          endDate: booking.endDate,
+          totalPrice: booking.totalPrice
+        }).catch(err => console.error('Email error:', err));
+        reminders++;
+      }
+    } catch (err) {
+      console.error('Error sending reminder email:', err);
+    }
+  }
+
+  // 2. Cancel bookings ending NOW or in past
+  const expiredBookings = await db.collection('bookings').find({
     endDate: { $lte: now },
     status: { $in: ['pending', 'paid'] }
   }).toArray();
 
-  for (const booking of endingBookings) {
+  for (const booking of expiredBookings) {
     if (booking.status === 'pending') {
       // Auto-cancel
       await db.collection('bookings').updateOne(
@@ -63,33 +89,6 @@ export async function processBookingAutoCompletion(db: Db): Promise<{ completed:
         { $set: { status: 'completed', completedAt: new Date(), updatedAt: new Date() } }
       );
       completed++;
-
-      // Send auto-completion email (optional)
-    }
-  }
-
-  // 2. Check for bookings ending tomorrow with pending status
-  const tomorrowBookings = await db.collection('bookings').find({
-    endDate: { $gt: now, $lte: tomorrowDate },
-    status: 'pending'
-  }).toArray();
-
-  for (const booking of tomorrowBookings) {
-    try {
-      const adminEmail = process.env.ADMIN_EMAIL;
-      if (adminEmail) {
-        const { sendBookingPendingReminderEmail } = await import('@/src/lib/email');
-        const equipmentNames = (booking.bookingItems || []).map((item: { equipmentName: string }) => item.equipmentName);
-        await sendBookingPendingReminderEmail(adminEmail, {
-          referenceNumber: booking.referenceNumber,
-          equipmentNames,
-          endDate: booking.endDate,
-          totalPrice: booking.totalPrice
-        }).catch(err => console.error('Email error:', err));
-        reminders++;
-      }
-    } catch (err) {
-      console.error('Error sending reminder email:', err);
     }
   }
 
