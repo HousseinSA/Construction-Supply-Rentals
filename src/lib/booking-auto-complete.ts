@@ -7,11 +7,11 @@ export async function processBookingAutoCompletion(db: Db): Promise<{ completed:
   let reminders = 0;
 
   const tomorrowDate = new Date(now);
-  tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+  tomorrowDate.setDate(tomorrowDate.getMinutes() + 1);
 
   const endingBookings = await db.collection('bookings').find({
-    endDate: { $lte: now },
-    status: { $in: ['pending', 'paid'] }
+  endDate: { $gt: now, $lte: tomorrowDate },
+  status: 'pending'
   }).toArray();
 
   for (const booking of endingBookings) {
