@@ -95,7 +95,8 @@ export default function SpecificationsGrid({
           <div className="bg-gray-50 rounded-lg p-3">
             <div className="text-xs sm:text-sm text-gray-500 mb-1 flex items-center gap-1">
               <Clock className="w-3 h-3" />
-              {t("equipmentUsage")}
+              {/* {t("equipmentUsage")} */}
+              ODO
             </div>
             <div className="font-semibold text-sm sm:text-base text-gray-900">
               {specifications.usageValue

@@ -1,4 +1,6 @@
 import Image from "next/image"
+import { Loader2 } from "lucide-react"
+import { useState } from "react"
 
 interface EquipmentImageProps {
   src: string | string[]
@@ -6,11 +8,13 @@ interface EquipmentImageProps {
   size?: "sm" | "md" | "lg"
   onClick?: () => void
   className?: string
+  cover?: boolean
 }
 
-export default function EquipmentImage({ src, alt, size = "md", onClick, className }: EquipmentImageProps) {
+export default function EquipmentImage({ src, alt, size = "md", onClick, className, cover = false }: EquipmentImageProps) {
   const imageSrc = Array.isArray(src) ? src[0] : src
   const fallback = "/equipement-images/default-fallback-image.png"
+  const [loading, setLoading] = useState(true)
 
   const sizes = {
     sm: { width: 64, height: 56, class: "w-16 h-14" },
@@ -19,6 +23,26 @@ export default function EquipmentImage({ src, alt, size = "md", onClick, classNa
   }
 
   const { width, height, class: sizeClass } = sizes[size]
+
+  if (cover) {
+    return (
+      <div className="relative w-full h-full">
+        {loading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+            <Loader2 className="w-6 h-6 text-gray-400 animate-spin" />
+          </div>
+        )}
+        <Image
+          src={imageSrc || fallback}
+          alt={alt}
+          fill
+          className={`object-cover ${onClick ? "cursor-pointer hover:opacity-90 transition-opacity" : ""} ${className || ""}`}
+          onClick={onClick}
+          onLoad={() => setLoading(false)}
+        />
+      </div>
+    )
+  }
 
   return imageSrc ? (
     <Image

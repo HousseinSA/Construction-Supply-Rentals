@@ -41,7 +41,6 @@ export default function EquipmentMobileCard({
   const tCommon = useTranslations("common")
   const [showRejectionModal, setShowRejectionModal] = useState(false)
   const [showPricingRejectionModal, setShowPricingRejectionModal] = useState(false)
-  
   const getPricesList = () => {
     const prices = []
     if (item.listingType === "forSale" && item.pricing.salePrice) {
@@ -128,7 +127,7 @@ export default function EquipmentMobileCard({
             </div>
           </div>
         </div>
-        <div className="flex-shrink-0 flex flex-col items-end">
+        <div className="flex-shrink-0 flex flex-col items-center">
           {item.status === "pending" && !isSupplier ? (
             <div className="flex flex-col gap-1">
               <button
@@ -191,9 +190,7 @@ export default function EquipmentMobileCard({
           <EquipmentImage
             src={item.images[0] || "/equipement-images/default-fallback-image.png"}
             alt={item.name}
-            size="lg"
-            
-            className="!w-full !h-full object-cover"
+            cover
             onClick={() =>
               onNavigate(
                 `/equipment/${item._id?.toString()}?admin=true`,

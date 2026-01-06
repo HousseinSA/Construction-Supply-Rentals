@@ -67,8 +67,6 @@ export default function EquipmentFormFields({
   onImagesChange,
   onNumericInputChange,
   isAdmin = true,
-  equipmentCreatedBy = "supplier",
-  hasPendingPricing = false,
   isEditMode = false,
   hasActiveBookings = false,
 }: EquipmentFormFieldsProps) {

@@ -16,14 +16,12 @@ import ActionButtons from "@/src/components/equipment-details/ActionButtons"
 import LoadingState from "@/src/components/equipment-details/LoadingState"
 import NotFoundState from "@/src/components/equipment-details/NotFoundState"
 import SupplierInfo from "@/src/components/equipment-details/SupplierInfo"
-import AdminPricingActions from "@/src/components/equipment-details/AdminPricingActions"
 
 interface EquipmentDetailsViewProps {
   equipmentId: string
 }
 
 export default function EquipmentDetailsView({ equipmentId }: EquipmentDetailsViewProps) {
-  const t = useTranslations("equipmentDetails")
   const { data: session } = useSession()
   const [equipment, setEquipment] = useState<any>(null)
   const [loading, setLoading] = useState(true)
