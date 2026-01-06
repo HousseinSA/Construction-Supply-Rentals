@@ -5,49 +5,14 @@ import { useTranslations } from "next-intl"
 import { useRouter } from "@/i18n/navigation"
 import { useSession } from "next-auth/react"
 import { useState } from "react"
-import { toast } from "sonner"
 import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
 import { useFontClass } from "@/src/hooks/useFontClass"
 import { useCityData } from "@/src/hooks/useCityData"
 import { getEquipmentImage } from "@/src/lib/equipment-images"
 import { getOptimizedCloudinaryUrl, getBlurDataURL } from "@/src/lib/cloudinary-url"
 import Button from "../ui/Button"
-import BookingModal from "../booking/BookingModal"
-import SaleModal from "../booking/SaleModal"
 import { MapPin, Tag, Clock, Gauge, Loader2 } from "lucide-react"
-
-interface Pricing {
-  type?: string
-  dailyRate?: number
-  hourlyRate?: number
-  monthlyRate?: number
-  kmRate?: number
-  tonRate?: number
-  salePrice?: number
-}
-
-interface Specifications {
-  condition?: string
-  brand?: string
-  model?: string
-  year?: number
-  hoursUsed?: number
-  kilometersUsed?: number
-
-}
-
-interface Equipment {
-  _id: string
-  name: string
-  description: string
-  location: string
-  pricing: Pricing
-  specifications?: Specifications
-  listingType?: string
-  forSale?: boolean
-  images: string[]
-  supplierId?: string
-}
+import type { Equipment } from "@/src/lib/models/equipment"
 
 interface EquipmentCardProps {
   equipment: Equipment
@@ -61,38 +26,15 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
   const fontClass = useFontClass()
   const { convertToLocalized } = useCityData()
   const { getPriceData, formatPrice } = usePriceFormatter()
-  const [showBookingModal, setShowBookingModal] = useState(false)
-  const [showSaleModal, setShowSaleModal] = useState(false)
   const [isNavigating, setIsNavigating] = useState(false)
-  const isForSale = equipment.listingType === "forSale" || equipment.forSale
+  const isForSale = equipment.listingType === "forSale" 
   const { rate, unit } = getPriceData(equipment.pricing, isForSale)
-  const { displayPrice, displayUnit } = formatPrice(rate, unit)
+  const { displayPrice } = formatPrice(rate, unit)
 
   const specs = equipment.specifications
   const tCommon = useTranslations("common")
   const localizedCity = convertToLocalized(equipment.location)
   const isOwnEquipment = session?.user?.id === equipment.supplierId
-
-  const handleActionClick = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    if (!session) {
-      const currentPath = `/equipment/${equipment._id}`
-      router.push(`/auth/login?callbackUrl=${encodeURIComponent(currentPath)}`)
-      return
-    }
-    if (session.user.role === "admin") {
-      toast.error(tDetails("adminCannotBook"))
-      return
-    }
-    if (isOwnEquipment) {
-      toast.error(tDetails("cannotBookOwnEquipment"))
-      return
-    }
-    isForSale ? setShowSaleModal(true) : setShowBookingModal(true)
-  }
-
-
 
   const handleNavigate = () => {
     setIsNavigating(true)
@@ -110,7 +52,7 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
       } group ${fontClass} ${isNavigating ? 'pointer-events-none' : ''}`}
     >
       <div
-        className="h-56 sm:h-60 relative overflow-hidden cursor-pointer bg-gradient-to-br from-gray-50 to-gray-100"
+        className="relative w-full aspect-[3/2] bg-gray-50 rounded-t-2xl overflow-hidden cursor-pointer"
         onClick={handleNavigate}
       >
         <Image
@@ -128,7 +70,7 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
           alt={equipment.name}
           fill
           sizes="(max-width: 500px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-center"
+          className="object-contain scale-110 transition-transform duration-500 ease-out group-hover:scale-115"
           placeholder={equipment.images?.length > 0 ? "blur" : "empty"}
           blurDataURL={equipment.images?.length > 0 ? getBlurDataURL(equipment.images[0]) : undefined}
           loading="lazy"
@@ -246,21 +188,6 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
           </Button>
         </div>
       </div>
-
-      {isForSale ? (
-        <SaleModal
-          isOpen={showSaleModal}
-          onClose={() => setShowSaleModal(false)}
-          equipment={equipment}
-          buyerId={session?.user?.id || ""}
-        />
-      ) : (
-        <BookingModal
-          isOpen={showBookingModal}
-          onClose={() => setShowBookingModal(false)}
-          equipment={equipment}
-        />
-      )}
     </div>
   )
 }

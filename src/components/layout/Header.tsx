@@ -210,7 +210,7 @@ export default function Header({ session: serverSession }: HeaderProps) {
                   className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm text-gray-700 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors font-medium"
                 >
                   <ClipboardList size={16} />
-                  {t("myOrders")}
+                  {t("myBookings")}
                 </Link>
               )}
               <div className="pt-2 border-t border-gray-200">

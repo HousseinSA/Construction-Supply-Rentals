@@ -24,12 +24,11 @@ export default async function RenterBookingsPage({
   }
 
   const tCommon = await getTranslations("common")
-  const tRenter = await getTranslations("dashboard.renter")
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <DashboardPageHeader title={tCommon("myTransactions")} subtitle={tRenter("myTransactionsDesc")} />
+        <DashboardPageHeader title={tCommon("myBookings")}  />
         <RenterTransactionsView />
       </div>
     </div>

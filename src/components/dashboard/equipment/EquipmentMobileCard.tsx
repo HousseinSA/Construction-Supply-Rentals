@@ -7,6 +7,7 @@ import PriceDisplay from "@/src/components/ui/PriceDisplay"
 import { EquipmentWithSupplier } from "@/src/stores/equipmentStore"
 import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
 import { useCityData } from "@/src/hooks/useCityData"
+import { useTooltip } from "@/src/hooks/useTooltip"
 import { useTranslations } from "next-intl"
 import { formatPhoneNumber } from "@/src/lib/format"
 import { useState } from "react"
@@ -41,6 +42,7 @@ export default function EquipmentMobileCard({
   const tCommon = useTranslations("common")
   const [showRejectionModal, setShowRejectionModal] = useState(false)
   const [showPricingRejectionModal, setShowPricingRejectionModal] = useState(false)
+  const { ref: tooltipRef, isOpen: showTooltip, toggle: toggleTooltip } = useTooltip()
   const getPricesList = () => {
     const prices = []
     if (item.listingType === "forSale" && item.pricing.salePrice) {
@@ -233,7 +235,7 @@ export default function EquipmentMobileCard({
       </div>
 
       <div className="space-y-2">
-        <div className="w-full relative group">
+        <div ref={tooltipRef} className="w-full relative">
           <Dropdown
             options={[
               { value: "available", label: t("available") },
@@ -249,21 +251,11 @@ export default function EquipmentMobileCard({
             }
             disabled={item.status !== "approved" || (item.listingType === "forSale" && !item.isAvailable) || item.hasActiveBookings || item.hasPendingSale}
           />
-          {item.status !== "approved" && (
-            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-              {t("equipmentMustBeApproved")}
-              <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
-            </div>
-          )}
-          {item.status === "approved" && (item.hasActiveBookings || item.hasPendingSale) && (
-            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-              {t("cannotEditActiveBooking")}
-              <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
-            </div>
-          )}
-          {item.status === "approved" && item.listingType === "forSale" && !item.isAvailable && (
-            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-              {t("equipmentSold")}
+          {(item.status !== "approved" || (item.status === "approved" && (item.hasActiveBookings || item.hasPendingSale)) || (item.status === "approved" && item.listingType === "forSale" && !item.isAvailable)) && (
+            <div onClick={toggleTooltip} className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap transition-opacity pointer-events-auto z-10 cursor-pointer ${showTooltip ? 'opacity-100' : 'opacity-0'}`}>
+              {item.status !== "approved" && t("equipmentMustBeApproved")}
+              {item.status === "approved" && (item.hasActiveBookings || item.hasPendingSale) && t("cannotEditActiveBooking")}
+              {item.status === "approved" && item.listingType === "forSale" && !item.isAvailable && t("equipmentSold")}
               <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
             </div>
           )}

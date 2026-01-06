@@ -6,7 +6,6 @@
     "signup": "S'inscrire",
     "dashboard": "Tableau de Bord",
     "myBookings": "Mes Réservations",
-    "myTransactions": "Mes Transactions",
     "myOrders": "Mes Commandes",
     "day": "jour",
     "hour": "heure",
@@ -539,7 +538,7 @@
       },
 
       "view": "Voir",
-      "usageLabel": "Utilisation Totale de l'Équipement",
+      "usageLabel": "Utilisation Totale de l'Équipement (ODO)",
       "manageTitle": "Gérer le Matériel",
       "manageSubtitle": "Voir et gérer toutes les annonces de matériel",
       "createdByAdmin": "Créé par l'Admin",

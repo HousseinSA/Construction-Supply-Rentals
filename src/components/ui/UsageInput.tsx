@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useTranslations } from "next-intl"
 import { Info } from "lucide-react"
 import Dropdown from "./Dropdown"
+import { useTooltip } from "@/src/hooks/useTooltip"
 
 interface UsageInputProps {
   equipmentTypeId: string
@@ -24,6 +25,7 @@ export default function UsageInput({
 }: UsageInputProps) {
   const t = useTranslations("dashboard.equipment")
   const [usageCategory, setUsageCategory] = useState<"hours" | "kilometers" | "tonnage">("hours")
+  const { ref, isOpen, toggle } = useTooltip()
 
   useEffect(() => {
     if (!equipmentTypeId) return
@@ -89,9 +91,12 @@ export default function UsageInput({
     <div>
       <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
         {t("usageLabel")}
-        <div className="relative group">
-          <Info className="h-4 w-4 text-gray-400 cursor-help" />
-          <div className="absolute ltr:left-0 rtl:right-0 bottom-full mb-2 w-64 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+        <div ref={ref} className="relative group">
+          <Info 
+            className="h-4 w-4 text-gray-400 cursor-help" 
+            onClick={toggle}
+          />
+          <div className={`absolute ltr:left-0 rtl:right-0 bottom-full mb-2 w-64 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg transition-opacity z-50 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 group-hover:opacity-100 pointer-events-none'}`}>
             {getTooltipText()}
             <div className="absolute top-full ltr:left-4 rtl:right-4 -mt-1 border-4 border-transparent border-t-gray-900"></div>
           </div>

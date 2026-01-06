@@ -539,7 +539,7 @@
       },
 
       "view": "View",
-      "usageLabel": "Total Equipment Usage",
+      "usageLabel": "Total Equipment Usage (ODO)",
       "manageTitle": "Manage Equipment",
       "manageSubtitle": "View and manage all equipment listings",
       "createdByAdmin": "Created by Admin",

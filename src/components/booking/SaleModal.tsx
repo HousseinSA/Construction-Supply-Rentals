@@ -7,13 +7,7 @@ import { useParams, useRouter } from "next/navigation"
 import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
 import { useBookingSuccessStore } from "@/src/stores/bookingSuccessStore"
 import BaseRequestModal from "@/src/components/shared/BaseRequestModal"
-
-interface Equipment {
-  _id: string
-  name: string
-  location: string
-  pricing: Record<string, unknown>
-}
+import type { Equipment } from "@/src/lib/models/equipment"
 
 interface SaleModalProps {
   isOpen: boolean
@@ -52,7 +46,7 @@ export default function SaleModal({
     try {
       const saleData: { buyerId: string; equipmentId: string; buyerMessage: string } = {
         buyerId,
-        equipmentId: equipment._id,
+        equipmentId: equipment._id?.toString() || "",
         buyerMessage: message,
       }
 
@@ -68,7 +62,7 @@ export default function SaleModal({
         if (data.data.equipment) {
           useBookingSuccessStore.setState({ equipment: data.data.equipment })
         }
-        router.push(`/${locale}/booking-success?equipment=${encodeURIComponent(equipment.name)}&equipmentId=${equipment._id}&type=sale`)
+        router.push(`/${locale}/booking-success?equipment=${encodeURIComponent(equipment.name)}&equipmentId=${equipment._id?.toString()}&type=sale`)
         onSaleSuccess?.()
         onClose()
         setMessage("")

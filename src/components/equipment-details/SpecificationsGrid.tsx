@@ -1,4 +1,4 @@
-import { Wrench, Clock, Weight, Gauge } from "lucide-react"
+import { Wrench, Clock, Weight, Gauge, Tag, Box, CheckCircle } from "lucide-react"
 import { useTranslations, useLocale } from "next-intl"
 
 interface Specifications {
@@ -6,6 +6,7 @@ interface Specifications {
   model?: string
   condition?: string
   hoursUsed?: number
+  kilometersUsed?: number
   weight?: number
   weightUnit?: string
   usageValue?: number
@@ -34,13 +35,15 @@ export default function SpecificationsGrid({
   }
 
   const formatUsage = (value: number, unit: string) => {
+    const formattedValue = value.toLocaleString()
     const unitText = unit === "km" ? t("units.km") : t("units.hours")
-    return locale === "ar" ? `${value} ${unitText}` : `${value} ${unitText}`
+    return locale === "ar" ? `${formattedValue} ${unitText}` : `${formattedValue} ${unitText}`
   }
 
   const formatWeight = (value: number, unit: string) => {
+    const formattedValue = value.toLocaleString()
     const unitText = getUnitText(unit || "kg")
-    return locale === "ar" ? `${value} ${unitText}` : `${value} ${unitText}`
+    return locale === "ar" ? `${formattedValue} ${unitText}` : `${formattedValue} ${unitText}`
   }
 
   const getConditionLabel = (condition: string) => {
@@ -59,14 +62,20 @@ export default function SpecificationsGrid({
       </h3>
       <div className="grid grid-cols-2 gap-3">
         <div className="bg-gray-50 rounded-lg p-3">
-          <div className="text-xs sm:text-sm text-gray-500 mb-1">{t("brand")}</div>
+          <div className="text-xs sm:text-sm text-gray-700 mb-1 flex items-center gap-1 font-bold">
+            <Tag className="w-3 h-3 text-blue-600" />
+            {t("brand")}
+          </div>
           <div className="font-semibold text-sm sm:text-base text-gray-900 break-words">
             {specifications.brand || "-"}
           </div>
         </div>
         {specifications.model && (
           <div className="bg-gray-50 rounded-lg p-3">
-            <div className="text-xs sm:text-sm text-gray-500 mb-1">{t("model")}</div>
+            <div className="text-xs sm:text-sm text-gray-700 mb-1 flex items-center gap-1 font-bold">
+              <Box className="w-3 h-3 text-purple-600" />
+              {t("model")}
+            </div>
             <div className="font-semibold text-sm sm:text-base text-gray-900 break-words">
               {specifications.model}
             </div>
@@ -74,7 +83,10 @@ export default function SpecificationsGrid({
         )}
         {isForSale ? (
           <div className="bg-gray-50 rounded-lg p-3">
-            <div className="text-xs sm:text-sm text-gray-500 mb-1">{t("condition")}</div>
+            <div className="text-xs sm:text-sm text-gray-700 mb-1 flex items-center gap-1 font-bold">
+              <CheckCircle className="w-3 h-3 text-green-600" />
+              {t("condition")}
+            </div>
             <div className="font-semibold text-sm sm:text-base text-gray-900">
               {specifications.condition
                 ? getConditionLabel(specifications.condition)
@@ -84,7 +96,10 @@ export default function SpecificationsGrid({
         ) : (
           specifications.condition && (
             <div className="bg-gray-50 rounded-lg p-3">
-              <div className="text-xs sm:text-sm text-gray-500 mb-1">{t("condition")}</div>
+              <div className="text-xs sm:text-sm text-gray-700 mb-1 flex items-center gap-1 font-bold">
+                <CheckCircle className="w-3 h-3 text-green-600" />
+                {t("condition")}
+              </div>
               <div className="font-semibold text-sm sm:text-base text-gray-900">
                 {getConditionLabel(specifications.condition)}
               </div>
@@ -93,9 +108,8 @@ export default function SpecificationsGrid({
         )}
         {(specifications.usageValue || specifications.hoursUsed) && (
           <div className="bg-gray-50 rounded-lg p-3">
-            <div className="text-xs sm:text-sm text-gray-500 mb-1 flex items-center gap-1">
-              <Clock className="w-3 h-3" />
-              {/* {t("equipmentUsage")} */}
+            <div className="text-xs sm:text-sm text-gray-700 mb-1 flex items-center gap-1 font-bold">
+              <Clock className="w-3 h-3 text-blue-600" />
               ODO
             </div>
             <div className="font-semibold text-sm sm:text-base text-gray-900">
@@ -104,17 +118,15 @@ export default function SpecificationsGrid({
                     specifications.usageValue,
                     specifications.usageUnit || "hours"
                   )
-                : specifications.hoursUsed
-                ? formatUsage(specifications.hoursUsed, "hours")
-                : "-"}
+                : formatUsage(specifications.hoursUsed!, "hours")}
             </div>
           </div>
         )}
         {specifications.kilometersUsed && (
           <div className="bg-gray-50 rounded-lg p-3">
-            <div className="text-xs sm:text-sm text-gray-500 mb-1 flex items-center gap-1">
-              <Gauge className="w-3 h-3" />
-              {t("kilometersUsed")}
+            <div className="text-xs sm:text-sm text-gray-700 mb-1 flex items-center gap-1 font-bold">
+              <Gauge className="w-3 h-3 text-green-600" />
+              ODO
             </div>
             <div className="font-semibold text-sm sm:text-base text-gray-900">
               {specifications.kilometersUsed.toLocaleString()} {t("units.km")}
@@ -123,8 +135,8 @@ export default function SpecificationsGrid({
         )}
         {specifications.weight && (
           <div className="bg-gray-50 rounded-lg p-3">
-            <div className="text-xs sm:text-sm text-gray-500 mb-1 flex items-center gap-1">
-              <Weight className="w-3 h-3" />
+            <div className="text-xs sm:text-sm text-gray-700 mb-1 flex items-center gap-1 font-bold">
+              <Weight className="w-3 h-3 text-orange-600" />
               {t("weight")}
             </div>
             <div className="font-semibold text-sm sm:text-base text-gray-900">

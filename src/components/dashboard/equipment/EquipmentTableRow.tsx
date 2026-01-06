@@ -2,6 +2,7 @@ import { useTranslations } from "next-intl"
 import { useRouter } from "@/src/i18n/navigation"
 import { useCityData } from "@/src/hooks/useCityData"
 import { useEquipmentPrices } from "@/src/hooks/useEquipmentPrices"
+import { useTooltip } from "@/src/hooks/useTooltip"
 import { MapPin, Edit, Eye, Tag, Loader2, RefreshCw, AlertCircle } from "lucide-react"
 import Image from "next/image"
 import { useState } from "react"
@@ -50,6 +51,7 @@ export default function EquipmentTableRow({
   const { convertToLocalized } = useCityData()
   const [showRejectionModal, setShowRejectionModal] = useState(false)
   const [showPricingRejectionModal, setShowPricingRejectionModal] = useState(false)
+  const editTooltip = useTooltip()
   const allPrices = useEquipmentPrices(item)
   return (
     <>
@@ -87,7 +89,7 @@ export default function EquipmentTableRow({
           </div>
           <div className="space-y-2">
             <div className="font-semibold text-sm text-gray-900">{item.name}</div>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-wrap gap-2">
               {item.createdBy === "admin" && (
                 <span className="inline-block px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 rounded w-fit">
                   {t("createdByAdmin")}
@@ -225,7 +227,7 @@ export default function EquipmentTableRow({
               </button>
               {!(item.lastEditedAt && item.rejectedAt && 
                 new Date(item.lastEditedAt) > new Date(item.rejectedAt)) && (
-                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none min-w-max z-10">
                   {t("editBeforeResubmit")}
                   <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
                 </div>
@@ -247,7 +249,7 @@ export default function EquipmentTableRow({
         )}
       </td>
       <td className="px-6 py-4">
-        <div className="flex justify-center">
+        <div className="flex justify-center overflow-visible">
           <div className="relative group">
             <Dropdown
               options={[
@@ -266,19 +268,19 @@ export default function EquipmentTableRow({
               disabled={item.status !== "approved" || (item.listingType === "forSale" && !item.isAvailable) || item.hasActiveBookings || item.hasPendingSale}
             />
             {item.status !== "approved" && (
-              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none min-w-max z-10">
                 {t("equipmentMustBeApproved")}
                 <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
               </div>
             )}
             {item.status === "approved" && (item.hasActiveBookings || item.hasPendingSale) && (
-              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none min-w-max z-10">
                 {t("cannotEditActiveBooking")}
                 <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
               </div>
             )}
             {item.status === "approved" && item.listingType === "forSale" && !item.isAvailable && (
-              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none min-w-max z-10">
                 {t("equipmentSold")}
                 <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
               </div>
@@ -286,82 +288,60 @@ export default function EquipmentTableRow({
           </div>
         </div>
       </td>
-      <td className="px-6 py-4">
-        <div className="flex items-center justify-center gap-2">
-          {!isSupplier && item.createdBy === "admin" && !(item.listingType === "forSale" && !item.isAvailable) && (
-            <div className="relative group">
-              <button
-                onClick={() =>
-                  !item.hasActiveBookings &&
-                  (onNavigate ? onNavigate(`/dashboard/equipment/edit/${item._id?.toString()}`, `edit-${item._id?.toString()}`) : router.push(`/dashboard/equipment/edit/${item._id?.toString()}`))
-                }
-                disabled={navigating === `edit-${item._id?.toString()}` || item.hasActiveBookings}
-                className={`p-2 font-medium transition-colors ${
-                  item.hasActiveBookings
-                    ? "text-gray-400 cursor-not-allowed"
-                    : "text-blue-600 hover:bg-blue-50"
-                }`}
-                title={t("editEquipment")}
-              >
-                {navigating === `edit-${item._id?.toString()}` ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <Edit className="w-5 h-5" />
-                )}
-              </button>
-              {item.hasActiveBookings && (
-                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
-                  {t("cannotEditActiveBooking")}
-                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
-                </div>
-              )}
-            </div>
-          )}
-          {isSupplier && (item.status === "approved" || item.status === "pending" || item.status === "rejected") && !(item.listingType === "forSale" && !item.isAvailable) && (
-            <div className="relative group">
-              <button
-                onClick={() =>
-                  !item.hasActiveBookings &&
-                  (onNavigate ? onNavigate(`/dashboard/equipment/edit/${item._id?.toString()}`, `edit-${item._id?.toString()}`) : router.push(`/dashboard/equipment/edit/${item._id?.toString()}`))
-                }
-                disabled={navigating === `edit-${item._id?.toString()}` || item.hasActiveBookings}
-                className={`p-2 font-medium transition-colors ${
-                  item.hasActiveBookings
-                    ? "text-gray-400 cursor-not-allowed"
-                    : "text-blue-600 hover:bg-blue-50"
-                }`}
-                title={t("editEquipment")}
-              >
-                {navigating === `edit-${item._id?.toString()}` ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <Edit className="w-5 h-5" />
-                )}
-              </button>
-              {item.hasActiveBookings && (
-                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
-                  {t("cannotEditActiveBooking")}
-                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
-                </div>
-              )}
-            </div>
-          )}
-          <button
-            onClick={() =>
-              onNavigate ? onNavigate(`/equipment/${item._id?.toString()}?admin=true`, item._id?.toString() || "") : router.push(`/equipment/${item._id?.toString()}?admin=true`)
-            }
-            disabled={navigating === item._id?.toString()}
-            className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
-            title={t("viewDetails")}
-          >
-            {navigating === item._id?.toString() ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <Eye className="w-5 h-5" />
+        <td className="px-6 py-4">
+          <div className="flex items-center justify-end gap-2 min-h-[40px] w-[88px] mx-auto">
+            {!isSupplier && item.status === "approved" && !item.hasActiveBookings && !item.hasPendingSale && !(item.listingType === "forSale" && !item.isAvailable) && (
+              <div ref={editTooltip.ref} className="relative group">
+                <button
+                  onClick={() => {
+                    onNavigate ? onNavigate(`/dashboard/equipment/edit/${item._id?.toString()}`, `edit-${item._id?.toString()}`) : router.push(`/dashboard/equipment/edit/${item._id?.toString()}`)
+                  }}
+                  disabled={navigating === `edit-${item._id?.toString()}`}
+                  className="p-2 font-medium text-blue-600 hover:bg-blue-50 transition-colors"
+                  title={t("editEquipment")}
+                >
+                  {navigating === `edit-${item._id?.toString()}` ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <Edit className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
             )}
-          </button>
-        </div>
-      </td>
+            {isSupplier && item.status === "approved" && !item.hasActiveBookings && !item.hasPendingSale && !(item.listingType === "forSale" && !item.isAvailable) && (
+              <div className="relative group">
+                <button
+                  onClick={() => {
+                    onNavigate ? onNavigate(`/dashboard/equipment/edit/${item._id?.toString()}`, `edit-${item._id?.toString()}`) : router.push(`/dashboard/equipment/edit/${item._id?.toString()}`)
+                  }}
+                  disabled={navigating === `edit-${item._id?.toString()}`}
+                  className="p-2 font-medium text-blue-600 hover:bg-blue-50 transition-colors"
+                  title={t("editEquipment")}
+                >
+                  {navigating === `edit-${item._id?.toString()}` ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <Edit className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+            )}
+            <button
+              onClick={() =>
+                onNavigate ? onNavigate(`/equipment/${item._id?.toString()}?admin=true`, item._id?.toString() || "") : router.push(`/equipment/${item._id?.toString()}?admin=true`)
+              }
+              disabled={navigating === item._id?.toString()}
+              className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+              title={t("viewDetails")}
+            >
+              {navigating === item._id?.toString() ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <Eye className="w-5 h-5" />
+              )}
+            </button>
+          </div>
+        </td>
     </tr>
     {typeof document !== 'undefined' && showRejectionModal && createPortal(
       <MessageModal

@@ -4,6 +4,7 @@ import { X, Loader2 } from "lucide-react"
 import Image from "next/image"
 import { useTranslations } from "next-intl"
 import { useFontClass } from "@/src/hooks/useFontClass"
+import { useTooltip } from "@/src/hooks/useTooltip"
 
 interface ImagePreviewProps {
   image: { url: string; public_id: string }
@@ -25,9 +26,10 @@ export default function ImagePreview({
   const t = useTranslations("dashboard.equipment")
   const fontClass = useFontClass()
   const isRTL = fontClass.includes("rtl")
+  const { ref, isOpen, toggle } = useTooltip()
 
   return (
-    <div className="relative group p-3">
+    <div ref={ref} className="relative group p-3">
       <div className="relative h-32 overflow-hidden rounded-xl border-2 border-gray-200 group-hover:border-primary/30 transition-all duration-200">
         <Image
           src={image.url}
@@ -41,15 +43,16 @@ export default function ImagePreview({
           </div>
         )}
 
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-200 flex items-center justify-center">
+        <div className={`absolute inset-0 transition-all duration-200 flex items-center justify-center ${isOpen ? 'bg-black/20' : 'bg-black/0 group-hover:bg-black/20'}`}>
           <button
             type="button"
             onClick={(e) => {
               e.preventDefault()
               e.stopPropagation()
+              toggle()
               onView()
             }}
-            className="text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black/50 px-3 py-2 rounded cursor-pointer hover:bg-black/70"
+            className={`text-white text-xs transition-opacity duration-200 bg-black/50 px-3 py-2 rounded cursor-pointer hover:bg-black/70 ${isOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
           >
             {t("view")}
           </button>
@@ -65,7 +68,7 @@ export default function ImagePreview({
         }}
         className={`absolute top-1 ${
           isRTL ? "left-1" : "right-1"
-        } bg-red-500 hover:bg-red-600 text-white rounded-full p-2 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-30`}
+        } bg-red-500 hover:bg-red-600 text-white rounded-full p-2 shadow-lg transition-opacity duration-200 z-30 ${isOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
         disabled={disabled || isDeleting}
       >
         <X className="h-4 w-4" />
