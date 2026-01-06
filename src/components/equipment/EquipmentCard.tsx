@@ -63,14 +63,14 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
                   height: 400,
                   quality: 'auto:good',
                   format: 'auto',
-                  crop: 'fit'
+                  crop: 'fill'
                 })
               : getEquipmentImage(equipment.name)
           }
           alt={equipment.name}
           fill
           sizes="(max-width: 500px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-contain scale-110 transition-transform duration-500 ease-out group-hover:scale-115"
+          className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
           placeholder={equipment.images?.length > 0 ? "blur" : "empty"}
           blurDataURL={equipment.images?.length > 0 ? getBlurDataURL(equipment.images[0]) : undefined}
           loading="lazy"

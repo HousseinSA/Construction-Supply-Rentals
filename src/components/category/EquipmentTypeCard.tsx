@@ -36,7 +36,7 @@ export default function EquipmentTypeCard({
           src={getEquipmentImage(type.name)}
           alt={type.name}
           fill
-          className="object-contain scale-120 transition-transform duration-500 ease-out group-hover:scale-125"
+          className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
         />
       </div>
       <div className="p-4 flex flex-col flex-1">
