@@ -10,7 +10,6 @@ interface PriceDisplayProps {
   variant?: "default" | "commission"
 }
 
-
 export default function PriceDisplay({
   amount,
   showMRU = true,
@@ -18,23 +17,18 @@ export default function PriceDisplay({
   amountClassName,
   dir = "ltr",
   suffix = "",
-  variant = "default"
+  variant = "default",
 }: PriceDisplayProps) {
-  const defaultAmountClassName = variant === "commission" 
-    ? "font-semibold text-sm text-green-600"
-    : "font-semibold text-sm text-gray-900"
-  
+  const defaultAmountClassName =
+    variant === "commission"
+      ? "font-semibold text-sm text-green-600"
+      : "font-semibold text-sm text-gray-900"
+
   const finalAmountClassName = amountClassName || defaultAmountClassName
   return (
     <span dir={dir} className="inline-flex  items-baseline gap-1">
-      <span className={finalAmountClassName}>
-        {amount.toLocaleString()}
-      </span>
-      {showMRU && (
-        <span className={mruClassName}>
-          MRU{suffix}
-        </span>
-      )}
+      <span className={finalAmountClassName}>{amount.toLocaleString()}</span>
+      {showMRU && <span className={mruClassName}>MRU{suffix}</span>}
     </span>
   )
 }

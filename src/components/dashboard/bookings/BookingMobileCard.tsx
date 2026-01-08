@@ -1,7 +1,6 @@
 import { Coins } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { formatDate, getTranslatedUnit } from "@/src/lib/table-utils"
-import { calculateBookingCommission } from "@/src/lib/commission"
 import GenericMobileCard from "@/src/components/ui/GenericMobileCard"
 import ReferenceNumber from "@/src/components/ui/ReferenceNumber"
 import PriceDisplay from "@/src/components/ui/PriceDisplay"
@@ -17,7 +16,7 @@ interface BookingMobileCardProps {
 
 export default function BookingMobileCard({ booking, onViewDetails, t, highlight = true, isAdminView = true }: BookingMobileCardProps) {
   const tCommon = useTranslations("common")
-  const commission = calculateBookingCommission(booking.bookingItems)
+  const commission = booking.totalCommission || booking.bookingItems[0]?.commission || 0
   const equipmentTitle = `${booking.bookingItems[0]?.equipmentName}${
     booking.bookingItems.length > 1 ? ` +${booking.bookingItems.length - 1}` : ""
   }`

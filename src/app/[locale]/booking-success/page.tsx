@@ -26,6 +26,12 @@ export default function BookingSuccessPage() {
   const clearEquipment = useBookingSuccessStore((state) => state.clearEquipment)
 
   const fetchMainEquipment = useCallback(async () => {
+    if (!equipmentId) return
+    // Skip fetch if we already have equipment from store
+    if (storedEquipment) {
+      setMainEquipment(storedEquipment)
+      return
+    }
     try {
       setMainLoading(true)
       const res = await fetch(`/api/equipment/${equipmentId}`)
@@ -36,7 +42,7 @@ export default function BookingSuccessPage() {
     } finally {
       setMainLoading(false)
     }
-  }, [equipmentId])
+  }, [equipmentId, storedEquipment])
 
   const fetchRelatedEquipment = useCallback(async () => {
     try {
@@ -69,18 +75,8 @@ export default function BookingSuccessPage() {
 
   useEffect(() => {
     fetchRelatedEquipment()
-  }, [fetchRelatedEquipment])
-
-  useEffect(() => {
-    if (equipmentId) {
-      if (storedEquipment) {
-        setMainEquipment(storedEquipment)
-        setMainLoading(false)
-      } else {
-        fetchMainEquipment()
-      }
-    }
-  }, [equipmentId, storedEquipment, fetchMainEquipment])
+    fetchMainEquipment()
+  }, [fetchRelatedEquipment, fetchMainEquipment])
 
   useEffect(() => {
     if (mainEquipment && relatedEquipment.length > 0 && !loading) {
@@ -107,6 +103,8 @@ export default function BookingSuccessPage() {
                       height={500}
                       className="w-full h-full object-cover"
                       priority
+                      loading="eager"
+                      quality={85}
                     />
                   ) : null}
                 </div>

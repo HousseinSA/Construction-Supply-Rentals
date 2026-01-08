@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl"
 import { PricingType } from "@/src/lib/types"
 import { requiresTransport } from "@/src/lib/constants/transport"
 import { useBookingSuccessStore } from "@/src/stores/bookingSuccessStore"
+import { calculateCommission } from "@/src/lib/commission"
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 
 export function useBookingModal(
@@ -59,9 +60,25 @@ export function useBookingModal(
     
     setLoading(true)
     try {
+      // Calculate rate and subtotal
+      const pricing = equipment.pricing
+      let rate = 0
+      if (pricingType === 'hourly') rate = pricing?.hourlyRate || 0
+      else if (pricingType === 'daily') rate = pricing?.dailyRate || 0
+      else if (pricingType === 'monthly') rate = pricing?.monthlyRate || 0
+      else if (pricingType === 'per_km') rate = pricing?.kmRate || 0
+      else if (pricingType === 'per_ton') rate = pricing?.tonRate || 0
+      
+      const subtotal = rate * usage
+      const commission = calculateCommission(subtotal)
+
       const bookingData: any = {
         renterId: session.user.id,
-        bookingItems: [{ equipmentId: equipment._id, usage, pricingType }],
+        equipmentId: equipment._id,
+        usage,
+        pricingType,
+        subtotal,
+        commission,
         renterMessage: message,
         startDate: startDate || undefined,
         endDate: endDate || undefined,

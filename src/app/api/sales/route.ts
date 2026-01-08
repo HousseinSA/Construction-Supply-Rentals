@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { buyerId, equipmentId, buyerMessage } = body
+    const { buyerId, equipmentId, buyerMessage, commission: frontendCommission } = body
 
     if (!buyerId || !equipmentId) {
       return NextResponse.json(
@@ -127,7 +127,7 @@ export async function POST(request: NextRequest) {
     }
 
     const salePrice = equipment.pricing?.salePrice || 0
-    const commission = salePrice * 0.05
+    const commission = frontendCommission || 0
     const grandTotal = salePrice
     const referenceNumber = await generateReferenceNumber('sale')
 
@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
       supplierId: equipment.supplierId && equipment.createdBy !== "admin" ? equipment.supplierId : null,
       equipmentName: equipment.name,
       salePrice,
-      commission: equipment.createdBy === "admin" ? 0 : commission,
+      commission,
       grandTotal,
       status: "pending",
       buyerMessage: buyerMessage || "",
@@ -146,33 +146,40 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date(),
     })
 
+    // Send email asynchronously without blocking response
     const adminEmail = process.env.ADMIN_EMAIL
     if (adminEmail) {
-      const buyer = await db
-        .collection("users")
-        .findOne({ _id: ObjectId.createFromHexString(buyerId) })
-      
-      let supplierName, supplierPhone;
-      if (equipment.supplierId) {
-        const supplier = await db.collection("users").findOne({ _id: equipment.supplierId })
-        if (supplier) {
-          supplierName = `${supplier.firstName} ${supplier.lastName}`
-          supplierPhone = supplier.phone
+      Promise.resolve().then(async () => {
+        try {
+          const buyer = await db
+            .collection("users")
+            .findOne({ _id: ObjectId.createFromHexString(buyerId) })
+          
+          let supplierName, supplierPhone;
+          if (equipment.supplierId) {
+            const supplier = await db.collection("users").findOne({ _id: equipment.supplierId })
+            if (supplier) {
+              supplierName = `${supplier.firstName} ${supplier.lastName}`
+              supplierPhone = supplier.phone
+            }
+          }
+          
+          const { sendNewSaleEmail } = await import("@/src/lib/email")
+          await sendNewSaleEmail(adminEmail, {
+            referenceNumber,
+            equipmentName: equipment.name,
+            salePrice,
+            buyerName: buyer ? `${buyer.firstName} ${buyer.lastName}` : "Unknown",
+            buyerPhone: buyer?.phone || "N/A",
+            buyerLocation: buyer?.city || undefined,
+            saleDate: new Date(),
+            supplierName,
+            supplierPhone
+          })
+        } catch (err) {
+          console.error("Email error:", err)
         }
-      }
-      
-      const { sendNewSaleEmail } = await import("@/src/lib/email")
-      await sendNewSaleEmail(adminEmail, {
-        referenceNumber,
-        equipmentName: equipment.name,
-        salePrice,
-        buyerName: buyer ? `${buyer.firstName} ${buyer.lastName}` : "Unknown",
-        buyerPhone: buyer?.phone || "N/A",
-        buyerLocation: buyer?.city || undefined,
-        saleDate: new Date(),
-        supplierName,
-        supplierPhone
-      }).catch((err) => console.error("Email error:", err))
+      })
     }
 
     try {
@@ -180,7 +187,7 @@ export async function POST(request: NextRequest) {
         { _id: ObjectId.createFromHexString(equipmentId) },
         { $set: { isAvailable: false, updatedAt: new Date() } }
       )
-      await triggerRealtimeUpdate('equipment')
+      triggerRealtimeUpdate('equipment').catch(err => console.error('Realtime update error:', err))
     } catch (e) {
       console.error(e)
     }
@@ -290,7 +297,6 @@ export async function PUT(request: NextRequest) {
 
     if (adminNotes) updateData.adminNotes = adminNotes
     if (status === "paid") updateData.paidAt = new Date()
-    if (status === "completed") updateData.completedAt = new Date()
 
     await db
       .collection("sales")

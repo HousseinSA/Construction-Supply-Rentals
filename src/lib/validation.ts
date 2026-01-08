@@ -12,18 +12,17 @@ export function validateBooking(booking: any): { valid: boolean; errors: string[
     errors.push('Invalid renterId');
   }
 
-  if (!booking.bookingItems || !Array.isArray(booking.bookingItems) || booking.bookingItems.length === 0) {
-    errors.push('At least one booking item is required');
+  if (!booking.equipmentId || !validateObjectId(booking.equipmentId)) {
+    errors.push('Invalid equipmentId');
   }
 
-  booking.bookingItems?.forEach((item: any, index: number) => {
-    if (!item.equipmentId || !validateObjectId(item.equipmentId)) {
-      errors.push(`Invalid equipmentId for item ${index + 1}`);
-    }
-    if (!item.usage || typeof item.usage !== 'number' || item.usage <= 0) {
-      errors.push(`Usage must be a positive number for item ${index + 1}`);
-    }
-  });
+  if (!booking.usage || typeof booking.usage !== 'number' || booking.usage <= 0) {
+    errors.push('Usage must be a positive number');
+  }
+
+  if (!booking.pricingType) {
+    errors.push('Pricing type is required');
+  }
 
   return { valid: errors.length === 0, errors };
 }

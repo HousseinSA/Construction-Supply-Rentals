@@ -10,7 +10,8 @@ export interface BookingItem {
   equipmentImage: string;
   usage: number;
   usageUnit?: string;
-  subtotal: number; 
+  subtotal: number;
+  commission?: number;
 }
 
 export interface Booking {
@@ -19,15 +20,16 @@ export interface Booking {
   renterId: ObjectId;
   bookingItems: BookingItem[];
   totalPrice: number;
+  totalCommission?: number;
   grandTotal: number;
   status: BookingStatus;
-  renterMessage?: string; 
+  renterMessage?: string;
   startDate?: Date;
   endDate?: Date;
-  adminNotes?: string; 
+  adminNotes?: string;
   adminHandledBy?: ObjectId;
-  adminHandledAt?: Date; 
-  completedAt?: Date; 
+  adminHandledAt?: Date;
+  completedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }

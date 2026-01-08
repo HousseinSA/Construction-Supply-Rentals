@@ -35,7 +35,7 @@ export default function ImagePreview({
           alt={`Equipment ${index + 1}`}
           fill
           className="object-cover"
-        />
+        /> 
         {isDeleting && (
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-20">
             <Loader2 className="h-6 w-6 text-white animate-spin" />

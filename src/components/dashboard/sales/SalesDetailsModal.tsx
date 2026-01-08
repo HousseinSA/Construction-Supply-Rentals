@@ -119,7 +119,6 @@ export default function SalesDetailsModal({
           statusOptions: {
             pending: tStatus("pending"),
             paid: tStatus("paid"),
-            completed: tStatus("completed"),
             cancelled: tStatus("cancelled"),
           },
         }}

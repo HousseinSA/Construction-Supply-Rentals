@@ -7,12 +7,10 @@ import { usePathname } from "next/navigation"
 import { X } from "lucide-react"
 
 interface WhatsAppFloatProps {
-  phoneNumber: string
   message?: string
 }
 
 export default function WhatsAppFloat({
-  phoneNumber,
   message = "Hello! I need support with the equipment rental platform.",
 }: WhatsAppFloatProps) {
   const { data: session } = useSession()
@@ -39,7 +37,7 @@ export default function WhatsAppFloat({
 
   const handleClick = () => {
     const encodedMessage = encodeURIComponent(message)
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`
+    const whatsappUrl = `https://wa.me/22233703131?text=${encodedMessage}`
     window.open(whatsappUrl, "_blank")
   }
 

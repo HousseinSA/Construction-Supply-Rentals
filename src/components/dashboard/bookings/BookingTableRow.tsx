@@ -1,6 +1,5 @@
 import { Eye } from "lucide-react"
 import { formatPhoneNumber } from "@/src/lib/format"
-import { calculateBookingCommission } from "@/src/lib/commission"
 import { formatDate, getTranslatedUnit } from "@/src/lib/table-utils"
 import CopyButton from "@/src/components/ui/CopyButton"
 import ReferenceNumber from "@/src/components/ui/ReferenceNumber"
@@ -24,10 +23,11 @@ export default function BookingTableRow({
   t,
   highlight = false,
 }: BookingTableRowProps) {
+  console.group(booking.bookingItems)
   const tCommon = useTranslations('common')
   const locale = useLocale()
   const isArabic = locale === 'ar'
-  const commission = calculateBookingCommission(booking.bookingItems)
+  const commission = booking.totalCommission || booking.bookingItems[0]?.commission || 0
   const totalUsage = booking.bookingItems.reduce(
     (sum, item) => sum + item.usage,
     0

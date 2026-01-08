@@ -97,8 +97,8 @@ export default function Dashboard() {
         color: "bg-blue-500",
       },
       {
-        title: t("renter.myBookings"),
-        description: t("renter.myTransactionsDesc"),
+        title: t("supplier.bookings"),
+        description: t("supplier.bookingsDesc"),
         icon: ClipboardList,
         href: "/bookings",
         color: "bg-orange-500",

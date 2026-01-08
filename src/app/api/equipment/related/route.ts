@@ -20,91 +20,74 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: false, error: "Equipment not found" })
     }
 
-    const unavailableBookings = await db.collection("bookings").find({ status: { $in: ["pending", "paid"] } }).toArray()
-    const pendingSales = await db.collection("sales").find({ status: "pending" }).toArray()
-    const manuallyUnavailableEquipment = await db.collection("equipment").find({ isAvailable: false }).toArray()
+    // Optimized: Get all unavailable equipment IDs in one aggregation
+    const unavailableIds = await db.collection("equipment").aggregate([
+      {
+        $facet: {
+          bookedEquipment: [
+            { $lookup: { from: "bookings", pipeline: [{ $match: { status: { $in: ["pending", "paid"] } } }], as: "bookings" } },
+            { $unwind: "$bookings" },
+            { $unwind: "$bookings.bookingItems" },
+            { $group: { _id: "$bookings.bookingItems.equipmentId" } }
+          ],
+          pendingSales: [
+            { $lookup: { from: "sales", pipeline: [{ $match: { status: "pending" } }], as: "sales" } },
+            { $unwind: "$sales" },
+            { $group: { _id: "$sales.equipmentId" } }
+          ],
+          unavailable: [
+            { $match: { isAvailable: false } },
+            { $group: { _id: "$_id" } }
+          ]
+        }
+      },
+      {
+        $project: {
+          allIds: { $concatArrays: ["$bookedEquipment", "$pendingSales", "$unavailable"] }
+        }
+      },
+      { $unwind: "$allIds" },
+      { $group: { _id: "$allIds._id" } }
+    ]).toArray()
 
-    const unavailableEquipmentIds = [
-      ...unavailableBookings.flatMap((b: any) => b.bookingItems.map((item: any) => item.equipmentId)),
-      ...pendingSales.map((s: any) => s.equipmentId),
-      ...manuallyUnavailableEquipment.map(e => e._id)
-    ].map(id => new ObjectId(id))
+    const unavailableEquipmentIds = unavailableIds.map(item => new ObjectId(item._id))
 
     if (type === "sale") {
-      // For sale success: prioritize forSale
-      const sameCategorySale = await db.collection("equipment").find({
+      const result = await db.collection("equipment").find({
         _id: { $ne: new ObjectId(equipmentId), $nin: unavailableEquipmentIds },
-        categoryId: equipment.categoryId,
         status: "approved",
         isAvailable: true,
         listingType: "forSale"
-      }).limit(limit).toArray()
-
-      let result = sameCategorySale
-
-      if (result.length < limit) {
-        const othersSale = await db.collection("equipment").find({
-          _id: { $ne: new ObjectId(equipmentId), $nin: unavailableEquipmentIds },
-          categoryId: { $ne: equipment.categoryId },
-          status: "approved",
-          isAvailable: true,
-          listingType: "forSale"
-        }).limit(limit - result.length).toArray()
-
-        result = [...result, ...othersSale]
-      }
+      }).sort({ categoryId: equipment.categoryId ? -1 : 1 }).limit(limit).toArray()
 
       return NextResponse.json({ success: true, equipment: result })
     } else {
-      // For booking success: prioritize forRent, then fill with forSale if needed
-      const sameCategoryRent = await db.collection("equipment").find({
-        _id: { $ne: new ObjectId(equipmentId), $nin: unavailableEquipmentIds },
-        categoryId: equipment.categoryId,
-        status: "approved",
-        isAvailable: true,
-        listingType: "forRent"
-      }).limit(limit).toArray()
-
-      let result = sameCategoryRent
-
-      if (result.length < limit) {
-        // Fill with forRent other categories
-        const othersRent = await db.collection("equipment").find({
-          _id: { $ne: new ObjectId(equipmentId), $nin: unavailableEquipmentIds },
-          categoryId: { $ne: equipment.categoryId },
-          status: "approved",
-          isAvailable: true,
-          listingType: "forRent"
-        }).limit(limit - result.length).toArray()
-
-        result = [...result, ...othersRent]
-      }
-
-      if (result.length < limit) {
-        // Fill with forSale same category
-        const sameCategorySale = await db.collection("equipment").find({
-          _id: { $ne: new ObjectId(equipmentId), $nin: unavailableEquipmentIds },
-          categoryId: equipment.categoryId,
-          status: "approved",
-          isAvailable: true,
-          listingType: "forSale"
-        }).limit(limit - result.length).toArray()
-
-        result = [...result, ...sameCategorySale]
-      }
-
-      if (result.length < limit) {
-        // Finally, fill with forSale other categories
-        const othersSale = await db.collection("equipment").find({
-          _id: { $ne: new ObjectId(equipmentId), $nin: unavailableEquipmentIds },
-          categoryId: { $ne: equipment.categoryId },
-          status: "approved",
-          isAvailable: true,
-          listingType: "forSale"
-        }).limit(limit - result.length).toArray()
-
-        result = [...result, ...othersSale]
-      }
+      const result = await db.collection("equipment").aggregate([
+        {
+          $match: {
+            _id: { $ne: new ObjectId(equipmentId), $nin: unavailableEquipmentIds },
+            status: "approved",
+            isAvailable: true
+          }
+        },
+        {
+          $addFields: {
+            priority: {
+              $switch: {
+                branches: [
+                  { case: { $and: [{ $eq: ["$categoryId", equipment.categoryId] }, { $eq: ["$listingType", "forRent"] }] }, then: 1 },
+                  { case: { $eq: ["$listingType", "forRent"] }, then: 2 },
+                  { case: { $eq: ["$categoryId", equipment.categoryId] }, then: 3 }
+                ],
+                default: 4
+              }
+            }
+          }
+        },
+        { $sort: { priority: 1 } },
+        { $limit: limit },
+        { $project: { priority: 0 } }
+      ]).toArray()
 
       return NextResponse.json({ success: true, equipment: result })
     }

@@ -2,7 +2,7 @@ import { useState } from "react"
 import {  ArrowLeft, Tag, Calendar, Clock } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
+import { useRouter } from "@/src/i18n/navigation"
 import BookingModal from "@/src/components/booking/BookingModal"
 import SaleModal from "@/src/components/booking/SaleModal"
 import Toast from "@/src/components/ui/Toast"
@@ -32,11 +32,6 @@ export default function ActionButtons({ isForSale, equipment, onBookingSuccess }
       return
     }
     
-    if (equipment.userBookingStatus === 'pending') {
-      setToast({ message: t('bookingPending'), type: 'error' })
-      return
-    }
-    
     if (isForSale) {
       setShowSaleModal(true)
     } else {
@@ -45,15 +40,6 @@ export default function ActionButtons({ isForSale, equipment, onBookingSuccess }
   }
   
   const getButtonContent = () => {
-    if (equipment.userBookingStatus === 'pending') {
-      return {
-        icon: <Clock className="w-4 h-4 sm:w-5 sm:h-5" />,
-        text: t('waitingApproval'),
-        className: 'bg-yellow-500 hover:bg-yellow-600'
-      }
-    }
-    
-    // Only show as unavailable if there's an active booking happening right now
     if (equipment.hasActiveBookings) {
       return {
         icon: <Clock className="w-4 h-4 sm:w-5 sm:h-5" />,
@@ -77,7 +63,7 @@ export default function ActionButtons({ isForSale, equipment, onBookingSuccess }
         {!shouldHideButton && (
           <button 
             onClick={handleActionClick}
-            disabled={equipment.hasActiveBookings || (equipment.userBookingStatus === 'pending')}
+            disabled={equipment.hasActiveBookings}
             className={`w-full ${buttonContent.className} text-white py-3 sm:py-3.5 px-4 rounded-xl transition-all duration-300 font-semibold text-base sm:text-lg shadow-lg hover:shadow-xl flex items-center justify-center gap-2 disabled:hover:shadow-lg`}
           >
             {buttonContent.icon}

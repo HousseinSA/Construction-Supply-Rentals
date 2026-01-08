@@ -399,8 +399,7 @@
       },
       "status": {
         "pending": "En attente",
-        "paid": "Payé",
-        "completed": "Terminé",
+        "paid": "Vente effectuée",
         "cancelled": "Annulé"
       },
       "actions": {
@@ -450,7 +449,7 @@
       "addEquipment": "Ajouter Matériel",
       "addEquipmentDesc": "Lister un nouveau matériel pour location",
       "bookings": "Mes Réservations",
-      "bookingsDesc": "Suivre les demandes de location de matériel",
+      "bookingsDesc": "Suivez vos commandes de location et d’achat",
       "profile": "Profil",
       "profileDesc": "Gérer votre profil d'entreprise"
     },
@@ -922,7 +921,7 @@
         "saleId": "ID Vente",
         "equipment": "Matériel",
         "salePrice": "Prix de Vente",
-        "commissionSale": "Commission (5%)",
+        "commission": "Commission (5%)",
         "createdAt": "Date de Création",
         "buyerInfo": "Acheteur",
         "supplierInfo": "Fournisseur",

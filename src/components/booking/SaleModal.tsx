@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl"
 import { useParams, useRouter } from "next/navigation"
 import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
 import { useBookingSuccessStore } from "@/src/stores/bookingSuccessStore"
+import { calculateSaleCommission } from "@/src/lib/commission"
 import BaseRequestModal from "@/src/components/shared/BaseRequestModal"
 import type { Equipment } from "@/src/lib/models/equipment"
 
@@ -44,10 +45,15 @@ export default function SaleModal({
     setLoading(true)
 
     try {
-      const saleData: { buyerId: string; equipmentId: string; buyerMessage: string } = {
+      const salePrice = equipment.pricing?.salePrice || 0
+      const commission = calculateSaleCommission(salePrice)
+
+      const saleData = {
         buyerId,
         equipmentId: equipment._id?.toString() || "",
         buyerMessage: message,
+        salePrice,
+        commission,
       }
 
       const response = await fetch("/api/sales", {

@@ -403,7 +403,6 @@
       "status": {
         "pending": "Pending",
         "paid": "Paid",
-        "completed": "Completed",
         "cancelled": "Cancelled"
       },
       "actions": {
@@ -451,8 +450,8 @@
       "myEquipmentDesc": "View and manage your listed equipment",
       "addEquipment": "Add Equipment",
       "addEquipmentDesc": "List new equipment for rental",
-      "bookings": "My Bookings",
-      "bookingsDesc": "Track equipment rental requests",
+      "bookings": "My Orders",
+      "bookingsDesc": "Track your rental and purchase orders",
       "profile": "Profile",
       "profileDesc": "Manage your business profile"
     },
@@ -903,7 +902,6 @@
       "status": {
         "pending": "Pending",
         "paid": "Paid",
-        "completed": "Completed",
         "cancelled": "Cancelled"
       },
       "actions": {
@@ -923,7 +921,7 @@
         "saleId": "Sale ID",
         "equipment": "Equipment",
         "salePrice": "Sale Price",
-        "commissionSale": "Commission (5%)",
+        "commission": "Commission (5%)",
         "createdAt": "Created Date",
         "buyerInfo": "Buyer ",
         "supplierInfo": "Supplier",
@@ -933,6 +931,7 @@
         "status": "Status",
         "buyerMessage": "Buyer Message",
         "adminOwned": "Admin Owned"
+
 
       },
       "noSales": "No Sales Found",

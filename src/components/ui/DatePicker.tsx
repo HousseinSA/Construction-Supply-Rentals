@@ -12,9 +12,10 @@ interface DatePickerProps {
   label: string
   required?: boolean
   showRange?: boolean
+  bookedRanges?: Array<{ start: Date | string; end: Date | string }>
 }
 
-export default function DatePicker({ startDate, endDate, onDateChange, label, required, showRange = true }: DatePickerProps) {
+export default function DatePicker({ startDate, endDate, onDateChange, label, required, showRange = true, bookedRanges = [] }: DatePickerProps) {
   const t = useTranslations('booking')
   const locale = useLocale()
   const [isOpen, setIsOpen] = useState(false)
@@ -54,7 +55,7 @@ export default function DatePicker({ startDate, endDate, onDateChange, label, re
   const handleClick = (date: Date) => {
     const today = new Date()
     today.setHours(0, 0, 0, 0)
-    if (date < today) return
+    if (date < today || isBooked(date)) return
 
     if (!showRange) {
       setStart(date)
@@ -68,6 +69,14 @@ export default function DatePicker({ startDate, endDate, onDateChange, label, re
       setEnd(null)
     } else {
       if (date >= start) {
+        const hasBookedInRange = bookedRanges.some(range => {
+          const rangeStart = new Date(range.start)
+          const rangeEnd = new Date(range.end)
+          rangeStart.setHours(0, 0, 0, 0)
+          rangeEnd.setHours(0, 0, 0, 0)
+          return (rangeStart > start && rangeStart <= date) || (rangeEnd >= start && rangeEnd < date)
+        })
+        if (hasBookedInRange) return
         setEnd(date)
       } else {
         setStart(date)
@@ -88,6 +97,16 @@ export default function DatePicker({ startDate, endDate, onDateChange, label, re
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     return date < today
+  }
+
+  const isBooked = (date: Date) => {
+    return bookedRanges.some(range => {
+      const rangeStart = new Date(range.start)
+      const rangeEnd = new Date(range.end)
+      rangeStart.setHours(0, 0, 0, 0)
+      rangeEnd.setHours(0, 0, 0, 0)
+      return date >= rangeStart && date <= rangeEnd
+    })
   }
 
   const format = () => {
@@ -152,12 +171,14 @@ export default function DatePicker({ startDate, endDate, onDateChange, label, re
                   <button
                     type="button"
                     onClick={() => handleClick(date)}
-                    disabled={isPast(date)}
+                    disabled={isPast(date) || isBooked(date)}
                     className={`w-full h-8 text-sm rounded-lg font-medium transition-all ${
                       isSelected(date) 
                         ? 'bg-primary text-white shadow-md' 
                         : isInRange(date) 
                         ? 'bg-primary/10 text-primary' 
+                        : isBooked(date)
+                        ? 'bg-red-100 text-red-400 cursor-not-allowed line-through'
                         : isPast(date) 
                         ? 'text-gray-300 cursor-not-allowed' 
                         : 'text-gray-700 hover:bg-gray-100'

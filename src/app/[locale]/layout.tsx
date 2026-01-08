@@ -81,7 +81,7 @@ export default async function LocaleLayout({
             <Header session={session} />
             {children}
             <Analytics />
-            <WhatsAppFloat phoneNumber="22212345678" />
+            <WhatsAppFloat />
             <Toaster position="top-right" richColors />
           </NextIntlClientProvider>
         </SessionProvider>

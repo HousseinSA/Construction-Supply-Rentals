@@ -9,12 +9,7 @@ interface StatusManagerProps {
   labels: {
     title: string
     currentStatus: string
-    statusOptions: {
-      pending: string
-      paid: string
-      completed: string
-      cancelled: string
-    }
+    statusOptions: Record<string, string>
   }
 }
 
@@ -42,16 +37,19 @@ export default function StatusManager({
   }
 
   const currentIndex = STATUS_ORDER.indexOf(currentStatus)
+  const availableStatuses = Object.keys(labels.statusOptions)
 
-  const options = STATUS_ORDER.map((status, index) => {
-    const isDisabled = status !== 'cancelled' && index < currentIndex
+  const options = STATUS_ORDER
+    .filter(status => availableStatuses.includes(status))
+    .map((status, index) => {
+      const isDisabled = status !== 'cancelled' && index < currentIndex
 
-    return {
-      value: status,
-      label: labels.statusOptions[status as keyof typeof labels.statusOptions],
-      disabled: isDisabled,
-    }
-  }).filter(opt => !opt.disabled) 
+      return {
+        value: status,
+        label: labels.statusOptions[status],
+        disabled: isDisabled,
+      }
+    }).filter(opt => !opt.disabled) 
 
   return (
     <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-4">
@@ -63,7 +61,7 @@ export default function StatusManager({
           currentStatus === 'completed' ? 'bg-green-100 text-green-800' :
           'bg-red-100 text-red-800'
         }`}>
-          {labels.statusOptions[currentStatus as keyof typeof labels.statusOptions]}
+          {labels.statusOptions[currentStatus]}
         </span>
       </div>
 

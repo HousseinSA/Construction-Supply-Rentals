@@ -110,7 +110,6 @@ export default function SalesTable() {
                   { value: "all", label: t("filters.allStatus") },
                   { value: "pending", label: t("status.pending") },
                   { value: "paid", label: t("status.paid") },
-                  { value: "completed", label: t("status.completed") },
                   { value: "cancelled", label: t("status.cancelled") },
                 ],
               },

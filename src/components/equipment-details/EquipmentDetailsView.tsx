@@ -67,7 +67,7 @@ export default function EquipmentDetailsView({ equipmentId }: EquipmentDetailsVi
       setIsAdminView(isAdmin)
       const apiUrl = `/api/equipment/${equipmentId}${isAdmin ? '?admin=true' : ''}`
       const response = await fetch(apiUrl)
-      const data = await response.json()
+        const data = await response.json()
       if (data.success) {
         setEquipment(data.data)
       }
@@ -125,13 +125,11 @@ export default function EquipmentDetailsView({ equipmentId }: EquipmentDetailsVi
               {!isAdminView && session?.user?.role === "renter" && equipment.supplierInfo && equipment.createdBy !== "admin" && (
                 <SupplierInfo supplier={equipment.supplierInfo} />
               )}
-              {!isAdminView && (
-                <ActionButtons 
-                  isForSale={isForSale} 
-                  equipment={equipment} 
-                  onBookingSuccess={handleBookingSuccess}
-                />
-              )}
+              <ActionButtons 
+                isForSale={isForSale} 
+                equipment={equipment} 
+                onBookingSuccess={handleBookingSuccess}
+              />
             </div>
           </div>
         </div>

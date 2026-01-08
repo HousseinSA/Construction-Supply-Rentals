@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { useTranslations } from "next-intl"
 import { useParams, useRouter } from "next/navigation"
 import { Send } from "lucide-react"
@@ -30,6 +30,20 @@ export default function BookingModal({
   const params = useParams()
   const router = useRouter()
   const locale = params?.locale as string || 'fr'
+  const [bookedRanges, setBookedRanges] = useState<Array<{ start: Date | string; end: Date | string }>>([])
+
+  useEffect(() => {
+    if (isOpen && equipment?._id) {
+      fetch(`/api/equipment/${equipment._id}/booked-dates`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            setBookedRanges(data.data)
+          }
+        })
+        .catch(err => console.error('Failed to fetch booked dates:', err))
+    }
+  }, [isOpen, equipment?._id])
 
   const availablePricingTypes = useMemo(() => {
     if (!equipment?.pricing) return []
@@ -158,6 +172,7 @@ export default function BookingModal({
           label={t("rentalPeriod")}
           required
           showRange
+          bookedRanges={bookedRanges}
         />
       ) : (
         <>
@@ -171,6 +186,7 @@ export default function BookingModal({
             label={t("startDate")}
             required
             showRange={false}
+            bookedRanges={bookedRanges}
           />
           <Input
             type="text"

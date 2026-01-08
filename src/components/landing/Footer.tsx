@@ -22,8 +22,6 @@ export default function Footer() {
             <WhatsAppLink
               className={`text-white hover:text-gray-200 [&>svg]:text-white transition-colors ${locale === 'ar' ? 'flex-row-reverse' : ''}`}
               iconSize={18}
-              phoneNumber="22245111111"
-              displayText="222 45 11 11 11"
             />
           </div>
           <div className="text-sm text-white text-center sm:text-right">

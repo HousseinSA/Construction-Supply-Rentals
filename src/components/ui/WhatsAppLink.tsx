@@ -1,3 +1,5 @@
+import {  useLocale } from "next-intl"
+
 const WhatsAppIcon = ({ size = 20 }: { size?: number }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -14,26 +16,33 @@ interface WhatsAppLinkProps {
   phoneNumber?: string
   displayText?: string
   iconSize?: number
-  className?: string
   showText?: boolean
+  className?:string
 }
 
 export default function WhatsAppLink({
-  phoneNumber = "22245111111",
-  displayText = "+222 45 11 11 11",
   iconSize = 20,
-  className = "",
   showText = true,
+  className
 }: WhatsAppLinkProps) {
+    const locale = useLocale()
+
+  const phoneNumber = "33 70 31 31"
   return (
     <a
-      href={`https://wa.me/${phoneNumber}`}
+      href={`https://wa.me/22233703131`}
       target="_blank"
       rel="noopener noreferrer"
-      className={`flex items-center gap-2 hover:text-green-600 transition-colors ${className}`}
+      className={`hidden  lg:flex text-gray-700 hover:text-green-400 [&>svg]:text-green-400 flex ${className} items-center gap-2 hover:text-green-400 transition-colors ${
+        locale === "ar" ? "flex-row-reverse" : ""
+      }`}
     >
       <WhatsAppIcon size={iconSize} />
-      {showText && <span className="font-medium" dir="ltr">{displayText}</span>}
+      {showText && (
+        <span className="font-medium" dir="ltr">
+          {phoneNumber}
+        </span>
+      )}
     </a>
   )
 }

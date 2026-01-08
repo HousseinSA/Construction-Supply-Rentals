@@ -94,7 +94,7 @@
     "waitingApproval": "في انتظار الموافقة",
     "currentlyUnavailable": "غير متاح حالياً",
     "bookingPending": "لديك بالفعل طلب حجز في انتظار الموافقة لهذه المعدة",
-    "equipmentUnavailable": "هذه المعدة غير متاحة حالياً بسبب وجود حجوزات في الانتظار",
+    "equipmentUnavailable": "هذه المعدة غير متاحة حالياً بسبب وجود حجوزات قيد الانتظار",
     "equipmentAlreadyBooked": "هذه المعدة محجوزة بالفعل للتواريخ المختارة",
     "bookedDatesConflict": "{equipmentName} محجوزة بالفعل من {startDate} إلى {endDate}. يرجى اختيار تواريخ مختلفة.",
     "adminCannotBook": "لا يمكن للإدارة إجراء حجوزات أو طلبات شراء",
@@ -436,14 +436,14 @@
       "settingsDesc": "تكوين إعدادات المنصة"
     },
     "supplier": {
-      "title": "لوحة تحكم الشريك",
+      "title": "لوحة تحكم",
       "subtitle": "إدارة معداتك وعملك في الإيجار",
       "myEquipment": "المعدات",
       "myEquipmentDesc": "عرض وإدارة معداتك المدرجة",
       "addEquipment": "إضافة معدة",
       "addEquipmentDesc": "إدراج معدة جديدة للإيجار",
-      "bookings": "حجوزاتي",
-      "bookingsDesc": "تتبع طلبات استئجار المعدات",
+      "bookings": "الطلبات",
+      "bookingsDesc": "تابع طلبات الاستئجار والشراء الخاصة بك",
       "profile": "الملف الشخصي",
       "profileDesc": "إدارة ملف شركتك"
     },
@@ -467,10 +467,10 @@
       "pricingPendingApproval": "التسعير بانتظار الموافقة",
       "reviewPricingRequest": "مراجعة طلب تحديث السعر",
       "pricingUpdateRequest": "تحديث السعر",
-           "currentPricing": "التسعير الحالي",
-            "requestedPricing": "التسعير المطلوب",
-            "rejectPricing": "رفض",
-            "approvePricing": "موافقة",
+      "currentPricing": "التسعير الحالي",
+      "requestedPricing": "التسعير المطلوب",
+      "rejectPricing": "رفض",
+      "approvePricing": "موافقة",
       "monthly": "شهر",
       "perKm": "كيلومتر",
       "price": "السعر",
@@ -548,7 +548,7 @@
       "rejected": "مرفوض",
       "rejectionReason": "سبب الرفض",
       "rejectionReasonPlaceholder": "اشرح لماذا يتم رفض هذه المعدة...",
-       "resubmit": "إعادة الإرسال",
+      "resubmit": "إعادة الإرسال",
       "resubmitting": "جاري إعادة الإرسال...",
       "editBeforeResubmit": "يجب تعديل المعدة قبل إعادة إرسالها",
       "cannotEditCoreFields": "لا يمكن تعديل الفئات الأساسية أثناء إعادة الإرسال",
@@ -580,7 +580,7 @@
       "confirmAvailability": "متأكد من تحديد هذه المعدة كـ {status}؟",
       "confirmApprove": "متأكد من الموافقة على هذه المعدة؟",
       "confirmReject": "رفض المعدة",
-            "processingRequest": "جاري المعالجة...",
+      "processingRequest": "جاري المعالجة...",
 
       "processing": "جاري المعالجة...",
       "confirm": "تأكيد",
@@ -603,9 +603,8 @@
         "allAvailability": "الكل",
         "allLocations": "جميع المواقع"
       },
-      "equipmentMustBeApproved":"يجب الموافقة على المعدة قبل أن تصبح متاحة ",
-      "equipmentSold":"تم بيع هذه المعدة"
-
+      "equipmentMustBeApproved": "يجب الموافقة على المعدة قبل أن تصبح متاحة ",
+      "equipmentSold": "تم بيع هذه المعدة"
     },
     "pages": {
       "equipment": {
@@ -811,7 +810,7 @@
         "estimatedTotal": "الإجمالي المقدر"
       },
       "status": {
-        "pending": "في الانتظار",
+        "pending": "قيد الانتظار",
         "paid": "مدفوع",
         "completed": "مكتمل",
         "cancelled": "ملغى"
@@ -832,7 +831,7 @@
         "bookingId": "رقم الحجز",
         "totalAmount": "المبلغ الإجمالي",
         "commissionBooking": "العمولة (10%)",
-                "createdAt": "تاريخ الإنشاء",
+        "createdAt": "تاريخ الإنشاء",
 
         "renterInfo": "المستأجر",
         "supplierInfo": "المورد",
@@ -858,7 +857,7 @@
       "noBookings": "لم يتم العثور على حجوزات",
       "noBookingsDesc": "لم يتم تقديم أي طلبات حجز بعد",
       "noAllBookings": "لم يتم العثور على حجوزات",
-      "noPendingBookings": "لا توجد حجوزات في الانتظار",
+      "noPendingBookings": "لا توجد حجوزات قيد الانتظار",
       "noPaidBookings": "لا توجد حجوزات مدفوعة",
       "noCompletedBookings": "لا توجد حجوزات مكتملة",
       "noCancelledBookings": "لا توجد حجوزات ملغاة",
@@ -898,7 +897,7 @@
         "actions": "الإجراءات"
       },
       "status": {
-        "pending": "في الانتظار",
+        "pending": "قيد الانتظار",
         "paid": "مدفوع",
         "completed": "مكتمل",
         "cancelled": "ملغى"
@@ -920,7 +919,7 @@
         "saleId": "رقم البيع",
         "equipment": "المعدات",
         "salePrice": "سعر البيع",
-        "commissionSale": "العمولة (5%)",
+        "commission": "العمولة (5%)",
         "createdAt": "تاريخ الإنشاء",
         "buyerInfo": "المشتري",
         "supplierInfo": "المورد",
@@ -930,11 +929,10 @@
         "status": "الحالة",
         "buyerMessage": "رسالة المشتري",
         "adminOwned": "ملك الإدارة"
-
       },
       "noSales": "لم يتم العثور على مبيعات",
       "noResults": "لم يتم العثور على مبيعات مطابقة للبحث",
-      "noPendingSales": "لا توجد مبيعات في الانتظار",
+      "noPendingSales": "لا توجد مبيعات قيد الانتظار",
       "noPaidSales": "لا توجد مبيعات مدفوعة",
       "noCompletedSales": "لا توجد مبيعات مكتملة",
       "noCancelledSales": "لا توجد مبيعات ملغاة",
@@ -994,14 +992,14 @@
     "estimatedDistance": "المسافة التقديرية",
     "startDate": "تاريخ البدء",
     "rentalPeriod": "فترة الإيجار",
-    "selectDate":" اختر التاريخ",
+    "selectDate": " اختر التاريخ",
     "from": "من",
     "to": "إلى",
     "apply": "تطبيق",
     "calculation": "حساب السعر",
     "rate": "السعر",
     "total": "المجموع",
-    "estimatedTotal":"الإجمالي المقدر",
+    "estimatedTotal": "الإجمالي المقدر",
     "message": "رسالة",
     "optional": "اختياري",
     "messagePlaceholder": "أي متطلبات خاصة أو ملاحظات...",

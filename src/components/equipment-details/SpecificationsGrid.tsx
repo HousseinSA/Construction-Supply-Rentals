@@ -62,8 +62,8 @@ export default function SpecificationsGrid({
       </h3>
       <div className="grid grid-cols-2 gap-3">
         <div className="bg-gray-50 rounded-lg p-3">
-          <div className="text-xs sm:text-sm text-gray-700 mb-1 flex items-center gap-1 font-bold">
-            <Tag className="w-3 h-3 text-blue-600" />
+          <div className="text-xs sm:text-sm text-primary mb-1 flex items-center gap-1 font-bold">
+            <Tag className="w-3 h-3" />
             {t("brand")}
           </div>
           <div className="font-semibold text-sm sm:text-base text-gray-900 break-words">
@@ -72,8 +72,8 @@ export default function SpecificationsGrid({
         </div>
         {specifications.model && (
           <div className="bg-gray-50 rounded-lg p-3">
-            <div className="text-xs sm:text-sm text-gray-700 mb-1 flex items-center gap-1 font-bold">
-              <Box className="w-3 h-3 text-purple-600" />
+            <div className="text-xs sm:text-sm text-primary mb-1 flex items-center gap-1 font-bold">
+              <Box className="w-3 h-3" />
               {t("model")}
             </div>
             <div className="font-semibold text-sm sm:text-base text-gray-900 break-words">
@@ -83,8 +83,8 @@ export default function SpecificationsGrid({
         )}
         {isForSale ? (
           <div className="bg-gray-50 rounded-lg p-3">
-            <div className="text-xs sm:text-sm text-gray-700 mb-1 flex items-center gap-1 font-bold">
-              <CheckCircle className="w-3 h-3 text-green-600" />
+            <div className="text-xs sm:text-sm text-primary mb-1 flex items-center gap-1 font-bold">
+              <CheckCircle className="w-3 h-3" />
               {t("condition")}
             </div>
             <div className="font-semibold text-sm sm:text-base text-gray-900">
@@ -96,8 +96,8 @@ export default function SpecificationsGrid({
         ) : (
           specifications.condition && (
             <div className="bg-gray-50 rounded-lg p-3">
-              <div className="text-xs sm:text-sm text-gray-700 mb-1 flex items-center gap-1 font-bold">
-                <CheckCircle className="w-3 h-3 text-green-600" />
+              <div className="text-xs sm:text-sm text-primary mb-1 flex items-center gap-1 font-bold">
+                <CheckCircle className="w-3 h-3" />
                 {t("condition")}
               </div>
               <div className="font-semibold text-sm sm:text-base text-gray-900">
@@ -108,8 +108,8 @@ export default function SpecificationsGrid({
         )}
         {(specifications.usageValue || specifications.hoursUsed) && (
           <div className="bg-gray-50 rounded-lg p-3">
-            <div className="text-xs sm:text-sm text-gray-700 mb-1 flex items-center gap-1 font-bold">
-              <Clock className="w-3 h-3 text-blue-600" />
+            <div className="text-xs sm:text-sm text-primary mb-1 flex items-center gap-1 font-bold">
+              <Clock className="w-3 h-3" />
               ODO
             </div>
             <div className="font-semibold text-sm sm:text-base text-gray-900">
@@ -124,8 +124,8 @@ export default function SpecificationsGrid({
         )}
         {specifications.kilometersUsed && (
           <div className="bg-gray-50 rounded-lg p-3">
-            <div className="text-xs sm:text-sm text-gray-700 mb-1 flex items-center gap-1 font-bold">
-              <Gauge className="w-3 h-3 text-green-600" />
+            <div className="text-xs sm:text-sm text-primary mb-1 flex items-center gap-1 font-bold">
+              <Gauge className="w-3 h-3" />
               ODO
             </div>
             <div className="font-semibold text-sm sm:text-base text-gray-900">
@@ -135,8 +135,8 @@ export default function SpecificationsGrid({
         )}
         {specifications.weight && (
           <div className="bg-gray-50 rounded-lg p-3">
-            <div className="text-xs sm:text-sm text-gray-700 mb-1 flex items-center gap-1 font-bold">
-              <Weight className="w-3 h-3 text-orange-600" />
+            <div className="text-xs sm:text-sm text-primary mb-1 flex items-center gap-1 font-bold">
+              <Weight className="w-3 h-3" />
               {t("weight")}
             </div>
             <div className="font-semibold text-sm sm:text-base text-gray-900">

@@ -8,7 +8,7 @@ export interface SaleOrder {
   salePrice: number;
   commission: number;
   grandTotal: number;
-  status: 'pending' | 'paid' | 'completed' | 'cancelled';
+  status: 'pending' | 'paid' | 'cancelled';
   buyerMessage?: string;
   adminNotes?: string;
   adminHandledBy?: ObjectId;
