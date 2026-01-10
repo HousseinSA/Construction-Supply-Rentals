@@ -543,7 +543,7 @@
       "manageSubtitle": "View and manage all equipment listings",
       "createdByAdmin": "Created by Admin",
       "pending": "Pending",
-      "pendingVerification": "Pending Admin Verification",
+      "pendingVerification": "Pending verification",
       "approved": "Approved",
       "rejected": "Rejected",
       "rejectionReason": "Rejection Reason",
@@ -616,8 +616,8 @@
       },
       "activeBookingWarning": "Active Bookings Warning",
       "activeBookingWarningMessage": "This equipment has active bookings. Editing may affect ongoing rentals. Please proceed with caution.",
-        "equipmentMustBeApproved":"Equipment must be approved before it becomes available",
-      "equipmentSold":"This equipment has been sold"
+      "equipmentMustBeApproved": "Equipment must be approved before it becomes available",
+      "equipmentSold": "This equipment has been sold"
     },
     "pages": {
       "equipment": {
@@ -910,13 +910,13 @@
         "close": "Close",
         "save": "Save Changes",
         "saving": "Saving...",
-        "update":" Update",
-        "updating":"Updating...",
+        "update": " Update",
+        "updating": "Updating...",
         "updateSale": "Update Sale"
       },
       "details": {
         "title": "Sale Order Details",
-                "reference": "Reference",
+        "reference": "Reference",
         "saleInfo": "Sale Information",
         "saleId": "Sale ID",
         "equipment": "Equipment",
@@ -931,8 +931,6 @@
         "status": "Status",
         "buyerMessage": "Buyer Message",
         "adminOwned": "Admin Owned"
-
-
       },
       "noSales": "No Sales Found",
       "noResults": "No sales found matching your search",
@@ -947,7 +945,6 @@
       "equipment": {
         "createdByAdmin": "Created by Admin"
       }
-
     }
   },
   "toast": {

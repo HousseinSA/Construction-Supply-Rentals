@@ -217,7 +217,7 @@ export default function EquipmentFormFields({
               type="text"
               value={formData.kmRate}
               onChange={onNumericInputChange}
-              placeholder="50"
+              placeholder="500"
               disabled={false}
             />
           )}

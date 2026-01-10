@@ -1,7 +1,6 @@
 import { Eye } from "lucide-react"
-import Image from "next/image"
 import { formatPhoneNumber } from "@/src/lib/format"
-import { formatDate } from "@/src/lib/table-utils"
+import { formatDateTime } from "@/src/lib/table-utils"
 import CopyButton from "@/src/components/ui/CopyButton"
 import ReferenceNumber from "@/src/components/ui/ReferenceNumber"
 import PriceDisplay from "@/src/components/ui/PriceDisplay"
@@ -66,8 +65,8 @@ export default function SalesTableRow({ sale, onViewDetails, t, highlight = fals
       </TableCell>
       <TableCell align="center"><BookingStatusBadge status={sale.status} /></TableCell>
       <TableCell align="center">
-        <span className="text-sm text-gray-600" dir="ltr">
-          {formatDate(sale.createdAt)}
+        <span className="text-xs text-gray-600" dir="ltr">
+          {formatDateTime(sale.createdAt)}
         </span>
       </TableCell>
       <TableCell align="center">

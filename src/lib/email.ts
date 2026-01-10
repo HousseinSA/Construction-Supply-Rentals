@@ -78,10 +78,14 @@ export async function sendNewBookingEmail(adminEmail: string, details: {
   const supplierDisplay = details.supplierName === 'admin' || !details.supplierName ? 'Administration' : details.supplierName;
   const supplierPhone = details.supplierName === 'admin' || !details.supplierName ? '-' : formatPhoneNumber(details.supplierPhone);
 
+  const bookingDateTime = new Date(details.bookingDate);
+  const dateStr = bookingDateTime.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const timeStr = bookingDateTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', hour12: true });
+
   const content = `
     <h2 style="margin: 0 0 8px 0; font-size: 22px; color: #111;">Nouvelle demande de location</h2>
     <p style="margin: 0 0 8px 0; color: #f97316; font-size: 14px; font-weight: 600;">Référence: #${details.referenceNumber}</p>
-    <p style="margin: 0 0 24px 0; color: #6b7280; font-size: 14px;">Date: ${new Date(details.bookingDate).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}</p>
+    <p style="margin: 0 0 24px 0; color: #6b7280; font-size: 14px;">Date: ${dateStr} à ${timeStr}</p>
     <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 12px 16px; margin-bottom: 24px;">
       <p style="margin: 0; font-size: 18px; font-weight: 700; color: #92400e;">Total: ${details.totalPrice.toLocaleString()} MRU</p>
     </div>
@@ -115,10 +119,14 @@ export async function sendNewSaleEmail(adminEmail: string, details: {
   const supplierDisplay = details.supplierName === 'admin' || !details.supplierName ? 'Administration' : details.supplierName;
   const supplierPhone = details.supplierName === 'admin' || !details.supplierName ? '-' : formatPhoneNumber(details.supplierPhone);
 
+  const saleDateTime = new Date(details.saleDate);
+  const dateStr = saleDateTime.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const timeStr = saleDateTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', hour12: true });
+
   const content = `
     <h2 style="margin: 0 0 8px 0; font-size: 22px; color: #111;">Nouvelle demande d'achat</h2>
     <p style="margin: 0 0 8px 0; color: #f97316; font-size: 14px; font-weight: 600;">Référence: #${details.referenceNumber}</p>
-    <p style="margin: 0 0 24px 0; color: #6b7280; font-size: 14px;">Date: ${new Date(details.saleDate).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}</p>
+    <p style="margin: 0 0 24px 0; color: #6b7280; font-size: 14px;">Date: ${dateStr} à ${timeStr}</p>
     <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 12px 16px; margin-bottom: 24px;">
       <p style="margin: 0; font-size: 18px; font-weight: 700; color: #92400e;">Prix: ${details.salePrice.toLocaleString()} MRU</p>
     </div>

@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { useSession } from "next-auth/react"
+import { formatDateTime } from "@/src/lib/table-utils"
 import BaseDetailsModal from "@/src/components/shared/BaseDetailsModal"
 import ContactCard from "@/src/components/shared/ContactCard"
 import MessageSection from "@/src/components/shared/MessageSection"
@@ -76,8 +77,8 @@ export default function SalesDetailsModal({
       <div className="bg-gray-50 py-4 border-b border-gray-200 -mx-6 px-6">
         <div>
           <div className="text-xs font-medium text-gray-600 mb-2">{t("createdAt")}</div>
-          <div className="text-sm font-semibold text-gray-900">
-            {new Date(sale.createdAt).toLocaleDateString()}
+          <div className="text-sm font-semibold text-gray-900" dir="ltr">
+            {formatDateTime(sale.createdAt)}
           </div>
         </div>
       </div>
@@ -102,7 +103,7 @@ export default function SalesDetailsModal({
           },
           {
             label: t("commission"),
-            value: <PriceDisplay amount={sale.commission} suffix="/(5%)" variant="commission" />,
+            value: <PriceDisplay amount={sale.commission} variant="commission" />,
             highlight: true,
             dir: "ltr",
           },

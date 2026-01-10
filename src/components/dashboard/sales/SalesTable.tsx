@@ -3,7 +3,7 @@ import { useState, useMemo, useEffect } from "react"
 import { useTranslations } from "next-intl"
 import { ArrowLeft } from "lucide-react"
 import { Link } from "@/src/i18n/navigation"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { usePagination } from "@/src/hooks/usePagination"
 import { useTableFilters } from "@/src/hooks/useTableFilters"
@@ -21,6 +21,7 @@ import { Table, TableHeader, TableBody, TableHead } from "@/src/components/ui/Ta
 export default function SalesTable() {
   const { data: session } = useSession()
   const searchParams = useSearchParams()
+  const router = useRouter()
   const highlightRef = searchParams.get("highlight")
   const t = useTranslations("dashboard.sales")
   const tPages = useTranslations("dashboard.pages")
@@ -28,6 +29,7 @@ export default function SalesTable() {
   const [selectedSale, setSelectedSale] = useState<SaleWithDetails | null>(null)
   const [showDetailsModal, setShowDetailsModal] = useState(false)
   const [highlightId, setHighlightId] = useState<string | null>(null)
+  const [hasProcessedHighlight, setHasProcessedHighlight] = useState(false)
 
   useEffect(() => {
     if (session?.user) {
@@ -62,19 +64,27 @@ export default function SalesTable() {
     usePagination({ data: filteredData, itemsPerPage: 10 })
 
   useEffect(() => {
-    if (highlightRef && sales.length > 0) {
+    if (highlightRef && sales.length > 0 && !hasProcessedHighlight) {
       const index = filteredData.findIndex(s => s.referenceNumber === highlightRef)
       if (index !== -1) {
         const page = Math.floor(index / itemsPerPage) + 1
         goToPage(page)
-        const saleId = filteredData[index]._id
+        const foundSale = filteredData[index]
+        const saleId = foundSale._id
         if (saleId) {
           setHighlightId(saleId)
+          setSelectedSale(foundSale)
+          setShowDetailsModal(true)
+          setHasProcessedHighlight(true)
           setTimeout(() => setHighlightId(null), 3000)
+          
+          // Clear the highlight parameter from URL
+          const newUrl = window.location.pathname
+          router.replace(newUrl, { scroll: false })
         }
       }
     }
-  }, [highlightRef, sales, filteredData, itemsPerPage, goToPage])
+  }, [highlightRef, sales, filteredData, itemsPerPage, goToPage, hasProcessedHighlight, router])
 
   const handleViewDetails = (sale: SaleWithDetails) => {
     setSelectedSale(sale)

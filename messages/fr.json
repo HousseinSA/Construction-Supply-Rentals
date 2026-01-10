@@ -542,7 +542,7 @@
       "manageSubtitle": "Voir et gérer toutes les annonces de matériel",
       "createdByAdmin": "Créé par l'Admin",
       "pending": "En attente",
-      "pendingVerification": "En attente de vérification admin",
+      "pendingVerification": "En attente de vérification",
       "approved": "Approuvé",
       "rejected": "Rejeté",
       "rejectionReason": "Raison du rejet",

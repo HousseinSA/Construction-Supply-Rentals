@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl"
 import { ArrowLeft } from "lucide-react"
 import { Link } from "@/src/i18n/navigation"
 import { useSession } from "next-auth/react"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, useRouter } from "next/navigation"
 import { usePagination } from "@/src/hooks/usePagination"
 import { useBookings } from "@/src/hooks/useBookings"
 import { useTableFilters } from "@/src/hooks/useTableFilters"
@@ -28,6 +28,7 @@ import type { BookingWithDetails } from "@/src/stores/bookingsStore"
 export default function BookingTable() {
   const { data: session } = useSession()
   const searchParams = useSearchParams()
+  const router = useRouter()
   const highlightRef = searchParams.get("highlight")
   const t = useTranslations("dashboard.bookings")
   const tPages = useTranslations("dashboard.pages")
@@ -37,6 +38,7 @@ export default function BookingTable() {
     useState<BookingWithDetails | null>(null)
   const [showDetailsModal, setShowDetailsModal] = useState(false)
   const [highlightId, setHighlightId] = useState<string | null>(null)
+  const [hasProcessedHighlight, setHasProcessedHighlight] = useState(false)
 
   const {
     searchValue,
@@ -89,16 +91,24 @@ export default function BookingTable() {
   } = usePagination({ data: filteredData, itemsPerPage: 10 })
 
   useEffect(() => {
-    if (highlightRef && bookings.length > 0) {
+    if (highlightRef && bookings.length > 0 && !hasProcessedHighlight) {
       const index = filteredData.findIndex(b => b.referenceNumber === highlightRef)
       if (index !== -1) {
         const page = Math.floor(index / itemsPerPage) + 1
         goToPage(page)
-        setHighlightId(filteredData[index]._id)
+        const foundBooking = filteredData[index]
+        setHighlightId(foundBooking._id)
+        setSelectedBooking(foundBooking)
+        setShowDetailsModal(true)
+        setHasProcessedHighlight(true)
         setTimeout(() => setHighlightId(null), 3000)
+        
+        // Clear the highlight parameter from URL
+        const newUrl = window.location.pathname
+        router.replace(newUrl, { scroll: false })
       }
     }
-  }, [highlightRef, bookings, filteredData, itemsPerPage, goToPage])
+  }, [highlightRef, bookings, filteredData, itemsPerPage, goToPage, hasProcessedHighlight, router])
 
   const handleViewDetails = (booking: BookingWithDetails) => {
     setSelectedBooking(booking)

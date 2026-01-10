@@ -1,9 +1,9 @@
 "use client"
 
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
 import { useSession } from "next-auth/react"
 import { useBookingDetails } from "@/src/hooks/useBookingDetails"
-import { formatDate } from "@/src/lib/table-utils"
+import { formatDate, formatDateTime } from "@/src/lib/table-utils"
 import BaseDetailsModal from "@/src/components/shared/BaseDetailsModal"
 import ContactCard from "@/src/components/shared/ContactCard"
 import MessageSection from "@/src/components/shared/MessageSection"
@@ -28,6 +28,8 @@ export default function BookingDetailsModal({
   const t = useTranslations("dashboard.bookings")
   const tBooking = useTranslations("booking")
   const tDashboard = useTranslations("dashboard")
+  const locale = useLocale()
+  const direction = locale === "ar" ? "justify-end" : "justify-start"
   const { data: session } = useSession()
   const {
     status,
@@ -64,7 +66,7 @@ export default function BookingDetailsModal({
     } else if (booking.startDate) {
       return formatDate(booking.startDate)
     }
-    return '-'
+    return "-"
   }
 
   const transactionRows: Array<{
@@ -99,7 +101,12 @@ export default function BookingDetailsModal({
     },
     {
       label: t("details.commissionBooking"),
-      value: <PriceDisplay amount={totalCommission} suffix="/(10%)" variant="commission" />,
+      value: (
+        <PriceDisplay
+          amount={totalCommission}
+          variant="commission"
+        />
+      ),
       highlight: true,
       dir: "ltr",
     }
@@ -122,14 +129,21 @@ export default function BookingDetailsModal({
       <div className="bg-gray-50 py-4 border-b border-gray-200 -mx-6 px-6">
         <div className="grid grid-cols-2 gap-6">
           <div>
-            <div className="text-xs font-medium text-gray-600 mb-2">{t("details.createdAt")}</div>
-            <div className="text-sm font-semibold text-gray-900" >
-              {new Date(booking.createdAt).toLocaleDateString()}
+            <div className="text-xs font-medium text-gray-600 mb-2">
+              {t("details.createdAt")}
+            </div>
+            <div
+              className={`text-sm flex  font-semibold text-gray-900 ${direction}`}
+              dir="ltr"
+            >
+              {formatDateTime(booking.createdAt)}
             </div>
           </div>
           <div>
-            <div className="text-xs font-medium text-gray-600 mb-2">{t("table.rentalPeriod")}</div>
-            <div className="text-sm font-semibold text-gray-900" >
+            <div className="text-xs font-medium text-gray-600 mb-2">
+              {t("table.rentalPeriod")}
+            </div>
+            <div className="text-sm font-semibold text-gray-900">
               {getRentalPeriod()}
             </div>
           </div>

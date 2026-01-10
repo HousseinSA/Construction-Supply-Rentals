@@ -1,6 +1,6 @@
 import { Eye } from "lucide-react"
 import { formatPhoneNumber } from "@/src/lib/format"
-import { formatDate, getTranslatedUnit } from "@/src/lib/table-utils"
+import { formatDate, formatDateTime, getTranslatedUnit } from "@/src/lib/table-utils"
 import CopyButton from "@/src/components/ui/CopyButton"
 import ReferenceNumber from "@/src/components/ui/ReferenceNumber"
 import PriceDisplay from "@/src/components/ui/PriceDisplay"
@@ -118,7 +118,7 @@ export default function BookingTableRow({
       </TableCell>
       <TableCell align="center">
         <span className="text-xs text-gray-600" dir="ltr">
-          {formatDate(booking.createdAt)}
+          {formatDateTime(booking.createdAt)}
         </span>
       </TableCell>
       <TableCell align="center">

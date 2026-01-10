@@ -75,8 +75,8 @@ export default function EquipmentMobileCard({
     <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all grid grid-rows-[minmax(50px,auto)_auto_auto] gap-2">
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1">
-          <div className="font-semibold text-gray-900 text-sm mb-1">{item.name}</div>
-          <div className="flex flex-wrap items-center gap-2 mb-1">
+          <div className="font-semibold text-gray-900 text-sm mb-1.5">{item.name}</div>
+          <div className="flex flex-wrap items-center gap-1.5 mb-1">
             {item.createdBy === "admin" && (
               <span className="inline-flex px-2 py-0.5 text-xs bg-blue-100 text-blue-700 rounded">
                 {t("createdByAdmin")}
@@ -91,15 +91,6 @@ export default function EquipmentMobileCard({
               >
                 <RefreshCw className="w-3 h-3" />
                 {isSupplier ? t("pricingPendingApproval") : t("pricingUpdateRequest")}
-              </button>
-            )}
-            {item.status === "rejected" && item.rejectionReason && (
-              <button
-                onClick={() => setShowRejectionModal(true)}
-                className="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors"
-              >
-                <AlertCircle className="w-3 h-3" />
-                {t("rejectionReason")}
               </button>
             )}
             {item.pricingRejectionReason && isSupplier && (
@@ -123,33 +114,44 @@ export default function EquipmentMobileCard({
                 {t("forSale")}
               </span>
             )}
+          </div>
+          <div className="flex items-center gap-1.5">
             <div className="text-xs text-gray-500 capitalize flex items-center gap-1">
               <MapPin className="w-3 h-3 text-primary" />
               {convertToLocalized(item.location)}
             </div>
           </div>
+          {item.status === "rejected" && item.rejectionReason && (
+            <button
+              onClick={() => setShowRejectionModal(true)}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs bg-red-50 text-red-700 rounded-md hover:bg-red-100 transition-colors border border-red-200 mt-1.5"
+            >
+              <AlertCircle className="w-3.5 h-3.5" />
+              <span className="font-medium">{t("rejectionReason")}</span>
+            </button>
+          )}
         </div>
-        <div className="flex-shrink-0 flex flex-col items-center">
+        <div className="flex-shrink-0 flex flex-col items-end gap-1.5">
           {item.status === "pending" && !isSupplier ? (
-            <div className="flex flex-col gap-1">
+            <>
               <button
                 onClick={() => onStatusChange(item._id?.toString() || "", "approve")}
                 disabled={updating === item._id?.toString()}
-                className="px-2 py-1 text-xs font-medium bg-green-500 text-white rounded hover:bg-green-600"
+                className="px-3 py-1.5 text-xs font-medium bg-green-500 text-white rounded-md hover:bg-green-600 min-w-[70px]"
               >
                 {t("approve")}
               </button>
               <button
                 onClick={() => onStatusChange(item._id?.toString() || "", "reject")}
                 disabled={updating === item._id?.toString()}
-                className="px-2 py-1 text-xs font-medium bg-red-500 text-white rounded hover:bg-red-600"
+                className="px-3 py-1.5 text-xs font-medium bg-red-500 text-white rounded-md hover:bg-red-600 min-w-[70px]"
               >
                 {t("reject")}
               </button>
-            </div>
+            </>
           ) : item.status === "rejected" && isSupplier ? (
-            <div className="flex flex-col gap-1">
-              <span className="inline-block px-2 py-1 text-xs font-semibold rounded bg-red-100 text-red-700">
+            <>
+              <span className="inline-block px-3 py-1.5 text-xs font-semibold rounded-md bg-red-100 text-red-700">
                 {t("rejected")}
               </span>
               <button
@@ -163,14 +165,15 @@ export default function EquipmentMobileCard({
                 disabled={updating === item._id?.toString() || 
                   !(item.lastEditedAt && item.rejectedAt && 
                     new Date(item.lastEditedAt) > new Date(item.rejectedAt))}
-                className="px-2 py-1 text-xs font-medium bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+                className="px-3 py-1.5 text-xs font-medium bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed min-w-[70px]"
+                title={!(item.lastEditedAt && item.rejectedAt && new Date(item.lastEditedAt) > new Date(item.rejectedAt)) ? t("editBeforeResubmit") : ""}
               >
                 {updating === item._id?.toString() ? t("resubmitting") : t("resubmit")}
               </button>
-            </div>
+            </>
           ) : (
             <span
-              className={`inline-block px-2 py-1 text-xs font-semibold rounded ${
+              className={`inline-block px-3 py-1.5 text-xs font-semibold rounded-md ${
                 item.status === "approved"
                   ? "bg-green-100 text-green-700"
                   : item.status === "pending"
@@ -181,8 +184,8 @@ export default function EquipmentMobileCard({
               {isSupplier && item.status === "pending" ? t("pendingVerification") : t(item.status)}
             </span>
           )}
-          <div className="text-xs text-gray-500 mt-1">
-            {new Date(item.createdAt).toLocaleDateString()}
+          <div className="text-xs text-gray-500" dir="ltr">
+            {new Date(item.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
           </div>
         </div>
       </div>
