@@ -1,9 +1,15 @@
-// {
-//   "redirects": [
-//     {
-//       "source": "/(.*)",
-//       "destination": "https://kriliyengin.com/$1",
-//       "permanent": true
-//     }
-//   ]
-// }
+{
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "construction-supply-rentals.vercel.app"
+        }
+      ],
+      "destination": "https://www.kriliyengin.com/:path*",
+      "permanent": true
+    }
+  ]
+}
