@@ -140,25 +140,6 @@ export async function PATCH(
 
     const updateData: any = { updatedAt: new Date() }
 
-    if (body.action === "resubmit" && !isAdmin) {
-      if (equipment.status !== "rejected") {
-        return NextResponse.json(
-          { success: false, error: "Only rejected equipment can be resubmitted" },
-          { status: 400 }
-        )
-      }
-      if (!equipment.lastEditedAt || !equipment.rejectedAt || 
-          new Date(equipment.lastEditedAt) <= new Date(equipment.rejectedAt)) {
-        return NextResponse.json(
-          { success: false, error: "Please edit equipment before resubmitting" },
-          { status: 400 }
-        )
-      }
-      updateData.status = "pending"
-      updateData.rejectionReason = null
-      updateData.rejectedAt = null
-    }
-
     if (body.hasOwnProperty("isAvailable")) {
       const hasActiveBookings = await db.collection("bookings").findOne({
         "bookingItems.equipmentId": new ObjectId(id),
@@ -300,6 +281,13 @@ export async function PUT(
       
       updateData.lastEditedAt = new Date()
       
+      // If equipment is rejected and supplier is editing, automatically resubmit for review
+      if (equipment.status === "rejected") {
+        updateData.status = "pending"
+        updateData.rejectionReason = null
+        updateData.rejectedAt = null
+      }
+      
       if (body.pricing !== undefined) {
         const pricingChanged = JSON.stringify(equipment.pricing) !== JSON.stringify(body.pricing)
         
@@ -316,6 +304,37 @@ export async function PUT(
             requestedAt: new Date()
           }
           updateData.pricingRejectionReason = null
+          
+          // Send email notification to admin
+          try {
+            const supplier = await db.collection("users").findOne({ _id: equipment.supplierId })
+            const adminUser = await db.collection("users").findOne({ role: "admin" })
+            
+            if (adminUser?.email && supplier) {
+              const formatPricing = (pricing: any) => {
+                const parts = []
+                if (pricing.hourlyRate) parts.push(`${pricing.hourlyRate} MRU/h`)
+                if (pricing.dailyRate) parts.push(`${pricing.dailyRate} MRU/jour`)
+                if (pricing.kmRate) parts.push(`${pricing.kmRate} MRU/km`)
+                if (pricing.tonRate) parts.push(`${pricing.tonRate} MRU/tonne`)
+                if (pricing.salePrice) parts.push(`${pricing.salePrice} MRU`)
+                return parts.join(', ') || '-'
+              }
+              
+              const { sendPricingUpdateRequestEmail } = await import("@/src/lib/email")
+              await sendPricingUpdateRequestEmail(adminUser.email, {
+                equipmentName: equipment.name,
+                equipmentReference: equipment.referenceNumber || '-',
+                supplierName: `${supplier.firstName} ${supplier.lastName}`,
+                supplierPhone: supplier.phone,
+                currentPricing: formatPricing(equipment.pricing),
+                requestedPricing: formatPricing(body.pricing),
+                requestDate: new Date()
+              })
+            }
+          } catch (emailError) {
+            console.error("Email error:", emailError)
+          }
         }
       }
     }

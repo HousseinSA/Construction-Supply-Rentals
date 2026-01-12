@@ -42,7 +42,5 @@ export default function PageHeader({ selectedCity, selectedType, listingType }: 
     return selectedCity ? `${baseTitle} - ${getDisplayValue(selectedCity)}` : baseTitle
   }
 
-  return (
-    <PageBanner title={getTitle()} />
-  )
+  return <PageBanner title={getTitle()} />
 }

@@ -30,10 +30,10 @@
   "quickSearch": {
     "button": "بحث",
     "title": "البحث برقم المرجع",
-    "description": "أدخل رقم مرجع الحجز أو البيع (مثل: 123456)",
+    "description": "أدخل رقم مرجع الحجز أو البيع أو معدة (مثل: 123456)",
     "placeholder": "123456",
     "enterReference": "يرجى إدخال رقم المرجع",
-    "notFound": "لم يتم العثور على أي حجز أو عملية بيع بهذا الرقم",
+    "notFound": "لم يتم العثور على أي حجز أو عملية بيع أو معدة بهذا الرقم",
     "error": "فشل البحث. يرجى المحاولة مرة أخرى.",
     "searching": "جاري البحث..."
   },
@@ -74,7 +74,7 @@
       "new": "جديد",
       "excellent": "حالة ممتازة",
       "good": "حالة جيدة",
-      "used": "مستعمل"
+      "Fair": "مقبول"
     },
     "hoursUsed": "ساعات الاستخدام",
     "kilometersUsed": "الكيلومترات المستخدمة",
@@ -456,6 +456,7 @@
       "equipmentType": "نوع المعدة",
       "selectEquipmentType": "اختر نوع المعدة",
       "city": "المدينة",
+      "clickToShowNewPrices": "انقر لتحديث طلب التسعير",
       "selectCity": "اختر المدينة",
       "listingType": "نوع الإعلان",
       "forRent": "للإيجار",
@@ -506,7 +507,7 @@
         "new": "جديد",
         "excellent": "حالة ممتازة",
         "good": "حالة جيدة",
-        "used": "مستعمل"
+        "Fair": "مقبول"
       },
       "brand": "الماركة",
       "brandPlaceholder": "مثال: Caterpillar, Komatsu, Volvo",
@@ -541,7 +542,7 @@
       "usageLabel": "(ODO)إجمالي استخدام المعدة",
       "manageTitle": "إدارة المعدات",
       "manageSubtitle": "عرض وإدارة جميع قوائم المعدات",
-      "createdByAdmin": "تم الإنشاء بواسطة الإدارة",
+      "createdByAdmin": " الإدارة",
       "pending": "قيد الانتظار",
       "approved": "موافق عليه",
       "pendingVerification": "قيد التحقق",
@@ -581,7 +582,7 @@
       "confirmApprove": "متأكد من الموافقة على هذه المعدة؟",
       "confirmReject": "رفض المعدة",
       "processingRequest": "جاري المعالجة...",
-
+      "pricingUpdateRejectedMessage": "تم رفض تحديث التسعير الخاص بك للسبب التالي:",
       "processing": "جاري المعالجة...",
       "confirm": "تأكيد",
       "equipmentUpdated": "تم تحديث المعدة بنجاح",
@@ -939,10 +940,7 @@
       "loading": "جاري التحميل...",
       "statusUpdated": "تم تحديث حالة البيع بنجاح",
       "statusUpdateFailed": "فشل في تحديث حالة البيع",
-      "adminOwned": "ملك الإدارة",
-      "equipment": {
-        "createdByAdmin": "تم الإنشاء بواسطة الإدارة"
-      }
+      "adminOwned": "ملك الإدارة"
     }
   },
   "toast": {
@@ -966,7 +964,7 @@
     "logoutError": "خطأ في تسجيل الخروج",
     "categoryRequired": "يرجى اختيار فئة",
     "equipmentTypeRequired": "يرجى اختيار نوع المعدة",
-    "locationRequired": "يرجى اختيار موقع",
+    "locationRequired": "يرجى اختيار المدينة",
     "priceTypeRequired": "يرجى اختيار نوع التسعير",
     "priceRequired": "يرجى إدخال سعر صحيح",
     "imagesRequired": "يرجى رفع صورة واحدة على الأقل",

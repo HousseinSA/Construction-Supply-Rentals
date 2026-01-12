@@ -222,3 +222,47 @@ export async function sendBookingCancellationEmail(adminEmail: string, details: 
     html: createEmailTemplate('Annulation de Réservation', content, 'Voir les détails', `${process.env.NEXTAUTH_URL}/fr/dashboard/bookings?highlight=${details.referenceNumber}`),
   });
 }
+
+export async function sendPricingUpdateRequestEmail(adminEmail: string, details: {
+  equipmentName: string; equipmentReference: string; supplierName: string; supplierPhone: string;
+  currentPricing: string; requestedPricing: string; requestDate: Date;
+}) {
+  const dateStr = new Date(details.requestDate).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const timeStr = new Date(details.requestDate).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+  const content = `
+    <h2 style="margin: 0 0 8px 0; font-size: 22px; color: #111;">Demande de mise à jour tarifaire</h2>
+    <p style="margin: 0 0 8px 0; color: #f97316; font-size: 14px; font-weight: 600;">Référence: #${details.equipmentReference}</p>
+    <p style="margin: 0 0 24px 0; color: #6b7280; font-size: 14px;">Date: ${dateStr} à ${timeStr}</p>
+    <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 12px 16px; margin-bottom: 24px;">
+      <p style="margin: 0; font-size: 14px; color: #92400e; font-weight: 600;">Un partenaire souhaite modifier ses tarifs</p>
+    </div>
+    ${createSection('Équipement', [
+      {label: 'Matériel', value: details.equipmentName}
+    ])}
+    ${createSection('Partenaire', [
+      {label: 'Nom', value: details.supplierName},
+      {label: 'Téléphone', value: formatPhoneNumber(details.supplierPhone)}
+    ])}
+    ${createSection('Tarification actuelle', [
+      {label: 'Prix', value: details.currentPricing}
+    ])}
+    ${createSection('Tarification demandée', [
+      {label: 'Nouveau prix', value: `<span style="color: #f97316; font-weight: 600;">${details.requestedPricing}</span>`}
+    ])}
+    <div style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 16px; margin-top: 24px; border-radius: 4px;">
+      <h3 style="margin: 0 0 12px 0; font-size: 14px; color: #1e40af; font-weight: 600;">📋 Comment trouver cet équipement :</h3>
+      <ul style="margin: 0; padding-left: 20px; color: #1e40af; font-size: 13px; line-height: 1.6;">
+        <li style="margin-bottom: 8px;">Allez dans <strong>Gestion des équipements</strong></li>
+        <li style="margin-bottom: 8px;">Recherchez par référence : <strong>#${details.equipmentReference}</strong></li>
+        <li style="margin-bottom: 0;">Ou filtrez par statut : <strong>Mise à jour tarifaire</strong></li>
+      </ul>
+    </div>`;
+
+  await transporter.sendMail({
+    from: MAIL_FROM,
+    to: adminEmail,
+    subject: `Demande de mise à jour tarifaire - Référence #${details.equipmentReference}`,
+    html: createEmailTemplate('Demande de mise à jour tarifaire', content, 'Examiner la demande', `${process.env.NEXTAUTH_URL}/fr/dashboard/equipment?status=pendingPricing`),
+  });
+}

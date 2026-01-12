@@ -51,6 +51,7 @@ interface EquipmentFormFieldsProps {
   hasPendingPricing?: boolean
   isEditMode?: boolean
   hasActiveBookings?: boolean
+  equipmentStatus?: "pending" | "approved" | "rejected"
 }
 
 export default function EquipmentFormFields({

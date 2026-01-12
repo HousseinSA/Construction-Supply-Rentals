@@ -39,6 +39,8 @@ export function useEquipmentForm(equipmentId?: string) {
   const [hasActiveBookings, setHasActiveBookings] = useState(false)
   const [ownershipError, setOwnershipError] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [initialFormData, setInitialFormData] = useState<FormData | null>(null)
+  const [initialImages, setInitialImages] = useState<UploadedImage[]>([])
   const [formData, setFormData] = useState<FormData>({
     category: "",
     type: "",
@@ -85,7 +87,7 @@ export function useEquipmentForm(equipmentId?: string) {
           ? String(eq.specifications.tonnageUsed)
           : ""
 
-        setFormData({
+        const loadedFormData = {
           category: eq.categoryId,
           type: eq.equipmentTypeId,
           location: eq.location,
@@ -109,14 +111,16 @@ export function useEquipmentForm(equipmentId?: string) {
             ? String(eq.specifications.weight)
             : "",
           weightUnit: eq.specifications?.weightUnit || "kg",
+        }
+        setFormData(loadedFormData)
+        setInitialFormData(loadedFormData)
+        const loadedImages = eq.images.map((url: string) => {
+          const match = url.match(/\/([^\/]+)\.[^.]+$/)
+          const public_id = match ? `equipment/${match[1]}` : ""
+          return { url, public_id }
         })
-        setImages(
-          eq.images.map((url: string) => {
-            const match = url.match(/\/([^\/]+)\.[^.]+$/)
-            const public_id = match ? `equipment/${match[1]}` : ""
-            return { url, public_id }
-          })
-        )
+        setImages(loadedImages)
+        setInitialImages(loadedImages)
       setLoading(false)
     } catch (error) {
       console.error("Error loading equipment:", error)
@@ -327,6 +331,13 @@ export function useEquipmentForm(equipmentId?: string) {
     }
   }
 
+  const hasChanges = () => {
+    if (!equipmentId || !initialFormData) return true
+    const formChanged = JSON.stringify(formData) !== JSON.stringify(initialFormData)
+    const imagesChanged = JSON.stringify(images.map(i => i.url)) !== JSON.stringify(initialImages.map(i => i.url))
+    return formChanged || imagesChanged
+  }
+
   return {
     formData,
     images,
@@ -347,5 +358,6 @@ export function useEquipmentForm(equipmentId?: string) {
     handleUsageUnitChange,
     handleSubmit,
     loadEquipment,
+    hasChanges: hasChanges(),
   }
 }

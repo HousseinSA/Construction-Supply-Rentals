@@ -1,7 +1,6 @@
 import { MapPin, Edit, Eye, Tag, Loader2, RefreshCw, AlertCircle } from "lucide-react"
 import EquipmentImage from "@/src/components/ui/EquipmentImage"
 import Dropdown from "@/src/components/ui/Dropdown"
-import MessageModal from "@/src/components/ui/MessageModal"
 import CopyButton from "@/src/components/ui/CopyButton"
 import PriceDisplay from "@/src/components/ui/PriceDisplay"
 import { EquipmentWithSupplier } from "@/src/stores/equipmentStore"
@@ -10,7 +9,6 @@ import { useCityData } from "@/src/hooks/useCityData"
 import { useTooltip } from "@/src/hooks/useTooltip"
 import { useTranslations } from "next-intl"
 import { formatPhoneNumber } from "@/src/lib/format"
-import { useState } from "react"
 
 interface EquipmentMobileCardProps {
   item: EquipmentWithSupplier & { hasActiveBookings?: boolean; hasPendingSale?: boolean }
@@ -20,7 +18,6 @@ interface EquipmentMobileCardProps {
   onAvailabilityChange: (id: string, isAvailable: boolean) => void
   onNavigate: (url: string, id: string) => void
   onPricingReview?: (item: EquipmentWithSupplier) => void
-  onResubmit?: (id: string) => void
   t: (key: string) => string
   isSupplier?: boolean
 }
@@ -33,16 +30,14 @@ export default function EquipmentMobileCard({
   onAvailabilityChange,
   onNavigate,
   onPricingReview,
-  onResubmit,
   t,
   isSupplier = false,
 }: EquipmentMobileCardProps) {
   const { formatPrice: _ } = usePriceFormatter()
   const { convertToLocalized } = useCityData()
   const tCommon = useTranslations("common")
-  const [showRejectionModal, setShowRejectionModal] = useState(false)
-  const [showPricingRejectionModal, setShowPricingRejectionModal] = useState(false)
   const { ref: tooltipRef, isOpen: showTooltip, toggle: toggleTooltip } = useTooltip()
+  const pricingTooltip = useTooltip()
   const getPricesList = () => {
     const prices = []
     if (item.listingType === "forSale" && item.pricing.salePrice) {
@@ -75,61 +70,50 @@ export default function EquipmentMobileCard({
     <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all grid grid-rows-[minmax(50px,auto)_auto_auto] gap-2">
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1">
-          <div className="font-semibold text-gray-900 text-sm mb-1.5">{item.name}</div>
+          {item.referenceNumber && (
+            <div className="text-xs font-semibold text-primary mb-1">
+              #{item.referenceNumber}
+            </div>
+          )}
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-gray-900 text-sm">{item.name}</span>
+            {item.status === "rejected" && item.rejectionReason && (
+              <div className="relative group inline-block">
+                <span className="inline-flex items-center text-red-600 cursor-help">
+                  <AlertCircle className="w-3.5 h-3.5" />
+                </span>
+                <div className="absolute bottom-full left-0 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none min-w-max max-w-xs z-50 whitespace-normal">
+                  {item.rejectionReason}
+                  <div className="absolute top-full left-4 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+                </div>
+              </div>
+            )}
+          </div>
           <div className="flex flex-wrap items-center gap-1.5 mb-1">
             {item.createdBy === "admin" && (
               <span className="inline-flex px-2 py-0.5 text-xs bg-blue-100 text-blue-700 rounded">
                 {t("createdByAdmin")}
               </span>
             )}
-            {item.pendingPricing && (
-              <button
-                onClick={() => !isSupplier && onPricingReview?.(item)}
-                disabled={isSupplier}
-                className="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-orange-100 text-orange-700 rounded hover:bg-orange-200 transition-colors disabled:hover:bg-orange-100 disabled:cursor-default"
-                title={!isSupplier ? t("reviewPricingRequest") : ""}
-              >
-                <RefreshCw className="w-3 h-3" />
-                {isSupplier ? t("pricingPendingApproval") : t("pricingUpdateRequest")}
-              </button>
-            )}
-            {item.pricingRejectionReason && isSupplier && (
-              <button
-                onClick={() => setShowPricingRejectionModal(true)}
-                className="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors"
-              >
-                <AlertCircle className="w-3 h-3" />
-                {t("pricingRejected")}
-              </button>
-            )}
             {item.listingType === "forSale" && !item.isAvailable && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs text-white rounded bg-red-600">
-                <Tag className="w-3 h-3" />
+                <Tag className="w-3.5 h-3.5" />
                 {t("sold")}
               </span>
             )}
             {item.listingType === "forSale" && item.isAvailable && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs text-white rounded bg-gradient-to-r from-orange-500 to-red-500">
-                <Tag className="w-3 h-3" />
+                <Tag className="w-3.5 h-3.5" />
                 {t("forSale")}
               </span>
             )}
           </div>
           <div className="flex items-center gap-1.5">
             <div className="text-xs text-gray-500 capitalize flex items-center gap-1">
-              <MapPin className="w-3 h-3 text-primary" />
+              <MapPin className="w-3.5 h-3.5 text-primary" />
               {convertToLocalized(item.location)}
             </div>
           </div>
-          {item.status === "rejected" && item.rejectionReason && (
-            <button
-              onClick={() => setShowRejectionModal(true)}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs bg-red-50 text-red-700 rounded-md hover:bg-red-100 transition-colors border border-red-200 mt-1.5"
-            >
-              <AlertCircle className="w-3.5 h-3.5" />
-              <span className="font-medium">{t("rejectionReason")}</span>
-            </button>
-          )}
         </div>
         <div className="flex-shrink-0 flex flex-col items-end gap-1.5">
           {item.status === "pending" && !isSupplier ? (
@@ -151,25 +135,15 @@ export default function EquipmentMobileCard({
             </>
           ) : item.status === "rejected" && isSupplier ? (
             <>
-              <span className="inline-block px-3 py-1.5 text-xs font-semibold rounded-md bg-red-100 text-red-700">
-                {t("rejected")}
-              </span>
-              <button
-                onClick={() => {
-                  const canResubmit = item.lastEditedAt && item.rejectedAt && 
-                    new Date(item.lastEditedAt) > new Date(item.rejectedAt)
-                  if (canResubmit) {
-                    onResubmit?.(item._id?.toString() || "")
-                  }
-                }}
-                disabled={updating === item._id?.toString() || 
-                  !(item.lastEditedAt && item.rejectedAt && 
-                    new Date(item.lastEditedAt) > new Date(item.rejectedAt))}
-                className="px-3 py-1.5 text-xs font-medium bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed min-w-[70px]"
-                title={!(item.lastEditedAt && item.rejectedAt && new Date(item.lastEditedAt) > new Date(item.rejectedAt)) ? t("editBeforeResubmit") : ""}
-              >
-                {updating === item._id?.toString() ? t("resubmitting") : t("resubmit")}
-              </button>
+              <div className="relative group">
+                <span className="inline-block px-3 py-1.5 text-xs font-semibold rounded-md bg-red-100 text-red-700 cursor-help">
+                  {t("rejected")}
+                </span>
+                <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none min-w-max z-50 whitespace-nowrap">
+                  {t("editBeforeResubmit")}
+                  <div className="absolute top-full right-4 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+                </div>
+              </div>
             </>
           ) : (
             <span
@@ -214,8 +188,48 @@ export default function EquipmentMobileCard({
             <div className="text-xs text-gray-500 mb-1">{t("price")}</div>
             <div className="space-y-0.5">
               {getPricesList().map((price, idx) => (
-                <div key={idx}>
+                <div key={idx} className="flex items-center gap-1">
                   <PriceDisplay amount={price.amount} suffix={price.suffix} />
+                  {idx === 0 && item.pendingPricing && !isSupplier && (
+                    <div ref={pricingTooltip.ref} className="relative inline-block">
+                      <button
+                        onClick={() => onPricingReview?.(item)}
+                        className="inline-flex items-center text-orange-600 hover:text-orange-700"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" />
+                      </button>
+                      {pricingTooltip.isOpen && (
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap z-50">
+                          {t("reviewPricingRequest")}
+                          <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {idx === 0 && item.pendingPricing && isSupplier && (
+                    <div ref={pricingTooltip.ref} className="relative inline-block">
+                      <span className="inline-flex items-center text-orange-600 cursor-help">
+                        <RefreshCw className="w-3.5 h-3.5" />
+                      </span>
+                      {pricingTooltip.isOpen && (
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap z-50">
+                          {t("pricingPendingApproval")}
+                          <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {idx === 0 && item.pricingRejectionReason && isSupplier && (
+                    <div className="relative group inline-block">
+                      <span className="inline-flex items-center text-red-600 cursor-help">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                      </span>
+                      <div className="absolute bottom-full left-0 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none min-w-max max-w-xs z-50 whitespace-normal">
+                        {item.pricingRejectionReason}
+                        <div className="absolute top-full left-4 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -296,36 +310,23 @@ export default function EquipmentMobileCard({
             )}
           </div>
         )}
-        {isSupplier && (item.status === "approved" || item.status === "pending" || item.status === "rejected") && !(item.listingType === "forSale" && !item.isAvailable) && (
-          <div className="relative group">
-            <button
-              onClick={() =>
-                !item.hasActiveBookings &&
-                onNavigate(
-                  `/dashboard/equipment/edit/${item._id?.toString()}`,
-                  `edit-${item._id?.toString()}`
-                )
-              }
-              disabled={navigating === `edit-${item._id?.toString()}` || item.hasActiveBookings}
-              className={`px-3 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-1.5 ${
-                item.hasActiveBookings
-                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                  : "text-blue-600 bg-blue-50 hover:bg-blue-100"
-              }`}
-            >
-              {navigating === `edit-${item._id?.toString()}` ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Edit className="w-4 h-4" />
-              )}
-            </button>
-            {item.hasActiveBookings && (
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                {t("cannotEditActiveBooking")}
-                <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
-              </div>
+        {isSupplier && (item.status === "rejected" || (item.status === "approved" && !item.hasActiveBookings && !item.hasPendingSale)) && !(item.listingType === "forSale" && !item.isAvailable) && (
+          <button
+            onClick={() =>
+              onNavigate(
+                `/dashboard/equipment/edit/${item._id?.toString()}`,
+                `edit-${item._id?.toString()}`
+              )
+            }
+            disabled={navigating === `edit-${item._id?.toString()}`}
+            className="px-3 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-1.5 text-blue-600 bg-blue-50 hover:bg-blue-100"
+          >
+            {navigating === `edit-${item._id?.toString()}` ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Edit className="w-4 h-4" />
             )}
-          </div>
+          </button>
         )}
         <button
           onClick={() =>
@@ -343,22 +344,6 @@ export default function EquipmentMobileCard({
         </div>
       </div>
     </div>
-    {showRejectionModal && (
-      <MessageModal
-        isOpen={showRejectionModal}
-        onClose={() => setShowRejectionModal(false)}
-        title={t("rejectionReason")}
-        message={item.rejectionReason || ""}
-      />
-    )}
-    {showPricingRejectionModal && (
-      <MessageModal
-        isOpen={showPricingRejectionModal}
-        onClose={() => setShowPricingRejectionModal(false)}
-        title={t("pricingRejected")}
-        message={item.pricingRejectionReason || ""}
-      />
-    )}
   </>
   )
 }

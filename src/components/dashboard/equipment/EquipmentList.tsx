@@ -18,7 +18,6 @@ interface EquipmentListProps {
   onNavigate: (url: string, id: string) => void
   onPageChange: (page: number) => void
   onPricingReview?: (item: EquipmentWithSupplier) => void
-  onResubmit?: (id: string) => void
   t:any
   isSupplier?: boolean
 }
@@ -36,7 +35,6 @@ export default function EquipmentList({
   onNavigate,
   onPageChange,
   onPricingReview,
-  onResubmit,
   t,
   isSupplier = false,
 }: EquipmentListProps) {
@@ -69,7 +67,6 @@ export default function EquipmentList({
                 onAvailabilityChange={onAvailabilityChange}
                 onNavigate={onNavigate}
                 onPricingReview={onPricingReview}
-                onResubmit={onResubmit}
                 isSupplier={isSupplier}
               />
             ))}
@@ -98,7 +95,6 @@ export default function EquipmentList({
               onAvailabilityChange={onAvailabilityChange}
               onNavigate={onNavigate}
               onPricingReview={onPricingReview}
-              onResubmit={onResubmit}
               t={t}
               isSupplier={isSupplier}
             />

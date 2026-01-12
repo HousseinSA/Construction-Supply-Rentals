@@ -49,6 +49,17 @@ export async function GET(request: NextRequest) {
       });
     }
 
+    const equipment = await db.collection('equipment').findOne({ referenceNumber: refNumber });
+    if (equipment) {
+      const supplierInfo = equipment.supplierId ? await db.collection('users').findOne({ _id: new ObjectId(equipment.supplierId) }) : null;
+
+      return NextResponse.json({
+        success: true,
+        type: 'equipment',
+        data: { ...equipment, supplierInfo: supplierInfo ? [supplierInfo] : [] }
+      });
+    }
+
     return NextResponse.json({ success: false, error: 'notFound' }, { status: 404 });
   } catch (error) {
     console.error('Search reference error:', error);

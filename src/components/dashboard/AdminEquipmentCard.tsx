@@ -12,6 +12,7 @@ import { getOptimizedCloudinaryUrl, getBlurDataURL } from "@/src/lib/cloudinary-
 interface EquipmentCardProps {
   equipment: {
     _id: string
+    referenceNumber?: string
     name: string
     description: string
     location: string
@@ -50,7 +51,6 @@ interface EquipmentCardProps {
 export default function AdminEquipmentCard({ equipment }: EquipmentCardProps) {
   const t = useTranslations("dashboard.equipment")
   const tCommon = useTranslations("common")
-  const tToast = useTranslations("toast")
   const router = useRouter()
   const { convertToLocalized } = useCityData()
   const [isAvailable, setIsAvailable] = useState(equipment.isAvailable)
@@ -170,6 +170,9 @@ export default function AdminEquipmentCard({ equipment }: EquipmentCardProps) {
         {/* Content */}
         <div className="p-4">
           <h3 className="font-semibold text-lg mb-2 line-clamp-1">
+            {equipment.referenceNumber && (
+              <span className="text-sm text-gray-500 font-normal mr-2">#{equipment.referenceNumber}</span>
+            )}
             {equipment.name}
           </h3>
           <p className="text-sm text-gray-600 mb-2 line-clamp-2">

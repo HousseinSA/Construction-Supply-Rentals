@@ -31,10 +31,10 @@
   "quickSearch": {
     "button": "Search",
     "title": "Search by Reference Number",
-    "description": "Enter booking or sale reference number (e.g., 123456)",
+    "description": "Enter a booking, sale, or equipment reference number (e.g., 123456)",
     "placeholder": "123456",
     "enterReference": "Please enter a reference number",
-    "notFound": "No booking or sale found with this reference number",
+    "notFound": "No booking, sale or equipment found with this reference number",
     "error": "Failed to search. Please try again.",
     "searching": "Searching..."
   },
@@ -75,7 +75,7 @@
       "new": "New",
       "excellent": "Like New",
       "good": "Good Condition",
-      "used": "Used"
+      "Fair ": "Fair"
     },
     "hoursUsed": "Hours Used",
     "kilometersUsed": "Kilometers Used",
@@ -459,6 +459,7 @@
       "createTitle": "Create New Equipment",
       "backToDashboard": "Back to Dashboard",
       "category": "Category",
+      "clickToShowNewPrices": "Click to update pricing request",
       "selectCategory": "Select Category",
       "equipmentType": "Equipment Type",
       "selectEquipmentType": "Select Equipment Type",
@@ -505,7 +506,7 @@
         "new": "New",
         "excellent": "Like New",
         "good": "Good Condition",
-        "used": "Used"
+        "Fair": "Fair"
       },
       "brand": "Brand",
       "brandPlaceholder": "e.g., Caterpillar, Komatsu, Volvo",
@@ -541,7 +542,7 @@
       "usageLabel": "Total Equipment Usage (ODO)",
       "manageTitle": "Manage Equipment",
       "manageSubtitle": "View and manage all equipment listings",
-      "createdByAdmin": "Created by Admin",
+      "createdByAdmin": "Admin",
       "pending": "Pending",
       "pendingVerification": "Pending verification",
       "approved": "Approved",
@@ -941,10 +942,7 @@
       "loading": "Loading...",
       "statusUpdated": "Sale status updated successfully",
       "statusUpdateFailed": "Failed to update sale status",
-      "adminOwned": "Admin Owned",
-      "equipment": {
-        "createdByAdmin": "Created by Admin"
-      }
+      "adminOwned": "Admin Owned"
     }
   },
   "toast": {
@@ -968,7 +966,7 @@
     "logoutError": "Error logging out",
     "categoryRequired": "Please select a category",
     "equipmentTypeRequired": "Please select equipment type",
-    "locationRequired": "Please select a location",
+    "locationRequired": "Please select a city",
     "priceTypeRequired": "Please select a pricing type",
     "priceRequired": "Please enter a valid price",
     "imagesRequired": "Please upload at least one image",

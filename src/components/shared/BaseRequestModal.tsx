@@ -11,6 +11,7 @@ interface BaseRequestModalProps {
   onClose: () => void
   title: string
   equipmentName: string
+  equipmentReference?: string
   equipmentLocation: string
   children: ReactNode
   message: string
@@ -31,6 +32,7 @@ export default function BaseRequestModal({
   onClose,
   title,
   equipmentName,
+  equipmentReference,
   equipmentLocation,
   children,
   message,
@@ -55,7 +57,7 @@ export default function BaseRequestModal({
       <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom-4 duration-200">
         <div className="p-6">
           <ModalHeader title={title} onClose={onClose} />
-          <EquipmentInfo name={equipmentName} location={equipmentLocation} />
+          <EquipmentInfo name={equipmentName} reference={equipmentReference} location={equipmentLocation} />
 
           <form onSubmit={onSubmit} className="space-y-4">
             {children}

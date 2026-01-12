@@ -98,6 +98,7 @@ export default function SaleModal({
       }}
       title={t("sendSaleRequest")}
       equipmentName={equipment.name}
+      equipmentReference={equipment.referenceNumber}
       equipmentLocation={equipment.location}
       message={message}
       onMessageChange={setMessage}

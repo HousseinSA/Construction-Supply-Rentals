@@ -109,6 +109,7 @@ export default function BookingModal({
       }}
       title={t("title")}
       equipmentName={equipment.name}
+      equipmentReference={equipment.referenceNumber}
       equipmentLocation={equipment.location}
       message={message}
       onMessageChange={setMessage}

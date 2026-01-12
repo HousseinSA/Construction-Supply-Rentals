@@ -5,9 +5,10 @@ import Button from "../ui/Button"
 interface FormActionsProps {
   isSubmitting: boolean
   isEdit?: boolean
+  hasChanges?: boolean
 }
 
-export default function FormActions({ isSubmitting, isEdit }: FormActionsProps) {
+export default function FormActions({ isSubmitting, isEdit, hasChanges = true }: FormActionsProps) {
   const t = useTranslations("dashboard.equipment")
 
   return (
@@ -25,7 +26,7 @@ export default function FormActions({ isSubmitting, isEdit }: FormActionsProps) 
         type="submit"
         variant="primary"
         className="w-full sm:w-auto"
-        disabled={isSubmitting}
+        disabled={isSubmitting || (isEdit && !hasChanges)}
       >
         {isSubmitting ? (isEdit ? t("updatingEquipment") : t("creatingEquipment")) : (isEdit ? t("updateEquipment") : t("createEquipment"))}
       </Button>

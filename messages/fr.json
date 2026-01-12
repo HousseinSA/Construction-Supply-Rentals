@@ -30,10 +30,10 @@
   "quickSearch": {
     "button": "Recherche",
     "title": "Rechercher par Numéro de Référence",
-    "description": "Entrez le numéro de référence de réservation ou de vente (ex: 123456)",
+    "description": "Entrez un numéro de référence de réservation, vente ou équipement (ex: 123456)",
     "placeholder": "123456",
     "enterReference": "Veuillez entrer un numéro de référence",
-    "notFound": "Aucune réservation ou vente trouvée avec ce numéro de référence",
+    "notFound": "Aucune réservation, vente ou équipement trouvée avec ce numéro de référence",
     "error": "Échec de la recherche. Veuillez réessayer.",
     "searching": "Recherche en cours..."
   },
@@ -74,7 +74,7 @@
       "new": "Neuf",
       "excellent": "Excellent",
       "good": "Bon",
-      "used": "Usagé"
+      "Fair": "Satisfaisant"
     },
     "hoursUsed": "Heures d'Utilisation",
     "kilometersUsed": "Kilomètres Parcourus",
@@ -455,10 +455,12 @@
     },
     "equipment": {
       "createTitle": "Créer Nouveau Matériel",
+      "clickToShowNewPrices": "Cliquez pour mettre à jour votre demande de prix",
       "backToDashboard": "Retour au Tableau de Bord",
       "category": "Catégorie",
       "selectCategory": "Sélectionner Catégorie",
       "equipmentType": "Type de Matériel",
+
       "selectEquipmentType": "Sélectionner Type de Matériel",
       "city": "Ville",
       "selectCity": "Sélectionner Ville",
@@ -504,7 +506,7 @@
         "new": "Nouveau",
         "excellent": "Excellent",
         "good": "Bon",
-        "used": "Usagé"
+        "Fair": "Satisfaisant"
       },
       "brand": "Marque",
       "brandPlaceholder": "ex: Caterpillar, Komatsu, Volvo",
@@ -540,7 +542,7 @@
       "usageLabel": "Utilisation Totale de l'Équipement (ODO)",
       "manageTitle": "Gérer le Matériel",
       "manageSubtitle": "Voir et gérer toutes les annonces de matériel",
-      "createdByAdmin": "Créé par l'Admin",
+      "createdByAdmin": "Admin",
       "pending": "En attente",
       "pendingVerification": "En attente de vérification",
       "approved": "Approuvé",
@@ -594,6 +596,7 @@
       "pricingUpdateRequest": "Mise à jour tarifaire",
       "pricingPendingApproval": "Mise à jour tarifaire en attente d'approbation",
       "reviewPricingRequest": "Examiner la demande tarifaire",
+      "pricingUpdateRejectedMessage": "La mise à jour de votre tarification a été rejetée pour la raison suivante :",
       "currentPricing": "Tarification actuelle",
       "requestedPricing": "Tarification demandée",
       "rejectPricing": "Rejeter",
@@ -603,7 +606,6 @@
       "pricingRejected": "Tarification Rejetée",
       "pricingRejectionReason": "Raison du Rejet de Tarification",
       "viewRejectionReason": "Voir la Raison du Rejet",
-      "pricingUpdateRejectedMessage": "Votre mise à jour tarifaire a été rejetée pour la raison suivante :",
       "processingRequest": "Traitement...",
       "noEquipmentFound": "Aucun matériel trouvé",
       "searchPlaceholder": "Rechercher par nom ou localisation...",
@@ -615,8 +617,8 @@
       },
       "activeBookingWarning": "Avertissement Réservations Actives",
       "activeBookingWarningMessage": "Cet équipement a des réservations actives. La modification peut affecter les locations en cours. Veuillez procéder avec prudence.",
-        "equipmentMustBeApproved":"Le matériel doit être approuvé avant d'être disponible",
-      "equipmentSold":"Ce matériel a été vendu"
+      "equipmentMustBeApproved": "Le matériel doit être approuvé avant d'être disponible",
+      "equipmentSold": "Ce matériel a été vendu"
     },
     "pages": {
       "equipment": {
@@ -825,8 +827,8 @@
         "close": "Fermer",
         "save": "Sauvegarder",
         "saving": "Sauvegarde...",
-        "update":"Mettre à Jour",
-        "updating":"Mise à Jour..."
+        "update": "Mettre à Jour",
+        "updating": "Mise à Jour..."
       },
       "details": {
         "title": "Détails de la Réservation",
@@ -834,7 +836,7 @@
         "reference": "Référence",
         "bookingId": "ID Réservation",
         "totalAmount": "Montant Total",
-     "commissionBooking": "Commission (10%)",
+        "commissionBooking": "Commission (10%)",
         "createdAt": "Date de Création",
         "renterInfo": "Locataire",
         "supplierInfo": "Fournisseur",
@@ -931,7 +933,6 @@
         "status": "Statut",
         "buyerMessage": "Message de l'Acheteur",
         "adminOwned": "Propriété Admin"
-
       },
       "noSales": "Aucune Vente Trouvée",
       "noResults": "Aucune vente trouvée correspondant à votre recherche",
@@ -942,11 +943,7 @@
       "loading": "Chargement...",
       "statusUpdated": "Statut de vente mis à jour avec succès",
       "statusUpdateFailed": "Échec de la mise à jour du statut de vente",
-      "adminOwned": "Propriété Admin",
-      "equipment": {
-        "createdByAdmin": "Créé par l'Admin"
-      }
-     
+      "adminOwned": "Propriété Admin"
     }
   },
   "toast": {
@@ -970,7 +967,7 @@
     "logoutError": "Erreur lors de la connexion",
     "categoryRequired": "Veuillez sélectionner une catégorie",
     "equipmentTypeRequired": "Veuillez sélectionner le type de matériel",
-    "locationRequired": "Veuillez sélectionner un emplacement",
+    "locationRequired": "Veuillez sélectionner une ville",
     "priceTypeRequired": "Veuillez sélectionner un type de prix",
     "priceRequired": "Veuillez entrer un prix valide",
     "imagesRequired": "Veuillez télécharger au moins une image",

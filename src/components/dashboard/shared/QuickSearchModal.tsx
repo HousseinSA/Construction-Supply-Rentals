@@ -4,6 +4,7 @@ import { useState, useRef, RefObject } from "react"
 import { X, Search, Loader2 } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
+import { useRouter } from "@/src/i18n/navigation"
 import { useModalClose } from "@/src/hooks/useModalClose"
 import BookingDetailsModal from "../bookings/BookingDetailsModal"
 import SalesDetailsModal from "../sales/SalesDetailsModal"
@@ -23,10 +24,11 @@ export default function QuickSearchModal({
 }: QuickSearchModalProps) {
   const t = useTranslations("quickSearch")
   const tToast = useTranslations("toast")
+  const router = useRouter()
   const [refNumber, setRefNumber] = useState("")
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<SearchResult | null>(null)
-  const [resultType, setResultType] = useState<"booking" | "sale" | null>(null)
+  const [resultType, setResultType] = useState<"booking" | "sale" | "equipment" | null>(null)
   const modalRef = useRef<HTMLDivElement>(null)
 
   const handleSearch = async () => {
@@ -55,9 +57,15 @@ export default function QuickSearchModal({
       const data = await response.json()
 
       if (data.success) {
-        setResult(data.data)
-        setResultType(data.type)
-        setRefNumber("")
+        if (data.type === "equipment") {
+          // Navigate to equipment details page for equipment results
+          router.push(`/equipment/${data.data._id}?admin=true`)
+          handleClose()
+        } else {
+          setResult(data.data)
+          setResultType(data.type)
+          setRefNumber("")
+        }
       } else {
         toast.error(t("notFound"))
       }

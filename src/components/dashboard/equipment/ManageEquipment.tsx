@@ -13,7 +13,6 @@ import ConfirmModal from "../../ui/ConfirmModal"
 import RejectionModal from "./RejectionModal"
 import TableFilters from "../../ui/TableFilters"
 import PricingReviewModal from "./PricingReviewModal"
-import { showToast } from "@/src/lib/toast"
 
 export default function ManageEquipment() {
   const { data: session } = useSession()
@@ -41,9 +40,9 @@ export default function ManageEquipment() {
     totalItems,
     itemsPerPage,
     hasEquipment,
-  } = useManageEquipment({ 
+  } = useManageEquipment({
     convertToLocalized,
-    supplierId: isSupplier ? session?.user?.id : undefined 
+    supplierId: isSupplier ? session?.user?.id : undefined,
   })
 
   const {
@@ -57,33 +56,25 @@ export default function ManageEquipment() {
   } = useEquipmentActions(handleStatusChange, handleAvailabilityChange, t)
 
   const [pricingReviewModal, setPricingReviewModal] = useState<any>(null)
-  const [rejectionModal, setRejectionModal] = useState<{ isOpen: boolean; equipmentId: string | null }>({ isOpen: false, equipmentId: null })
+  const [rejectionModal, setRejectionModal] = useState<{
+    isOpen: boolean
+    equipmentId: string | null
+  }>({ isOpen: false, equipmentId: null })
 
   const handleReject = async (reason: string) => {
     if (!rejectionModal.equipmentId) return
-    const success = await handleStatusChange(rejectionModal.equipmentId, "rejected", reason)
+    const success = await handleStatusChange(
+      rejectionModal.equipmentId,
+      "rejected",
+      reason
+    )
     if (success) {
       setRejectionModal({ isOpen: false, equipmentId: null })
     }
   }
 
-  const handleResubmit = async (id: string) => {
-    try {
-      const response = await fetch(`/api/equipment/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "resubmit" }),
-      })
-      const data = await response.json()
-      if (response.ok) {
-        showToast.success(t("resubmitSuccess"))
-        window.location.reload()
-      } else {
-        showToast.error(data.error || t("resubmitFailed"))
-      }
-    } catch {
-      showToast.error(t("resubmitFailed"))
-    }
+  const handleCloseRejectionModal = () => {
+    setRejectionModal({ isOpen: false, equipmentId: null })
   }
 
   if (!session?.user || (!isAdmin && !isSupplier)) {
@@ -93,9 +84,7 @@ export default function ManageEquipment() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
-        <DashboardPageHeader
-          title={t("manageTitle")}
-        />
+        <DashboardPageHeader title={t("manageTitle")} />
 
         {hasEquipment && (
           <TableFilters
@@ -177,7 +166,6 @@ export default function ManageEquipment() {
               onNavigate={handleNavigation}
               onPageChange={goToPage}
               onPricingReview={(item) => setPricingReviewModal(item)}
-              onResubmit={handleResubmit}
               t={t}
               isSupplier={isSupplier}
             />
@@ -228,7 +216,7 @@ export default function ManageEquipment() {
 
         <RejectionModal
           isOpen={rejectionModal.isOpen}
-          onClose={() => setRejectionModal({ isOpen: false, equipmentId: null })}
+          onClose={handleCloseRejectionModal}
           onConfirm={handleReject}
           title={t("confirmRejectTitle")}
           message={t("confirmRejectMessage")}

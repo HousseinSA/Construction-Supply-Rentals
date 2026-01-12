@@ -8,6 +8,7 @@ import {
 } from "@/src/lib/models/equipment"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/src/lib/auth"
+import { generateReferenceNumber } from "@/src/lib/reference-number"
 
 
 export async function GET(request: NextRequest) {
@@ -296,8 +297,10 @@ export async function POST(request: NextRequest) {
     const status = getInitialEquipmentStatus(userRole as "admin" | "user")
 
     const equipmentName = equipmentType.name
+    const referenceNumber = await generateReferenceNumber("equipment")
 
     const result = await db.collection("equipment").insertOne({
+      referenceNumber,
       supplierId: new ObjectId(userId),
       name: equipmentName,
       description: description || "",

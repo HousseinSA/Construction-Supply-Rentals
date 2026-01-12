@@ -3,6 +3,7 @@ import { EquipmentStatus, UsageCategory, PricingType } from "../types"
 
 export interface Equipment {
   _id?: ObjectId
+  referenceNumber?: string
   supplierId?: ObjectId
   name: string 
   description: string

@@ -31,9 +31,68 @@ export async function generateMetadata({
     namespace: "common",
   })
 
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://yourdomain.com'
+  const titles = {
+    fr: 'Location Équipement Construction Mauritanie | Matériel BTP',
+    ar: 'تأجير معدات البناء موريتانيا | معدات البناء والأشغال العامة',
+    en: 'Construction Equipment Rental Mauritania | Heavy Machinery'
+  }
+  const descriptions = {
+    fr: 'Plateforme de location d\'équipements de construction en Mauritanie. Trouvez des engins de terrassement, nivellement, transport et levage à Nouakchott, Nouadhibou et partout en Mauritanie.',
+    ar: 'منصة تأجير معدات البناء في موريتانيا. ابحث عن معدات الحفر والتسوية والنقل والرفع في نواكشوط ونواذيبو وجميع أنحاء موريتانيا.',
+    en: 'Construction equipment rental platform in Mauritania. Find excavation, leveling, transport and lifting equipment in Nouakchott, Nouadhibou and across Mauritania.'
+  }
+
   return {
-    title: t("title"),
-    description: "TECHNO-TRANS-SALR",
+    title: {
+      default: titles[locale],
+      template: `%s | ${t("title")}`
+    },
+    description: descriptions[locale],
+    keywords: ['location équipement', 'construction mauritanie', 'engins BTP', 'matériel construction', 'Nouakchott', 'Nouadhibou', 'terrassement', 'excavation', 'معدات البناء', 'موريتانيا'],
+    authors: [{ name: 'TECHNO-TRANS' }],
+    creator: 'TECHNO-TRANS',
+    publisher: 'TECHNO-TRANS',
+    metadataBase: new URL(baseUrl),
+    alternates: {
+      canonical: `/${locale}`,
+      languages: {
+        'fr': '/fr',
+        'ar': '/ar',
+        'en': '/en',
+      },
+    },
+    openGraph: {
+      type: 'website',
+      locale: locale === 'ar' ? 'ar_MR' : locale === 'fr' ? 'fr_MR' : 'en_US',
+      url: `${baseUrl}/${locale}`,
+      siteName: titles[locale],
+      title: titles[locale],
+      description: descriptions[locale],
+      images: [{
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: titles[locale],
+      }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: titles[locale],
+      description: descriptions[locale],
+      images: ['/og-image.jpg'],
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
     icons: {
       icon: "/favicon.ico",
     },
@@ -74,6 +133,24 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} dir={direction} className={fontClasses}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'Mauritania Equipment Rental',
+              url: process.env.NEXTAUTH_URL || 'https://yourdomain.com',
+              potentialAction: {
+                '@type': 'SearchAction',
+                target: `${process.env.NEXTAUTH_URL || 'https://yourdomain.com'}/${locale}/equipment?search={search_term_string}`,
+                'query-input': 'required name=search_term_string',
+              },
+            }),
+          }}
+        />
+      </head>
       <body className={`${baseFont} antialiased`}>
         <SessionProvider session={session}>
           <NextIntlClientProvider messages={messages} locale={locale}>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { AlertTriangle } from "lucide-react"
 import { useModalClose } from "@/src/hooks/useModalClose"
 import Button from "@/src/components/ui/Button"
@@ -32,12 +32,17 @@ export default function RejectionModal({
   const modalRef = useRef<HTMLDivElement>(null)
   useModalClose(isOpen, onClose, modalRef)
 
+  useEffect(() => {
+    if (isOpen) {
+      setReason("")
+    }
+  }, [isOpen])
+
   if (!isOpen) return null
 
   const handleConfirm = () => {
     if (reason.trim()) {
       onConfirm(reason)
-      setReason("")
     }
   }
 

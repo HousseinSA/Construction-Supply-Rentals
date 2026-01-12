@@ -43,6 +43,7 @@ export default function EditEquipmentForm({ equipmentId }: EditEquipmentFormProp
     hasActiveBookings,
     ownershipError,
     loading,
+    hasChanges,
   } = useEquipmentForm(equipmentId)
 
   useEffect(() => {
@@ -162,7 +163,7 @@ export default function EditEquipmentForm({ equipmentId }: EditEquipmentFormProp
               isEditMode={true}
               hasActiveBookings={hasActiveBookings}
             />
-                <FormActions isSubmitting={isSubmitting} isEdit />
+                <FormActions isSubmitting={isSubmitting} isEdit hasChanges={hasChanges} />
               </form>
             </>
           )}

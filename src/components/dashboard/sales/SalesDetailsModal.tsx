@@ -30,12 +30,13 @@ export default function SalesDetailsModal({
   const tActions = useTranslations("dashboard.sales.actions")
   const tTable = useTranslations("dashboard.sales.table")
   const tSales = useTranslations("dashboard.sales")
-  const tDashboard = useTranslations("dashboard")
+  const tEquipment = useTranslations("dashboard.equipment")
   const { data: session } = useSession()
   const [status, setStatus] = useState(sale.status)
   const [loading, setLoading] = useState(false)
-  
-  const isAdminOwned = sale.isAdminOwned || (!sale.supplierInfo || sale.supplierInfo.length === 0)
+
+  const isAdminOwned =
+    sale.isAdminOwned || !sale.supplierInfo || sale.supplierInfo.length === 0
 
   const handleStatusUpdate = async (adminId?: string) => {
     setLoading(true)
@@ -76,7 +77,9 @@ export default function SalesDetailsModal({
     >
       <div className="bg-gray-50 py-4 border-b border-gray-200 -mx-6 px-6">
         <div>
-          <div className="text-xs font-medium text-gray-600 mb-2">{t("createdAt")}</div>
+          <div className="text-xs font-medium text-gray-600 mb-2">
+            {t("createdAt")}
+          </div>
           <div className="text-sm font-semibold text-gray-900" dir="ltr">
             {formatDateTime(sale.createdAt)}
           </div>
@@ -103,7 +106,9 @@ export default function SalesDetailsModal({
           },
           {
             label: t("commission"),
-            value: <PriceDisplay amount={sale.commission} variant="commission" />,
+            value: (
+              <PriceDisplay amount={sale.commission} variant="commission" />
+            ),
             highlight: true,
             dir: "ltr",
           },
@@ -136,7 +141,7 @@ export default function SalesDetailsModal({
           title={t("supplierInfo")}
           variant="supplier"
           adminCreated={isAdminOwned}
-          adminLabel={tDashboard("equipment.createdByAdmin")}
+          adminLabel={tEquipment("createdByAdmin")}
         />
       </div>
 
