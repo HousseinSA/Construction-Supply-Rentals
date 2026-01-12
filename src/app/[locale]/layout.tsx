@@ -31,11 +31,11 @@ export async function generateMetadata({
     namespace: "common",
   })
 
-  const baseUrl = process.env.NEXTAUTH_URL || 'https://yourdomain.com'
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://kriliyengin.com'
   const titles = {
-    fr: 'Location Équipement Construction Mauritanie | Matériel BTP',
-    ar: 'تأجير معدات البناء موريتانيا | معدات البناء والأشغال العامة',
-    en: 'Construction Equipment Rental Mauritania | Heavy Machinery'
+    fr: 'KriliyEngin - Location Équipement Construction Mauritanie | Matériel BTP',
+    ar: 'KriliyEngin - تأجير معدات البناء موريتانيا | معدات البناء والأشغال العامة',
+    en: 'KriliyEngin - Construction Equipment Rental Mauritania | Heavy Machinery'
   }
   const descriptions = {
     fr: 'Plateforme de location d\'équipements de construction en Mauritanie. Trouvez des engins de terrassement, nivellement, transport et levage à Nouakchott, Nouadhibou et partout en Mauritanie.',
@@ -140,11 +140,11 @@ export default async function LocaleLayout({
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'WebSite',
-              name: 'Mauritania Equipment Rental',
-              url: process.env.NEXTAUTH_URL || 'https://yourdomain.com',
+              name: 'KriliyEngin',
+              url: process.env.NEXTAUTH_URL || 'https://kriliyengin.com',
               potentialAction: {
                 '@type': 'SearchAction',
-                target: `${process.env.NEXTAUTH_URL || 'https://yourdomain.com'}/${locale}/equipment?search={search_term_string}`,
+                target: `${process.env.NEXTAUTH_URL || 'https://kriliyengin.com'}/${locale}/equipment?search={search_term_string}`,
                 'query-input': 'required name=search_term_string',
               },
             }),

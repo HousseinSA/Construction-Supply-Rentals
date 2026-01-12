@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXTAUTH_URL || 'https://yourdomain.com'
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://kriliyengin.com'
   const locales = ['ar', 'fr', 'en']
   
   const routes = [

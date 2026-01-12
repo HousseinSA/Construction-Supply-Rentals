@@ -172,16 +172,27 @@ export default function EquipmentTableRow({
                   </div>
                 )}
                 {index === 0 && item.pendingPricing && isSupplier && (
-                  <div ref={pricingTooltip.ref} className="relative inline-block">
+                  <div className="relative group inline-block">
                     <span className="inline-flex items-center gap-0.5 text-xs text-orange-600 cursor-help">
                       <RefreshCw className="w-3 h-3" />
                     </span>
-                    {pricingTooltip.isOpen && (
-                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap z-50">
-                        {t("pricingPendingApproval")}
-                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                      <div className="space-y-1">
+                        <div className="font-semibold">{t("pricingPendingApproval")}</div>
+                        <div className="text-gray-300">{t("currentPricing")} → {t("requestedPricing")}</div>
+                        {[
+                          { key: 'hourlyRate' as const, suffix: `/h` },
+                          { key: 'dailyRate' as const, suffix: `/${tCommon("day")}` },
+                          { key: 'kmRate' as const, suffix: `/${tCommon("km")}` },
+                          { key: 'salePrice' as const, suffix: '' }
+                        ].map(({ key, suffix }) => 
+                          item.pricing[key] && item.pendingPricing?.[key] ? (
+                            <div key={key} dir="ltr">{item.pricing[key]} → {item.pendingPricing[key]} MRU{suffix}</div>
+                          ) : null
+                        )}
                       </div>
-                    )}
+                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+                    </div>
                   </div>
                 )}
                 {index === 0 && item.pricingRejectionReason && isSupplier && (
