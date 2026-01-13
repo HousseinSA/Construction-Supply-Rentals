@@ -77,66 +77,10 @@ export async function GET(request: NextRequest) {
     }
 
     if (!isAdmin) {
-      const pipeline: any[] = [
-        { $match: query },
-        {
-          $lookup: {
-            from: "bookings",
-            let: { equipmentId: "$_id" },
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $and: [
-                      { $in: ["$$equipmentId", "$bookingItems.equipmentId"] },
-                      { $in: ["$status", ["pending", "paid"]] },
-                      // Check if booking dates include TODAY
-                      { $lte: ["$startDate", new Date()] },
-                      { $gte: ["$endDate", new Date()] }
-                    ],
-                  },
-                },
-              },
-            ],
-            as: "activeBookings",
-          },
-        },
-        {
-          $lookup: {
-            from: "sales",
-            let: { equipmentId: "$_id" },
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $and: [
-                      { $eq: ["$equipmentId", "$$equipmentId"] },
-                      { $in: ["$status", ["pending", "paid"]] },
-                    ],
-                  },
-                },
-              },
-            ],
-            as: "activeSales",
-          },
-        },
-        {
-          $match: {
-            $expr: {
-              $and: [
-                { $eq: [{ $size: "$activeBookings" }, 0] },
-                { $eq: [{ $size: "$activeSales" }, 0] },
-              ],
-            },
-          },
-        },
-        { $project: { activeBookings: 0, activeSales: 0 } },
-        { $sort: { createdAt: -1 } },
-      ]
-
       const equipment = await db
         .collection("equipment")
-        .aggregate(pipeline)
+        .find(query)
+        .sort({ createdAt: -1 })
         .toArray()
 
       return NextResponse.json({

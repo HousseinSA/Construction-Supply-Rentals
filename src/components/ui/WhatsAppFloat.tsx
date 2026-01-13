@@ -6,13 +6,7 @@ import { useSession } from "next-auth/react"
 import { usePathname } from "next/navigation"
 import { X } from "lucide-react"
 
-interface WhatsAppFloatProps {
-  message?: string
-}
-
-export default function WhatsAppFloat({
-  message = "Hello! I need support with the equipment rental platform.",
-}: WhatsAppFloatProps) {
+export default function WhatsAppFloat() {
   const { data: session } = useSession()
   const pathname = usePathname()
   const t = useTranslations("landing.whatsapp")
@@ -20,7 +14,7 @@ export default function WhatsAppFloat({
   const isRTL = locale === "ar"
   const [isHovered, setIsHovered] = useState(false)
   const [showTooltip, setShowTooltip] = useState(true)
-  
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowTooltip(false)
@@ -28,7 +22,7 @@ export default function WhatsAppFloat({
     return () => clearTimeout(timer)
   }, [])
 
-  const shouldHide = 
+  const shouldHide =
     session?.user?.role === "admin" ||
     (session?.user?.role === "supplier" && pathname.includes("/dashboard")) ||
     (session?.user?.role === "renter" && pathname.includes("/bookings"))
@@ -36,8 +30,7 @@ export default function WhatsAppFloat({
   if (shouldHide) return null
 
   const handleClick = () => {
-    const encodedMessage = encodeURIComponent(message)
-    const whatsappUrl = `https://wa.me/22233703131?text=${encodedMessage}`
+    const whatsappUrl = `https://wa.me/22233703131`
     window.open(whatsappUrl, "_blank")
   }
 
@@ -47,10 +40,16 @@ export default function WhatsAppFloat({
   }
 
   return (
-    <div className={`fixed bottom-6 z-40 flex items-end gap-3 ${isRTL ? "left-6" : "right-6"}`}>
+    <div
+      className={`fixed bottom-6 z-40 flex items-end gap-3 ${
+        isRTL ? "left-6" : "right-6"
+      }`}
+    >
       {showTooltip && (
         <div
-          className={`hidden sm:flex items-center gap-2 bg-white px-4 py-3 rounded-lg shadow-lg border border-gray-200 animate-bounce-slow ${isRTL ? "flex-row-reverse" : ""}`}
+          className={`hidden sm:flex items-center gap-2 bg-white px-4 py-3 rounded-lg shadow-lg border border-gray-200 animate-bounce-slow ${
+            isRTL ? "flex-row-reverse" : ""
+          }`}
           dir="auto"
         >
           <span className="text-sm font-medium text-gray-800 whitespace-nowrap">

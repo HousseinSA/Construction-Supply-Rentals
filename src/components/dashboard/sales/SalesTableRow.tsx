@@ -48,7 +48,7 @@ export default function SalesTableRow({ sale, onViewDetails, t, highlight = fals
       </TableCell>
       <TableCell>
         {isAdminOwned ? (
-          <span className="text-sm text-gray-400">{t("admin")}</span>
+          <span className="text-sm font-medium text-blue-700 whitespace-nowrap">{t("admin")}</span>
         ) : (
           <div className="space-y-1.5">
             <div className="text-sm font-medium text-gray-900">
@@ -65,7 +65,7 @@ export default function SalesTableRow({ sale, onViewDetails, t, highlight = fals
       </TableCell>
       <TableCell align="center"><BookingStatusBadge status={sale.status} /></TableCell>
       <TableCell align="center">
-        <span className="text-xs text-gray-600" dir="ltr">
+        <span className="text-sm text-gray-600" dir="ltr">
           {formatDateTime(sale.createdAt)}
         </span>
       </TableCell>

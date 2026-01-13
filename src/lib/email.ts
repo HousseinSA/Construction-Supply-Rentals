@@ -19,16 +19,19 @@ function createEmailTemplate(title: string, content: string, buttonText?: string
   return `
     <!DOCTYPE html>
     <html>
-      <head><meta charset="utf-8"></head>
-      <body style="margin: 0; padding: 20px; font-family: Arial, sans-serif; background: #f9fafb;">
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      </head>
+      <body style="margin: 0; padding: 10px; font-family: Arial, sans-serif; background: #f9fafb;">
         <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
           <div style="background: #f97316; padding: 20px; text-align: center;">
-            <h1 style="margin: 0; color: white; font-size: 20px;">Kriliy Engin</h1>
+            <h1 style="margin: 0; color: white; font-size: 20px;">KriliyEngin</h1>
           </div>
-          <div style="padding: 30px;">
+          <div style="padding: 20px;">
             ${content}
             ${buttonText && buttonUrl ? `<div style="text-align: center; margin-top: 30px;">
-              <a href="${buttonUrl}" style="display: inline-block; background: #f97316; color: white; padding: 12px 32px; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: 600;">${buttonText}</a>
+              <a href="${buttonUrl}" style="display: inline-block; background: #f97316; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: 600; word-break: break-word;">${buttonText}</a>
             </div>` : ''}
           </div>
         </div>
@@ -38,10 +41,10 @@ function createEmailTemplate(title: string, content: string, buttonText?: string
 
 function createSection(title: string, rows: Array<{label: string, value: string}>): string {
   return `
-    <div style="background: #f9fafb; padding: 16px; border-radius: 6px; margin-bottom: 24px; border: 1px solid #e5e7eb;">
-      <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #f97316; font-weight: 600;">${title}</h3>
-      <table style="width: 100%;">
-        ${rows.map(r => `<tr><td style="padding: 6px 0; color: #6b7280; font-size: 14px; width: 140px;">${r.label}</td><td style="padding: 6px 0; font-size: 14px; font-weight: 500;">${r.value}</td></tr>`).join('')}
+    <div style="background: #f9fafb; padding: 12px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #e5e7eb;">
+      <h3 style="margin: 0 0 12px 0; font-size: 15px; color: #f97316; font-weight: 600;">${title}</h3>
+      <table style="width: 100%; table-layout: fixed;">
+        ${rows.map(r => `<tr><td style="padding: 6px 0; color: #6b7280; font-size: 13px; width: 35%; vertical-align: top;">${r.label}</td><td style="padding: 6px 0; font-size: 13px; font-weight: 500; word-break: break-word; overflow-wrap: break-word;">${r.value}</td></tr>`).join('')}
       </table>
     </div>`;
 }
@@ -197,29 +200,127 @@ export async function sendEquipmentApprovalEmail(supplierEmail: string, details:
 }
 
 export async function sendBookingCancellationEmail(adminEmail: string, details: { 
-  referenceNumber: string; equipmentName: string; renterName: string; renterPhone: string; cancellationDate: Date;
+  referenceNumber: string; equipmentNames: string[]; totalPrice: number;
+  renterName: string; renterPhone: string; renterLocation?: string; cancellationDate: Date; createdAt: Date;
+  suppliers: Array<{name: string; phone: string; equipment: string; duration: string}>;
 }) {
+  const equipmentList = details.equipmentNames.join(', ');
+  const createdDateStr = new Date(details.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  const suppliersList = details.suppliers.map(s => 
+    `<tr><td style="padding: 6px 0; color: #6b7280; font-size: 13px;">${s.equipment}</td><td style="padding: 6px 0; font-size: 13px;">${s.name}</td><td style="padding: 6px 0; font-size: 13px;">${formatPhoneNumber(s.phone)}</td></tr>`
+  ).join('');
+
   const content = `
     <h2 style="margin: 0 0 8px 0; font-size: 22px; color: #111;">Annulation de Réservation</h2>
     <p style="margin: 0 0 8px 0; color: #f97316; font-size: 14px; font-weight: 600;">Référence: #${details.referenceNumber}</p>
-    <p style="margin: 0 0 24px 0; color: #6b7280; font-size: 14px;">Date: ${new Date(details.cancellationDate).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+    <p style="margin: 0 0 8px 0; color: #6b7280; font-size: 14px;">Date de création: ${createdDateStr}</p>
+    <p style="margin: 0 0 24px 0; color: #6b7280; font-size: 14px;">Date d'annulation: ${new Date(details.cancellationDate).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
     <div style="background: #fef2f2; border-left: 4px solid #ef4444; padding: 12px 16px; margin-bottom: 24px;">
-      <p style="margin: 0; font-size: 14px; color: #991b1b; font-weight: 600;">Cette réservation a été annulée</p>
+      <p style="margin: 0; font-size: 14px; color: #991b1b; font-weight: 600;">⚠️ Cette réservation a été annulée automatiquement car elle est restée en attente après sa date de fin</p>
     </div>
-    <div style="background: #f9fafb; padding: 16px; border-radius: 6px; margin-bottom: 24px; border: 1px solid #e5e7eb;">
-      <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #f97316; font-weight: 600;">Équipement</h3>
-      <p style="margin: 0; font-size: 14px; font-weight: 500;">${details.equipmentName}</p>
-    </div>
+    ${createSection('Équipement', [{label: 'Matériel', value: equipmentList}, {label: 'Total', value: `${details.totalPrice.toLocaleString()} MRU`}])}
     ${createSection('Client', [
       {label: 'Nom', value: details.renterName},
-      {label: 'Téléphone', value: formatPhoneNumber(details.renterPhone)}
-    ])}`;
+      {label: 'Téléphone', value: formatPhoneNumber(details.renterPhone)},
+      ...(details.renterLocation ? [{label: 'Ville', value: details.renterLocation}] : [])
+    ])}
+    ${details.suppliers.length > 0 ? `<div style="background: #f9fafb; padding: 12px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #e5e7eb;">
+      <h3 style="margin: 0 0 12px 0; font-size: 15px; color: #f97316; font-weight: 600;">Fournisseurs</h3>
+      <table style="width: 100%;">
+        <tr><th style="text-align: left; padding: 6px 0; color: #6b7280; font-size: 13px;">Équipement</th><th style="text-align: left; padding: 6px 0; color: #6b7280; font-size: 13px;">Nom</th><th style="text-align: left; padding: 6px 0; color: #6b7280; font-size: 13px;">Téléphone</th></tr>
+        ${suppliersList}
+      </table>
+    </div>` : ''}`;
 
   await transporter.sendMail({
     from: MAIL_FROM,
     to: adminEmail,
     subject: `Annulation de réservation - Référence #${details.referenceNumber}`,
     html: createEmailTemplate('Annulation de Réservation', content, 'Voir les détails', `${process.env.NEXTAUTH_URL}/fr/dashboard/bookings?highlight=${details.referenceNumber}`),
+  });
+}
+
+export async function sendBookingPendingReminderEmail(adminEmail: string, details: {
+  referenceNumber: string; equipmentNames: string[]; endDate: Date; totalPrice: number; createdAt: Date;
+}) {
+  const equipmentList = details.equipmentNames.join(', ');
+  const createdDateStr = new Date(details.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  const endDateStr = new Date(details.endDate).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+  const content = `
+    <h2 style="margin: 0 0 8px 0; font-size: 22px; color: #111;">Rappel: Réservation en attente</h2>
+    <p style="margin: 0 0 8px 0; color: #f97316; font-size: 14px; font-weight: 600;">Référence: #${details.referenceNumber}</p>
+    <p style="margin: 0 0 24px 0; color: #6b7280; font-size: 14px;">Date de création: ${createdDateStr}</p>
+    <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 12px 16px; margin: 24px 0;">
+      <p style="margin: 0; font-size: 14px; color: #92400e; font-weight: 600;">⚠️ Cette réservation se termine dans moins de 24 heures et est toujours en attente. Veuillez mettre à jour son statut avant qu'elle ne soit automatiquement annulée</p>
+    </div>
+    ${createSection('Détails', [
+      {label: 'Équipement', value: equipmentList},
+      {label: 'Fin prévue', value: endDateStr},
+      {label: 'Montant', value: `${details.totalPrice.toLocaleString()} MRU`}
+    ])}`;
+
+  await transporter.sendMail({
+    from: MAIL_FROM,
+    to: adminEmail,
+    subject: `Rappel: Réservation en attente - Référence #${details.referenceNumber}`,
+    html: createEmailTemplate('Rappel: Réservation en attente', content, 'Mettre à jour', `${process.env.NEXTAUTH_URL}/fr/dashboard/bookings?highlight=${details.referenceNumber}`),
+  });
+}
+
+export async function sendSalePendingReminderEmail(adminEmail: string, details: {
+  referenceNumber: string; equipmentName: string; salePrice: number; createdAt: Date;
+}) {
+  const createdDateStr = new Date(details.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+  const content = `
+    <h2 style="margin: 0 0 8px 0; font-size: 22px; color: #111;">Rappel: Vente en attente</h2>
+    <p style="margin: 0 0 8px 0; color: #f97316; font-size: 14px; font-weight: 600;">Référence: #${details.referenceNumber}</p>
+    <p style="margin: 0 0 24px 0; color: #6b7280; font-size: 14px;">Date de création: ${createdDateStr}</p>
+    <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 12px 16px; margin: 24px 0;">
+      <p style="margin: 0; font-size: 14px; color: #92400e; font-weight: 600;">⚠️ Cette vente est en attente depuis 6 jours. Veuillez mettre à jour son statut avant qu'elle ne soit automatiquement annulée dans 24 heures</p>
+    </div>
+    ${createSection('Détails', [
+      {label: 'Équipement', value: details.equipmentName},
+      {label: 'Prix', value: `${details.salePrice.toLocaleString()} MRU`}
+    ])}`;
+
+  await transporter.sendMail({
+    from: MAIL_FROM,
+    to: adminEmail,
+    subject: `Rappel: Vente en attente - Référence #${details.referenceNumber}`,
+    html: createEmailTemplate('Rappel: Vente en attente', content, 'Mettre à jour', `${process.env.NEXTAUTH_URL}/fr/dashboard/sales?highlight=${details.referenceNumber}`),
+  });
+}
+
+export async function sendSaleCancellationEmail(adminEmail: string, details: {
+  referenceNumber: string; equipmentName: string; salePrice: number;
+  buyerName: string; buyerPhone: string; cancellationDate: Date; createdAt: Date;
+}) {
+  const createdDateStr = new Date(details.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+  const content = `
+    <h2 style="margin: 0 0 8px 0; font-size: 22px; color: #111;">Annulation de Vente</h2>
+    <p style="margin: 0 0 8px 0; color: #f97316; font-size: 14px; font-weight: 600;">Référence: #${details.referenceNumber}</p>
+    <p style="margin: 0 0 8px 0; color: #6b7280; font-size: 14px;">Date de création: ${createdDateStr}</p>
+    <p style="margin: 0 0 24px 0; color: #6b7280; font-size: 14px;">Date d'annulation: ${new Date(details.cancellationDate).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+    <div style="background: #fef2f2; border-left: 4px solid #ef4444; padding: 12px 16px; margin-bottom: 24px;">
+      <p style="margin: 0; font-size: 14px; color: #991b1b; font-weight: 600;">⚠️ Cette vente a été annulée automatiquement car elle est restée en attente pendant plus de 7 jours</p>
+    </div>
+    ${createSection('Équipement', [
+      {label: 'Matériel', value: details.equipmentName},
+      {label: 'Prix', value: `${details.salePrice.toLocaleString()} MRU`}
+    ])}
+    ${createSection('Acheteur', [
+      {label: 'Nom', value: details.buyerName},
+      {label: 'Téléphone', value: formatPhoneNumber(details.buyerPhone)}
+    ])}`;
+
+  await transporter.sendMail({
+    from: MAIL_FROM,
+    to: adminEmail,
+    subject: `Annulation de vente - Référence #${details.referenceNumber}`,
+    html: createEmailTemplate('Annulation de Vente', content, 'Voir les détails', `${process.env.NEXTAUTH_URL}/fr/dashboard/sales?highlight=${details.referenceNumber}`),
   });
 }
 

@@ -29,19 +29,21 @@ export default function BookingModal({
   const tCommon = useTranslations("common")
   const params = useParams()
   const router = useRouter()
-  const locale = params?.locale as string || 'fr'
-  const [bookedRanges, setBookedRanges] = useState<Array<{ start: Date | string; end: Date | string }>>([])
+  const locale = (params?.locale as string) || "fr"
+  const [bookedRanges, setBookedRanges] = useState<
+    Array<{ start: Date | string; end: Date | string }>
+  >([])
 
   useEffect(() => {
     if (isOpen && equipment?._id) {
       fetch(`/api/equipment/${equipment._id}/booked-dates`)
-        .then(res => res.json())
-        .then(data => {
+        .then((res) => res.json())
+        .then((data) => {
           if (data.success) {
             setBookedRanges(data.data)
           }
         })
-        .catch(err => console.error('Failed to fetch booked dates:', err))
+        .catch((err) => console.error("Failed to fetch booked dates:", err))
     }
   }, [isOpen, equipment?._id])
 
@@ -85,8 +87,27 @@ export default function BookingModal({
     availablePricingTypes[0]?.type || "daily"
   )
 
-  const { usage, setUsage, startDate, setStartDate, endDate, setEndDate, message, setMessage, loading, handleSubmit, resetForm, validateBooking } =
-    useBookingModal(equipment, onBookingSuccess, onClose, selectedPricingType, router, locale)
+  const {
+    usage,
+    setUsage,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
+    message,
+    setMessage,
+    loading,
+    handleSubmit,
+    resetForm,
+    validateBooking,
+  } = useBookingModal(
+    equipment,
+    onBookingSuccess,
+    onClose,
+    selectedPricingType,
+    router,
+    locale
+  )
 
   if (!isOpen || !equipment) return null
 
@@ -109,7 +130,6 @@ export default function BookingModal({
       }}
       title={t("title")}
       equipmentName={equipment.name}
-      equipmentReference={equipment.referenceNumber}
       equipmentLocation={equipment.location}
       message={message}
       onMessageChange={setMessage}
@@ -141,16 +161,22 @@ export default function BookingModal({
                 }}
                 className={`flex-1 min-w-[100px] p-3 rounded-xl border-2 transition-all ${
                   selectedPricingType === pricing.type
-                    ? 'border-primary bg-primary/5'
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? "border-primary bg-primary/5"
+                    : "border-gray-200 hover:border-gray-300"
                 }`}
               >
                 <div className="flex flex-col items-center gap-0.5" dir="ltr">
                   <div className="flex items-baseline gap-1">
-                    <span className="text-lg font-bold text-gray-900">{pricing.rate.toLocaleString()}</span>
-                    <span className="text-xs font-medium text-gray-500">MRU</span>
+                    <span className="text-lg font-bold text-gray-900">
+                      {pricing.rate.toLocaleString()}
+                    </span>
+                    <span className="text-xs font-medium text-gray-500">
+                      MRU
+                    </span>
                   </div>
-                  <span className="text-xs font-medium text-gray-500">/ {pricing.label}</span>
+                  <span className="text-xs font-medium text-gray-500">
+                    / {pricing.label}
+                  </span>
                 </div>
               </button>
             ))}
@@ -158,7 +184,7 @@ export default function BookingModal({
         </div>
       )}
 
-      {selectedPricingType === 'daily' ? (
+      {selectedPricingType === "daily" ? (
         <DatePicker
           startDate={startDate}
           endDate={endDate}
@@ -166,7 +192,11 @@ export default function BookingModal({
             setStartDate(start)
             setEndDate(end)
             if (start && end) {
-              const days = Math.ceil((new Date(end).getTime() - new Date(start).getTime()) / (1000 * 60 * 60 * 24)) + 1
+              const days =
+                Math.ceil(
+                  (new Date(end).getTime() - new Date(start).getTime()) /
+                    (1000 * 60 * 60 * 24)
+                ) + 1
               setUsage(days)
             }
           }}
@@ -191,7 +221,11 @@ export default function BookingModal({
           />
           <Input
             type="text"
-            label={`${selectedPricingType === 'per_km' ? t("estimatedDistance") : t("usage")} (${usageLabel})`}
+            label={`${
+              selectedPricingType === "per_km"
+                ? t("estimatedDistance")
+                : t("usage")
+            } (${usageLabel})`}
             value={usage}
             onChange={(e) => {
               const val = e.target.value.replace(/\D/g, "")
@@ -199,9 +233,12 @@ export default function BookingModal({
             }}
             required
           />
-          {selectedPricingType === 'per_km' && (
+          {selectedPricingType === "per_km" && (
             <div className="-mt-2 text-sm text-gray-600">
-              {t("rate")}: <span dir="ltr">{rate.toLocaleString()} MRU/{usageLabel}</span>
+              {t("rate")}:{" "}
+              <span dir="ltr">
+                {rate.toLocaleString()} MRU/{usageLabel}
+              </span>
             </div>
           )}
         </>

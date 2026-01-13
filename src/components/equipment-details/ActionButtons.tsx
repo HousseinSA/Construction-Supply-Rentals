@@ -40,14 +40,6 @@ export default function ActionButtons({ isForSale, equipment, onBookingSuccess }
   }
   
   const getButtonContent = () => {
-    if (equipment.hasActiveBookings) {
-      return {
-        icon: <Clock className="w-4 h-4 sm:w-5 sm:h-5" />,
-        text: t('currentlyUnavailable'),
-        className: 'bg-gray-400 cursor-not-allowed'
-      }
-    }
-    
     return {
       icon: isForSale ? <Tag className="w-4 h-4 sm:w-5 sm:h-5" /> : <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />,
       text: isForSale ? t('sendSaleRequest') : t('sendBookingRequest'),
@@ -63,8 +55,7 @@ export default function ActionButtons({ isForSale, equipment, onBookingSuccess }
         {!shouldHideButton && (
           <button 
             onClick={handleActionClick}
-            disabled={equipment.hasActiveBookings}
-            className={`w-full ${buttonContent.className} text-white py-3 sm:py-3.5 px-4 rounded-xl transition-all duration-300 font-semibold text-base sm:text-lg shadow-lg hover:shadow-xl flex items-center justify-center gap-2 disabled:hover:shadow-lg`}
+            className={`w-full ${buttonContent.className} text-white py-3 sm:py-3.5 px-4 rounded-xl transition-all duration-300 font-semibold text-base sm:text-lg shadow-lg hover:shadow-xl flex items-center justify-center gap-2`}
           >
             {buttonContent.icon}
             {buttonContent.text}

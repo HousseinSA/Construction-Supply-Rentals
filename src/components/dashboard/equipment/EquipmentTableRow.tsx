@@ -178,16 +178,29 @@ export default function EquipmentTableRow({
                     </span>
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
                       <div className="space-y-1">
-                        <div className="font-semibold">{t("pricingPendingApproval")}</div>
-                        <div className="text-gray-300">{t("currentPricing")} → {t("requestedPricing")}</div>
+                        <div className="font-semibold">
+                          {t("pricingPendingApproval")}
+                        </div>
+                        <div className="text-gray-300">
+                          {t("currentPricing")} → {t("requestedPricing")}
+                        </div>
                         {[
-                          { key: 'hourlyRate' as const, suffix: `/h` },
-                          { key: 'dailyRate' as const, suffix: `/${tCommon("day")}` },
-                          { key: 'kmRate' as const, suffix: `/${tCommon("km")}` },
-                          { key: 'salePrice' as const, suffix: '' }
-                        ].map(({ key, suffix }) => 
+                          { key: "hourlyRate" as const, suffix: `/h` },
+                          {
+                            key: "dailyRate" as const,
+                            suffix: `/${tCommon("day")}`,
+                          },
+                          {
+                            key: "kmRate" as const,
+                            suffix: `/${tCommon("km")}`,
+                          },
+                          { key: "salePrice" as const, suffix: "" },
+                        ].map(({ key, suffix }) =>
                           item.pricing[key] && item.pendingPricing?.[key] ? (
-                            <div key={key} dir="ltr">{item.pricing[key]} → {item.pendingPricing[key]} MRU{suffix}</div>
+                            <div key={key} dir="ltr">
+                              {item.pricing[key]} → {item.pendingPricing[key]}{" "}
+                              MRU{suffix}
+                            </div>
                           ) : null
                         )}
                       </div>
@@ -237,7 +250,7 @@ export default function EquipmentTableRow({
           </td>
         )}
         <td className="px-6 py-4 text-center">
-          <span className="text-sm text-gray-600 whitespace-nowrap">
+          <span className="text-lg text-gray-600 whitespace-nowrap">
             {new Date(item.createdAt).toLocaleDateString()}
           </span>
         </td>

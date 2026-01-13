@@ -207,7 +207,6 @@ export default function AdminEquipmentCard({ equipment }: EquipmentCardProps) {
             )}
           </div>
 
-          {/* Supplier Info (if not admin created) */}
           {!isAdminCreated && equipment.supplier && (
             <div className="border-t pt-3 mb-4">
               <h4 className="text-sm font-semibold mb-2 text-gray-700">

@@ -238,7 +238,7 @@ async function runAutoComplete(db) {
 
   try {
     // Call the actual backend API endpoint
-    const response = await fetch('http://localhost:3000/api/booking-auto-complete', {
+    const response = await fetch('http://localhost:3000/api/cron/auto-complete', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' }
     });
@@ -247,9 +247,11 @@ async function runAutoComplete(db) {
     
     if (result.success) {
       console.log('✅ Auto-complete API executed successfully:');
-      console.log(`   Cancelled: ${result.cancelled || 0}`);
-      console.log(`   Completed: ${result.completed || 0}`);
-      console.log(`   Warnings Sent: ${result.warnings || 0}\n`);
+      console.log(`   Bookings Cancelled: ${result.result?.bookings?.cancelled || 0}`);
+      console.log(`   Bookings Completed: ${result.result?.bookings?.completed || 0}`);
+      console.log(`   Booking Reminders: ${result.result?.bookings?.reminders || 0}`);
+      console.log(`   Sales Cancelled: ${result.result?.sales?.cancelled || 0}`);
+      console.log(`   Sale Reminders: ${result.result?.sales?.reminders || 0}\n`);
     } else {
       console.log('❌ Auto-complete API failed:', result.error);
     }
@@ -257,7 +259,7 @@ async function runAutoComplete(db) {
     return result;
   } catch (error) {
     console.error('❌ Error calling auto-complete API:', error.message);
-    return { success: false, cancelled: 0, completed: 0, warnings: 0 };
+    return { success: false, result: { bookings: { cancelled: 0, completed: 0, reminders: 0 }, sales: { cancelled: 0, reminders: 0 } } };
   }
 }
 

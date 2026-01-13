@@ -27,7 +27,6 @@ export default function BookingSuccessPage() {
 
   const fetchMainEquipment = useCallback(async () => {
     if (!equipmentId) return
-    // Skip fetch if we already have equipment from store
     if (storedEquipment) {
       setMainEquipment(storedEquipment)
       return

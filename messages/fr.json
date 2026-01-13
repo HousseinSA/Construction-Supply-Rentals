@@ -1040,8 +1040,8 @@
   "bookingSuccess": {
     "title": "Réservation Réussie!",
     "saleTitle": "Demande d’achat envoyée !",
-    "bookingMessage": "Votre demande de réservation a été soumise avec succès. Notre équipe l'examinera et vous contactera bientôt.",
-    "saleMessage": "Votre demande d'achat a été soumise avec succès. Notre équipe l'examinera et vous contactera bientôt.",
+    "bookingMessage_fr": "Votre demande de réservation a été envoyée avec succès. Elle sera examinée et vous serez contacté prochainement.",
+    "saleMessage_fr": "Votre demande d’achat a été envoyée avec succès. Elle sera examinée et vous serez contacté prochainement.",
     "transportTitle": "Besoin de Transport?",
     "transportSubtitle": "Parcourez les équipements de transport disponibles pour déplacer votre matériel",
     "noTransportAvailable": "Aucun équipement de transport actuellement disponible",

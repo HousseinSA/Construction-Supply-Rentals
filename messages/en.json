@@ -1038,8 +1038,8 @@
   "bookingSuccess": {
     "title": "Booking Successful!",
     "saleTitle": "Purchase request sent!",
-    "bookingMessage": "Your booking request has been submitted successfully. Our team will review it and contact you soon.",
-    "saleMessage": "Your purchase request has been submitted successfully. Our team will review it and contact you soon.",
+    "bookingMessage_en": "Your booking request has been sent successfully. It will be reviewed and you will be contacted soon.",
+    "saleMessage_en": "Your purchase request has been sent successfully. It will be reviewed and you will be contacted soon.",
     "transportTitle": "Need Transport?",
     "transportSubtitle": "Browse available transport equipment to move your equipment",
     "noTransportAvailable": "No transport equipment currently available",

@@ -1,6 +1,10 @@
 import { Eye } from "lucide-react"
 import { formatPhoneNumber } from "@/src/lib/format"
-import { formatDate, formatDateTime, getTranslatedUnit } from "@/src/lib/table-utils"
+import {
+  formatDate,
+  formatDateTime,
+  getTranslatedUnit,
+} from "@/src/lib/table-utils"
 import CopyButton from "@/src/components/ui/CopyButton"
 import ReferenceNumber from "@/src/components/ui/ReferenceNumber"
 import PriceDisplay from "@/src/components/ui/PriceDisplay"
@@ -24,10 +28,11 @@ export default function BookingTableRow({
   highlight = false,
 }: BookingTableRowProps) {
   console.group(booking.bookingItems)
-  const tCommon = useTranslations('common')
+  const tCommon = useTranslations("common")
   const locale = useLocale()
-  const isArabic = locale === 'ar'
-  const commission = booking.totalCommission || booking.bookingItems[0]?.commission || 0
+  const isArabic = locale === "ar"
+  const commission =
+    booking.totalCommission || booking.bookingItems[0]?.commission || 0
   const totalUsage = booking.bookingItems.reduce(
     (sum, item) => sum + item.usage,
     0
@@ -39,7 +44,7 @@ export default function BookingTableRow({
     } else if (booking.startDate) {
       return formatDate(booking.startDate)
     }
-    return '-'
+    return "-"
   }
 
   const getUsageDisplay = () => {
@@ -55,12 +60,16 @@ export default function BookingTableRow({
             {booking.bookingItems[0]?.equipmentName}
             {booking.bookingItems.length > 1 && (
               <span className="text-gray-600 text-xs">
-                {" "}+{booking.bookingItems.length - 1} {t("more")}
+                {" "}
+                +{booking.bookingItems.length - 1} {t("more")}
               </span>
             )}
           </div>
           <div className="flex items-center gap-2">
-            <ReferenceNumber referenceNumber={booking.referenceNumber} size="md" />
+            <ReferenceNumber
+              referenceNumber={booking.referenceNumber}
+              size="md"
+            />
           </div>
         </div>
       </TableCell>
@@ -70,7 +79,7 @@ export default function BookingTableRow({
             {booking.renterInfo[0]?.firstName} {booking.renterInfo[0]?.lastName}
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-700" >
+            <span className="text-sm text-gray-700">
               {formatPhoneNumber(booking.renterInfo[0]?.phone)}
             </span>
             <CopyButton text={booking.renterInfo[0]?.phone} size="sm" />
@@ -78,12 +87,12 @@ export default function BookingTableRow({
         </div>
       </TableCell>
       <TableCell>
-        <span className="text-xs font-medium text-gray-700" >
+        <span className="text-xs font-medium text-gray-700">
           {getRentalPeriod()}
         </span>
       </TableCell>
       <TableCell>
-        <span className="text-sm font-medium text-gray-700" >
+        <span className="text-sm font-medium text-gray-700">
           {getUsageDisplay()}
         </span>
       </TableCell>
@@ -110,7 +119,9 @@ export default function BookingTableRow({
             </div>
           </div>
         ) : (
-          <span className="text-sm text-gray-400">{t("admin")}</span>
+          <span className="text-sm font-medium text-blue-700 whitespace-nowrap">
+            {t("admin")}
+          </span>
         )}
       </TableCell>
       <TableCell align="center">

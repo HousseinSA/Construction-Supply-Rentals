@@ -55,7 +55,7 @@ export default function GenericMobileCard({
   phoneNumber,
 }: GenericMobileCardProps) {
   const defaultStyles = {
-    dateClassName: "text-xs text-gray-500 mt-0.5",
+    dateClassName: "text-sm text-gray-500 mt-0.5",
     labelClassName: "text-xs text-gray-500",
     valueClassName: "font-semibold text-xs text-gray-900",
     idClassName: "font-semibold text-orange-600 flex items-center text-sm mb-1",
@@ -67,17 +67,16 @@ export default function GenericMobileCard({
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1">
           <div className={`${defaultStyles.idClassName}`}>
-            {typeof id === 'string' && '#' + id}
-            {!isAdminView  &&  <CopyButton text={id as string}  />}
-                 
+            {typeof id === "string" && "#" + id}
+            {!isAdminView && <CopyButton text={id as string} />}
           </div>
           {subtitle && (
             <div>
               <div className={defaultStyles.subtitleClassName}>{subtitle}</div>
               {isAdminView && phoneNumber && (
                 <div className="flex items-center gap-1">
-                  <span className="text-xs text-gray-600 dir-ltr">{phoneNumber}</span>
-                  <CopyButton text={phoneNumber}  />
+                  <span className="text-sm text-gray-600">{phoneNumber}</span>
+                  <CopyButton text={phoneNumber} />
                 </div>
               )}
             </div>
@@ -94,28 +93,48 @@ export default function GenericMobileCard({
           {image && <div className="flex-shrink-0">{image}</div>}
           <div className="flex-1 flex flex-col gap-2">
             <div className="text-sm font-medium text-gray-900">{title}</div>
-            
+
             {fields.length > 0 && (
               <div className="grid grid-cols-2 gap-2">
                 {fields.slice(0, 2).map((field, index) => {
                   const isNumeric = typeof field.value === "number"
                   const isString = typeof field.value === "string"
-                  const isJSX = typeof field.value === "object" && !isNumeric && !isString
-                  
+                  const isJSX =
+                    typeof field.value === "object" && !isNumeric && !isString
+
                   let displayValue: string | React.ReactNode = field.value
-                  if (isNumeric && field.value !== null && field.value !== undefined) {
+                  if (
+                    isNumeric &&
+                    field.value !== null &&
+                    field.value !== undefined
+                  ) {
                     const formatted = field.value.toLocaleString()
-                    displayValue = field.currency ? `${formatted} MRU` : formatted
+                    displayValue = field.currency
+                      ? `${formatted} MRU`
+                      : formatted
                   }
 
                   return (
                     <div key={index} className="flex items-start gap-1">
                       {field.icon}
                       <div>
-                        <div className={field.labelClassName || defaultStyles.labelClassName}>{field.label}</div>
-                        <div className={field.valueClassName || `font-semibold text-xs ${
-                          field.highlight ? "text-green-600" : "text-gray-900"
-                        }`} >
+                        <div
+                          className={
+                            field.labelClassName || defaultStyles.labelClassName
+                          }
+                        >
+                          {field.label}
+                        </div>
+                        <div
+                          className={
+                            field.valueClassName ||
+                            `font-semibold text-xs ${
+                              field.highlight
+                                ? "text-green-600"
+                                : "text-gray-900"
+                            }`
+                          }
+                        >
                           {isJSX ? displayValue : displayValue}
                         </div>
                       </div>
@@ -134,10 +153,15 @@ export default function GenericMobileCard({
             {fields.slice(2).map((field, index) => {
               const isNumeric = typeof field.value === "number"
               const isString = typeof field.value === "string"
-              const isJSX = typeof field.value === "object" && !isNumeric && !isString
-              
+              const isJSX =
+                typeof field.value === "object" && !isNumeric && !isString
+
               let displayValue: string | React.ReactNode = field.value
-              if (isNumeric && field.value !== null && field.value !== undefined) {
+              if (
+                isNumeric &&
+                field.value !== null &&
+                field.value !== undefined
+              ) {
                 const formatted = field.value.toLocaleString()
                 displayValue = field.currency ? `${formatted} MRU` : formatted
               }
@@ -146,15 +170,28 @@ export default function GenericMobileCard({
                 <div key={index} className="flex items-start gap-1">
                   {field.icon}
                   <div className="flex-1">
-                    <div className={field.labelClassName || defaultStyles.labelClassName}>{field.label}</div>
-                    <div className={field.valueClassName || `font-semibold text-sm ${
-                      field.highlight ? "text-green-600" : "text-gray-900"
-                    }`}>
+                    <div
+                      className={
+                        field.labelClassName || defaultStyles.labelClassName
+                      }
+                    >
+                      {field.label}
+                    </div>
+                    <div
+                      className={
+                        field.valueClassName ||
+                        `font-semibold text-sm ${
+                          field.highlight ? "text-green-600" : "text-gray-900"
+                        }`
+                      }
+                    >
                       {isJSX ? displayValue : displayValue}
                     </div>
                     {field.secondaryValue && (
                       <div className="flex items-center gap-1">
-                        <span className="text-xs text-gray-600 dir-ltr">{field.secondaryValue}</span>
+                        <span className="text-sm text-gray-600 ">
+                          {field.secondaryValue}
+                        </span>
                         <CopyButton text={field.secondaryValue} />
                       </div>
                     )}

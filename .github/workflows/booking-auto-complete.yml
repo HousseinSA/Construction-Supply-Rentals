@@ -1,18 +1,18 @@
-name: Auto-Complete Bookings
+name: Auto-Complete Bookings and Sales
 
 on:
   schedule:
-    - cron: '0 2 * * *'
-  workflow_dispatch:
+    - cron: '0 2 * * *'  # Runs daily at 2 AM UTC
+  workflow_dispatch:  # Allows manual trigger for testing
 
 jobs:
   auto-complete:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Trigger booking auto-completion
+      - name: Trigger auto-completion
         run: |
-          curl -X POST http://localhost:3000/api/booking-auto-complete \
-            -H "x-auto-complete-secret: ${{ secrets.AUTO_COMPLETE_SECRET }}" \
+          curl -X POST ${{ secrets.APP_URL }}/api/cron/auto-complete \
+            -H "Authorization: Bearer ${{ secrets.AUTO_COMPLETE_SECRET }}" \
             -H "Content-Type: application/json" \
             -d '{}'
