@@ -12,8 +12,7 @@ jobs:
     steps:
       - name: Trigger auto-completion
         run: |
-          curl -L -X POST ${{ secrets.APP_URL }}/api/cron/auto-complete \
-            -H "Authorization: Bearer ${{ secrets.AUTO_COMPLETE_SECRET }}" \
+          curl -L -X POST "${{ secrets.APP_URL }}/api/cron/auto-complete?token=${{ secrets.AUTO_COMPLETE_SECRET }}" \
             -H "Content-Type: application/json" \
             -d '{}' \
             -w "\nHTTP Status: %{http_code}\n" \

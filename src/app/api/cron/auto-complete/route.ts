@@ -8,11 +8,15 @@ export async function POST(req: NextRequest) {
   try {
     console.log('[CRON] Auto-complete triggered at:', new Date().toISOString());
     
+    // Check both header and query parameter for token
     const authHeader = req.headers.get('authorization');
-    const token = authHeader?.replace('Bearer ', '');
+    const headerToken = authHeader?.replace('Bearer ', '');
+    const queryToken = req.nextUrl.searchParams.get('token');
+    const token = headerToken || queryToken;
     const envSecret = process.env.AUTO_COMPLETE_SECRET;
     
-    console.log('[CRON] Token received:', token ? 'YES' : 'NO');
+    console.log('[CRON] Header token received:', headerToken ? 'YES' : 'NO');
+    console.log('[CRON] Query token received:', queryToken ? 'YES' : 'NO');
     console.log('[CRON] Env secret exists:', envSecret ? 'YES' : 'NO');
     console.log('[CRON] Token matches:', token === envSecret);
     
