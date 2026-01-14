@@ -55,15 +55,22 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  const session = await getServerSession(authOptions);
+  // Debug endpoint - remove after testing
+  const authHeader = req.headers.get('authorization');
+  const token = authHeader?.replace('Bearer ', '');
+  const envSecret = process.env.AUTO_COMPLETE_SECRET;
   
-  if (!session || session.user?.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
   return NextResponse.json({
     status: 'ready',
     endpoint: '/api/cron/auto-complete',
-    message: 'Send POST to trigger manually'
+    message: 'Send POST to trigger manually',
+    debug: {
+      hasAuthHeader: !!authHeader,
+      hasToken: !!token,
+      hasEnvSecret: !!envSecret,
+      tokenLength: token?.length || 0,
+      envSecretLength: envSecret?.length || 0,
+      tokensMatch: token === envSecret
+    }
   });
 }
