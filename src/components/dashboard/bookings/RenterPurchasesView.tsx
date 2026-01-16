@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { useTranslations } from "next-intl"
+import { usePurchases } from "@/src/hooks/usePurchases"
 import { usePagination } from "@/src/hooks/usePagination"
 import {
   Table,
@@ -22,39 +22,9 @@ import { useTransactionCancel } from "@/src/hooks/useTransactionCancel"
 import { formatDate } from "@/src/lib/table-utils"
 import PriceDisplay from "@/src/components/ui/PriceDisplay"
 
-interface SaleOrder {
-  _id: string
-  equipmentId: string
-  equipmentName: string
-  equipmentImage?: string[]
-  salePrice: number
-  status: "pending" | "paid" | "completed" | "cancelled"
-  buyerMessage?: string
-  referenceNumber: string
-  createdAt: string
-}
-
 export default function RenterPurchasesView() {
   const t = useTranslations("dashboard.purchases")
-  const [purchases, setPurchases] = useState<SaleOrder[]>([])
-  const [loading, setLoading] = useState(true)
-
-  const fetchPurchases = async () => {
-    try {
-      setLoading(true)
-      const response = await fetch("/api/sales/my-purchases")
-      const data = await response.json()
-      if (data.success) setPurchases(data.data)
-    } catch (error) {
-      console.error("Failed to fetch purchases:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    fetchPurchases()
-  }, [])
+  const { purchases, loading } = usePurchases()
 
   const {
     currentPage,
@@ -71,7 +41,7 @@ export default function RenterPurchasesView() {
     setShowDialog,
     handleCancelClick,
     handleConfirm,
-  } = useTransactionCancel("purchase", fetchPurchases, {
+  } = useTransactionCancel("purchase", () => {}, {
     cancelSuccess: t("cancelSuccess"),
     cancelFailed: t("cancelFailed"),
   })

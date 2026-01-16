@@ -68,16 +68,17 @@ export async function GET(request: NextRequest) {
         }
       },
       { $sort: { createdAt: -1 } },
-      { $skip: skip },
-      { $limit: limit }
+      {
+        $facet: {
+          data: [{ $skip: skip }, { $limit: limit }],
+          total: [{ $count: "count" }],
+        },
+      }
     )
 
-    const sales = await db.collection("sales").aggregate(pipeline).toArray()
-
-    // Get total count for pagination info
-    const countPipeline = pipeline.slice(0, -2) // Remove $skip and $limit for count
-    const totalCountResult = await db.collection("sales").aggregate([...pipeline.slice(0, pipeline.length - 2), { $count: "total" }]).toArray()
-    const total = totalCountResult[0]?.total || 0
+    const result = await db.collection("sales").aggregate(pipeline).toArray()
+    const sales = result[0]?.data || []
+    const total = result[0]?.total[0]?.count || 0
 
     return NextResponse.json({
       success: true,

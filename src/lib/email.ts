@@ -5,6 +5,7 @@ const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST || 'smtp.gmail.com',
   port: parseInt(process.env.EMAIL_PORT || '587'),
   secure: false,
+  requireTLS: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD,
@@ -265,6 +266,42 @@ export async function sendBookingPendingReminderEmail(adminEmail: string, detail
     to: adminEmail,
     subject: `Rappel: Réservation en attente - Référence #${details.referenceNumber}`,
     html: createEmailTemplate('Rappel: Réservation en attente', content, 'Mettre à jour', `${process.env.NEXTAUTH_URL}/fr/dashboard/bookings?highlight=${details.referenceNumber}`),
+  });
+}
+
+export async function sendBookingStartReminderEmail(adminEmail: string, details: {
+  referenceNumber: string; equipmentNames: string[]; startDate: Date; endDate: Date; 
+  totalPrice: number; status: string; renterName: string; renterPhone: string;
+}) {
+  const equipmentList = details.equipmentNames.join(', ');
+  const startDateStr = new Date(details.startDate).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  const endDateStr = new Date(details.endDate).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  const statusText = details.status === 'pending' ? 'En attente' : 'Payée';
+  const statusColor = details.status === 'pending' ? '#f59e0b' : '#22c55e';
+
+  const content = `
+    <h2 style="margin: 0 0 8px 0; font-size: 22px; color: #111;">Rappel: Location commence demain</h2>
+    <p style="margin: 0 0 8px 0; color: #f97316; font-size: 14px; font-weight: 600;">Référence: #${details.referenceNumber}</p>
+    <p style="margin: 0 0 24px 0; color: #6b7280; font-size: 14px;">Statut: <span style="color: ${statusColor}; font-weight: 600;">${statusText}</span></p>
+    <div style="background: #dbeafe; border-left: 4px solid #3b82f6; padding: 12px 16px; margin: 24px 0;">
+      <p style="margin: 0; font-size: 14px; color: #1e40af; font-weight: 600;">📅 Cette location commence dans moins de 24 heures. Assurez-vous que tout est prêt!</p>
+    </div>
+    ${createSection('Détails de la location', [
+      {label: 'Équipement', value: equipmentList},
+      {label: 'Début', value: startDateStr},
+      {label: 'Fin', value: endDateStr},
+      {label: 'Montant', value: `${details.totalPrice.toLocaleString()} MRU`}
+    ])}
+    ${createSection('Client', [
+      {label: 'Nom', value: details.renterName},
+      {label: 'Téléphone', value: formatPhoneNumber(details.renterPhone)}
+    ])}`;
+
+  await transporter.sendMail({
+    from: MAIL_FROM,
+    to: adminEmail,
+    subject: `Rappel: Location commence demain - Référence #${details.referenceNumber}`,
+    html: createEmailTemplate('Rappel: Location commence demain', content, 'Voir les détails', `${process.env.NEXTAUTH_URL}/fr/dashboard/bookings?highlight=${details.referenceNumber}`),
   });
 }
 

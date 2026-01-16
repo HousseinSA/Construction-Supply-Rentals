@@ -12,38 +12,19 @@ interface UseManageEquipmentConfig {
 }
 
 export function useManageEquipment({ convertToLocalized, supplierId }: UseManageEquipmentConfig) {
-  const { equipment, loading, setEquipment, setLoading, updateEquipment } = useEquipmentStore()
+  const { equipment, loading, setEquipment, setLoading, updateEquipment, shouldRefetch } = useEquipmentStore()
   const [updating, setUpdating] = useState<string | null>(null)
 
   const fetchEquipment = useCallback(async () => {
     try {
       setLoading(true)
       const url = supplierId 
-        ? `/api/equipment?supplierId=${supplierId}`
-        : "/api/equipment?admin=true"
+        ? `/api/equipment?supplierId=${supplierId}&includeSupplier=true`
+        : "/api/equipment?admin=true&includeSupplier=true"
       const response = await fetch(url)
       const data = await response.json()
       if (data.success) {
-        const usersResponse = await fetch("/api/users")
-        const usersData = await usersResponse.json()
-
-        const equipmentWithSuppliers = data.data.map((item: Equipment) => {
-          if (
-            item.createdBy === "supplier" &&
-            item.supplierId &&
-            usersData.success
-          ) {
-            const supplierId = item.supplierId.toString()
-            const supplier = usersData.data.find(
-              (user: User) => user._id?.toString() === supplierId
-            )
-            if (supplier) {
-              return { ...item, supplier } as EquipmentWithSupplier
-            }
-          }
-          return item as EquipmentWithSupplier
-        })
-        setEquipment(equipmentWithSuppliers)
+        setEquipment(data.data || [])
       }
     } catch (error) {
       console.error("Error fetching equipment:", error)
@@ -165,8 +146,10 @@ export function useManageEquipment({ convertToLocalized, supplierId }: UseManage
   }, [fetchEquipment]))
 
   useEffect(() => {
-    fetchEquipment()
-  }, [fetchEquipment])
+    if (shouldRefetch()) {
+      fetchEquipment()
+    }
+  }, [fetchEquipment, shouldRefetch])
 
   return {
     equipment: paginatedData,

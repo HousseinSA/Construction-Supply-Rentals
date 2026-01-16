@@ -1,23 +1,21 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useMemo } from "react"
 import { useTranslations } from "next-intl"
 import { useSession } from "next-auth/react"
 import { ArrowLeft, Users, Shield, Building, Phone, MapPin, Calendar } from "lucide-react"
 import { Link } from "@/src/i18n/navigation"
 import { usePagination } from "@/src/hooks/usePagination"
 import { useTableFilters } from "@/src/hooks/useTableFilters"
+import { useUsers } from "@/src/hooks/useUsers"
 import HomeButton from "../../ui/HomeButton"
 import Pagination from "../../ui/Pagination"
 import TableFilters from "../../ui/TableFilters"
-import { User } from "@/src/lib/models/user"
 
 export default function ManageUsers() {
   const { data: session } = useSession()
   const t = useTranslations("dashboard.pages.users")
-
-  const [users, setUsers] = useState<User[]>([])
-  const [loading, setLoading] = useState(true)
+  const { users, loading } = useUsers()
 
   const {
     searchValue,
@@ -57,24 +55,6 @@ export default function ManageUsers() {
     totalItems,
     itemsPerPage,
   } = usePagination({ data: filteredUsers, itemsPerPage: 10 })
-
-  useEffect(() => {
-    fetchUsers()
-  }, [])
-
-  const fetchUsers = async () => {
-    try {
-      const response = await fetch("/api/admin/users")
-      if (response.ok) {
-        const data = await response.json()
-        setUsers(data.users || [])
-      }
-    } catch (error) {
-      console.error("Error fetching users:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const getRoleIcon = (role: string) => {
     switch (role) {

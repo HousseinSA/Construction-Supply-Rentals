@@ -166,22 +166,21 @@ export async function GET(request: NextRequest) {
       },
       { $project: { equipmentDetails: 0, equipmentIds: 0 } },
       { $sort: { createdAt: -1 } },
-      { $skip: skip },
-      { $limit: limit }
+      {
+        $facet: {
+          data: [{ $skip: skip }, { $limit: limit }],
+          total: [{ $count: "count" }],
+        },
+      }
     )
 
-    const bookings = await db
+    const result = await db
       .collection("bookings")
       .aggregate(pipeline)
       .toArray()
 
-    // Get total count for pagination info (exclude skip/limit)
-    const countPipeline = pipeline.slice(0, -2) // Remove $skip and $limit
-    const totalCountResult = await db
-      .collection("bookings")
-      .aggregate([...countPipeline, { $count: "total" }])
-      .toArray()
-    const total = totalCountResult[0]?.total || 0
+    const bookings = result[0]?.data || []
+    const total = result[0]?.total[0]?.count || 0
 
     return NextResponse.json({
       success: true,

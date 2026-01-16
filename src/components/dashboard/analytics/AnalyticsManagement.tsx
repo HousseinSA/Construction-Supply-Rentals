@@ -1,47 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { useTranslations } from "next-intl"
-import { Users, Package, Calendar, DollarSign, MapPin } from "lucide-react"
-
-interface AnalyticsData {
-  overview: {
-    totalUsers: number
-    totalEquipment: number
-    activeEquipment: number
-    newUsersThisMonth: number
-  }
-  usersByRole: Record<string, number>
-  equipmentByCity: Array<{ city: string; count: number }>
-  topSuppliers: Array<{
-    name: string
-    companyName?: string
-    email: string
-    equipmentCount: number
-  }>
-}
+import { Users, Package, MapPin } from "lucide-react"
+import { useAnalytics } from "@/src/hooks/useAnalytics"
 
 export default function AnalyticsManagement() {
   const t = useTranslations("dashboard")
-  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
-  const [loading, setLoading] = useState(true)
-  useEffect(() => {
-    fetchAnalytics()
-  }, [])
-
-  const fetchAnalytics = async () => {
-    try {
-      const response = await fetch("/api/analytics")
-      if (response.ok) {
-        const data = await response.json()
-        setAnalytics(data)
-      }
-    } catch (error) {
-      console.error("Error fetching analytics:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
+  const { analytics, loading } = useAnalytics()
 
   if (loading) {
     return (

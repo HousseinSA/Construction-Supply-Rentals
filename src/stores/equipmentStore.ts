@@ -14,6 +14,7 @@ interface EquipmentStore {
   setLoading: (loading: boolean) => void
   updateEquipment: (id: string, updates: Partial<Equipment>) => void
   shouldRefetch: () => boolean
+  invalidateCache: () => void
 }
 
 const CACHE_DURATION = 5 * 60 * 1000 
@@ -33,4 +34,5 @@ export const useEquipmentStore = create<EquipmentStore>((set, get) => ({
     const { lastFetch } = get()
     return !lastFetch || Date.now() - lastFetch > CACHE_DURATION
   },
+  invalidateCache: () => set({ lastFetch: null }),
 }))

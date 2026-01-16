@@ -8,12 +8,14 @@
     "start": "next start",
     "lint": "eslint",
     "seed": "node scripts/seed.js",
-    "ngrok": "ngrok http 3000 --domain=margarette-floretty-ivory.ngrok-free.dev"
+    "ngrok": "ngrok http 3000 --domain=margarette-floretty-ivory.ngrok-free.dev",
+    "test:emails": "node scripts/test-emails-standalone.js"
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.11.0",
     "@vercel/analytics": "^1.6.1",
     "cloudinary": "^2.8.0",
+    "dotenv": "^17.2.3",
     "lucide-react": "^0.546.0",
     "mongodb": "^6.20.0",
     "next": "^15.5.7",

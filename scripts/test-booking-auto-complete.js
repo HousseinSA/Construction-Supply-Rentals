@@ -71,14 +71,42 @@ async function createTestBookings(db) {
   }
 
   console.log(`✅ Found equipment:`);
-  console.log(`   KM: ${kmEquipment.name}`);
-  console.log(`   Daily: ${dailyEquipment.name}`);
-  console.log(`   Hourly: ${hourlyEquipment.name}\n`);
+  console.log(`   KM: ${kmEquipment.name} (#${kmEquipment.referenceNumber || 'N/A'})`);
+  console.log(`   Daily: ${dailyEquipment.name} (#${dailyEquipment.referenceNumber || 'N/A'})`);
+  console.log(`   Hourly: ${hourlyEquipment.name} (#${hourlyEquipment.referenceNumber || 'N/A'})\n`);
 
   const now = new Date();
   const renterEmail = renter.email || `${renter.phone}@test.com`;
 
-  // Test 1: Daily booking ending in 30 seconds (should trigger warning)
+  // Test 1: Booking starting in 30 seconds (should trigger start reminder)
+  const startReminderBooking = {
+    referenceNumber: `TEST-START-${Date.now()}`,
+    renterId: renter._id,
+    renterEmail: renterEmail,
+    supplierId: dailyEquipment.supplierId,
+    bookingItems: [
+      {
+        equipmentId: dailyEquipment._id,
+        equipmentName: dailyEquipment.name,
+        equipmentReference: dailyEquipment.referenceNumber,
+        pricingType: 'daily',
+        rate: dailyEquipment.pricing.dailyRate,
+        usage: 1,
+        usageUnit: 'days',
+        subtotal: dailyEquipment.pricing.dailyRate,
+      }
+    ],
+    totalPrice: dailyEquipment.pricing.dailyRate,
+    grandTotal: dailyEquipment.pricing.dailyRate,
+    status: 'pending',
+    startDate: new Date(now.getTime() + 30 * 1000), // 30 seconds from now
+    endDate: new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000), // 2 days later
+    renterMessage: 'Test start reminder booking',
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  // Test 2: Daily booking ending in 30 seconds (should trigger end warning)
   const warningBooking = {
     referenceNumber: `TEST-WARNING-${Date.now()}`,
     renterId: renter._id,
@@ -88,6 +116,7 @@ async function createTestBookings(db) {
       {
         equipmentId: dailyEquipment._id,
         equipmentName: dailyEquipment.name,
+        equipmentReference: dailyEquipment.referenceNumber,
         pricingType: 'daily',
         rate: dailyEquipment.pricing.dailyRate,
         usage: 1,
@@ -105,7 +134,7 @@ async function createTestBookings(db) {
     updatedAt: now,
   };
 
-  // Test 2: KM booking - 3 days old (should be cancelled if pending)
+  // Test 3: KM booking - 3 days old (should be cancelled if pending)
   const kmBooking = {
     referenceNumber: `TEST-KM-${Date.now()}`,
     renterId: renter._id,
@@ -115,6 +144,7 @@ async function createTestBookings(db) {
       {
         equipmentId: kmEquipment._id,
         equipmentName: kmEquipment.name,
+        equipmentReference: kmEquipment.referenceNumber,
         pricingType: 'per_km',
         rate: kmEquipment.pricing.kmRate,
         usage: 500,
@@ -132,7 +162,7 @@ async function createTestBookings(db) {
     updatedAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000),
   };
 
-  // Test 2: Daily booking - endDate 1 day ago (should be cancelled if pending)
+  // Test 4: Daily booking - endDate 1 day ago (should be cancelled if pending)
   const dailyBooking = {
     referenceNumber: `TEST-DAILY-${Date.now() + 1}`,
     renterId: renter._id,
@@ -142,6 +172,7 @@ async function createTestBookings(db) {
       {
         equipmentId: dailyEquipment._id,
         equipmentName: dailyEquipment.name,
+        equipmentReference: dailyEquipment.referenceNumber,
         pricingType: 'daily',
         rate: dailyEquipment.pricing.dailyRate,
         usage: 2,
@@ -159,7 +190,7 @@ async function createTestBookings(db) {
     updatedAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000),
   };
 
-  // Test 3: Hourly booking - endDate 1 hour ago (should be cancelled if pending)
+  // Test 5: Hourly booking - endDate 1 hour ago (should be cancelled if pending)
   const hourlyBooking = {
     referenceNumber: `TEST-HOURLY-${Date.now() + 2}`,
     renterId: renter._id,
@@ -169,6 +200,7 @@ async function createTestBookings(db) {
       {
         equipmentId: hourlyEquipment._id,
         equipmentName: hourlyEquipment.name,
+        equipmentReference: hourlyEquipment.referenceNumber,
         pricingType: 'hourly',
         rate: hourlyEquipment.pricing.hourlyRate,
         usage: 8,
@@ -186,7 +218,7 @@ async function createTestBookings(db) {
     updatedAt: new Date(now.getTime() - 10 * 60 * 60 * 1000),
   };
 
-  // Test 4: KM booking - Paid (should be completed)
+  // Test 6: KM booking - Paid (should be completed)
   const kmPaidBooking = {
     referenceNumber: `TEST-KM-PAID-${Date.now() + 3}`,
     renterId: renter._id,
@@ -196,6 +228,7 @@ async function createTestBookings(db) {
       {
         equipmentId: kmEquipment._id,
         equipmentName: kmEquipment.name,
+        equipmentReference: kmEquipment.referenceNumber,
         pricingType: 'per_km',
         rate: kmEquipment.pricing.kmRate,
         usage: 300,
@@ -214,6 +247,7 @@ async function createTestBookings(db) {
   };
 
   const result = await db.collection('bookings').insertMany([
+    startReminderBooking,
     warningBooking,
     kmBooking,
     dailyBooking,
@@ -221,12 +255,13 @@ async function createTestBookings(db) {
     kmPaidBooking,
   ]);
 
-  console.log('✅ Created 5 test bookings:');
-  console.log(`  1. Warning (Pending) - ${warningBooking.referenceNumber} - ends in 30s`);
-  console.log(`  2. KM (Pending) - ${kmBooking.referenceNumber}`);
-  console.log(`  3. Daily (Pending) - ${dailyBooking.referenceNumber}`);
-  console.log(`  4. Hourly (Pending) - ${hourlyBooking.referenceNumber}`);
-  console.log(`  5. KM (Paid) - ${kmPaidBooking.referenceNumber}\n`);
+  console.log('✅ Created 6 test bookings:');
+  console.log(`  1. Start Reminder (Pending) - ${startReminderBooking.referenceNumber} - starts in 30s`);
+  console.log(`  2. End Warning (Pending) - ${warningBooking.referenceNumber} - ends in 30s`);
+  console.log(`  3. KM (Pending) - ${kmBooking.referenceNumber}`);
+  console.log(`  4. Daily (Pending) - ${dailyBooking.referenceNumber}`);
+  console.log(`  5. Hourly (Pending) - ${hourlyBooking.referenceNumber}`);
+  console.log(`  6. KM (Paid) - ${kmPaidBooking.referenceNumber}\n`);
   console.log('📋 Check your admin dashboard - bookings are now visible!');
   console.log('⏳ Waiting 90 seconds before checking auto-complete results...\n');
 
@@ -237,8 +272,10 @@ async function runAutoComplete(db) {
   console.log('🔄 Calling backend auto-complete API...\n');
 
   try {
-    // Call the actual backend API endpoint
-    const response = await fetch('http://localhost:3000/api/cron/auto-complete', {
+    const AUTO_COMPLETE_SECRET = envVars.AUTO_COMPLETE_SECRET;
+    
+    // Call the actual backend API endpoint with token
+    const response = await fetch('http://localhost:3000/api/cron/auto-complete?token=' + AUTO_COMPLETE_SECRET, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' }
     });
@@ -249,7 +286,8 @@ async function runAutoComplete(db) {
       console.log('✅ Auto-complete API executed successfully:');
       console.log(`   Bookings Cancelled: ${result.result?.bookings?.cancelled || 0}`);
       console.log(`   Bookings Completed: ${result.result?.bookings?.completed || 0}`);
-      console.log(`   Booking Reminders: ${result.result?.bookings?.reminders || 0}`);
+      console.log(`   Booking End Reminders: ${result.result?.bookings?.reminders || 0}`);
+      console.log(`   Booking Start Reminders: ${result.result?.bookings?.startReminders || 0}`);
       console.log(`   Sales Cancelled: ${result.result?.sales?.cancelled || 0}`);
       console.log(`   Sale Reminders: ${result.result?.sales?.reminders || 0}\n`);
     } else {
@@ -259,7 +297,7 @@ async function runAutoComplete(db) {
     return result;
   } catch (error) {
     console.error('❌ Error calling auto-complete API:', error.message);
-    return { success: false, result: { bookings: { cancelled: 0, completed: 0, reminders: 0 }, sales: { cancelled: 0, reminders: 0 } } };
+    return { success: false, result: { bookings: { cancelled: 0, completed: 0, reminders: 0, startReminders: 0 }, sales: { cancelled: 0, reminders: 0 } } };
   }
 }
 

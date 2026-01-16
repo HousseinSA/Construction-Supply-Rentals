@@ -9,6 +9,7 @@ interface UsersStore {
   setLoading: (loading: boolean) => void
   updateUser: (id: string, updates: Partial<User>) => void
   shouldRefetch: () => boolean
+  invalidateCache: () => void
 }
 
 const CACHE_DURATION = 5 * 60 * 1000 
@@ -29,4 +30,5 @@ export const useUsersStore = create<UsersStore>((set, get) => ({
     const { lastFetch } = get()
     return !lastFetch || Date.now() - lastFetch > CACHE_DURATION
   },
+  invalidateCache: () => set({ lastFetch: null }),
 }))

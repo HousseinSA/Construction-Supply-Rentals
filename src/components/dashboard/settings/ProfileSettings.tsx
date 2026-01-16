@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useTranslations } from "next-intl"
 import { Save, Shield, Loader2 } from "lucide-react"
 import { showToast } from "@/src/lib/toast"
+import { useSettings } from "@/src/hooks/useSettings"
 import Input from "@/src/components/ui/Input"
 import PasswordInput from "@/src/components/ui/PasswordInput"
 
@@ -21,60 +22,25 @@ export default function ProfileSettings({
   passwordLabel 
 }: ProfileSettingsProps) {
   const t = useTranslations("dashboard")
-  const [settings, setSettings] = useState({
-    phone: "",
-    password: ""
-  })
-
+  const { settings, loading: isInitialLoading, updateSettings } = useSettings(apiEndpoint)
+  const [localSettings, setLocalSettings] = useState({ phone: "", password: "" })
   const [isLoading, setIsLoading] = useState(false)
-  const [isInitialLoading, setIsInitialLoading] = useState(true)
 
   useEffect(() => {
-    const loadSettings = async () => {
-      try {
-        const response = await fetch(apiEndpoint)
-        if (response.ok) {
-          const data = await response.json()
-          setSettings({
-            phone: data.phone || data.adminPhone || '',
-            password: data.password || data.adminPassword || ''
-          })
-        }
-      } catch (error) {
-        console.error('Error loading settings:', error)
-      } finally {
-        setIsInitialLoading(false)
-      }
+    if (settings) {
+      setLocalSettings(settings)
     }
-
-    loadSettings()
-  }, [apiEndpoint])
+  }, [settings])
 
   const handleSave = async () => {
     setIsLoading(true)
-    try {
-      const body = { phone: settings.phone, password: settings.password }
-
-      const response = await fetch(apiEndpoint, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      })
-
-      if (response.ok) {
-        showToast.success('تم حفظ الإعدادات بنجاح!')
-      } else {
-        const error = await response.json()
-        showToast.error(error.message || 'فشل في حفظ الإعدادات')
-      }
-    } catch (error) {
-      console.error('Error saving settings:', error)
-      showToast.error('حدث خطأ أثناء حفظ الإعدادات')
-    } finally {
-      setIsLoading(false)
+    const success = await updateSettings(localSettings.phone, localSettings.password)
+    if (success) {
+      showToast.success('تم حفظ الإعدادات بنجاح!')
+    } else {
+      showToast.error('فشل في حفظ الإعدادات')
     }
+    setIsLoading(false)
   }
 
   if (isInitialLoading) {
@@ -96,14 +62,14 @@ export default function ProfileSettings({
           <Input
             label={phoneLabel}
             type="text"
-            value={settings.phone}
-            onChange={(e) => setSettings({...settings, phone: e.target.value})}
+            value={localSettings.phone}
+            onChange={(e) => setLocalSettings({...localSettings, phone: e.target.value})}
             placeholder="+222 XX XXXXXX"
           />
           <PasswordInput
             label={passwordLabel}
-            value={settings.password}
-            onChange={(e) => setSettings({...settings, password: e.target.value})}
+            value={localSettings.password}
+            onChange={(e) => setLocalSettings({...localSettings, password: e.target.value})}
             placeholder="••••••••"
           />
         </div>

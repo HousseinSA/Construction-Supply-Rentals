@@ -26,7 +26,7 @@ import PriceDisplay from "@/src/components/ui/PriceDisplay"
 export default function RenterBookingView() {
   const t = useTranslations("dashboard.bookings")
   const tCommon = useTranslations("common")
-  const { bookings, loading, fetchBookings } = useBookings()
+  const { bookings, loading } = useBookings()
   const [cancellingId, setCancellingId] = useState<string | null>(null)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(
@@ -63,7 +63,6 @@ export default function RenterBookingView() {
 
       if (response.ok) {
         toast.success(t("cancelSuccess"))
-        fetchBookings()
       } else {
         toast.error(t("cancelFailed"))
       }

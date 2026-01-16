@@ -31,12 +31,6 @@ export default function SalesTable() {
   const [highlightId, setHighlightId] = useState<string | null>(null)
   const [hasProcessedHighlight, setHasProcessedHighlight] = useState(false)
 
-  useEffect(() => {
-    if (session?.user) {
-      fetchSales()
-    }
-  }, [session?.user, fetchSales])
-
   const { searchValue, setSearchValue, filterValues, handleFilterChange, filteredData: baseFiltered } = 
     useTableFilters({
       data: sales,
@@ -213,7 +207,7 @@ export default function SalesTable() {
               setShowDetailsModal(false)
               setSelectedSale(null)
             }}
-            onStatusUpdate={fetchSales}
+            onStatusUpdate={() => {}} // No need to refetch, store updates automatically
           />
         )}
       </div>

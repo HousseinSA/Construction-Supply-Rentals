@@ -23,6 +23,7 @@ export async function GET(request: NextRequest) {
     const availableOnly = searchParams.get("available") === "true"
     const isAdmin = searchParams.get("admin") === "true"
     const supplierId = searchParams.get("supplierId")
+    const includeSupplier = searchParams.get("includeSupplier") === "true"
     const startDate = searchParams.get("startDate")
     const endDate = searchParams.get("endDate")
 
@@ -90,11 +91,43 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    const equipment = await db
-      .collection("equipment")
-      .find(query)
-      .sort({ createdAt: -1 })
-      .toArray()
+    // Admin view with optional supplier join
+    let equipment
+    if (includeSupplier) {
+      equipment = await db
+        .collection("equipment")
+        .aggregate([
+          { $match: query },
+          {
+            $lookup: {
+              from: "users",
+              localField: "supplierId",
+              foreignField: "_id",
+              as: "supplierData",
+            },
+          },
+          {
+            $addFields: {
+              supplier: {
+                $cond: {
+                  if: { $eq: ["$createdBy", "supplier"] },
+                  then: { $arrayElemAt: ["$supplierData", 0] },
+                  else: null,
+                },
+              },
+            },
+          },
+          { $project: { supplierData: 0 } },
+          { $sort: { createdAt: -1 } },
+        ])
+        .toArray()
+    } else {
+      equipment = await db
+        .collection("equipment")
+        .find(query)
+        .sort({ createdAt: -1 })
+        .toArray()
+    }
 
     const equipmentWithBookingStatus = await Promise.all(
       equipment.map(async (item) => {

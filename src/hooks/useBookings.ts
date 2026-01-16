@@ -37,8 +37,12 @@ export function useBookings() {
       })
 
       if (response.ok) {
-        invalidateCache()
-        await fetchBookings()
+        const data = await response.json()
+        if (data.booking) {
+          updateBooking(bookingId, data.booking)
+        } else {
+          invalidateCache()
+        }
         return true
       }
       return false
