@@ -8,7 +8,7 @@ interface ReferenceBadgeProps {
 
 export default function ReferenceBadge({ referenceNumber, label, createdAt }: ReferenceBadgeProps) {
   return (
-    <div className="mb-4 px-3 py-2 bg-orange-50 border border-orange-200 rounded-lg">
+    <div className=" px-3 py-2 bg-orange-50 border border-orange-200 rounded-lg">
       <div className="flex items-center justify-between">
         <div className="text-xl font-bold text-gray-600">{label}</div>
         <ReferenceNumber referenceNumber={referenceNumber} size="lg" />

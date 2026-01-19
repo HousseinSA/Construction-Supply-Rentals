@@ -71,6 +71,7 @@ export default function SalesDetailsModal({
       equipmentImage={sale.equipmentInfo?.[0]?.images?.[0]}
       equipmentName={sale.equipmentName}
       equipmentId={sale.equipmentId?.toString()}
+      viewDetailsLabel={tActions("viewDetails")}
       onUpdate={() => handleStatusUpdate(session?.user?.id)}
       updateDisabled={loading || status === sale.status}
       updateLoading={loading}

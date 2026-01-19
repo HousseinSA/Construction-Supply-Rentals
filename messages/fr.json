@@ -822,6 +822,7 @@
         "cancelled": "Annulé"
       },
       "actions": {
+        "viewDetails": "Voir les Détails",
         "view": "Voir",
         "cancel": "Annuler",
         "close": "Fermer",
@@ -908,6 +909,7 @@
       },
       "actions": {
         "view": "Voir",
+        "viewDetails": "Voir les Détails",
         "cancel": "Annuler",
         "close": "Fermer",
         "save": "Sauvegarder",

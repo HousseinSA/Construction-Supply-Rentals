@@ -823,6 +823,7 @@
       },
       "actions": {
         "view": "View",
+        "viewDetails": "View Details",
         "cancel": "Cancel",
         "close": "Close",
         "save": "Save Changes",
@@ -907,6 +908,7 @@
       },
       "actions": {
         "view": "View",
+        "viewDetails": "View Details",
         "cancel": "Cancel",
         "close": "Close",
         "save": "Save Changes",

@@ -817,6 +817,7 @@
         "cancelled": "ملغى"
       },
       "actions": {
+        "viewDetails": "عرض التفاصيل",
         "view": "عرض",
         "cancel": "إلغاء",
         "close": "إغلاق",
@@ -905,6 +906,7 @@
       },
       "actions": {
         "view": "عرض",
+        "viewDetails": "عرض التفاصيل",
         "cancel": "إلغاء",
         "close": "إغلاق",
         "save": "حفظ التغييرات",

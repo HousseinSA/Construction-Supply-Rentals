@@ -34,7 +34,7 @@ interface EquipmentTableRowProps {
   onStatusChange: (
     id: string,
     action: "approve" | "reject",
-    reason?: string
+    reason?: string,
   ) => void
   onAvailabilityChange: (id: string, isAvailable: boolean) => void
   onNavigate?: (url: string, id: string) => void
@@ -86,10 +86,10 @@ export default function EquipmentTableRow({
                   onNavigate
                     ? onNavigate(
                         `/equipment/${item._id?.toString()}?admin=true`,
-                        item._id?.toString() || ""
+                        item._id?.toString() || "",
                       )
                     : router.push(
-                        `/equipment/${item._id?.toString()}?admin=true`
+                        `/equipment/${item._id?.toString()}?admin=true`,
                       )
                 }
                 loading="lazy"
@@ -201,7 +201,7 @@ export default function EquipmentTableRow({
                               {item.pricing[key]} → {item.pendingPricing[key]}{" "}
                               MRU{suffix}
                             </div>
-                          ) : null
+                          ) : null,
                         )}
                       </div>
                       <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
@@ -250,7 +250,7 @@ export default function EquipmentTableRow({
           </td>
         )}
         <td className="px-6 py-4 text-center">
-          <span className="text-lg text-gray-600 whitespace-nowrap">
+          <span className="text-sm text-gray-600 whitespace-nowrap">
             {new Date(item.createdAt).toLocaleDateString()}
           </span>
         </td>
@@ -292,8 +292,8 @@ export default function EquipmentTableRow({
                 item.status === "pending"
                   ? "bg-yellow-100 text-yellow-700"
                   : item.status === "approved"
-                  ? "bg-green-100 text-green-700"
-                  : "bg-red-100 text-red-700"
+                    ? "bg-green-100 text-green-700"
+                    : "bg-red-100 text-red-700"
               }`}
             >
               {isSupplier && item.status === "pending"
@@ -318,7 +318,7 @@ export default function EquipmentTableRow({
                   !item.hasPendingSale &&
                   onAvailabilityChange(
                     item._id?.toString() || "",
-                    val === "available"
+                    val === "available",
                   )
                 }
                 compact
@@ -366,10 +366,10 @@ export default function EquipmentTableRow({
                       onNavigate
                         ? onNavigate(
                             `/dashboard/equipment/edit/${item._id?.toString()}`,
-                            `edit-${item._id?.toString()}`
+                            `edit-${item._id?.toString()}`,
                           )
                         : router.push(
-                            `/dashboard/equipment/edit/${item._id?.toString()}`
+                            `/dashboard/equipment/edit/${item._id?.toString()}`,
                           )
                     }}
                     disabled={navigating === `edit-${item._id?.toString()}`}
@@ -396,10 +396,10 @@ export default function EquipmentTableRow({
                       onNavigate
                         ? onNavigate(
                             `/dashboard/equipment/edit/${item._id?.toString()}`,
-                            `edit-${item._id?.toString()}`
+                            `edit-${item._id?.toString()}`,
                           )
                         : router.push(
-                            `/dashboard/equipment/edit/${item._id?.toString()}`
+                            `/dashboard/equipment/edit/${item._id?.toString()}`,
                           )
                     }}
                     disabled={navigating === `edit-${item._id?.toString()}`}
@@ -419,7 +419,7 @@ export default function EquipmentTableRow({
                 onNavigate
                   ? onNavigate(
                       `/equipment/${item._id?.toString()}?admin=true`,
-                      item._id?.toString() || ""
+                      item._id?.toString() || "",
                     )
                   : router.push(`/equipment/${item._id?.toString()}?admin=true`)
               }

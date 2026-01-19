@@ -122,6 +122,7 @@ export default function BookingDetailsModal({
       equipmentImage={booking.bookingItems?.[0]?.equipmentImage}
       equipmentName={booking.bookingItems?.[0]?.equipmentName}
       equipmentId={booking.bookingItems?.[0]?.equipmentId?.toString()}
+      viewDetailsLabel={t("actions.viewDetails")}
       onUpdate={() => handleStatusUpdate(session?.user?.id)}
       updateDisabled={loading || status === originalStatus}
       updateLoading={loading}
