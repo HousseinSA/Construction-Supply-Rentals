@@ -2,21 +2,31 @@
  * Comprehensive Email Testing Script
  * Tests all email types in the system
  * 
- * Run with: npm run test:emails
+ * Run with: node scripts/test-all-emails.js
  */
 
-import dotenv from 'dotenv';
-import { resolve } from 'path';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import { readFileSync } from 'fs';
+import * as emailLib from '../src/lib/email.js';
 
-// Load environment variables FIRST
-dotenv.config({ path: resolve(process.cwd(), '.env.local') });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-console.log('✅ Environment loaded');
-console.log(`   EMAIL_USER: ${process.env.EMAIL_USER}`);
-console.log(`   EMAIL_HOST: ${process.env.EMAIL_HOST}\n`);
+// Load environment variables
+function loadEnv() {
+  const envPath = join(__dirname, '..', '.env.local');
+  const envContent = readFileSync(envPath, 'utf-8');
+  const lines = envContent.split('\n');
+  lines.forEach(line => {
+    if (line && !line.startsWith('#')) {
+      const [key, ...valueParts] = line.split('=');
+      if (key) process.env[key.trim()] = valueParts.join('=').trim();
+    }
+  });
+}
 
-// NOW import email functions after env is loaded
-import * as emailLib from '../src/lib/email';
+loadEnv();
 
 const TEST_RENTER_EMAIL = 'nejihoussein1@gmail.com';
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@gmail.com';
@@ -28,15 +38,15 @@ async function testAllEmails() {
   console.log(`Renter Email: ${TEST_RENTER_EMAIL}`);
   console.log(`Admin Email: ${ADMIN_EMAIL}\n`);
 
-  const results: Array<{ type: string; status: string; recipient?: string; error?: string }> = [];
+  const results = [];
 
-  // 1. Password Reset Email (to Renter)
+  // 1. Password Reset Email
   try {
     console.log('1️⃣  Testing Password Reset Email...');
     await emailLib.sendPasswordResetEmail(TEST_RENTER_EMAIL, 'test-token-123', 'fr');
     results.push({ type: 'Password Reset', status: '✅ Sent', recipient: TEST_RENTER_EMAIL });
     console.log('   ✅ Sent to renter\n');
-  } catch (err: any) {
+  } catch (err) {
     results.push({ type: 'Password Reset', status: '❌ Failed', error: err.message });
     console.log(`   ❌ Failed: ${err.message}\n`);
   }
@@ -62,7 +72,7 @@ async function testAllEmails() {
     });
     results.push({ type: 'New Booking', status: '✅ Sent', recipient: ADMIN_EMAIL });
     console.log('   ✅ Sent to admin\n');
-  } catch (err: any) {
+  } catch (err) {
     results.push({ type: 'New Booking', status: '❌ Failed', error: err.message });
     console.log(`   ❌ Failed: ${err.message}\n`);
   }
@@ -83,7 +93,7 @@ async function testAllEmails() {
     });
     results.push({ type: 'New Sale', status: '✅ Sent', recipient: ADMIN_EMAIL });
     console.log('   ✅ Sent to admin\n');
-  } catch (err: any) {
+  } catch (err) {
     results.push({ type: 'New Sale', status: '❌ Failed', error: err.message });
     console.log(`   ❌ Failed: ${err.message}\n`);
   }
@@ -103,7 +113,7 @@ async function testAllEmails() {
     });
     results.push({ type: 'New Equipment', status: '✅ Sent', recipient: ADMIN_EMAIL });
     console.log('   ✅ Sent to admin\n');
-  } catch (err: any) {
+  } catch (err) {
     results.push({ type: 'New Equipment', status: '❌ Failed', error: err.message });
     console.log(`   ❌ Failed: ${err.message}\n`);
   }
@@ -117,7 +127,7 @@ async function testAllEmails() {
     });
     results.push({ type: 'Equipment Approval', status: '✅ Sent', recipient: TEST_RENTER_EMAIL });
     console.log('   ✅ Sent to renter (as supplier)\n');
-  } catch (err: any) {
+  } catch (err) {
     results.push({ type: 'Equipment Approval', status: '❌ Failed', error: err.message });
     console.log(`   ❌ Failed: ${err.message}\n`);
   }
@@ -141,7 +151,7 @@ async function testAllEmails() {
     });
     results.push({ type: 'Booking Cancellation', status: '✅ Sent', recipient: ADMIN_EMAIL });
     console.log('   ✅ Sent to admin\n');
-  } catch (err: any) {
+  } catch (err) {
     results.push({ type: 'Booking Cancellation', status: '❌ Failed', error: err.message });
     console.log(`   ❌ Failed: ${err.message}\n`);
   }
@@ -158,7 +168,7 @@ async function testAllEmails() {
     });
     results.push({ type: 'Booking Pending Reminder', status: '✅ Sent', recipient: ADMIN_EMAIL });
     console.log('   ✅ Sent to admin\n');
-  } catch (err: any) {
+  } catch (err) {
     results.push({ type: 'Booking Pending Reminder', status: '❌ Failed', error: err.message });
     console.log(`   ❌ Failed: ${err.message}\n`);
   }
@@ -178,7 +188,7 @@ async function testAllEmails() {
     });
     results.push({ type: 'Booking Start Reminder', status: '✅ Sent', recipient: ADMIN_EMAIL });
     console.log('   ✅ Sent to admin\n');
-  } catch (err: any) {
+  } catch (err) {
     results.push({ type: 'Booking Start Reminder', status: '❌ Failed', error: err.message });
     console.log(`   ❌ Failed: ${err.message}\n`);
   }
@@ -194,7 +204,7 @@ async function testAllEmails() {
     });
     results.push({ type: 'Sale Pending Reminder', status: '✅ Sent', recipient: ADMIN_EMAIL });
     console.log('   ✅ Sent to admin\n');
-  } catch (err: any) {
+  } catch (err) {
     results.push({ type: 'Sale Pending Reminder', status: '❌ Failed', error: err.message });
     console.log(`   ❌ Failed: ${err.message}\n`);
   }
@@ -213,7 +223,7 @@ async function testAllEmails() {
     });
     results.push({ type: 'Sale Cancellation', status: '✅ Sent', recipient: ADMIN_EMAIL });
     console.log('   ✅ Sent to admin\n');
-  } catch (err: any) {
+  } catch (err) {
     results.push({ type: 'Sale Cancellation', status: '❌ Failed', error: err.message });
     console.log(`   ❌ Failed: ${err.message}\n`);
   }
@@ -232,7 +242,7 @@ async function testAllEmails() {
     });
     results.push({ type: 'Pricing Update Request', status: '✅ Sent', recipient: ADMIN_EMAIL });
     console.log('   ✅ Sent to admin\n');
-  } catch (err: any) {
+  } catch (err) {
     results.push({ type: 'Pricing Update Request', status: '❌ Failed', error: err.message });
     console.log(`   ❌ Failed: ${err.message}\n`);
   }

@@ -5,7 +5,7 @@ import { useState } from "react"
 interface EquipmentImageProps {
   src: string | string[]
   alt: string
-  size?: "sm" | "md" | "lg"
+  size?: "sm" | "md" | "lg" | "xl"
   onClick?: () => void
   className?: string
   cover?: boolean
@@ -20,6 +20,7 @@ export default function EquipmentImage({ src, alt, size = "md", onClick, classNa
     sm: { width: 64, height: 56, class: "w-16 h-14" },
     md: { width: 80, height: 64, class: "w-20 h-16" },
     lg: { width: 96, height: 80, class: "w-24 h-20" },
+    xl: { width: 200, height: 150, class: "w-50 h-38" },
   }
 
   const { width, height, class: sizeClass } = sizes[size]

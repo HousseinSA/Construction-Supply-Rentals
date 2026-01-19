@@ -68,6 +68,9 @@ export default function SalesDetailsModal({
       title={t("title")}
       referenceNumber={sale.referenceNumber}
       referenceLabel={t("reference")}
+      equipmentImage={sale.equipmentInfo?.[0]?.images?.[0]}
+      equipmentName={sale.equipmentName}
+      equipmentId={sale.equipmentId?.toString()}
       onUpdate={() => handleStatusUpdate(session?.user?.id)}
       updateDisabled={loading || status === sale.status}
       updateLoading={loading}

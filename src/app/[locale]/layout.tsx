@@ -56,8 +56,10 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} dir={direction} className={fontClasses}>
       <head>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData.website) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData.organization) }} />
+        <script 
+          type="application/ld+json" 
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} 
+        />
       </head>
       <body className={`${baseFont} antialiased`}>
         <SessionProvider session={session}>

@@ -119,6 +119,9 @@ export default function BookingDetailsModal({
       title={t("details.title")}
       referenceNumber={booking.referenceNumber || ""}
       referenceLabel={t("details.reference")}
+      equipmentImage={booking.bookingItems?.[0]?.equipmentImage}
+      equipmentName={booking.bookingItems?.[0]?.equipmentName}
+      equipmentId={booking.bookingItems?.[0]?.equipmentId?.toString()}
       onUpdate={() => handleStatusUpdate(session?.user?.id)}
       updateDisabled={loading || status === originalStatus}
       updateLoading={loading}

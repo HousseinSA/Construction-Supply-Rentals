@@ -2,38 +2,28 @@ import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = process.env.NEXTAUTH_URL || 'https://kriliyengin.com'
-  const locales = ['ar', 'fr', 'en']
+  const locales = ['fr', 'ar', 'en'] as const
   
   const routes = [
-    '',
-    '/equipment',
-    '/categories/excavation',
-    '/categories/leveling-compaction',
-    '/categories/transport',
-    '/categories/lifting-handling',
-    '/auth/login',
-    '/auth/register',
+    { path: '', priority: 1.0, changeFrequency: 'daily' as const },
+    { path: '/equipment', priority: 0.9, changeFrequency: 'daily' as const },
+    { path: '/categories/excavation', priority: 0.8, changeFrequency: 'weekly' as const },
+    { path: '/categories/leveling-compaction', priority: 0.8, changeFrequency: 'weekly' as const },
+    { path: '/categories/transport', priority: 0.8, changeFrequency: 'weekly' as const },
+    { path: '/categories/lifting-handling', priority: 0.8, changeFrequency: 'weekly' as const },
   ]
 
-  const urls: MetadataRoute.Sitemap = []
-
-  locales.forEach(locale => {
-    routes.forEach(route => {
-      urls.push({
-        url: `${baseUrl}/${locale}${route}`,
-        lastModified: new Date(),
-        changeFrequency: route === '' ? 'daily' : 'weekly',
-        priority: route === '' ? 1 : 0.8,
-        alternates: {
-          languages: {
-            ar: `${baseUrl}/ar${route}`,
-            fr: `${baseUrl}/fr${route}`,
-            en: `${baseUrl}/en${route}`,
-          },
-        },
-      })
-    })
-  })
-
-  return urls
+  return routes.flatMap(route => 
+    locales.map(locale => ({
+      url: `${baseUrl}/${locale}${route.path}`,
+      lastModified: new Date(),
+      changeFrequency: route.changeFrequency,
+      priority: route.priority,
+      alternates: {
+        languages: Object.fromEntries(
+          locales.map(l => [l, `${baseUrl}/${l}${route.path}`])
+        ),
+      },
+    }))
+  )
 }

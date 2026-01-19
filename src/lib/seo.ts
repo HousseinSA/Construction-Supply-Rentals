@@ -49,7 +49,7 @@ export function generateSiteMetadata(locale: 'fr' | 'ar' | 'en', titleTemplate: 
       type: 'website',
       locale: locale === 'ar' ? 'ar_MR' : locale === 'fr' ? 'fr_MR' : 'en_US',
       url: `${baseUrl}/${locale}`,
-      siteName: seoConfig.titles[locale],
+      siteName: 'KriliyEngin',
       title: seoConfig.titles[locale],
       description: seoConfig.descriptions[locale],
       images: [
@@ -57,7 +57,7 @@ export function generateSiteMetadata(locale: 'fr' | 'ar' | 'en', titleTemplate: 
           url: `${baseUrl}/Kriliy-engin-logo.png`,
           width: 1200,
           height: 630,
-          alt: seoConfig.titles[locale],
+          alt: 'KriliyEngin - Location Équipement Construction Mauritanie',
         },
       ],
     },
@@ -79,40 +79,67 @@ export function generateSiteMetadata(locale: 'fr' | 'ar' | 'en', titleTemplate: 
       },
     },
     icons: {
-      icon: '/favicon.ico',
-      shortcut: '/favicon.ico',
-      apple: '/favicon.ico',
+      icon: [
+        { url: '/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
+        { url: '/web-app-manifest-192x192.png', sizes: '192x192', type: 'image/png' },
+        { url: '/web-app-manifest-512x512.png', sizes: '512x512', type: 'image/png' }
+      ],
+      shortcut: '/favicon-96x96.png',
+      apple: '/apple-touch-icon.png',
     },
     manifest: '/manifest.json',
+    verification: {
+      google: '617f69fbddc3eaa1',
+    },
   }
 }
 
 export function generateStructuredData(locale: 'fr' | 'ar' | 'en') {
   return {
-    website: {
-      '@context': 'https://schema.org',
-      '@type': 'WebSite',
-      name: 'KriliyEngin',
-      url: baseUrl,
-      potentialAction: {
-        '@type': 'SearchAction',
-        target: `${baseUrl}/${locale}/equipment?search={search_term_string}`,
-        'query-input': 'required name=search_term_string',
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'WebSite',
+        '@id': `${baseUrl}/#website`,
+        url: baseUrl,
+        name: 'KriliyEngin',
+        inLanguage: locale,
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: {
+            '@type': 'EntryPoint',
+            urlTemplate: `${baseUrl}/${locale}/equipment?search={search_term_string}`
+          },
+          'query-input': 'required name=search_term_string',
+        },
       },
-    },
-    organization: {
-      '@context': 'https://schema.org',
-      '@type': 'Organization',
-      name: 'KriliyEngin',
-      url: baseUrl,
-      logo: `${baseUrl}/Kriliy-engin-logo.png`,
-      description: seoConfig.descriptions[locale],
-      address: {
-        '@type': 'PostalAddress',
-        addressCountry: 'MR',
-        addressLocality: 'Nouakchott',
-      },
-      areaServed: 'MR',
-    }
+      {
+        '@type': 'Organization',
+        '@id': `${baseUrl}/#organization`,
+        name: 'KriliyEngin',
+        alternateName: 'Kriliy Engin',
+        url: baseUrl,
+        logo: {
+          '@type': 'ImageObject',
+          '@id': `${baseUrl}/#logo`,
+          url: `${baseUrl}/web-app-manifest-512x512.png`,
+          contentUrl: `${baseUrl}/web-app-manifest-512x512.png`,
+          width: 512,
+          height: 512,
+          caption: 'KriliyEngin'
+        },
+        image: { '@id': `${baseUrl}/#logo` },
+        description: seoConfig.descriptions[locale],
+        address: {
+          '@type': 'PostalAddress',
+          addressCountry: 'MR',
+          addressLocality: 'Nouakchott',
+        },
+        areaServed: {
+          '@type': 'Country',
+          name: 'Mauritania'
+        },
+      }
+    ]
   }
 }
