@@ -3,10 +3,11 @@
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { useSession } from "next-auth/react"
-import { AlertTriangle, CheckCircle } from "lucide-react"
+import { AlertTriangle, CheckCircle, Plus, Loader2 } from "lucide-react"
 import { useCityData } from "@/src/hooks/useCityData"
 import { useManageEquipment } from "@/src/hooks/useManageEquipment"
 import { useEquipmentActions } from "@/src/hooks/useEquipmentActions"
+import { Link } from "@/src/i18n/navigation"
 import EquipmentList from "./EquipmentList"
 import DashboardPageHeader from "../DashboardPageHeader"
 import ConfirmModal from "../../ui/ConfirmModal"
@@ -19,6 +20,7 @@ export default function ManageEquipment() {
   const t = useTranslations("dashboard.equipment")
   const tCommon = useTranslations("common")
   const { convertToLocalized } = useCityData()
+  const [isNavigating, setIsNavigating] = useState(false)
 
   const isSupplier = session?.user?.userType === "supplier"
   const isAdmin = session?.user?.role === "admin"
@@ -66,7 +68,7 @@ export default function ManageEquipment() {
     const success = await handleStatusChange(
       rejectionModal.equipmentId,
       "rejected",
-      reason
+      reason,
     )
     if (success) {
       setRejectionModal({ isOpen: false, equipmentId: null })
@@ -84,7 +86,20 @@ export default function ManageEquipment() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
-        <DashboardPageHeader title={t("manageTitle")} />
+        <DashboardPageHeader
+          title={t("manageTitle")}
+          showBackButton={false}
+          actions={
+            <Link
+              href="/dashboard/equipment/create"
+              onClick={() => setIsNavigating(true)}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium"
+            >
+              {isNavigating ? <Loader2 className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />}
+              <span className="hidden sm:inline">{t("createEquipment")}</span>
+            </Link>
+          }
+        />
 
         {hasEquipment && (
           <TableFilters
@@ -179,15 +194,11 @@ export default function ManageEquipment() {
           title={t(
             confirmModal.action === "approve"
               ? "confirmApproveTitle"
-              : "confirmRejectTitle"
+              : "confirmRejectTitle",
           )}
-          message={t(
-            confirmModal.action === "approve"
-              ? "confirmApproveMessage"
-              : "confirmRejectMessage"
-          )}
+          message={t("confirmApproveMessage")}
           confirmText={t(
-            confirmModal.action === "approve" ? "approve" : "reject"
+            confirmModal.action === "approve" ? "approve" : "reject",
           )}
           cancelText={tCommon("cancel")}
           icon={
@@ -206,7 +217,6 @@ export default function ManageEquipment() {
         {pricingReviewModal && (
           <PricingReviewModal
             equipmentId={pricingReviewModal._id?.toString()}
-            equipmentName={pricingReviewModal.name}
             currentPricing={pricingReviewModal.pricing}
             pendingPricing={pricingReviewModal.pendingPricing}
             onClose={() => setPricingReviewModal(null)}
@@ -219,7 +229,6 @@ export default function ManageEquipment() {
           onClose={handleCloseRejectionModal}
           onConfirm={handleReject}
           title={t("confirmRejectTitle")}
-          message={t("confirmRejectMessage")}
           confirmText={t("reject")}
           cancelText={tCommon("cancel")}
           placeholder={t("rejectionReasonPlaceholder")}

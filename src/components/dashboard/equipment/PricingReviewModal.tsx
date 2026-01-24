@@ -8,7 +8,6 @@ import ModalHeader from "@/src/components/booking/ModalHeader"
 
 interface PricingReviewModalProps {
   equipmentId: string
-  equipmentName: string
   currentPricing: any
   pendingPricing: any
   onClose: () => void
@@ -17,7 +16,6 @@ interface PricingReviewModalProps {
 
 export default function PricingReviewModal({
   equipmentId,
-  equipmentName,
   currentPricing,
   pendingPricing,
   onClose,
@@ -102,39 +100,25 @@ export default function PricingReviewModal({
         >
           <div className="p-6">
             <ModalHeader title={t("reviewPricingRequest")} onClose={onClose} />
-            <div className="mb-4 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="text-sm font-medium text-blue-900">{equipmentName}</div>
-            </div>
-
             <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-700 mb-3">{t("currentPricing")}</h3>
-                  <div className="space-y-2 bg-gray-50 p-4 rounded-lg">
-                    {Object.entries(currentPricing)
-                      .filter(([key, value]) => key !== 'monthlyRate' && key !== 'requestedAt' && value && typeof value === 'number')
-                      .map(([key, value]) => (
-                        <div key={key} className="flex justify-between">
-                          <span className="text-sm text-gray-600">{getRateLabel(key)}:</span>
-                          <span className="text-sm font-medium" dir="ltr">{formatPrice(value as number)} MRU</span>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-700 mb-3">{t("requestedPricing")}</h3>
-                  <div className="space-y-2 bg-orange-50 p-4 rounded-lg border border-orange-200">
-                    {Object.entries(pendingPricing)
-                      .filter(([key, value]) => key !== 'monthlyRate' && key !== 'requestedAt' && value && typeof value === 'number')
-                      .map(([key, value]) => (
-                        <div key={key} className="flex justify-between">
-                          <span className="text-sm text-gray-600">{getRateLabel(key)}:</span>
-                          <span className="text-sm font-medium text-orange-700" dir="ltr">{formatPrice(value as number)} MRU</span>
-                        </div>
-                      ))}
-                  </div>
-                </div>
+              <div className="bg-gradient-to-r from-gray-50 to-orange-50 p-6 rounded-xl border border-gray-200">
+                {Object.entries(pendingPricing)
+                  .filter(([key, value]) => {
+                    if (key === 'monthlyRate' || key === 'requestedAt' || !value || typeof value !== 'number') return false
+                    return currentPricing[key] !== pendingPricing[key]
+                  })
+                  .map(([key, value]) => (
+                    <div key={key} className="flex items-center justify-between py-3 border-b border-gray-200 last:border-0">
+                      <span className="text-sm font-medium text-gray-700">{getRateLabel(key)}</span>
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm text-gray-500" dir="ltr">{formatPrice(currentPricing[key] as number)} MRU</span>
+                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        </svg>
+                        <span className="text-base font-semibold text-orange-600" dir="ltr">{formatPrice(value as number)} MRU</span>
+                      </div>
+                    </div>
+                  ))}
               </div>
 
               {showRejectInput && (

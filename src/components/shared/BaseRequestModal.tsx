@@ -53,8 +53,8 @@ export default function BaseRequestModal({
   if (!isOpen) return null
 
   return (
-    <div ref={modalRef} className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60] p-4 animate-in fade-in duration-150">
-      <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom-4 duration-200">
+    <div ref={modalRef} className="fixed top-0 left-0 right-0 bottom-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60] animate-in fade-in duration-150" style={{ height: "100dvh", width: "100vw" }}>
+      <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom-4 duration-200 m-4">
         <div className="p-6">
           <ModalHeader title={title} onClose={onClose} />
           <EquipmentInfo name={equipmentName} reference={equipmentReference} location={equipmentLocation} />

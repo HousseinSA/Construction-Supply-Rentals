@@ -29,10 +29,18 @@ export async function GET(request: NextRequest) {
       const supplierInfo = await db.collection('users').find({ _id: { $in: supplierIds } }).toArray();
       const hasAdminCreatedEquipment = supplierInfo.some((s: any) => s.role === 'admin');
 
+      const bookingItemsWithImages = booking.bookingItems.map((item: any) => {
+        const equipment = equipmentInfo.find((eq: any) => eq._id.toString() === item.equipmentId.toString());
+        return {
+          ...item,
+          equipmentImage: equipment?.images?.[0] || item.equipmentImage
+        };
+      });
+
       return NextResponse.json({
         success: true,
         type: 'booking',
-        data: { ...booking, renterInfo: [renterInfo], equipmentInfo, supplierInfo, hasAdminCreatedEquipment }
+        data: { ...booking, bookingItems: bookingItemsWithImages, renterInfo: [renterInfo], equipmentInfo, supplierInfo, hasAdminCreatedEquipment }
       });
     }
 
@@ -45,7 +53,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         success: true,
         type: 'sale',
-        data: { ...sale, buyerInfo: [buyerInfo], equipmentInfo, supplierInfo: supplierInfo ? [supplierInfo] : [] }
+        data: { ...sale, buyerInfo: [buyerInfo], equipmentInfo: [equipmentInfo], supplierInfo: supplierInfo ? [supplierInfo] : [] }
       });
     }
 

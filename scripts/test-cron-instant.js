@@ -17,6 +17,7 @@ function loadEnv() {
 
 const envVars = loadEnv();
 const MONGODB_URI = envVars.MONGODB_URI;
+const AUTO_COMPLETE_SECRET = envVars.AUTO_COMPLETE_SECRET;
 
 async function createTestData(db) {
   const now = new Date();
@@ -34,15 +35,50 @@ async function createTestData(db) {
 
   console.log('✅ Creating test data...\n');
 
-  // 1. Pending booking ending in 12 hours (should send reminder)
-  const reminderBooking = {
-    referenceNumber: `TEST-REMINDER-${Date.now()}`,
+  // 1. Booking starting tomorrow (should send start reminder)
+  const tomorrowStart = new Date(now);
+  tomorrowStart.setDate(tomorrowStart.getDate() + 1);
+  tomorrowStart.setHours(14, 0, 0, 0); // 2 PM tomorrow
+  
+  const startReminderBooking = {
+    referenceNumber: `TEST-START-${Date.now()}`,
     renterId: renter._id,
     renterEmail: renter.email || `${renter.phone}@test.com`,
     supplierId: equipment.supplierId,
     bookingItems: [{
       equipmentId: equipment._id,
       equipmentName: equipment.name,
+      equipmentReference: equipment.referenceNumber,
+      pricingType: 'daily',
+      rate: equipment.pricing?.dailyRate || 1000,
+      usage: 1,
+      usageUnit: 'days',
+      subtotal: equipment.pricing?.dailyRate || 1000,
+      supplierId: equipment.supplierId
+    }],
+    totalPrice: equipment.pricing?.dailyRate || 1000,
+    grandTotal: equipment.pricing?.dailyRate || 1000,
+    status: 'paid',
+    startDate: tomorrowStart,
+    endDate: new Date(tomorrowStart.getTime() + 2 * 24 * 60 * 60 * 1000),
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  // 2. Pending booking ending tomorrow (should send end reminder)
+  const tomorrowEnd = new Date(now);
+  tomorrowEnd.setDate(tomorrowEnd.getDate() + 1);
+  tomorrowEnd.setHours(18, 0, 0, 0); // 6 PM tomorrow
+  
+  const endReminderBooking = {
+    referenceNumber: `TEST-END-${Date.now()}`,
+    renterId: renter._id,
+    renterEmail: renter.email || `${renter.phone}@test.com`,
+    supplierId: equipment.supplierId,
+    bookingItems: [{
+      equipmentId: equipment._id,
+      equipmentName: equipment.name,
+      equipmentReference: equipment.referenceNumber,
       pricingType: 'daily',
       rate: equipment.pricing?.dailyRate || 1000,
       usage: 1,
@@ -53,13 +89,13 @@ async function createTestData(db) {
     totalPrice: equipment.pricing?.dailyRate || 1000,
     grandTotal: equipment.pricing?.dailyRate || 1000,
     status: 'pending',
-    startDate: new Date(now.getTime() - 1 * 60 * 60 * 1000),
-    endDate: new Date(now.getTime() + 12 * 60 * 60 * 1000), // 12 hours from now
+    startDate: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000),
+    endDate: tomorrowEnd,
     createdAt: now,
     updatedAt: now,
   };
 
-  // 2. Pending booking ended 1 hour ago (should be cancelled)
+  // 3. Pending booking ended 1 hour ago (should be cancelled)
   const expiredPendingBooking = {
     referenceNumber: `TEST-EXPIRED-${Date.now()}`,
     renterId: renter._id,
@@ -84,7 +120,7 @@ async function createTestData(db) {
     updatedAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000),
   };
 
-  // 3. Paid booking ended 1 hour ago (should be completed)
+  // 4. Paid booking ended 1 hour ago (should be completed)
   const expiredPaidBooking = {
     referenceNumber: `TEST-PAID-${Date.now()}`,
     renterId: renter._id,
@@ -109,7 +145,11 @@ async function createTestData(db) {
     updatedAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000),
   };
 
-  // 4. Pending sale created 6.5 days ago (should send reminder)
+  // 5. Pending sale created exactly 6 days ago (should send reminder)
+  const sixDaysAgo = new Date(now);
+  sixDaysAgo.setDate(sixDaysAgo.getDate() - 6);
+  sixDaysAgo.setHours(10, 0, 0, 0); // 10 AM, 6 days ago
+  
   const reminderSale = {
     referenceNumber: `TEST-SALE-REMINDER-${Date.now()}`,
     equipmentId: equipment._id,
@@ -117,11 +157,11 @@ async function createTestData(db) {
     buyerEmail: renter.email || `${renter.phone}@test.com`,
     salePrice: equipment.salePrice || 50000,
     status: 'pending',
-    createdAt: new Date(now.getTime() - 6.5 * 24 * 60 * 60 * 1000), // 6.5 days ago
-    updatedAt: new Date(now.getTime() - 6.5 * 24 * 60 * 60 * 1000),
+    createdAt: sixDaysAgo,
+    updatedAt: sixDaysAgo,
   };
 
-  // 5. Pending sale created 8 days ago (should be cancelled)
+  // 6. Pending sale created 8 days ago (should be cancelled)
   const expiredSale = {
     referenceNumber: `TEST-SALE-EXPIRED-${Date.now()}`,
     equipmentId: equipment._id,
@@ -134,7 +174,8 @@ async function createTestData(db) {
   };
 
   const bookingResult = await db.collection('bookings').insertMany([
-    reminderBooking,
+    startReminderBooking,
+    endReminderBooking,
     expiredPendingBooking,
     expiredPaidBooking
   ]);
@@ -145,13 +186,14 @@ async function createTestData(db) {
   ]);
 
   console.log('📋 Created test bookings:');
-  console.log(`  1. ${reminderBooking.referenceNumber} - Pending, ends in 12h (should remind)`);
-  console.log(`  2. ${expiredPendingBooking.referenceNumber} - Pending, ended 1h ago (should cancel)`);
-  console.log(`  3. ${expiredPaidBooking.referenceNumber} - Paid, ended 1h ago (should complete)\n`);
+  console.log(`  1. ${startReminderBooking.referenceNumber} - Paid, starts tomorrow (should send start reminder)`);
+  console.log(`  2. ${endReminderBooking.referenceNumber} - Pending, ends tomorrow (should send end reminder)`);
+  console.log(`  3. ${expiredPendingBooking.referenceNumber} - Pending, ended 1h ago (should cancel)`);
+  console.log(`  4. ${expiredPaidBooking.referenceNumber} - Paid, ended 1h ago (should complete)\n`);
   
   console.log('📋 Created test sales:');
-  console.log(`  4. ${reminderSale.referenceNumber} - Pending, 6.5 days old (should remind)`);
-  console.log(`  5. ${expiredSale.referenceNumber} - Pending, 8 days old (should cancel)\n`);
+  console.log(`  5. ${reminderSale.referenceNumber} - Pending, exactly 6 days old (should remind)`);
+  console.log(`  6. ${expiredSale.referenceNumber} - Pending, 8 days old (should cancel)\n`);
 
   return {
     bookingIds: Object.values(bookingResult.insertedIds),
@@ -164,18 +206,22 @@ async function triggerCron() {
   
   const response = await fetch('http://localhost:3000/api/cron/auto-complete', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' }
+    headers: { 
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${AUTO_COMPLETE_SECRET}`
+    }
   });
 
   const result = await response.json();
   
   if (result.success) {
     console.log('✅ Cron executed successfully:');
-    console.log(`   Bookings Completed: ${result.result.bookings.completed}`);
+    console.log(`   Booking Start Reminders: ${result.result.bookings.startReminders}`);
+    console.log(`   Booking End Reminders: ${result.result.bookings.reminders}`);
     console.log(`   Bookings Cancelled: ${result.result.bookings.cancelled}`);
-    console.log(`   Booking Reminders: ${result.result.bookings.reminders}`);
-    console.log(`   Sales Cancelled: ${result.result.sales.cancelled}`);
-    console.log(`   Sale Reminders: ${result.result.sales.reminders}\n`);
+    console.log(`   Bookings Completed: ${result.result.bookings.completed}`);
+    console.log(`   Sale Reminders: ${result.result.sales.reminders}`);
+    console.log(`   Sales Cancelled: ${result.result.sales.cancelled}\n`);
   } else {
     console.log('❌ Cron failed:', result.error);
   }

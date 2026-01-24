@@ -25,9 +25,11 @@ export default function PriceDisplay({
       : "font-semibold text-sm text-gray-900"
 
   const finalAmountClassName = amountClassName || defaultAmountClassName
+  const displayAmount = amount ?? 0
+  
   return (
     <span dir={dir} className="inline-flex  items-baseline gap-1">
-      <span className={finalAmountClassName}>{amount.toLocaleString()}</span>
+      <span className={finalAmountClassName}>{displayAmount.toLocaleString()}</span>
       {showMRU && <span className={mruClassName}>MRU{suffix}</span>}
     </span>
   )

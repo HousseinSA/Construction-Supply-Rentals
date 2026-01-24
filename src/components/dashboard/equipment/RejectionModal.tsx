@@ -10,7 +10,6 @@ interface RejectionModalProps {
   onClose: () => void
   onConfirm: (reason: string) => void
   title: string
-  message: string
   confirmText: string
   cancelText: string
   placeholder: string
@@ -22,7 +21,6 @@ export default function RejectionModal({
   onClose,
   onConfirm,
   title,
-  message,
   confirmText,
   cancelText,
   placeholder,
@@ -62,7 +60,6 @@ export default function RejectionModal({
             </div>
             <h3 className="text-lg sm:text-xl font-bold text-gray-900">{title}</h3>
           </div>
-          <p className="text-sm sm:text-base text-gray-600 mb-4">{message}</p>
           <textarea
             value={reason}
             onChange={(e) => setReason(e.target.value)}

@@ -2,13 +2,13 @@ import { ObjectId } from "mongodb"
 import { EquipmentStatus, UsageCategory, PricingType } from "../types"
 
 export interface Equipment {
-  _id?: ObjectId
+  _id?: ObjectId | string
   referenceNumber?: string
-  supplierId?: ObjectId
+  supplierId?: ObjectId | string
   name: string 
   description: string
-  categoryId: ObjectId
-  equipmentTypeId: ObjectId
+  categoryId: ObjectId | string
+  equipmentTypeId: ObjectId | string
   pricing: {
     type: PricingType
     hourlyRate?: number
@@ -50,8 +50,8 @@ export interface Equipment {
   isSold?: boolean
   listingType: "forSale" | "forRent"
   createdBy: "admin" | "supplier"
-  createdById: ObjectId
-  approvedBy?: ObjectId
+  createdById: ObjectId | string
+  approvedBy?: ObjectId | string
   approvedAt?: Date
   createdAt: Date
   updatedAt: Date

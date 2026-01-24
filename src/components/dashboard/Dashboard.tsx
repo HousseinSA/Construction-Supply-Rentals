@@ -4,7 +4,6 @@ import { useTranslations } from "next-intl"
 import { useSession } from "next-auth/react"
 import { Link } from "@/src/i18n/navigation"
 import {
-  Plus,
   Settings,
   BarChart3,
   Users,
@@ -43,20 +42,12 @@ export default function Dashboard() {
           color: "bg-yellow-500",
         },
         {
-          title: t("admin.createEquipment"),
-          description: t("admin.createEquipmentDesc"),
-          icon: Plus,
-          href: "/dashboard/equipment/create",
-          color: "bg-blue-500",
-        },
-        {
           title: t("admin.manageEquipment"),
           description: t("admin.manageEquipmentDesc"),
           icon: Truck,
           href: "/dashboard/equipment",
           color: "bg-green-500",
         },
-        
         {
           title: t("admin.users"),
           description: t("admin.usersDesc"),
@@ -90,13 +81,6 @@ export default function Dashboard() {
         color: "bg-green-500",
       },
       {
-        title: t("supplier.addEquipment"),
-        description: t("supplier.addEquipmentDesc"),
-        icon: Plus,
-        href: "/dashboard/equipment/create",
-        color: "bg-blue-500",
-      },
-      {
         title: t("supplier.bookings"),
         description: t("supplier.bookingsDesc"),
         icon: ClipboardList,
@@ -120,7 +104,7 @@ export default function Dashboard() {
       : session?.user?.userType || "renter"
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50" style={{ minHeight: '100dvh' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         <div className="mb-6 sm:mb-8">
           <div className="flex items-center justify-between gap-4">

@@ -178,7 +178,7 @@ export async function PATCH(
             const { sendEquipmentApprovalEmail } = await import("@/src/lib/email")
             await sendEquipmentApprovalEmail(supplier.email, {
               equipmentName: equipment.name,
-              supplierName: `${supplier.firstName} ${supplier.lastName}`
+              supplierFirstName: supplier.firstName
             })
           }
         } catch (emailError) {

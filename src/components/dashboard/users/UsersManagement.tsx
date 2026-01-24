@@ -367,7 +367,7 @@ export default function UsersManagement() {
                       </div>
                     )}
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-gray-500">{t("users.status")}:</span>
+                      {/* <span className="text-xs text-gray-500">{t("users.status")}:</span> */}
                       <span
                         className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                           user.status === "blocked"

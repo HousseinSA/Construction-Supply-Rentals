@@ -4,7 +4,6 @@ import { useTranslations } from "next-intl"
 import { ArrowLeft } from "lucide-react"
 import { Link } from "@/src/i18n/navigation"
 import { useSearchParams, useRouter } from "next/navigation"
-import { useSession } from "next-auth/react"
 import { usePagination } from "@/src/hooks/usePagination"
 import { useTableFilters } from "@/src/hooks/useTableFilters"
 import { useSales } from "@/src/hooks/useSales"
@@ -19,13 +18,12 @@ import TableFilters from "@/src/components/ui/TableFilters"
 import { Table, TableHeader, TableBody, TableHead } from "@/src/components/ui/Table"
 
 export default function SalesTable() {
-  const { data: session } = useSession()
   const searchParams = useSearchParams()
   const router = useRouter()
   const highlightRef = searchParams.get("highlight")
   const t = useTranslations("dashboard.sales")
   const tPages = useTranslations("dashboard.pages")
-  const { sales, loading, fetchSales } = useSales()
+  const { sales, loading } = useSales()
   const [selectedSale, setSelectedSale] = useState<SaleWithDetails | null>(null)
   const [showDetailsModal, setShowDetailsModal] = useState(false)
   const [highlightId, setHighlightId] = useState<string | null>(null)
@@ -72,7 +70,6 @@ export default function SalesTable() {
           setHasProcessedHighlight(true)
           setTimeout(() => setHighlightId(null), 3000)
           
-          // Clear the highlight parameter from URL
           const newUrl = window.location.pathname
           router.replace(newUrl, { scroll: false })
         }
@@ -207,7 +204,7 @@ export default function SalesTable() {
               setShowDetailsModal(false)
               setSelectedSale(null)
             }}
-            onStatusUpdate={() => {}} // No need to refetch, store updates automatically
+            onStatusUpdate={() => {}}
           />
         )}
       </div>

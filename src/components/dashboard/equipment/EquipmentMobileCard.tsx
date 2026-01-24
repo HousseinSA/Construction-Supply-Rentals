@@ -67,7 +67,9 @@ export default function EquipmentMobileCard({
 
   return (
     <>
-    <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all grid grid-rows-[minmax(50px,auto)_auto_auto] gap-2">
+    <div className={`p-4 bg-white rounded-lg border shadow-sm hover:shadow-md transition-all grid grid-rows-[minmax(50px,auto)_auto_auto] gap-2 ${
+      item.pendingPricing ? 'border-orange-400 border-2 bg-orange-50' : 'border-gray-200'
+    }`}>
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1">
           {item.referenceNumber && (
@@ -107,12 +109,10 @@ export default function EquipmentMobileCard({
                 {t("forSale")}
               </span>
             )}
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="text-xs text-gray-500 capitalize flex items-center gap-1">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs text-gray-600 bg-gray-100 rounded">
               <MapPin className="w-3.5 h-3.5 text-primary" />
               {convertToLocalized(item.location)}
-            </div>
+            </span>
           </div>
         </div>
         <div className="flex-shrink-0 flex flex-col items-end gap-1.5">

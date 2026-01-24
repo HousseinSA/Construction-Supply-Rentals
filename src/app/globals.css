@@ -174,10 +174,12 @@ video {
 
 html {
   scroll-behavior: smooth;
+  height: 100%;
 }
 
 body {
   overflow-x: hidden;
+  min-height: 100dvh;
 }
 
 .transform-gpu {

@@ -7,11 +7,13 @@ import HomeButton from "../ui/HomeButton"
 interface DashboardPageHeaderProps {
   title: string
   showBackButton?: boolean
+  actions?: React.ReactNode
 }
 
-export default function DashboardPageHeader({ 
+export default function DashboardPageHeader({
   title,
-  showBackButton = true 
+  showBackButton = true,
+  actions,
 }: DashboardPageHeaderProps) {
   const router = useRouter()
 
@@ -27,12 +29,13 @@ export default function DashboardPageHeader({
           </button>
         )}
         <div className="flex-1">
-          <h1 className="text-2xl font-bold text-primary">
-            {title}
-          </h1>
+          <h1 className="text-2xl font-bold text-primary">{title}</h1>
         </div>
       </div>
-      <HomeButton />
+      <div className="flex items-center gap-2">
+        {actions}
+        <HomeButton />
+      </div>
     </div>
   )
 }

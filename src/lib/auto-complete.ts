@@ -3,6 +3,23 @@ import { Db, ObjectId, WithId, Document } from 'mongodb';
 type Booking = WithId<Document>;
 type Sale = WithId<Document>;
 
+// Configuration constants
+const SALE_REMINDER_DAYS = 6;  // Send reminder when sale is 6 days old
+const SALE_CANCEL_DAYS = 7;    // Cancel sale when 7 days old
+const BOOKING_REMINDER_DAYS = 1; // Send reminder 1 day before
+
+// Helper to get start/end of a specific day offset from now
+const getDayRange = (daysOffset: number) => {
+  const start = new Date();
+  start.setDate(start.getDate() + daysOffset);
+  start.setHours(0, 0, 0, 0);
+  
+  const end = new Date(start);
+  end.setHours(23, 59, 59, 999);
+  
+  return { start, end };
+};
+
 const formatEquipmentNames = (items: any[]) => 
   items.map(item => item.equipmentName + (item.equipmentReference ? ` (#${item.equipmentReference})` : ''));
 
@@ -25,9 +42,9 @@ const safeUpdate = async (fn: () => Promise<any>, errorMsg: string): Promise<boo
   }
 };
 
-async function sendBookingStartReminders(db: Db, adminEmail: string, now: Date, oneDayFromNow: Date) {
+async function sendBookingStartReminders(db: Db, adminEmail: string, tomorrowStart: Date, tomorrowEnd: Date) {
   const items = await safeQuery(
-    () => db.collection('bookings').find({ startDate: { $gte: now, $lte: oneDayFromNow }, status: { $in: ['pending', 'paid'] } }).toArray(),
+    () => db.collection('bookings').find({ startDate: { $gte: tomorrowStart, $lt: tomorrowEnd }, status: { $in: ['pending', 'paid'] } }).toArray(),
     'Error fetching bookings starting soon:'
   );
 
@@ -37,6 +54,16 @@ async function sendBookingStartReminders(db: Db, adminEmail: string, now: Date, 
       if (!adminEmail) continue;
       const { sendBookingStartReminderEmail } = await import('@/src/lib/email');
       const renter = await db.collection('users').findOne({ _id: new ObjectId(booking.renterId) });
+      const suppliers = await Promise.all(
+        (booking.bookingItems || []).map(async (item: any) => {
+          if (!item.supplierId) return null;
+          const supplier = await db.collection('users').findOne({ _id: new ObjectId(item.supplierId) });
+          return supplier ? { name: `${supplier.firstName} ${supplier.lastName}`, phone: supplier.phone || 'N/A' } : null;
+        })
+      );
+      const uniqueSuppliers = Array.from(
+        new Map(suppliers.filter(s => s !== null).map((s: any) => [s.phone, s])).values()
+      );
       await sendBookingStartReminderEmail(adminEmail, {
         referenceNumber: booking.referenceNumber,
         equipmentNames: formatEquipmentNames(booking.bookingItems || []),
@@ -45,7 +72,8 @@ async function sendBookingStartReminders(db: Db, adminEmail: string, now: Date, 
         totalPrice: booking.totalPrice,
         status: booking.status,
         renterName: renter ? `${renter.firstName} ${renter.lastName}` : 'Unknown',
-        renterPhone: renter?.phone || 'N/A'
+        renterPhone: renter?.phone || 'N/A',
+        suppliers: uniqueSuppliers
       });
       count++;
     } catch (err) {
@@ -55,9 +83,9 @@ async function sendBookingStartReminders(db: Db, adminEmail: string, now: Date, 
   return count;
 }
 
-async function sendBookingEndReminders(db: Db, adminEmail: string, now: Date, oneDayFromNow: Date) {
+async function sendBookingEndReminders(db: Db, adminEmail: string, tomorrowStart: Date, tomorrowEnd: Date) {
   const items = await safeQuery(
-    () => db.collection('bookings').find({ endDate: { $gte: now, $lte: oneDayFromNow }, status: 'pending' }).toArray(),
+    () => db.collection('bookings').find({ endDate: { $gte: tomorrowStart, $lt: tomorrowEnd }, status: 'pending' }).toArray(),
     'Error fetching pending bookings near end:'
   );
 
@@ -66,12 +94,26 @@ async function sendBookingEndReminders(db: Db, adminEmail: string, now: Date, on
     try {
       if (!adminEmail) continue;
       const { sendBookingPendingReminderEmail } = await import('@/src/lib/email');
+      const renter = await db.collection('users').findOne({ _id: new ObjectId(booking.renterId) });
+      const suppliers = await Promise.all(
+        (booking.bookingItems || []).map(async (item: any) => {
+          if (!item.supplierId) return null;
+          const supplier = await db.collection('users').findOne({ _id: new ObjectId(item.supplierId) });
+          return supplier ? { name: `${supplier.firstName} ${supplier.lastName}`, phone: supplier.phone || 'N/A' } : null;
+        })
+      );
+      const uniqueSuppliers = Array.from(
+        new Map(suppliers.filter(s => s !== null).map((s: any) => [s.phone, s])).values()
+      );
       await sendBookingPendingReminderEmail(adminEmail, {
         referenceNumber: booking.referenceNumber,
         equipmentNames: formatEquipmentNames(booking.bookingItems || []),
         endDate: booking.endDate,
         totalPrice: booking.totalPrice,
-        createdAt: booking.createdAt
+        createdAt: booking.createdAt,
+        renterName: renter ? `${renter.firstName} ${renter.lastName}` : 'Unknown',
+        renterPhone: renter?.phone || 'N/A',
+        suppliers: uniqueSuppliers
       });
       count++;
     } catch (err) {
@@ -148,9 +190,9 @@ async function completeExpiredPaidBookings(db: Db, now: Date) {
   return count;
 }
 
-async function sendSaleReminders(db: Db, adminEmail: string, sixDaysAgo: Date, sevenDaysAgo: Date) {
+async function sendSaleReminders(db: Db, adminEmail: string, sixDaysAgoStart: Date, sixDaysAgoEnd: Date) {
   const items = await safeQuery(
-    () => db.collection('sales').find({ createdAt: { $gte: sevenDaysAgo, $lte: sixDaysAgo }, status: 'pending' }).toArray(),
+    () => db.collection('sales').find({ createdAt: { $gte: sixDaysAgoStart, $lt: sixDaysAgoEnd }, status: 'pending' }).toArray(),
     'Error fetching pending sales near deadline:'
   );
 
@@ -160,13 +202,19 @@ async function sendSaleReminders(db: Db, adminEmail: string, sixDaysAgo: Date, s
       if (!adminEmail) continue;
       const { sendSalePendingReminderEmail } = await import('@/src/lib/email');
       const equipment = await db.collection('equipment').findOne({ _id: new ObjectId(sale.equipmentId) });
+      const buyer = await db.collection('users').findOne({ _id: new ObjectId(sale.buyerId) });
+      const supplier = sale.supplierId ? await db.collection('users').findOne({ _id: new ObjectId(sale.supplierId) }) : null;
       const equipmentName = equipment?.name || 'Unknown';
       const equipmentRef = equipment?.referenceNumber ? ` (#${equipment.referenceNumber})` : '';
       await sendSalePendingReminderEmail(adminEmail, {
         referenceNumber: sale.referenceNumber,
         equipmentName: equipmentName + equipmentRef,
         salePrice: sale.salePrice,
-        createdAt: sale.createdAt
+        createdAt: sale.createdAt,
+        buyerName: buyer ? `${buyer.firstName} ${buyer.lastName}` : 'Unknown',
+        buyerPhone: buyer?.phone || 'N/A',
+        supplierName: supplier ? `${supplier.firstName} ${supplier.lastName}` : 'Administration',
+        supplierPhone: supplier?.phone || '-'
       });
       count++;
     } catch (err) {
@@ -196,6 +244,7 @@ async function cancelOldPendingSales(db: Db, adminEmail: string, now: Date, seve
       const { sendSaleCancellationEmail } = await import('@/src/lib/email');
       const equipment = await db.collection('equipment').findOne({ _id: new ObjectId(sale.equipmentId) });
       const buyer = await db.collection('users').findOne({ _id: new ObjectId(sale.buyerId) });
+      const supplier = sale.supplierId ? await db.collection('users').findOne({ _id: new ObjectId(sale.supplierId) }) : null;
       const equipmentName = equipment?.name || 'Unknown';
       const equipmentRef = equipment?.referenceNumber ? ` (#${equipment.referenceNumber})` : '';
       
@@ -205,6 +254,8 @@ async function cancelOldPendingSales(db: Db, adminEmail: string, now: Date, seve
         salePrice: sale.salePrice,
         buyerName: buyer ? `${buyer.firstName} ${buyer.lastName}` : 'Unknown',
         buyerPhone: buyer?.phone || 'N/A',
+        supplierName: supplier ? `${supplier.firstName} ${supplier.lastName}` : 'Administration',
+        supplierPhone: supplier?.phone || '-',
         cancellationDate: now,
         createdAt: sale.createdAt
       });
@@ -217,20 +268,18 @@ async function cancelOldPendingSales(db: Db, adminEmail: string, now: Date, seve
 
 export async function processAutoCompletion(db: Db) {
   const now = new Date();
-  const oneDayFromNow = new Date(now);
-  oneDayFromNow.setDate(oneDayFromNow.getDate() + 1);
-  const sixDaysAgo = new Date(now);
-  sixDaysAgo.setDate(sixDaysAgo.getDate() - 6);
-  const sevenDaysAgo = new Date(now);
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
   const adminEmail = process.env.ADMIN_EMAIL || '';
+  
+  const tomorrow = getDayRange(BOOKING_REMINDER_DAYS);
+  const saleReminderDay = getDayRange(-SALE_REMINDER_DAYS);
+  const saleCancelDate = getDayRange(-SALE_CANCEL_DAYS).start;
 
-  const bookingsStartReminders = await sendBookingStartReminders(db, adminEmail, now, oneDayFromNow);
-  const bookingsReminders = await sendBookingEndReminders(db, adminEmail, now, oneDayFromNow);
+  const bookingsStartReminders = await sendBookingStartReminders(db, adminEmail, tomorrow.start, tomorrow.end);
+  const bookingsReminders = await sendBookingEndReminders(db, adminEmail, tomorrow.start, tomorrow.end);
   const bookingsCancelled = await cancelExpiredPendingBookings(db, adminEmail, now);
   const bookingsCompleted = await completeExpiredPaidBookings(db, now);
-  const salesReminders = await sendSaleReminders(db, adminEmail, sixDaysAgo, sevenDaysAgo);
-  const salesCancelled = await cancelOldPendingSales(db, adminEmail, now, sevenDaysAgo);
+  const salesReminders = await sendSaleReminders(db, adminEmail, saleReminderDay.start, saleReminderDay.end);
+  const salesCancelled = await cancelOldPendingSales(db, adminEmail, now, saleCancelDate);
 
   return {
     bookings: { completed: bookingsCompleted, cancelled: bookingsCancelled, reminders: bookingsReminders, startReminders: bookingsStartReminders },

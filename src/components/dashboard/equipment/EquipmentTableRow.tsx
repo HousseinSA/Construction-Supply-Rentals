@@ -61,7 +61,9 @@ export default function EquipmentTableRow({
   const allPrices = useEquipmentPrices(item)
   return (
     <>
-      <tr className="hover:bg-gray-50 transition-colors">
+      <tr className={`hover:bg-gray-50 transition-colors ${
+        item.pendingPricing ? 'bg-orange-50 border-l-4 border-orange-400' : ''
+      }`}>
         <td className="px-6 py-4 sticky left-0 z-10 bg-white">
           <div className="flex items-center gap-4">
             <div className="relative">
@@ -196,7 +198,7 @@ export default function EquipmentTableRow({
                           },
                           { key: "salePrice" as const, suffix: "" },
                         ].map(({ key, suffix }) =>
-                          item.pricing[key] && item.pendingPricing?.[key] ? (
+                          item.pendingPricing?.[key] && item.pricing[key] !== item.pendingPricing[key] ? (
                             <div key={key} dir="ltr">
                               {item.pricing[key]} → {item.pendingPricing[key]}{" "}
                               MRU{suffix}
@@ -255,6 +257,8 @@ export default function EquipmentTableRow({
           </span>
         </td>
         <td className="px-6 py-4 text-center">
+          <div className="flex flex-col items-center gap-1.5">
+
           {item.status === "pending" && !isSupplier ? (
             <div className="flex flex-col gap-2">
               <button
@@ -301,6 +305,7 @@ export default function EquipmentTableRow({
                 : t(item.status)}
             </span>
           )}
+          </div>
         </td>
         <td className="px-6 py-4">
           <div className="flex justify-center overflow-visible">

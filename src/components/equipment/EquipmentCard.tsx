@@ -99,7 +99,7 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
               <span className="capitalize">{localizedCity}</span>
             </div>
             {specs?.condition && (
-              <span className="text-xs text-gray-600 px-2 py-0.5 bg-gray-50 rounded">{tDetails(`conditionLabels.${specs.condition}`)}</span>
+              <span className="text-xs text-gray-600 py-0.5 bg-gray-50 rounded">{tDetails(`conditionLabels.${specs.condition}`)}</span>
             )}
           </div>
 
@@ -137,7 +137,7 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
                   <span className="font-bold text-primary" dir="ltr">
                     {equipment.pricing.hourlyRate.toLocaleString()} MRU
                   </span>
-                  <span className="text-xs text-gray-500">/{tCommon("hour")}</span>
+                  <span className="text-xs text-gray-500">/ {tCommon("hour")}</span>
                 </div>
               )}
               {equipment.pricing.dailyRate && (
@@ -145,7 +145,7 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
                   <span className="font-bold text-primary" dir="ltr">
                     {equipment.pricing.dailyRate.toLocaleString()} MRU
                   </span>
-                  <span className="text-xs text-gray-500">/{tCommon("day")}</span>
+                  <span className="text-xs text-gray-500">/ {tCommon("day")}</span>
                 </div>
               )}
               {equipment.pricing.kmRate && (
@@ -153,7 +153,7 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
                   <span className="font-bold text-primary" dir="ltr">
                     {equipment.pricing.kmRate.toLocaleString()} MRU
                   </span>
-                  <span className="text-xs text-gray-500">/{tCommon("km")}</span>
+                  <span className="text-xs text-gray-500">/ {tCommon("km")}</span>
                 </div>
               )}
             </div>

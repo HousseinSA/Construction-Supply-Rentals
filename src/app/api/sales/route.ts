@@ -10,7 +10,10 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 },
+      )
     }
 
     const { searchParams } = new URL(request.url)
@@ -20,15 +23,11 @@ export async function GET(request: NextRequest) {
     const db = await connectDB()
     const pipeline: any[] = []
 
-    // Role-based filtering for sales
-    if (session.user.role === 'admin') {
-      // Admin sees all sales
-    } else if (session.user.userType === 'supplier') {
-      // Suppliers see sales of their own equipment
-      pipeline.push({ $match: { supplierId: new ObjectId(session.user.id) } })
-    } else {
-      // Renters see sales they made as buyers
-      pipeline.push({ $match: { buyerId: new ObjectId(session.user.id) } })
+    if (session.user.role !== "admin") {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 403 },
+      )
     }
 
     pipeline.push(
@@ -60,12 +59,17 @@ export async function GET(request: NextRequest) {
         $addFields: {
           isAdminOwned: {
             $cond: {
-              if: { $eq: [{ $arrayElemAt: ["$equipmentInfo.createdBy", 0] }, "admin"] },
+              if: {
+                $eq: [
+                  { $arrayElemAt: ["$equipmentInfo.createdBy", 0] },
+                  "admin",
+                ],
+              },
               then: true,
-              else: false
-            }
-          }
-        }
+              else: false,
+            },
+          },
+        },
       },
       { $sort: { createdAt: -1 } },
       {
@@ -73,7 +77,7 @@ export async function GET(request: NextRequest) {
           data: [{ $skip: skip }, { $limit: limit }],
           total: [{ $count: "count" }],
         },
-      }
+      },
     )
 
     const result = await db.collection("sales").aggregate(pipeline).toArray()
@@ -91,7 +95,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     return NextResponse.json(
       { success: false, error: "Failed to fetch sales" },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -99,12 +103,17 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { buyerId, equipmentId, buyerMessage, commission: frontendCommission } = body
+    const {
+      buyerId,
+      equipmentId,
+      buyerMessage,
+      commission: frontendCommission,
+    } = body
 
     if (!buyerId || !equipmentId) {
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -116,27 +125,30 @@ export async function POST(request: NextRequest) {
     if (!equipment) {
       return NextResponse.json(
         { success: false, error: "Equipment not found" },
-        { status: 404 }
+        { status: 404 },
       )
     }
 
     if (equipment.listingType !== "forSale") {
       return NextResponse.json(
         { success: false, error: "Equipment is not for sale" },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
     const salePrice = equipment.pricing?.salePrice || 0
     const commission = frontendCommission || 0
     const grandTotal = salePrice
-    const referenceNumber = await generateReferenceNumber('sale')
+    const referenceNumber = await generateReferenceNumber("sale")
 
     const result = await db.collection("sales").insertOne({
       referenceNumber,
       buyerId: ObjectId.createFromHexString(buyerId),
       equipmentId: ObjectId.createFromHexString(equipmentId),
-      supplierId: equipment.supplierId && equipment.createdBy !== "admin" ? equipment.supplierId : null,
+      supplierId:
+        equipment.supplierId && equipment.createdBy !== "admin"
+          ? equipment.supplierId
+          : null,
       equipmentName: equipment.name,
       salePrice,
       commission,
@@ -147,7 +159,6 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date(),
     })
 
-    // Send email asynchronously without blocking response
     const adminEmail = process.env.ADMIN_EMAIL
     if (adminEmail) {
       Promise.resolve().then(async () => {
@@ -155,27 +166,31 @@ export async function POST(request: NextRequest) {
           const buyer = await db
             .collection("users")
             .findOne({ _id: ObjectId.createFromHexString(buyerId) })
-          
-          let supplierName, supplierPhone;
+
+          let supplierName, supplierPhone
           if (equipment.supplierId) {
-            const supplier = await db.collection("users").findOne({ _id: equipment.supplierId })
+            const supplier = await db
+              .collection("users")
+              .findOne({ _id: equipment.supplierId })
             if (supplier) {
               supplierName = `${supplier.firstName} ${supplier.lastName}`
               supplierPhone = supplier.phone
             }
           }
-          
+
           const { sendNewSaleEmail } = await import("@/src/lib/email")
           await sendNewSaleEmail(adminEmail, {
             referenceNumber,
-            equipmentName: equipment.name,
+            equipmentName: `${equipment.name}${equipment.referenceNumber ? ` (#${equipment.referenceNumber})` : ''}`,
             salePrice,
-            buyerName: buyer ? `${buyer.firstName} ${buyer.lastName}` : "Unknown",
-            buyerPhone: buyer?.phone || "N/A",
-            buyerLocation: buyer?.city || undefined,
+            commission,
+            buyerName: buyer
+              ? `${buyer.firstName} ${buyer.lastName}`
+              : "Unknown",
+            buyerPhone: buyer?.phone,
+            supplierName: supplierName || "admin",
+            supplierPhone: supplierPhone,
             saleDate: new Date(),
-            supplierName,
-            supplierPhone
           })
         } catch (err) {
           console.error("Email error:", err)
@@ -184,31 +199,35 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-      await db.collection('equipment').updateOne(
-        { _id: ObjectId.createFromHexString(equipmentId) },
-        { $set: { isAvailable: false, updatedAt: new Date() } }
+      await db
+        .collection("equipment")
+        .updateOne(
+          { _id: ObjectId.createFromHexString(equipmentId) },
+          { $set: { isAvailable: false, updatedAt: new Date() } },
+        )
+      triggerRealtimeUpdate("equipment").catch((err) =>
+        console.error("Realtime update error:", err),
       )
-      triggerRealtimeUpdate('equipment').catch(err => console.error('Realtime update error:', err))
     } catch (e) {
       console.error(e)
     }
 
     return NextResponse.json(
-      { 
-        success: true, 
-        data: { 
-          id: result.insertedId, 
-          salePrice, 
+      {
+        success: true,
+        data: {
+          id: result.insertedId,
+          salePrice,
           commission,
           equipment: equipment || null,
-        } 
+        },
       },
-      { status: 201 }
+      { status: 201 },
     )
   } catch (error) {
     return NextResponse.json(
       { success: false, error: "Failed to create sale order" },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -221,71 +240,76 @@ export async function PUT(request: NextRequest) {
     if (!saleId || !status) {
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
     if (!ObjectId.isValid(saleId)) {
       return NextResponse.json(
         { success: false, error: "Invalid sale ID" },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
     const db = await connectDB()
     const saleObjectId = ObjectId.createFromHexString(saleId)
-    
-    if (status === 'cancelled') {
-      const sale = await db.collection('sales').findOne({ _id: saleObjectId })
+
+    if (status === "cancelled") {
+      const sale = await db.collection("sales").findOne({ _id: saleObjectId })
       if (!sale) {
         return NextResponse.json(
           {
             success: false,
             error: "Sale not found",
           },
-          { status: 404 }
+          { status: 404 },
         )
       }
-      if (sale.status !== 'pending') {
+      if (sale.status !== "pending") {
         return NextResponse.json(
           {
             success: false,
-            error: "Only pending purchases can be cancelled. Please contact support for assistance.",
+            error:
+              "Only pending purchases can be cancelled. Please contact support for assistance.",
           },
-          { status: 400 }
+          { status: 400 },
         )
       }
 
       if (!adminId) {
         const adminEmail = process.env.ADMIN_EMAIL
         if (adminEmail) {
-          const buyer = await db.collection('users').findOne({ _id: sale.buyerId })
-        
-        let supplierName, supplierPhone;
-        if (sale.supplierId) {
-          const supplier = await db.collection('users').findOne({ _id: sale.supplierId })
-          if (supplier) {
-            supplierName = `${supplier.firstName} ${supplier.lastName}`
-            supplierPhone = supplier.phone
+          const buyer = await db
+            .collection("users")
+            .findOne({ _id: sale.buyerId })
+
+          let supplierName, supplierPhone
+          if (sale.supplierId) {
+            const supplier = await db
+              .collection("users")
+              .findOne({ _id: sale.supplierId })
+            if (supplier) {
+              supplierName = `${supplier.firstName} ${supplier.lastName}`
+              supplierPhone = supplier.phone
+            }
           }
+
+          const { sendSaleCancellationEmail } = await import("@/src/lib/email")
+          await sendSaleCancellationEmail(adminEmail, {
+            referenceNumber: sale.referenceNumber,
+            equipmentName: sale.equipmentName,
+            salePrice: sale.salePrice,
+            buyerName: buyer
+              ? `${buyer.firstName} ${buyer.lastName}`
+              : "Unknown",
+            buyerPhone: buyer?.phone || "N/A",
+            cancellationDate: new Date(),
+            createdAt: sale.createdAt,
+          }).catch((err: any) => console.error("Email error:", err))
         }
-        
-        const { sendSaleCancellationEmail } = await import('@/src/lib/email')
-        await sendSaleCancellationEmail(adminEmail, {
-          referenceNumber: sale.referenceNumber,
-          equipmentName: sale.equipmentName,
-          salePrice: sale.salePrice,
-          buyerName: buyer ? `${buyer.firstName} ${buyer.lastName}` : 'Unknown',
-          buyerPhone: buyer?.phone || 'N/A',
-          buyerLocation: buyer?.city || undefined,
-          cancellationDate: new Date(),
-          supplierName,
-          supplierPhone
-        }).catch((err: any) => console.error('Email error:', err))
-      }
       }
     }
-    
+
     const updateData: any = {
       status,
       updatedAt: new Date(),
@@ -304,27 +328,29 @@ export async function PUT(request: NextRequest) {
       .updateOne({ _id: saleObjectId }, { $set: updateData })
 
     if (status === "paid") {
-      const sale = await db
-        .collection("sales")
-        .findOne({ _id: saleObjectId })
+      const sale = await db.collection("sales").findOne({ _id: saleObjectId })
       if (sale) {
         await db
           .collection("equipment")
           .updateOne(
             { _id: sale.equipmentId },
-            { $set: { isAvailable: false, soldViaTransaction: true, updatedAt: new Date() } }
+            {
+              $set: {
+                isAvailable: false,
+                soldViaTransaction: true,
+                updatedAt: new Date(),
+              },
+            },
           )
       }
     } else if (status === "cancelled") {
-      const sale = await db
-        .collection("sales")
-        .findOne({ _id: saleObjectId })
+      const sale = await db.collection("sales").findOne({ _id: saleObjectId })
       if (sale) {
         await db
           .collection("equipment")
           .updateOne(
             { _id: sale.equipmentId },
-            { $set: { isAvailable: true, updatedAt: new Date() } }
+            { $set: { isAvailable: true, updatedAt: new Date() } },
           )
       }
     }
@@ -336,7 +362,7 @@ export async function PUT(request: NextRequest) {
   } catch (error: any) {
     return NextResponse.json(
       { success: false, error: error.message || "Failed to update sale" },
-      { status: 400 }
+      { status: 400 },
     )
   }
 }
