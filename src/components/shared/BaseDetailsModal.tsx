@@ -55,12 +55,11 @@ export default function BaseDetailsModal({
   return (
     <div
       ref={modalRef}
-      className="fixed top-0 left-0 right-0 bottom-0 z-50 animate-in fade-in duration-150"
-      style={{ height: "100dvh", width: "100vw" }}
+      className="fixed inset-0 z-50"
     >
-      <div className="absolute top-0 left-0 right-0 bottom-0 bg-black/50 backdrop-blur-sm" style={{ height: "100%", width: "100%" }} />
+      <div className="absolute inset-0 bg-black/50" />
       <div className="relative h-full flex items-center justify-center p-4">
-        <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom-4 duration-200">
+        <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
           <div className="p-6">
             <ModalHeader title={title} onClose={onClose} />
             <ReferenceBadge

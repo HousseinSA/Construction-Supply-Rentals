@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Tag } from 'lucide-react'
 import { useTranslations } from "next-intl"
 import { useParams, useRouter } from "next/navigation"
+import { toast } from "sonner"
 import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
 import { useBookingSuccessStore } from "@/src/stores/bookingSuccessStore"
 import { calculateSaleCommission } from "@/src/lib/commission"
@@ -37,7 +38,6 @@ export default function SaleModal({
     e.preventDefault()
     
     if (!buyerId) {
-      const { toast } = await import("sonner")
       toast.error(t("saleRequestFailed"))
       return
     }
@@ -73,11 +73,9 @@ export default function SaleModal({
         onClose()
         setMessage("")
       } else {
-        const { toast } = await import("sonner")
         toast.error(data.error || t("saleRequestFailed"))
       }
     } catch {
-      const { toast } = await import("sonner")
       toast.error(t("saleRequestFailed"))
     } finally {
       setLoading(false)

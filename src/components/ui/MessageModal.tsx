@@ -39,12 +39,12 @@ export default function MessageModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 animate-in fade-in duration-150">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+    <div className="fixed inset-0 z-50">
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative h-full flex items-center justify-center p-4">
         <div
           ref={modalRef}
-          className="bg-white rounded-xl max-w-md w-full animate-in slide-in-from-bottom-4 duration-200 shadow-xl"
+          className="bg-white rounded-xl max-w-md w-full shadow-xl"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="p-6">

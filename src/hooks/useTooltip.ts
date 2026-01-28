@@ -8,7 +8,11 @@ export const useTooltip = () => {
     if (!isOpen) return
 
     const handleClickOutside = (e: MouseEvent | TouchEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
+      const target = e.target as HTMLElement
+      if (target.closest('[data-copy-button]')) {
+        return
+      }
+      if (ref.current && !ref.current.contains(target)) {
         setIsOpen(false)
       }
     }
@@ -27,5 +31,6 @@ export const useTooltip = () => {
     isOpen,
     toggle: () => setIsOpen(!isOpen),
     close: () => setIsOpen(false),
+    open: () => setIsOpen(true),
   }
 }

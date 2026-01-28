@@ -548,7 +548,7 @@
       "pendingVerification": "قيد التحقق",
       "rejected": "مرفوض",
       "rejectionReason": "سبب الرفض",
-      "rejectionReasonPlaceholder": "سبب رفض المورد",
+      "rejectionReasonPlaceholder": "سبب رفض السعر المحدث",
       "resubmit": "إعادة الإرسال",
       "resubmitting": "جاري إعادة الإرسال...",
       "editBeforeResubmit": "يجب تعديل المعدة قبل إعادة إرسالها",
@@ -1018,9 +1018,8 @@
     "day": "يوم",
     "month": "شهر",
     "ton": "طن",
-    "ratePerKm": "السعر بالكيلومتر",
-    "transportCost": "تكلفة النقل",
-    "transport": "النقل"
+    "transport": "النقل",
+    "failedToLoadDates": "فشل في تحميل التواريخ المحجوزة"
   },
   "bookingSuccess": {
     "title": "تم الحجز بنجاح!",
@@ -1029,7 +1028,6 @@
     "saleMessage": "تم إرسال طلب الشراء بنجاح.والتواصل معك قريباً.",
     "transportTitle": "تحتاج نقل؟",
     "transportSubtitle": "تصفح معدات النقل المتاحة لنقل المعدات ",
-    "noTransportAvailable": "لا توجد معدات نقل متاحة حالياً",
     "noEquipmentAvailable": "لا توجد معدات متاحة حالياً",
     "myBookings": "حجوزاتي",
     "viewBookings": "عرض وتتبع حجوزاتك",

@@ -3,6 +3,7 @@ import EquipmentImage from "@/src/components/ui/EquipmentImage"
 import Dropdown from "@/src/components/ui/Dropdown"
 import CopyButton from "@/src/components/ui/CopyButton"
 import PriceDisplay from "@/src/components/ui/PriceDisplay"
+import PricingUpdateTooltip from "./PricingUpdateTooltip"
 import { EquipmentWithSupplier } from "@/src/stores/equipmentStore"
 import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
 import { useCityData } from "@/src/hooks/useCityData"
@@ -38,6 +39,7 @@ export default function EquipmentMobileCard({
   const tCommon = useTranslations("common")
   const { ref: tooltipRef, isOpen: showTooltip, toggle: toggleTooltip } = useTooltip()
   const pricingTooltip = useTooltip()
+  const supplierPricingTooltip = useTooltip()
   const getPricesList = () => {
     const prices = []
     if (item.listingType === "forSale" && item.pricing.salePrice) {
@@ -165,7 +167,7 @@ export default function EquipmentMobileCard({
       </div>
 
       <div className="flex gap-4 pb-3 border-b border-gray-200">
-        <div className="w-32 sm:w-40 md:w-44 lg:w-48 h-32 relative rounded-lg flex-shrink-0 overflow-hidden">
+        <div className="w-36 sm:w-44 md:w-48 lg:w-52 h-36 relative rounded-lg flex-shrink-0 overflow-hidden">
           <EquipmentImage
             src={item.images[0] || "/equipement-images/default-fallback-image.png"}
             alt={item.name}
@@ -183,7 +185,7 @@ export default function EquipmentMobileCard({
             </div>
           )}
         </div>
-        <div className="flex-1 flex flex-col justify-start space-y-2 overflow-hidden">
+        <div className="flex-1 flex flex-col justify-start space-y-2 overflow-visible" >
           <div >
             <div className="text-xs text-gray-500 mb-1">{t("price")}</div>
             <div className="space-y-0.5">
@@ -191,43 +193,48 @@ export default function EquipmentMobileCard({
                 <div key={idx} className="flex items-center gap-1">
                   <PriceDisplay amount={price.amount} suffix={price.suffix} />
                   {idx === 0 && item.pendingPricing && !isSupplier && (
-                    <div ref={pricingTooltip.ref} className="relative inline-block">
+                    <div 
+                      ref={pricingTooltip.ref} 
+                      className="relative inline-block"
+                      onMouseEnter={pricingTooltip.open}
+                      onMouseLeave={pricingTooltip.close}
+                    >
                       <button
-                        onClick={() => onPricingReview?.(item)}
+                        onClick={() => {
+                          pricingTooltip.toggle()
+                          onPricingReview?.(item)
+                        }}
                         className="inline-flex items-center text-orange-600 hover:text-orange-700"
                       >
                         <RefreshCw className="w-3.5 h-3.5" />
                       </button>
                       {pricingTooltip.isOpen && (
-                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap z-50">
-                          {t("reviewPricingRequest")}
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg z-50 whitespace-nowrap">
+                          <PricingUpdateTooltip item={item} isSupplier={false} />
                           <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
                         </div>
                       )}
                     </div>
                   )}
                   {idx === 0 && item.pendingPricing && isSupplier && (
-                    <div className="relative group inline-block">
-                      <span className="inline-flex items-center text-orange-600 cursor-help">
+                    <div 
+                      ref={supplierPricingTooltip.ref} 
+                      className="relative inline-block"
+                      onMouseEnter={supplierPricingTooltip.open}
+                      onMouseLeave={supplierPricingTooltip.close}
+                    >
+                      <button
+                        onClick={supplierPricingTooltip.toggle}
+                        className="inline-flex items-center text-orange-600 hover:text-orange-700"
+                      >
                         <RefreshCw className="w-3.5 h-3.5" />
-                      </span>
-                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
-                        <div className="space-y-1">
-                          <div className="font-semibold">{t("pricingPendingApproval")}</div>
-                          <div className="text-gray-300">{t("currentPricing")} → {t("requestedPricing")}</div>
-                          {[
-                            { key: 'hourlyRate' as const, suffix: `/h` },
-                            { key: 'dailyRate' as const, suffix: `/${tCommon("day")}` },
-                            { key: 'kmRate' as const, suffix: `/${tCommon("km")}` },
-                            { key: 'salePrice' as const, suffix: '' }
-                          ].map(({ key, suffix }) => 
-                            item.pricing[key] && item.pendingPricing?.[key] ? (
-                              <div key={key} dir="ltr">{item.pricing[key]} → {item.pendingPricing[key]} MRU{suffix}</div>
-                            ) : null
-                          )}
+                      </button>
+                      {supplierPricingTooltip.isOpen && (
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg z-50 min-w-max">
+                          <PricingUpdateTooltip item={item} isSupplier={true} />
+                          <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
                         </div>
-                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
-                      </div>
+                      )}
                     </div>
                   )}
                   {idx === 0 && item.pricingRejectionReason && isSupplier && (
@@ -248,7 +255,7 @@ export default function EquipmentMobileCard({
           {!isSupplier && (
             <div>
               <div className="text-xs text-gray-500 mb-1">{t("supplierInfo")}</div>
-              <div className="font-semibold text-sm text-gray-900">
+              <div className={`font-semibold ${supplierName === 'Admin' ? 'text-blue-700' : 'text-gray-900'} text-sm`}>
                 {supplierName}
               </div>
               {item.createdBy !== "admin" && item.supplier && (

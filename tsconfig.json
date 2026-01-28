@@ -32,6 +32,6 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "global.d.ts"
-  ],
+, "scripts/test-all-emails.js"  ],
   "exclude": ["node_modules"]
 }

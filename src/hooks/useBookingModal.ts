@@ -1,8 +1,8 @@
 import { useState } from "react"
 import { useSession } from "next-auth/react"
 import { useTranslations } from "next-intl"
+import { toast } from "sonner"
 import { PricingType } from "@/src/lib/types"
-import { requiresTransport } from "@/src/lib/constants/transport"
 import { useBookingSuccessStore } from "@/src/stores/bookingSuccessStore"
 import { calculateCommission } from "@/src/lib/commission"
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
@@ -53,7 +53,6 @@ export function useBookingModal(
 
     const validation = validateBooking(pricingType || "daily")
     if (!validation.valid) {
-      const { toast } = await import("sonner")
       toast.error(validation.error || t("error"))
       return
     }
@@ -98,18 +97,15 @@ export function useBookingModal(
         if (router && locale) {
           router.push(`/${locale}/booking-success?equipment=${encodeURIComponent(equipment.name)}&equipmentId=${equipment._id}&type=booking`)
         } else {
-          const { toast } = await import("sonner")
           toast.success(t("successPending"))
         }
         resetForm()
         onSuccess?.()
         onClose?.()
       } else {
-        const { toast } = await import("sonner")
         toast.error(data.error || t("error"))
       }
     } catch {
-      const { toast } = await import("sonner")
       toast.error(t("error"))
     } finally {
       setLoading(false)

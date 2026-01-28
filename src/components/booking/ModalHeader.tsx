@@ -1,3 +1,4 @@
+import { memo } from "react"
 import { X } from "lucide-react"
 
 interface ModalHeaderProps {
@@ -5,7 +6,7 @@ interface ModalHeaderProps {
   onClose: () => void
 }
 
-export default function ModalHeader({ title, onClose }: ModalHeaderProps) {
+function ModalHeader({ title, onClose }: ModalHeaderProps) {
   return (
     <div className="flex items-center justify-between mb-4">
       <h2 className="text-xl font-semibold">{title}</h2>
@@ -15,3 +16,5 @@ export default function ModalHeader({ title, onClose }: ModalHeaderProps) {
     </div>
   )
 }
+
+export default memo(ModalHeader)

@@ -367,7 +367,8 @@ export async function POST(request: NextRequest) {
           const { sendNewBookingEmail } = await import("@/src/lib/email")
           await sendNewBookingEmail(adminEmail, {
             referenceNumber,
-            equipmentName: `${bookingItem.equipmentName}${equipment?.referenceNumber ? ` (#${equipment.referenceNumber})` : ''}`,
+            equipmentName: bookingItem.equipmentName,
+            equipmentReference: equipment?.referenceNumber,
             totalPrice: subtotal,
             commission,
             renterName: renter

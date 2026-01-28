@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react"
 import { toast } from "sonner"
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
 import { useModalClose } from "@/src/hooks/useModalClose"
 import ModalHeader from "@/src/components/booking/ModalHeader"
 
@@ -84,18 +84,23 @@ export default function PricingReviewModal({
       dailyRate: t("daily"),
       kmRate: t("perKm"),
       tonRate: t("tonRate"),
-      salePrice: t("salePrice")
+      salePrice: t("salePrice"),
     }
     return labelMap[key] || key
   }
+  const locale = useLocale()
+  const isRTL = locale === "ar"
 
   return (
-    <div className="fixed inset-0 z-50 animate-in fade-in duration-150">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+    <div className="fixed inset-0 z-50">
+      <div
+        className="absolute inset-0 bg-black/50"
+        onClick={onClose}
+      />
       <div className="relative h-full flex items-center justify-center p-4">
-        <div 
+        <div
           ref={modalRef}
-          className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom-4 duration-200"
+          className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="p-6">
@@ -104,18 +109,46 @@ export default function PricingReviewModal({
               <div className="bg-gradient-to-r from-gray-50 to-orange-50 p-6 rounded-xl border border-gray-200">
                 {Object.entries(pendingPricing)
                   .filter(([key, value]) => {
-                    if (key === 'monthlyRate' || key === 'requestedAt' || !value || typeof value !== 'number') return false
+                    if (
+                      key === "monthlyRate" ||
+                      key === "requestedAt" ||
+                      !value ||
+                      typeof value !== "number"
+                    )
+                      return false
                     return currentPricing[key] !== pendingPricing[key]
                   })
                   .map(([key, value]) => (
-                    <div key={key} className="flex items-center justify-between py-3 border-b border-gray-200 last:border-0">
-                      <span className="text-sm font-medium text-gray-700">{getRateLabel(key)}</span>
+                    <div
+                      key={key}
+                      className="flex items-center justify-between py-3 border-b border-gray-200 last:border-0"
+                    >
+                      <span className="text-sm font-medium text-gray-700">
+                        {getRateLabel(key)}
+                      </span>
                       <div className="flex items-center gap-3">
-                        <span className="text-sm text-gray-500" dir="ltr">{formatPrice(currentPricing[key] as number)} MRU</span>
-                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        <span
+                          className="text-sm text-gray-500 line-through"
+                          dir="ltr"
+                        >
+                          {formatPrice(currentPricing[key] as number)} MRU
+                        </span>
+                        <svg
+                          className={`w-4 h-4 text-gray-400 ${isRTL ? 'rotate-180' : ''}`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13 7l5 5m0 0l-5 5m5-5H6"
+                          />
                         </svg>
-                        <span className="text-base font-semibold text-orange-600" dir="ltr">{formatPrice(value as number)} MRU</span>
+                        <span className="text-lg font-bold text-primary" dir="ltr">
+                          {formatPrice(value as number)} MRU
+                        </span>
                       </div>
                     </div>
                   ))}
@@ -151,7 +184,9 @@ export default function PricingReviewModal({
                       disabled={isApproving || isRejecting}
                       className="flex-1 px-4 py-3 bg-primary text-white rounded-lg hover:bg-green-700 font-medium disabled:opacity-50 transition-colors"
                     >
-                      {isApproving ? t("processingRequest") : t("approvePricing")}
+                      {isApproving
+                        ? t("processingRequest")
+                        : t("approvePricing")}
                     </button>
                   </>
                 ) : (
@@ -171,7 +206,9 @@ export default function PricingReviewModal({
                       disabled={isRejecting}
                       className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium disabled:opacity-50 transition-colors"
                     >
-                      {isRejecting ? t("processingRequest") : t("confirmReject")}
+                      {isRejecting
+                        ? t("processingRequest")
+                        : t("confirmReject")}
                     </button>
                   </>
                 )}

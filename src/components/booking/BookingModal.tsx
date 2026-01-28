@@ -1,9 +1,10 @@
 "use client"
 
-import { useMemo, useState, useEffect } from "react"
+import { useMemo, useState, useEffect, useCallback } from "react"
 import { useTranslations } from "next-intl"
 import { useParams, useRouter } from "next/navigation"
 import { Send } from "lucide-react"
+import { toast } from "sonner"
 import { useBookingModal } from "@/src/hooks/useBookingModal"
 import BaseRequestModal from "@/src/components/shared/BaseRequestModal"
 import Input from "@/src/components/ui/Input"
@@ -33,55 +34,44 @@ export default function BookingModal({
   const [bookedRanges, setBookedRanges] = useState<
     Array<{ start: Date | string; end: Date | string }>
   >([])
+  const [loadingDates, setLoadingDates] = useState(false)
+
+  const fetchBookedDates = useCallback(async () => {
+    if (!equipment?._id) return
+    setLoadingDates(true)
+    try {
+      const res = await fetch(`/api/equipment/${equipment._id}/booked-dates`)
+      const data = await res.json()
+      if (data.success) {
+        setBookedRanges(data.data)
+      }
+    } catch (err) {
+      console.error("Failed to fetch booked dates:", err)
+      toast.error(t("failedToLoadDates"))
+    } finally {
+      setLoadingDates(false)
+    }
+  }, [equipment?._id, t])
 
   useEffect(() => {
-    if (isOpen && equipment?._id) {
-      fetch(`/api/equipment/${equipment._id}/booked-dates`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.success) {
-            setBookedRanges(data.data)
-          }
-        })
-        .catch((err) => console.error("Failed to fetch booked dates:", err))
+    if (isOpen) {
+      fetchBookedDates()
     }
-  }, [isOpen, equipment?._id])
+  }, [isOpen, fetchBookedDates])
 
   const availablePricingTypes = useMemo(() => {
     if (!equipment?.pricing) return []
     const types: { type: PricingType; label: string; rate: number }[] = []
-    if (equipment.pricing.hourlyRate)
-      types.push({
-        type: "hourly",
-        label: tCommon("hour"),
-        rate: equipment.pricing.hourlyRate,
-      })
-    if (equipment.pricing.dailyRate)
-      types.push({
-        type: "daily",
-        label: tCommon("day"),
-        rate: equipment.pricing.dailyRate,
-      })
-    if (equipment.pricing.monthlyRate)
-      types.push({
-        type: "monthly",
-        label: tCommon("month"),
-        rate: equipment.pricing.monthlyRate,
-      })
-    if (equipment.pricing.kmRate)
-      types.push({
-        type: "per_km",
-        label: tCommon("km"),
-        rate: equipment.pricing.kmRate,
-      })
-    if (equipment.pricing.tonRate)
-      types.push({
-        type: "per_ton",
-        label: tCommon("ton"),
-        rate: equipment.pricing.tonRate,
-      })
+    const pricing = equipment.pricing
+    
+    if (pricing.hourlyRate) types.push({ type: "hourly", label: tCommon("hour"), rate: pricing.hourlyRate })
+    if (pricing.dailyRate) types.push({ type: "daily", label: tCommon("day"), rate: pricing.dailyRate })
+    if (pricing.monthlyRate) types.push({ type: "monthly", label: tCommon("month"), rate: pricing.monthlyRate })
+    if (pricing.kmRate) types.push({ type: "per_km", label: tCommon("km"), rate: pricing.kmRate })
+    if (pricing.tonRate) types.push({ type: "per_ton", label: tCommon("ton"), rate: pricing.tonRate })
+    
     return types
-  }, [equipment, tCommon])
+  }, [equipment?.pricing, tCommon])
 
   const [selectedPricingType, setSelectedPricingType] = useState<PricingType>(
     availablePricingTypes[0]?.type || "daily"

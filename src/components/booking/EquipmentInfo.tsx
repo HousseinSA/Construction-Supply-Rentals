@@ -1,3 +1,4 @@
+import { memo } from "react"
 import { MapPin } from "lucide-react"
 import { useCityData } from "@/src/hooks/useCityData"
 
@@ -7,7 +8,7 @@ interface EquipmentInfoProps {
   location: string
 }
 
-export default function EquipmentInfo({ name, reference, location }: EquipmentInfoProps) {
+function EquipmentInfo({ name, reference, location }: EquipmentInfoProps) {
   const { convertToLocalized } = useCityData()
   
   return (
@@ -20,3 +21,5 @@ export default function EquipmentInfo({ name, reference, location }: EquipmentIn
     </div>
   )
 }
+
+export default memo(EquipmentInfo)

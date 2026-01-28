@@ -33,17 +33,6 @@ export default function ImageModal({ images, initialIndex = 0, isOpen, onClose }
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [isOpen, currentIndex])
 
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden"
-    } else {
-      document.body.style.overflow = "unset"
-    }
-    return () => {
-      document.body.style.overflow = "unset"
-    }
-  }, [isOpen])
-
   const handleNext = (e?: React.MouseEvent) => {
     e?.preventDefault()
     e?.stopPropagation()
@@ -60,7 +49,7 @@ export default function ImageModal({ images, initialIndex = 0, isOpen, onClose }
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           e.preventDefault()
@@ -101,7 +90,6 @@ export default function ImageModal({ images, initialIndex = 0, isOpen, onClose }
         </>
       )}
 
-      {/* Main Image */}
       <div 
         className="relative w-full h-full flex items-center justify-center p-4 md:p-8"
         onClick={(e) => {
@@ -120,10 +108,9 @@ export default function ImageModal({ images, initialIndex = 0, isOpen, onClose }
         </div>
       </div>
 
-      {/* Thumbnail Strip */}
       {images.length > 1 && (
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-50 max-w-full px-4">
-          <div className="flex gap-2 bg-black/50 backdrop-blur-md rounded-lg p-3 overflow-x-auto max-w-[90vw]">
+          <div className="flex gap-2 bg-black/50 rounded-lg p-3 overflow-x-auto max-w-[90vw]">
             {images.map((img, idx) => (
               <button
                 key={idx}
@@ -148,7 +135,7 @@ export default function ImageModal({ images, initialIndex = 0, isOpen, onClose }
 
       {/* Image Counter */}
       {images.length > 1 && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-black/50 backdrop-blur-md text-white px-4 py-2 rounded-full text-sm font-medium">
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-black/50 text-white px-4 py-2 rounded-full text-sm font-medium">
           {t("imageCounter", { current: currentIndex + 1, total: images.length })}
         </div>
       )}

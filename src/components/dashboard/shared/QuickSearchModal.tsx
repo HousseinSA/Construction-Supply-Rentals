@@ -1,15 +1,15 @@
 "use client"
 
-import { useState, useRef, RefObject } from "react"
+import { useState, useRef, RefObject, lazy, Suspense } from "react"
 import { X, Search, Loader2 } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { useRouter } from "@/src/i18n/navigation"
 import { useModalClose } from "@/src/hooks/useModalClose"
-import BookingDetailsModal from "../bookings/BookingDetailsModal"
-import SalesDetailsModal from "../sales/SalesDetailsModal"
-
 import type { BookingWithDetails } from "@/src/stores/bookingsStore"
+
+const BookingDetailsModal = lazy(() => import("../bookings/BookingDetailsModal"))
+const SalesDetailsModal = lazy(() => import("../sales/SalesDetailsModal"))
 
 type SearchResult = BookingWithDetails | Record<string, unknown>
 
@@ -96,11 +96,11 @@ export default function QuickSearchModal({
       {!result && (
         <div
           ref={modalRef}
-          className="fixed inset-0 z-[60] animate-in fade-in duration-150"
+          className="fixed inset-0 z-[60]"
         >
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+          <div className="absolute inset-0 bg-black/50" />
           <div className="relative h-full flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-4 sm:p-6 animate-in slide-in-from-bottom-4 duration-200">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-4 sm:p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg sm:text-xl font-bold text-gray-900">
                   {t("title")}
@@ -146,31 +146,33 @@ export default function QuickSearchModal({
         </div>
       )}
 
-      {result && resultType === "booking" && (
-        <BookingDetailsModal
-          booking={result as BookingWithDetails}
-          isOpen={true}
-          onClose={() => {
-            setResult(null)
-            setResultType(null)
-            onClose()
-          }}
-          onStatusUpdate={() => {}}
-        />
-      )}
+      <Suspense fallback={null}>
+        {result && resultType === "booking" && (
+          <BookingDetailsModal
+            booking={result as BookingWithDetails}
+            isOpen={true}
+            onClose={() => {
+              setResult(null)
+              setResultType(null)
+              onClose()
+            }}
+            onStatusUpdate={() => {}}
+          />
+        )}
 
-      {result && resultType === "sale" && (
-        <SalesDetailsModal
-          sale={result as Record<string, unknown>}
-          isOpen={true}
-          onClose={() => {
-            setResult(null)
-            setResultType(null)
-            onClose()
-          }}
-          onStatusUpdate={() => {}}
-        />
-      )}
+        {result && resultType === "sale" && (
+          <SalesDetailsModal
+            sale={result as Record<string, unknown>}
+            isOpen={true}
+            onClose={() => {
+              setResult(null)
+              setResultType(null)
+              onClose()
+            }}
+            onStatusUpdate={() => {}}
+          />
+        )}
+      </Suspense>
     </>
   )
 }

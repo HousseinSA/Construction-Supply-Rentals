@@ -8,14 +8,6 @@ export function useModalClose(
   useEffect(() => {
     if (!isOpen) return
 
-    // Lock body scroll on mobile
-    const originalStyle = window.getComputedStyle(document.body).overflow
-    const scrollY = window.scrollY
-    document.body.style.overflow = 'hidden'
-    document.body.style.position = 'fixed'
-    document.body.style.top = `-${scrollY}px`
-    document.body.style.width = '100%'
-
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
     }
@@ -30,13 +22,6 @@ export function useModalClose(
     document.addEventListener('mousedown', handleClickOutside)
 
     return () => {
-      // Restore body scroll
-      document.body.style.overflow = originalStyle
-      document.body.style.position = ''
-      document.body.style.top = ''
-      document.body.style.width = ''
-      window.scrollTo(0, scrollY)
-      
       document.removeEventListener('keydown', handleEscape)
       document.removeEventListener('mousedown', handleClickOutside)
     }

@@ -1,11 +1,12 @@
-import { useState } from "react"
-import {  ArrowLeft, Tag, Calendar, Clock } from "lucide-react"
+import { useState, lazy, Suspense } from "react"
+import {  ArrowLeft, Tag, Calendar } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useSession } from "next-auth/react"
 import { useRouter } from "@/src/i18n/navigation"
-import BookingModal from "@/src/components/booking/BookingModal"
-import SaleModal from "@/src/components/booking/SaleModal"
 import Toast from "@/src/components/ui/Toast"
+
+const BookingModal = lazy(() => import("@/src/components/booking/BookingModal"))
+const SaleModal = lazy(() => import("@/src/components/booking/SaleModal"))
 
 interface ActionButtonsProps {
   isForSale: boolean
@@ -70,22 +71,28 @@ export default function ActionButtons({ isForSale, equipment, onBookingSuccess }
         </button>
       </div>
       
-      {isForSale ? (
-        <SaleModal
-          isOpen={showSaleModal}
-          onClose={() => setShowSaleModal(false)}
-          equipment={equipment}
-          onSaleSuccess={onBookingSuccess}
-          buyerId={session?.user?.id || ""}
-        />
-      ) : (
-        <BookingModal
-          isOpen={showBookingModal}
-          onClose={() => setShowBookingModal(false)}
-          equipment={equipment}
-          onBookingSuccess={onBookingSuccess}
-        />
-      )}
+      <Suspense fallback={null}>
+        {isForSale ? (
+          showSaleModal && (
+            <SaleModal
+              isOpen={showSaleModal}
+              onClose={() => setShowSaleModal(false)}
+              equipment={equipment}
+              onSaleSuccess={onBookingSuccess}
+              buyerId={session?.user?.id || ""}
+            />
+          )
+        ) : (
+          showBookingModal && (
+            <BookingModal
+              isOpen={showBookingModal}
+              onClose={() => setShowBookingModal(false)}
+              equipment={equipment}
+              onBookingSuccess={onBookingSuccess}
+            />
+          )
+        )}
+      </Suspense>
       
       {toast && (
         <Toast

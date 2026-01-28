@@ -12,10 +12,22 @@ interface CopyButtonProps {
 export default function CopyButton({ text, size = 'md', className = '' }: CopyButtonProps) {
   const [copied, setCopied] = useState(false)
 
-  const handleCopy = () => {
+  const handleCopy = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    e.nativeEvent.stopImmediatePropagation()
     navigator.clipboard.writeText(text)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    e.nativeEvent.stopImmediatePropagation()
+  }
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    e.stopPropagation()
+    e.nativeEvent.stopImmediatePropagation()
   }
 
   const iconSize = size === 'sm' ? 'w-3.5 h-3.5' : 'w-4 h-4'
@@ -23,6 +35,9 @@ export default function CopyButton({ text, size = 'md', className = '' }: CopyBu
   return (
     <button
       onClick={handleCopy}
+      onMouseDown={handleMouseDown}
+      onTouchStart={handleTouchStart}
+      data-copy-button
       className={`p-1.5 hover:bg-gray-100 rounded transition-colors ${className}`}
       title="Copy"
     >

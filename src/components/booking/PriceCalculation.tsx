@@ -1,3 +1,4 @@
+import { memo } from "react"
 import { useLocale, useTranslations } from "next-intl"
 
 interface PriceCalculationProps {
@@ -7,7 +8,7 @@ interface PriceCalculationProps {
   subtotal: number
 }
 
-export default function PriceCalculation({
+function PriceCalculation({
   rate,
   unit,
   usage,
@@ -30,3 +31,5 @@ const isRTL = locale === 'ar'
     </div>
   )
 }
+
+export default memo(PriceCalculation)

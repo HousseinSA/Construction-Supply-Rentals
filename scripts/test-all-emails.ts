@@ -1,32 +1,10 @@
-/**
- * Comprehensive Email Testing Script
- * Tests all email types in the system
- * 
- * Run with: node scripts/test-all-emails.js
- */
+import { config } from 'dotenv';
+import { resolve } from 'path';
 
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-import { readFileSync } from 'fs';
-import * as emailLib from '../src/lib/email.js';
+// Load .env.local FIRST
+config({ path: resolve(process.cwd(), '.env.local') });
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-// Load environment variables
-function loadEnv() {
-  const envPath = join(__dirname, '..', '.env.local');
-  const envContent = readFileSync(envPath, 'utf-8');
-  const lines = envContent.split('\n');
-  lines.forEach(line => {
-    if (line && !line.startsWith('#')) {
-      const [key, ...valueParts] = line.split('=');
-      if (key) process.env[key.trim()] = valueParts.join('=').trim();
-    }
-  });
-}
-
-loadEnv();
+import * as emailLib from '../src/lib/email';
 
 const TEST_RENTER_EMAIL = 'nejihoussein1@gmail.com';
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@gmail.com';
@@ -40,23 +18,24 @@ async function testAllEmails() {
 
   const results = [];
 
-  // 1. Password Reset Email
+  // 1. Password Reset
   try {
-    console.log('1️⃣  Testing Password Reset Email...');
+    console.log('1️⃣  Password Reset Email...');
     await emailLib.sendPasswordResetEmail(TEST_RENTER_EMAIL, 'test-token-123', 'fr');
-    results.push({ type: 'Password Reset', status: '✅ Sent', recipient: TEST_RENTER_EMAIL });
-    console.log('   ✅ Sent to renter\n');
-  } catch (err) {
-    results.push({ type: 'Password Reset', status: '❌ Failed', error: err.message });
-    console.log(`   ❌ Failed: ${err.message}\n`);
+    results.push({ type: 'Password Reset', status: '✅', recipient: TEST_RENTER_EMAIL });
+    console.log('   ✅ Sent\n');
+  } catch (err: any) {
+    results.push({ type: 'Password Reset', status: '❌', error: err.message });
+    console.log(`   ❌ ${err.message}\n`);
   }
 
-  // 2. New Booking Email (to Admin)
+  // 2. New Booking
   try {
-    console.log('2️⃣  Testing New Booking Email...');
+    console.log('2️⃣  New Booking Email...');
     await emailLib.sendNewBookingEmail(ADMIN_EMAIL, {
       referenceNumber: 'TEST-BOOK-001',
       equipmentName: 'Excavatrice CAT 320',
+      equipmentReference: 'EQ-2024-001',
       totalPrice: 50000,
       commission: 5000,
       renterName: 'Neji Houssein',
@@ -70,19 +49,20 @@ async function testAllEmails() {
       endDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
       bookingDate: new Date()
     });
-    results.push({ type: 'New Booking', status: '✅ Sent', recipient: ADMIN_EMAIL });
-    console.log('   ✅ Sent to admin\n');
-  } catch (err) {
-    results.push({ type: 'New Booking', status: '❌ Failed', error: err.message });
-    console.log(`   ❌ Failed: ${err.message}\n`);
+    results.push({ type: 'New Booking', status: '✅', recipient: ADMIN_EMAIL });
+    console.log('   ✅ Sent\n');
+  } catch (err: any) {
+    results.push({ type: 'New Booking', status: '❌', error: err.message });
+    console.log(`   ❌ ${err.message}\n`);
   }
 
-  // 3. New Sale Email (to Admin)
+  // 3. New Sale
   try {
-    console.log('3️⃣  Testing New Sale Email...');
+    console.log('3️⃣  New Sale Email...');
     await emailLib.sendNewSaleEmail(ADMIN_EMAIL, {
       referenceNumber: 'TEST-SALE-001',
       equipmentName: 'Bulldozer D6',
+      equipmentReference: 'EQ-2024-002',
       salePrice: 500000,
       commission: 25000,
       buyerName: 'Neji Houssein',
@@ -91,16 +71,16 @@ async function testAllEmails() {
       supplierPhone: '44556677',
       saleDate: new Date()
     });
-    results.push({ type: 'New Sale', status: '✅ Sent', recipient: ADMIN_EMAIL });
-    console.log('   ✅ Sent to admin\n');
-  } catch (err) {
-    results.push({ type: 'New Sale', status: '❌ Failed', error: err.message });
-    console.log(`   ❌ Failed: ${err.message}\n`);
+    results.push({ type: 'New Sale', status: '✅', recipient: ADMIN_EMAIL });
+    console.log('   ✅ Sent\n');
+  } catch (err: any) {
+    results.push({ type: 'New Sale', status: '❌', error: err.message });
+    console.log(`   ❌ ${err.message}\n`);
   }
 
-  // 4. New Equipment Email (to Admin)
+  // 4. New Equipment
   try {
-    console.log('4️⃣  Testing New Equipment Email...');
+    console.log('4️⃣  New Equipment Email...');
     await emailLib.sendNewEquipmentEmail(ADMIN_EMAIL, {
       equipmentName: 'Grue Mobile 50T',
       supplierName: 'Hassan Supplier',
@@ -111,33 +91,34 @@ async function testAllEmails() {
       pricing: '15,000 MRU/jour',
       dateSubmitted: new Date()
     });
-    results.push({ type: 'New Equipment', status: '✅ Sent', recipient: ADMIN_EMAIL });
-    console.log('   ✅ Sent to admin\n');
-  } catch (err) {
-    results.push({ type: 'New Equipment', status: '❌ Failed', error: err.message });
-    console.log(`   ❌ Failed: ${err.message}\n`);
+    results.push({ type: 'New Equipment', status: '✅', recipient: ADMIN_EMAIL });
+    console.log('   ✅ Sent\n');
+  } catch (err: any) {
+    results.push({ type: 'New Equipment', status: '❌', error: err.message });
+    console.log(`   ❌ ${err.message}\n`);
   }
 
-  // 5. Equipment Approval Email (to Supplier - using renter email for test)
+  // 5. Equipment Approval
   try {
-    console.log('5️⃣  Testing Equipment Approval Email...');
+    console.log('5️⃣  Equipment Approval Email...');
     await emailLib.sendEquipmentApprovalEmail(TEST_RENTER_EMAIL, {
       equipmentName: 'Grue Mobile 50T',
       supplierName: 'Neji Houssein'
     });
-    results.push({ type: 'Equipment Approval', status: '✅ Sent', recipient: TEST_RENTER_EMAIL });
-    console.log('   ✅ Sent to renter (as supplier)\n');
-  } catch (err) {
-    results.push({ type: 'Equipment Approval', status: '❌ Failed', error: err.message });
-    console.log(`   ❌ Failed: ${err.message}\n`);
+    results.push({ type: 'Equipment Approval', status: '✅', recipient: TEST_RENTER_EMAIL });
+    console.log('   ✅ Sent\n');
+  } catch (err: any) {
+    results.push({ type: 'Equipment Approval', status: '❌', error: err.message });
+    console.log(`   ❌ ${err.message}\n`);
   }
 
-  // 6. Booking Cancellation Email (to Admin)
+  // 6. Booking Cancellation
   try {
-    console.log('6️⃣  Testing Booking Cancellation Email...');
+    console.log('6️⃣  Booking Cancellation Email...');
     await emailLib.sendBookingCancellationEmail(ADMIN_EMAIL, {
       referenceNumber: 'TEST-BOOK-002',
       equipmentNames: ['Excavatrice CAT 320', 'Compacteur Bomag'],
+      equipmentReferences: ['EQ-2024-003', 'EQ-2024-004'],
       totalPrice: 75000,
       renterName: 'Neji Houssein',
       renterPhone: '22345678',
@@ -149,88 +130,103 @@ async function testAllEmails() {
         { name: 'Ahmed Supplier', phone: '44556677', equipment: 'Compacteur Bomag', duration: '3 jours' }
       ]
     });
-    results.push({ type: 'Booking Cancellation', status: '✅ Sent', recipient: ADMIN_EMAIL });
-    console.log('   ✅ Sent to admin\n');
-  } catch (err) {
-    results.push({ type: 'Booking Cancellation', status: '❌ Failed', error: err.message });
-    console.log(`   ❌ Failed: ${err.message}\n`);
+    results.push({ type: 'Booking Cancellation', status: '✅', recipient: ADMIN_EMAIL });
+    console.log('   ✅ Sent\n');
+  } catch (err: any) {
+    results.push({ type: 'Booking Cancellation', status: '❌', error: err.message });
+    console.log(`   ❌ ${err.message}\n`);
   }
 
-  // 7. Booking Pending Reminder Email (to Admin)
+  // 7. Booking Pending Reminder
   try {
-    console.log('7️⃣  Testing Booking Pending Reminder Email...');
+    console.log('7️⃣  Booking Pending Reminder Email...');
     await emailLib.sendBookingPendingReminderEmail(ADMIN_EMAIL, {
       referenceNumber: 'TEST-BOOK-003',
       equipmentNames: ['Chargeuse Caterpillar'],
+      equipmentReferences: ['EQ-2024-005'],
       endDate: new Date(Date.now() + 12 * 60 * 60 * 1000),
       totalPrice: 30000,
-      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
+      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+      renterName: 'Neji Houssein',
+      renterPhone: '22345678',
+      suppliers: [{ name: 'Hassan Supplier', phone: '55667788' }]
     });
-    results.push({ type: 'Booking Pending Reminder', status: '✅ Sent', recipient: ADMIN_EMAIL });
-    console.log('   ✅ Sent to admin\n');
-  } catch (err) {
-    results.push({ type: 'Booking Pending Reminder', status: '❌ Failed', error: err.message });
-    console.log(`   ❌ Failed: ${err.message}\n`);
+    results.push({ type: 'Booking Pending Reminder', status: '✅', recipient: ADMIN_EMAIL });
+    console.log('   ✅ Sent\n');
+  } catch (err: any) {
+    results.push({ type: 'Booking Pending Reminder', status: '❌', error: err.message });
+    console.log(`   ❌ ${err.message}\n`);
   }
 
-  // 8. Booking Start Reminder Email (to Admin)
+  // 8. Booking Start Reminder
   try {
-    console.log('8️⃣  Testing Booking Start Reminder Email...');
+    console.log('8️⃣  Booking Start Reminder Email...');
     await emailLib.sendBookingStartReminderEmail(ADMIN_EMAIL, {
       referenceNumber: 'TEST-BOOK-004',
       equipmentNames: ['Camion Benne 20T'],
+      equipmentReferences: ['EQ-2024-006'],
       startDate: new Date(Date.now() + 12 * 60 * 60 * 1000),
       endDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
       totalPrice: 45000,
       status: 'paid',
       renterName: 'Neji Houssein',
-      renterPhone: '22345678'
+      renterPhone: '22345678',
+      createdAt: new Date(),
+      suppliers: [{ name: 'Mohamed Supplier', phone: '33445566' }]
     });
-    results.push({ type: 'Booking Start Reminder', status: '✅ Sent', recipient: ADMIN_EMAIL });
-    console.log('   ✅ Sent to admin\n');
-  } catch (err) {
-    results.push({ type: 'Booking Start Reminder', status: '❌ Failed', error: err.message });
-    console.log(`   ❌ Failed: ${err.message}\n`);
+    results.push({ type: 'Booking Start Reminder', status: '✅', recipient: ADMIN_EMAIL });
+    console.log('   ✅ Sent\n');
+  } catch (err: any) {
+    results.push({ type: 'Booking Start Reminder', status: '❌', error: err.message });
+    console.log(`   ❌ ${err.message}\n`);
   }
 
-  // 9. Sale Pending Reminder Email (to Admin)
+  // 9. Sale Pending Reminder
   try {
-    console.log('9️⃣  Testing Sale Pending Reminder Email...');
+    console.log('9️⃣  Sale Pending Reminder Email...');
     await emailLib.sendSalePendingReminderEmail(ADMIN_EMAIL, {
       referenceNumber: 'TEST-SALE-002',
       equipmentName: 'Pelle Hydraulique',
+      equipmentReference: 'EQ-2024-007',
       salePrice: 350000,
-      createdAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000)
+      createdAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
+      buyerName: 'Neji Houssein',
+      buyerPhone: '22345678',
+      supplierName: 'Ahmed Supplier',
+      supplierPhone: '44556677'
     });
-    results.push({ type: 'Sale Pending Reminder', status: '✅ Sent', recipient: ADMIN_EMAIL });
-    console.log('   ✅ Sent to admin\n');
-  } catch (err) {
-    results.push({ type: 'Sale Pending Reminder', status: '❌ Failed', error: err.message });
-    console.log(`   ❌ Failed: ${err.message}\n`);
+    results.push({ type: 'Sale Pending Reminder', status: '✅', recipient: ADMIN_EMAIL });
+    console.log('   ✅ Sent\n');
+  } catch (err: any) {
+    results.push({ type: 'Sale Pending Reminder', status: '❌', error: err.message });
+    console.log(`   ❌ ${err.message}\n`);
   }
 
-  // 10. Sale Cancellation Email (to Admin)
+  // 10. Sale Cancellation
   try {
-    console.log('🔟 Testing Sale Cancellation Email...');
+    console.log('🔟 Sale Cancellation Email...');
     await emailLib.sendSaleCancellationEmail(ADMIN_EMAIL, {
       referenceNumber: 'TEST-SALE-003',
       equipmentName: 'Niveleuse Caterpillar',
+      equipmentReference: 'EQ-2024-008',
       salePrice: 450000,
       buyerName: 'Neji Houssein',
       buyerPhone: '22345678',
+      supplierName: 'Hassan Supplier',
+      supplierPhone: '55667788',
       cancellationDate: new Date(),
       createdAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000)
     });
-    results.push({ type: 'Sale Cancellation', status: '✅ Sent', recipient: ADMIN_EMAIL });
-    console.log('   ✅ Sent to admin\n');
-  } catch (err) {
-    results.push({ type: 'Sale Cancellation', status: '❌ Failed', error: err.message });
-    console.log(`   ❌ Failed: ${err.message}\n`);
+    results.push({ type: 'Sale Cancellation', status: '✅', recipient: ADMIN_EMAIL });
+    console.log('   ✅ Sent\n');
+  } catch (err: any) {
+    results.push({ type: 'Sale Cancellation', status: '❌', error: err.message });
+    console.log(`   ❌ ${err.message}\n`);
   }
 
-  // 11. Pricing Update Request Email (to Admin)
+  // 11. Pricing Update Request
   try {
-    console.log('1️⃣1️⃣  Testing Pricing Update Request Email...');
+    console.log('1️⃣1️⃣  Pricing Update Request Email...');
     await emailLib.sendPricingUpdateRequestEmail(ADMIN_EMAIL, {
       equipmentName: 'Compacteur Vibrant',
       equipmentReference: 'EQ-2024-001',
@@ -240,36 +236,23 @@ async function testAllEmails() {
       requestedPricing: '10,000 MRU/jour',
       requestDate: new Date()
     });
-    results.push({ type: 'Pricing Update Request', status: '✅ Sent', recipient: ADMIN_EMAIL });
-    console.log('   ✅ Sent to admin\n');
-  } catch (err) {
-    results.push({ type: 'Pricing Update Request', status: '❌ Failed', error: err.message });
-    console.log(`   ❌ Failed: ${err.message}\n`);
+    results.push({ type: 'Pricing Update Request', status: '✅', recipient: ADMIN_EMAIL });
+    console.log('   ✅ Sent\n');
+  } catch (err: any) {
+    results.push({ type: 'Pricing Update Request', status: '❌', error: err.message });
+    console.log(`   ❌ ${err.message}\n`);
   }
 
   // Summary
   console.log('\n' + '='.repeat(60));
-  console.log('📊 EMAIL TEST SUMMARY');
+  console.log('📊 SUMMARY');
   console.log('='.repeat(60) + '\n');
   
-  results.forEach((result, index) => {
-    console.log(`${index + 1}. ${result.type}`);
-    console.log(`   Status: ${result.status}`);
-    console.log(`   Recipient: ${result.recipient || 'N/A'}`);
-    if (result.error) console.log(`   Error: ${result.error}`);
-    console.log('');
-  });
+  const successCount = results.filter(r => r.status === '✅').length;
+  const failCount = results.filter(r => r.status === '❌').length;
 
-  const successCount = results.filter(r => r.status.includes('✅')).length;
-  const failCount = results.filter(r => r.status.includes('❌')).length;
-
-  console.log(`Total: ${results.length} emails`);
-  console.log(`✅ Success: ${successCount}`);
-  console.log(`❌ Failed: ${failCount}\n`);
-
-  console.log('📧 Check these inboxes:');
-  console.log(`   - Renter: ${TEST_RENTER_EMAIL}`);
-  console.log(`   - Admin: ${ADMIN_EMAIL}\n`);
+  console.log(`Total: ${results.length} | ✅ ${successCount} | ❌ ${failCount}\n`);
+  console.log(`📧 Check: ${TEST_RENTER_EMAIL} & ${ADMIN_EMAIL}\n`);
 }
 
 testAllEmails().catch(console.error);

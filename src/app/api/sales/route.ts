@@ -181,7 +181,8 @@ export async function POST(request: NextRequest) {
           const { sendNewSaleEmail } = await import("@/src/lib/email")
           await sendNewSaleEmail(adminEmail, {
             referenceNumber,
-            equipmentName: `${equipment.name}${equipment.referenceNumber ? ` (#${equipment.referenceNumber})` : ''}`,
+            equipmentName: equipment.name,
+            equipmentReference: equipment.referenceNumber,
             salePrice,
             commission,
             buyerName: buyer

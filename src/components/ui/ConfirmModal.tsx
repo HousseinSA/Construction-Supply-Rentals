@@ -33,10 +33,10 @@ export default function ConfirmModal({
   if (!isOpen) return null
 
   return (
-    <div ref={modalRef} className="fixed inset-0 z-[60] animate-in fade-in duration-150">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+    <div ref={modalRef} className="fixed inset-0 z-[60]">
+      <div className="absolute inset-0 bg-black/50" />
       <div className="relative h-full flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-4 sm:p-6 animate-in slide-in-from-bottom-4 duration-200">
+        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-4 sm:p-6">
           <div className="flex items-center gap-3 mb-4">
             {icon && (
               <div
