@@ -8,7 +8,9 @@ import { useRouter } from "@/src/i18n/navigation"
 import { useModalClose } from "@/src/hooks/useModalClose"
 import type { BookingWithDetails } from "@/src/stores/bookingsStore"
 
-const BookingDetailsModal = lazy(() => import("../bookings/BookingDetailsModal"))
+const BookingDetailsModal = lazy(
+  () => import("../bookings/BookingDetailsModal"),
+)
 const SalesDetailsModal = lazy(() => import("../sales/SalesDetailsModal"))
 
 type SearchResult = BookingWithDetails | Record<string, unknown>
@@ -28,17 +30,19 @@ export default function QuickSearchModal({
   const [refNumber, setRefNumber] = useState("")
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<SearchResult | null>(null)
-  const [resultType, setResultType] = useState<"booking" | "sale" | "equipment" | null>(null)
+  const [resultType, setResultType] = useState<
+    "booking" | "sale" | "equipment" | null
+  >(null)
   const modalRef = useRef<HTMLDivElement>(null)
 
   const handleSearch = async () => {
     const cleanRef = refNumber.replace(/\D/g, "")
-    
+
     if (!cleanRef) {
       toast.error(t("enterReference"))
       return
     }
-    
+
     if (cleanRef.length < 6) {
       toast.error("Please enter a complete 6-digit reference number")
       return
@@ -47,13 +51,13 @@ export default function QuickSearchModal({
     setLoading(true)
     try {
       const response = await fetch(
-        `/api/search-reference?ref=${encodeURIComponent(cleanRef)}`
+        `/api/search-reference?ref=${encodeURIComponent(cleanRef)}`,
       )
-      
+
       if (!response.ok) {
-        throw new Error('Network response was not ok')
+        throw new Error("Network response was not ok")
       }
-      
+
       const data = await response.json()
 
       if (data.success) {
@@ -70,7 +74,11 @@ export default function QuickSearchModal({
         toast.error(t("notFound"))
       }
     } catch (error) {
-      if (error instanceof TypeError || (error instanceof Error && error.message === 'Failed to fetch') || !navigator.onLine) {
+      if (
+        error instanceof TypeError ||
+        (error instanceof Error && error.message === "Failed to fetch") ||
+        !navigator.onLine
+      ) {
         toast.error(tToast("networkError"))
       } else {
         toast.error(t("notFound"))
@@ -87,17 +95,14 @@ export default function QuickSearchModal({
     onClose()
   }
 
-  useModalClose(isOpen, handleClose, modalRef as unknown as RefObject<HTMLElement>)
+  useModalClose(isOpen, handleClose, modalRef)
 
   if (!isOpen) return null
 
   return (
     <>
       {!result && (
-        <div
-          ref={modalRef}
-          className="fixed inset-0 z-[60]"
-        >
+        <div ref={modalRef} className="fixed inset-0 z-[60]">
           <div className="absolute inset-0 bg-black/50" />
           <div className="relative h-full flex items-center justify-center p-4">
             <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-4 sm:p-6">
@@ -124,11 +129,15 @@ export default function QuickSearchModal({
                   }}
                   onPaste={(e) => {
                     e.preventDefault()
-                    const paste = e.clipboardData.getData('text')
+                    const paste = e.clipboardData.getData("text")
                     const cleanValue = paste.replace(/\D/g, "").slice(0, 6)
                     setRefNumber(cleanValue)
                   }}
-                  onKeyDown={(e) => e.key === "Enter" && refNumber.length === 6 && handleSearch()}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" &&
+                    refNumber.length === 6 &&
+                    handleSearch()
+                  }
                   placeholder={t("placeholder")}
                   maxLength={6}
                   className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
@@ -138,7 +147,11 @@ export default function QuickSearchModal({
                   disabled={loading || refNumber.length < 6}
                   className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-colors flex items-center justify-center"
                 >
-                  {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Search className="h-5 w-5" />}
+                  {loading ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <Search className="h-5 w-5" />
+                  )}
                 </button>
               </div>
             </div>

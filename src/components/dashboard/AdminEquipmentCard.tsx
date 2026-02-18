@@ -167,7 +167,6 @@ export default function AdminEquipmentCard({ equipment }: EquipmentCardProps) {
           </span>
         </div>
 
-        {/* Content */}
         <div className="p-4">
           <h3 className="font-semibold text-lg mb-2 line-clamp-1">
             {equipment.referenceNumber && (
@@ -179,7 +178,6 @@ export default function AdminEquipmentCard({ equipment }: EquipmentCardProps) {
             {equipment.description}
           </p>
 
-          {/* Details */}
           <div className="space-y-2 mb-4 text-sm">
             <div className="flex justify-between">
               <span className="text-gray-600">{t("location")}:</span>
@@ -241,9 +239,7 @@ export default function AdminEquipmentCard({ equipment }: EquipmentCardProps) {
             </div>
           )}
 
-          {/* Actions */}
           <div className="space-y-2">
-            {/* Admin Created Equipment Actions */}
             {isAdminCreated && (
               <>
                 <div className="relative group">
@@ -282,7 +278,6 @@ export default function AdminEquipmentCard({ equipment }: EquipmentCardProps) {
               </>
             )}
 
-            {/* Supplier Equipment Actions */}
             {!isAdminCreated && (
               <>
                 {status === "pending" && (
@@ -340,7 +335,6 @@ export default function AdminEquipmentCard({ equipment }: EquipmentCardProps) {
         </div>
       </div>
 
-      {/* Confirmation Modal */}
       {showConfirm && (
         <div className="fixed inset-0 bg-black/25 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl p-6 max-w-md w-full">

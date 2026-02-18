@@ -3,7 +3,6 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/src/lib/auth"
 import { connectDB } from "@/src/lib/mongodb"
 import { ObjectId } from "mongodb"
-import { triggerRealtimeUpdate } from "@/src/lib/realtime-trigger"
 import { generateReferenceNumber } from "@/src/lib/reference-number"
 
 export async function GET(request: NextRequest) {
@@ -206,9 +205,6 @@ export async function POST(request: NextRequest) {
           { _id: ObjectId.createFromHexString(equipmentId) },
           { $set: { isAvailable: false, updatedAt: new Date() } },
         )
-      triggerRealtimeUpdate("equipment").catch((err) =>
-        console.error("Realtime update error:", err),
-      )
     } catch (e) {
       console.error(e)
     }
@@ -355,9 +351,6 @@ export async function PUT(request: NextRequest) {
           )
       }
     }
-
-    await triggerRealtimeUpdate("sales")
-    await triggerRealtimeUpdate("equipment")
 
     return NextResponse.json({ success: true, message: "Sale status updated" })
   } catch (error: any) {

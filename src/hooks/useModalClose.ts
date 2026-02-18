@@ -1,15 +1,15 @@
-import { useEffect, RefObject } from 'react'
+import { useEffect, RefObject } from "react"
 
-export function useModalClose(
+export function useModalClose<T extends HTMLElement = HTMLElement>(
   isOpen: boolean,
   onClose: () => void,
-  modalRef: RefObject<HTMLElement>
+  modalRef: RefObject<T | null>,
 ) {
   useEffect(() => {
     if (!isOpen) return
 
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
+      if (e.key === "Escape") onClose()
     }
 
     const handleClickOutside = (e: MouseEvent) => {
@@ -18,12 +18,12 @@ export function useModalClose(
       }
     }
 
-    document.addEventListener('keydown', handleEscape)
-    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener("keydown", handleEscape)
+    document.addEventListener("mousedown", handleClickOutside)
 
     return () => {
-      document.removeEventListener('keydown', handleEscape)
-      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener("keydown", handleEscape)
+      document.removeEventListener("mousedown", handleClickOutside)
     }
   }, [isOpen, onClose, modalRef])
 }

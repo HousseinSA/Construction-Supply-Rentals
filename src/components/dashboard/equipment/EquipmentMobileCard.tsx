@@ -3,13 +3,14 @@ import EquipmentImage from "@/src/components/ui/EquipmentImage"
 import Dropdown from "@/src/components/ui/Dropdown"
 import CopyButton from "@/src/components/ui/CopyButton"
 import PriceDisplay from "@/src/components/ui/PriceDisplay"
-import PricingUpdateTooltip from "./PricingUpdateTooltip"
+import PricingInfoModal from "./PricingInfoModal"
 import { EquipmentWithSupplier } from "@/src/stores/equipmentStore"
 import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
 import { useCityData } from "@/src/hooks/useCityData"
 import { useTooltip } from "@/src/hooks/useTooltip"
 import { useTranslations } from "next-intl"
 import { formatPhoneNumber } from "@/src/lib/format"
+import { useState } from "react"
 
 interface EquipmentMobileCardProps {
   item: EquipmentWithSupplier & { hasActiveBookings?: boolean; hasPendingSale?: boolean }
@@ -38,8 +39,7 @@ export default function EquipmentMobileCard({
   const { convertToLocalized } = useCityData()
   const tCommon = useTranslations("common")
   const { ref: tooltipRef, isOpen: showTooltip, toggle: toggleTooltip } = useTooltip()
-  const pricingTooltip = useTooltip()
-  const supplierPricingTooltip = useTooltip()
+  const [showPricingModal, setShowPricingModal] = useState(false)
   const getPricesList = () => {
     const prices = []
     if (item.listingType === "forSale" && item.pricing.salePrice) {
@@ -50,6 +50,9 @@ export default function EquipmentMobileCard({
       }
       if (item.pricing.dailyRate) {
         prices.push({ amount: item.pricing.dailyRate, suffix: ` / ${tCommon("day")}` })
+      }
+      if (item.pricing.monthlyRate) {
+        prices.push({ amount: item.pricing.monthlyRate, suffix: ` / ${tCommon("month")}` })
       }
       if (item.pricing.kmRate) {
         prices.push({ amount: item.pricing.kmRate, suffix: ` / ${tCommon("km")}` })
@@ -70,12 +73,16 @@ export default function EquipmentMobileCard({
   return (
     <>
     <div className={`p-4 bg-white rounded-lg border shadow-sm hover:shadow-md transition-all grid grid-rows-[minmax(50px,auto)_auto_auto] gap-2 ${
-      item.pendingPricing ? 'border-orange-400 border-2 bg-orange-50' : 'border-gray-200'
+      item.pendingPricing 
+        ? 'border-orange-400 border-2 bg-orange-50' 
+        : item.rejectedPricingValues && Object.keys(item.rejectedPricingValues).length > 0 && isSupplier
+        ? 'border-red-400 border-2 bg-red-50'
+        : 'border-gray-200'
     }`}>
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1">
           {item.referenceNumber && (
-            <div className="text-xs font-semibold text-primary mb-1">
+            <div className="text-sm font-semibold text-primary mb-1">
               #{item.referenceNumber}
             </div>
           )}
@@ -192,61 +199,21 @@ export default function EquipmentMobileCard({
               {getPricesList().map((price, idx) => (
                 <div key={idx} className="flex items-center gap-1">
                   <PriceDisplay amount={price.amount} suffix={price.suffix} />
-                  {idx === 0 && item.pendingPricing && !isSupplier && (
-                    <div 
-                      ref={pricingTooltip.ref} 
-                      className="relative inline-block"
-                      onMouseEnter={pricingTooltip.open}
-                      onMouseLeave={pricingTooltip.close}
+                  {idx === 0 && item.pendingPricing && (
+                    <button
+                      onClick={() => isSupplier ? setShowPricingModal(true) : onPricingReview?.(item)}
+                      className="inline-flex items-center text-orange-600 hover:text-orange-700"
                     >
-                      <button
-                        onClick={() => {
-                          pricingTooltip.toggle()
-                          onPricingReview?.(item)
-                        }}
-                        className="inline-flex items-center text-orange-600 hover:text-orange-700"
-                      >
-                        <RefreshCw className="w-3.5 h-3.5" />
-                      </button>
-                      {pricingTooltip.isOpen && (
-                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg z-50 whitespace-nowrap">
-                          <PricingUpdateTooltip item={item} isSupplier={false} />
-                          <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
-                        </div>
-                      )}
-                    </div>
+                      <RefreshCw className="w-3.5 h-3.5" />
+                    </button>
                   )}
-                  {idx === 0 && item.pendingPricing && isSupplier && (
-                    <div 
-                      ref={supplierPricingTooltip.ref} 
-                      className="relative inline-block"
-                      onMouseEnter={supplierPricingTooltip.open}
-                      onMouseLeave={supplierPricingTooltip.close}
+                  {idx === 0 && item.rejectedPricingValues && Object.keys(item.rejectedPricingValues).length > 0 && isSupplier && !item.pendingPricing && (
+                    <button
+                      onClick={() => setShowPricingModal(true)}
+                      className="inline-flex items-center text-red-600 hover:text-red-700"
                     >
-                      <button
-                        onClick={supplierPricingTooltip.toggle}
-                        className="inline-flex items-center text-orange-600 hover:text-orange-700"
-                      >
-                        <RefreshCw className="w-3.5 h-3.5" />
-                      </button>
-                      {supplierPricingTooltip.isOpen && (
-                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg z-50 min-w-max">
-                          <PricingUpdateTooltip item={item} isSupplier={true} />
-                          <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  {idx === 0 && item.pricingRejectionReason && isSupplier && (
-                    <div className="relative group inline-block">
-                      <span className="inline-flex items-center text-red-600 cursor-help">
-                        <AlertCircle className="w-3.5 h-3.5" />
-                      </span>
-                      <div className="absolute bottom-full left-0 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none min-w-max max-w-xs z-50 whitespace-normal">
-                        {item.pricingRejectionReason}
-                        <div className="absolute top-full left-4 -mt-1 border-4 border-transparent border-t-gray-900"></div>
-                      </div>
-                    </div>
+                      <AlertCircle className="w-3.5 h-3.5" />
+                    </button>
                   )}
                 </div>
               ))}
@@ -288,7 +255,7 @@ export default function EquipmentMobileCard({
           />
           {(item.status !== "approved" || (item.status === "approved" && (item.hasActiveBookings || item.hasPendingSale)) || (item.status === "approved" && item.listingType === "forSale" && !item.isAvailable)) && (
             <div onClick={toggleTooltip} className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap transition-opacity pointer-events-auto z-10 cursor-pointer ${showTooltip ? 'opacity-100' : 'opacity-0'}`}>
-              {item.status !== "approved" && t("equipmentMustBeApproved")}
+              {item.status !== "approved" && t("pendingVerification")}
               {item.status === "approved" && (item.hasActiveBookings || item.hasPendingSale) && t("cannotEditActiveBooking")}
               {item.status === "approved" && item.listingType === "forSale" && !item.isAvailable && t("equipmentSold")}
               <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
@@ -362,6 +329,12 @@ export default function EquipmentMobileCard({
         </div>
       </div>
     </div>
+    <PricingInfoModal
+      isOpen={showPricingModal}
+      onClose={() => setShowPricingModal(false)}
+      item={item}
+      isSupplier={isSupplier}
+    />
   </>
   )
 }

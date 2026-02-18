@@ -39,9 +39,7 @@ export default function RejectionModal({
   if (!isOpen) return null
 
   const handleConfirm = () => {
-    if (reason.trim()) {
-      onConfirm(reason)
-    }
+    onConfirm(reason.trim() || "")
   }
 
   const handleClose = () => {
@@ -58,7 +56,9 @@ export default function RejectionModal({
             <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
               <AlertTriangle className="w-6 h-6 text-red-600" />
             </div>
-            <h3 className="text-lg sm:text-xl font-bold text-gray-900">{title}</h3>
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900">
+              {title}
+            </h3>
           </div>
           <textarea
             value={reason}
@@ -81,7 +81,7 @@ export default function RejectionModal({
               onClick={handleConfirm}
               variant="warning"
               className="flex-1 !py-2 !px-4 sm:!py-3 sm:!px-8 !text-sm sm:!text-base whitespace-nowrap"
-              disabled={isLoading || !reason.trim()}
+              disabled={isLoading}
             >
               {isLoading ? `${confirmText}...` : confirmText}
             </Button>

@@ -211,6 +211,17 @@ export default function EquipmentFormFields({
               disabled={false}
             />
           )}
+          {(pricingTypes.includes("daily") || pricingTypes.length === 0) && (
+            <Input
+              label={t("monthlyRate")}
+              name="monthlyRate"
+              type="text"
+              value={formData.monthlyRate}
+              onChange={onNumericInputChange}
+              placeholder="120000"
+              disabled={false}
+            />
+          )}
           {pricingTypes.includes("per_km") && (
             <Input
               label={t("kmRate")}

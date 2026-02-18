@@ -1,6 +1,6 @@
 import { useEffect, useCallback } from 'react'
 import { useUsersStore } from '@/src/stores/usersStore'
-import { useSSE } from './useSSE'
+import { usePolling } from './usePolling'
 
 export function useUsers() {
   const { users, loading, setUsers, setLoading, updateUser, shouldRefetch } = useUsersStore()
@@ -38,9 +38,7 @@ export function useUsers() {
     }
   }
 
-  useSSE('user', useCallback(() => {
-    fetchUsers()
-  }, [fetchUsers]))
+  usePolling(fetchUsers, { interval: 30000 })
 
   useEffect(() => {
     if (shouldRefetch()) {

@@ -74,9 +74,9 @@ export default function Dashboard() {
 
     return [
       {
-        title: t("supplier.myEquipment"),
-        description: t("supplier.myEquipmentDesc"),
-        icon: Package,
+        title: t("admin.manageEquipment"),
+        description: t("admin.manageEquipmentDesc"),
+        icon: Truck,
         href: "/dashboard/equipment",
         color: "bg-green-500",
       },
@@ -104,7 +104,7 @@ export default function Dashboard() {
       : session?.user?.userType || "renter"
 
   return (
-    <div className="min-h-screen bg-gray-50" style={{ minHeight: '100dvh' }}>
+    <div className="min-h-screen bg-gray-50" style={{ minHeight: "100dvh" }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         <div className="mb-6 sm:mb-8">
           <div className="flex items-center justify-between gap-4">

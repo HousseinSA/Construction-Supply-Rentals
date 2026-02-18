@@ -105,7 +105,7 @@ export default function AuthButtons({
                 className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm text-gray-700 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors font-medium"
               >
                 <ClipboardList size={16} />
-                {t("myTransactions")}
+                {t("myBookings")}
               </Link>
             )}
             <button
@@ -137,7 +137,7 @@ export default function AuthButtons({
           <button
             onClick={() => setShowDropdown(!showDropdown)}
             className={`w-10 h-10 rounded-full text-white font-semibold flex items-center justify-center text-sm hover:opacity-90 transition-opacity ${getUserColor(
-              session.user.name || "User"
+              session.user.name || "User",
             )}`}
             title={session.user.name}
           >
@@ -190,7 +190,7 @@ export default function AuthButtons({
                     }`}
                   >
                     <ClipboardList size={16} />
-                    {t("myTransactions")}
+                    {t("myBookings")}
                   </Link>
                 )}
                 <button

@@ -117,7 +117,7 @@ export default function Header({ session: serverSession }: HeaderProps) {
                 className="hidden lg:flex items-center gap-2 px-3 py-2 text-gray-700 hover:text-primary hover:bg-gray-50 rounded-lg transition-colors"
               >
                 <ClipboardList className="w-4 h-4" />
-                <span className="text-sm font-medium">{t("myOrders")}</span>
+                <span className="text-sm font-medium">{t("myBookings")}</span>
               </Link>
             )}
             {isRenter && (
@@ -179,7 +179,7 @@ export default function Header({ session: serverSession }: HeaderProps) {
         {isMobileMenuOpen && (
           <div
             ref={mobileMenuRef}
-            className="lg:hidden border-t border-gray-200 py-3"
+            className="lg:hidden absolute left-0 right-0 top-full bg-white border-t border-gray-200 py-3 shadow-lg"
           >
             <nav className="px-4 space-y-3">
               <div className="grid grid-cols-2 gap-2">

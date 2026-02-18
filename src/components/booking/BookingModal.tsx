@@ -233,7 +233,6 @@ export default function BookingModal({
           )}
         </>
       )}
-
       <PriceCalculation
         rate={rate}
         unit={usageLabel}

@@ -10,7 +10,7 @@ export type UnifiedStatus =
 
 export function getUnifiedStatus(item: any): UnifiedStatus {
   if (item.status === "rejected") return "REJECTED"
-  if (item.pricingRejectionReason) return "PRICING_REJECTED"
+  if (item.pricingRejectionReasons && Object.keys(item.pricingRejectionReasons).length > 0) return "PRICING_REJECTED"
   if (item.status === "pending") return "PENDING_REVIEW"
   if (item.pendingPricing) return "PRICING_PENDING"
   if (item.listingType === "forSale" && !item.isAvailable) return "SOLD"
@@ -58,7 +58,9 @@ export function getStatusDetails(item: any, status: UnifiedStatus) {
     return { reason: item.rejectionReason, date: item.rejectedAt }
   }
   if (status === "PRICING_REJECTED") {
-    return { reason: item.pricingRejectionReason, date: item.updatedAt }
+    const reasons = item.pricingRejectionReasons
+    const reasonText = reasons?._all || Object.values(reasons || {}).filter(r => r !== reasons?._all).join(", ")
+    return { reason: reasonText, date: item.updatedAt }
   }
   if (status === "PRICING_PENDING") {
     return { reason: null, date: item.pendingPricing?.requestedAt }

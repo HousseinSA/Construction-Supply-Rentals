@@ -10,8 +10,8 @@ import { useClickOutside } from "@/src/hooks/useClickOutside"
 
 const languages = [
   { code: "fr", name: "Français" },
-  { code: "en", name: "English" },
   { code: "ar", name: "العربية" },
+  { code: "en", name: "English" },
 ]
 
 interface LanguageSwitcherProps {

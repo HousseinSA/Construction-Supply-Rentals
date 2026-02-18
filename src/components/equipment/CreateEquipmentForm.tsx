@@ -63,7 +63,6 @@ export default function CreateEquipmentForm() {
                 value={formData.listingType}
                 onChange={handleListingTypeChange}
               />
-
               <EquipmentFormFields
                 formData={formData}
                 images={images}

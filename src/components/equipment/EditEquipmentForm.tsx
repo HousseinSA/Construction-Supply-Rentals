@@ -18,7 +18,9 @@ interface EditEquipmentFormProps {
   equipmentId: string
 }
 
-export default function EditEquipmentForm({ equipmentId }: EditEquipmentFormProps) {
+export default function EditEquipmentForm({
+  equipmentId,
+}: EditEquipmentFormProps) {
   const t = useTranslations("dashboard.equipment")
   const fontClass = useFontClass()
   const { data: session } = useSession()
@@ -54,7 +56,9 @@ export default function EditEquipmentForm({ equipmentId }: EditEquipmentFormProp
 
   if (loading) {
     return (
-      <div className={`min-h-screen bg-gray-50 flex items-center justify-center ${fontClass}`}>
+      <div
+        className={`min-h-screen bg-gray-50 flex items-center justify-center ${fontClass}`}
+      >
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-gray-600">{t("loading")}</p>
@@ -65,7 +69,9 @@ export default function EditEquipmentForm({ equipmentId }: EditEquipmentFormProp
 
   if (ownershipError) {
     return (
-      <div className={`min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 ${fontClass}`}>
+      <div
+        className={`min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 ${fontClass}`}
+      >
         <div className="max-w-4xl mx-auto">
           <AuthCard>
             <div className="p-8 text-center">
@@ -93,7 +99,9 @@ export default function EditEquipmentForm({ equipmentId }: EditEquipmentFormProp
   }
 
   return (
-    <div className={`min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 ${fontClass}`}>
+    <div
+      className={`min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 ${fontClass}`}
+    >
       <div className="max-w-4xl mx-auto">
         <div className="mb-6 sm:mb-8">
           <div className="flex items-center justify-between gap-4">
@@ -105,7 +113,9 @@ export default function EditEquipmentForm({ equipmentId }: EditEquipmentFormProp
                 <ArrowLeft className="h-5 w-5 text-gray-600" />
               </Link>
               <div className="flex-1">
-                <h1 className="text-2xl font-bold text-primary">{t("editTitle")}</h1>
+                <h1 className="text-2xl font-bold text-primary">
+                  {t("editTitle")}
+                </h1>
               </div>
             </div>
           </div>
@@ -121,7 +131,8 @@ export default function EditEquipmentForm({ equipmentId }: EditEquipmentFormProp
                 {t("cannotEditActiveBooking")}
               </h3>
               <p className="text-gray-600">
-                This equipment has active bookings and cannot be edited at this time.
+                This equipment has active bookings and cannot be edited at this
+                time.
               </p>
             </div>
           ) : (
@@ -133,37 +144,48 @@ export default function EditEquipmentForm({ equipmentId }: EditEquipmentFormProp
                   listingType={equipment.listingType}
                 />
               )}
-              {!isAdmin && equipment?.pricingRejectionReason && (
-                <PricingRejectionBanner
-                  rejectionReason={equipment.pricingRejectionReason}
-                />
-              )}
+              {!isAdmin &&
+                equipment?.rejectedPricingValues &&
+                Object.keys(equipment.rejectedPricingValues).length > 0 &&
+                (
+                  <PricingRejectionBanner
+                    pricingRejectionReasons={equipment.pricingRejectionReasons}
+                    rejectedPricingValues={equipment.rejectedPricingValues}
+                    currentPricing={equipment.pricing}
+                    listingType={equipment.listingType}
+                    pendingPricing={equipment.pendingPricing}
+                  />
+                )}
               <form onSubmit={handleSubmit} className="space-y-6">
-            <ListingTypeSelector 
-              value={formData.listingType} 
-              onChange={handleListingTypeChange} 
-              disabled={true} 
-            />
-            <EquipmentFormFields
-              formData={formData}
-              images={images}
-              isSubmitting={isSubmitting}
-              onInputChange={handleInputChange}
-              onNumericInputChange={handleNumericInputChange}
-              onCategoryChange={handleCategoryChange}
-              onTypeChange={handleTypeChange}
-              onLocationChange={handleLocationChange}
-              onConditionChange={handleConditionChange}
-              onWeightUnitChange={handleWeightUnitChange}
-              onUsageUnitChange={handleUsageUnitChange}
-              onImagesChange={setImages}
-              isAdmin={isAdmin}
-              equipmentCreatedBy={equipment?.createdBy}
-              hasPendingPricing={!!equipment?.pendingPricing}
-              isEditMode={true}
-              hasActiveBookings={hasActiveBookings}
-            />
-                <FormActions isSubmitting={isSubmitting} isEdit hasChanges={hasChanges} />
+                <ListingTypeSelector
+                  value={formData.listingType}
+                  onChange={handleListingTypeChange}
+                  disabled={true}
+                />
+                <EquipmentFormFields
+                  formData={formData}
+                  images={images}
+                  isSubmitting={isSubmitting}
+                  onInputChange={handleInputChange}
+                  onNumericInputChange={handleNumericInputChange}
+                  onCategoryChange={handleCategoryChange}
+                  onTypeChange={handleTypeChange}
+                  onLocationChange={handleLocationChange}
+                  onConditionChange={handleConditionChange}
+                  onWeightUnitChange={handleWeightUnitChange}
+                  onUsageUnitChange={handleUsageUnitChange}
+                  onImagesChange={setImages}
+                  isAdmin={isAdmin}
+                  equipmentCreatedBy={equipment?.createdBy}
+                  hasPendingPricing={!!equipment?.pendingPricing}
+                  isEditMode={true}
+                  hasActiveBookings={hasActiveBookings}
+                />
+                <FormActions
+                  isSubmitting={isSubmitting}
+                  isEdit
+                  hasChanges={hasChanges}
+                />
               </form>
             </>
           )}

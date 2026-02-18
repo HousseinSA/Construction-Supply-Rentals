@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl"
+import CustomCheckbox from "../ui/CustomCheckbox"
 
 interface ListingTypeSelectorProps {
   value: "forSale" | "forRent"
@@ -19,57 +20,20 @@ export default function ListingTypeSelector({
         {t("listingType")}
       </label>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <button
-          type="button"
-          onClick={() => onChange("forRent")}
+        <CustomCheckbox
+          checked={value === "forRent"}
+          onChange={() => onChange("forRent")}
+          label={t("forRent")}
           disabled={disabled}
-          className={`p-4 border-2 rounded-xl transition-all duration-200 ${
-            value === "forRent"
-              ? "border-primary bg-primary/5"
-              : "border-gray-200 hover:border-gray-300"
-          } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
-        >
-          <div className="flex items-center gap-3">
-            <div
-              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                value === "forRent" ? "border-primary" : "border-gray-300"
-              }`}
-            >
-              {value === "forRent" && (
-                <div className="w-3 h-3 rounded-full bg-primary" />
-              )}
-            </div>
-            <div className="text-left">
-              <h3 className="font-semibold text-gray-900">{t("forRent")}</h3>
-            </div>
-          </div>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => onChange("forSale")}
+          variant="card"
+        />
+        <CustomCheckbox
+          checked={value === "forSale"}
+          onChange={() => onChange("forSale")}
+          label={t("forSale")}
           disabled={disabled}
-          className={`p-4 border-2 rounded-xl transition-all duration-200 ${
-            value === "forSale"
-              ? "border-primary bg-primary/5"
-              : "border-gray-200 hover:border-gray-300"
-          } ${disabled ? "opacity-50 cursor-not-allowed" : ""}` }
-        >
-          <div className="flex items-center gap-3">
-            <div
-              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                value === "forSale" ? "border-primary" : "border-gray-300"
-              }`}
-            >
-              {value === "forSale" && (
-                <div className="w-3 h-3 rounded-full bg-primary" />
-              )}
-            </div>
-            <div className="text-left">
-              <h3 className="font-semibold text-gray-900">{t("forSale")}</h3>
-            </div>
-          </div>
-        </button>
+          variant="card"
+        />
       </div>
     </div>
   )

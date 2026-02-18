@@ -39,7 +39,7 @@ export const getAvailabilityTooltipMessage = (
   t: (key: string) => string
 ) => {
   if (item.status !== "approved") {
-    return t("equipmentMustBeApproved")
+    return t("pendingVerification")
   }
   if (item.hasActiveBookings || item.hasPendingSale) {
     return t("cannotEditActiveBooking")

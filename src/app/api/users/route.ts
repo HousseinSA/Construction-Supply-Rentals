@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { connectDB } from '@/src/lib/mongodb'
 import { ObjectId } from 'mongodb'
-import { triggerRealtimeUpdate } from '@/src/lib/realtime-trigger'
 
 export async function GET() {
   try {
@@ -53,8 +52,6 @@ export async function PATCH(request: NextRequest) {
         error: 'User not found' 
       }, { status: 404 })
     }
-
-    await triggerRealtimeUpdate('user')
 
     return NextResponse.json({ 
       success: true, 
@@ -131,8 +128,6 @@ export async function POST(request: NextRequest) {
       createdAt: new Date(),
       updatedAt: new Date()
     })
-
-    await triggerRealtimeUpdate('user')
 
     return NextResponse.json({ 
       success: true, 

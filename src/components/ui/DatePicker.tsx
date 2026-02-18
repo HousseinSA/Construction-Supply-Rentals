@@ -158,7 +158,7 @@ export default function DatePicker({ startDate, endDate, onDateChange, label, re
 
           <div className="grid grid-cols-7 gap-1.5 mb-2">
             {dayNames[locale as keyof typeof dayNames].map((d, i) => (
-              <div key={i} className="text-center text-sm font-semibold text-gray-600 py-1">
+              <div key={i} className="text-center text-sm font-semibold text-gray-900 py-1">
                 {d}
               </div>
             ))}

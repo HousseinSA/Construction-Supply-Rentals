@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useRouter } from "@/src/i18n/navigation"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
+import { useEquipmentStore } from "@/src/stores/equipmentStore"
 
 export interface UploadedImage {
   url: string
@@ -33,6 +34,7 @@ interface FormData {
 export function useEquipmentForm(equipmentId?: string) {
   const router = useRouter()
   const tToast = useTranslations("toast")
+  const { invalidateCache } = useEquipmentStore()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [images, setImages] = useState<UploadedImage[]>([])
   const [equipment, setEquipment] = useState<any>(null)
@@ -69,58 +71,56 @@ export function useEquipmentForm(equipmentId?: string) {
       setLoading(true)
       const response = await fetch(`/api/equipment/${equipmentId}?admin=true`)
       const data = await response.json()
-      
       if (!data.success) {
         setOwnershipError(true)
         setLoading(false)
         return
       }
-      
+
       const eq = data.data
       setEquipment(eq)
       setHasActiveBookings(eq.hasActiveBookings || false)
-        const usageValue = eq.specifications?.hoursUsed
-          ? String(eq.specifications.hoursUsed)
-          : eq.specifications?.kilometersUsed
+      const usageValue = eq.specifications?.hoursUsed
+        ? String(eq.specifications.hoursUsed)
+        : eq.specifications?.kilometersUsed
           ? String(eq.specifications.kilometersUsed)
           : eq.specifications?.tonnageUsed
-          ? String(eq.specifications.tonnageUsed)
-          : ""
-
-        const loadedFormData = {
-          category: eq.categoryId,
-          type: eq.equipmentTypeId,
-          location: eq.location,
-          listingType: eq.listingType,
-          hourlyRate: eq.pricing.hourlyRate
-            ? String(eq.pricing.hourlyRate)
-            : "",
-          dailyRate: eq.pricing.dailyRate ? String(eq.pricing.dailyRate) : "",
-          monthlyRate: eq.pricing.monthlyRate ? String(eq.pricing.monthlyRate) : "",
-          kmRate: eq.pricing.kmRate ? String(eq.pricing.kmRate) : "",
-          tonRate: eq.pricing.tonRate ? String(eq.pricing.tonRate) : "",
-          salePrice: eq.pricing.salePrice ? String(eq.pricing.salePrice) : "",
-          description: eq.description || "",
-          brand: eq.specifications?.brand || "",
-          model: eq.specifications?.model || "",
-          year: eq.specifications?.year ? String(eq.specifications.year) : "",
-          condition: eq.specifications?.condition || "",
-          usageValue,
-          usageUnit: eq.specifications?.usageUnit || "hours",
-          weight: eq.specifications?.weight
-            ? String(eq.specifications.weight)
-            : "",
-          weightUnit: eq.specifications?.weightUnit || "kg",
-        }
-        setFormData(loadedFormData)
-        setInitialFormData(loadedFormData)
-        const loadedImages = eq.images.map((url: string) => {
-          const match = url.match(/\/([^\/]+)\.[^.]+$/)
-          const public_id = match ? `equipment/${match[1]}` : ""
-          return { url, public_id }
-        })
-        setImages(loadedImages)
-        setInitialImages(loadedImages)
+            ? String(eq.specifications.tonnageUsed)
+            : ""
+      const loadedFormData = {
+        category: eq.categoryId,
+        type: eq.equipmentTypeId,
+        location: eq.location,
+        listingType: eq.listingType,
+        hourlyRate: eq.pricing.hourlyRate ? String(eq.pricing.hourlyRate) : "",
+        dailyRate: eq.pricing.dailyRate ? String(eq.pricing.dailyRate) : "",
+        monthlyRate: eq.pricing.monthlyRate
+          ? String(eq.pricing.monthlyRate)
+          : "",
+        kmRate: eq.pricing.kmRate ? String(eq.pricing.kmRate) : "",
+        tonRate: eq.pricing.tonRate ? String(eq.pricing.tonRate) : "",
+        salePrice: eq.pricing.salePrice ? String(eq.pricing.salePrice) : "",
+        description: eq.description || "",
+        brand: eq.specifications?.brand || "",
+        model: eq.specifications?.model || "",
+        year: eq.specifications?.year ? String(eq.specifications.year) : "",
+        condition: eq.specifications?.condition || "",
+        usageValue,
+        usageUnit: eq.specifications?.usageUnit || "hours",
+        weight: eq.specifications?.weight
+          ? String(eq.specifications.weight)
+          : "",
+        weightUnit: eq.specifications?.weightUnit || "kg",
+      }
+      setFormData(loadedFormData)
+      setInitialFormData(loadedFormData)
+      const loadedImages = eq.images.map((url: string) => {
+        const match = url.match(/\/([^\/]+)\.[^.]+$/)
+        const public_id = match ? `equipment/${match[1]}` : ""
+        return { url, public_id }
+      })
+      setImages(loadedImages)
+      setInitialImages(loadedImages)
       setLoading(false)
     } catch (error) {
       console.error("Error loading equipment:", error)
@@ -130,7 +130,7 @@ export function useEquipmentForm(equipmentId?: string) {
   }
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
@@ -228,10 +228,10 @@ export function useEquipmentForm(equipmentId?: string) {
       } else {
         if (formData.hourlyRate)
           pricing.hourlyRate = parseFloat(formData.hourlyRate)
-        if (formData.dailyRate) {
+        if (formData.dailyRate)
           pricing.dailyRate = parseFloat(formData.dailyRate)
-          pricing.monthlyRate = parseFloat(formData.dailyRate) * 30
-        }
+        if (formData.monthlyRate)
+          pricing.monthlyRate = parseFloat(formData.monthlyRate)
         if (formData.kmRate) pricing.kmRate = parseFloat(formData.kmRate)
         if (formData.tonRate) pricing.tonRate = parseFloat(formData.tonRate)
       }
@@ -250,7 +250,7 @@ export function useEquipmentForm(equipmentId?: string) {
       if (formData.usageValue) {
         const usageNum = parseInt(formData.usageValue)
         specifications.usageUnit = formData.usageUnit
-        
+
         if (formData.usageUnit === "hours") {
           specifications.hoursUsed = usageNum
         } else if (formData.usageUnit === "km") {
@@ -270,28 +270,36 @@ export function useEquipmentForm(equipmentId?: string) {
         listingType: formData.listingType,
       }
 
-      // Only include pricing if it changed (for edit mode)
       if (equipmentId && equipment) {
-        // Normalize pricing objects for comparison
         const normalizePricing = (p: any) => {
           const normalized: any = {}
-          if (p.hourlyRate) normalized.hourlyRate = parseFloat(String(p.hourlyRate))
-          if (p.dailyRate) normalized.dailyRate = parseFloat(String(p.dailyRate))
+          if (p.hourlyRate)
+            normalized.hourlyRate = parseFloat(String(p.hourlyRate))
+          if (p.dailyRate)
+            normalized.dailyRate = parseFloat(String(p.dailyRate))
+          if (p.monthlyRate)
+            normalized.monthlyRate = parseFloat(String(p.monthlyRate))
           if (p.kmRate) normalized.kmRate = parseFloat(String(p.kmRate))
           if (p.tonRate) normalized.tonRate = parseFloat(String(p.tonRate))
-          if (p.salePrice) normalized.salePrice = parseFloat(String(p.salePrice))
+          if (p.salePrice)
+            normalized.salePrice = parseFloat(String(p.salePrice))
           return normalized
         }
-        
+
         const currentPricing = normalizePricing(equipment.pricing)
         const newPricing = normalizePricing(pricing)
-        const pricingChanged = JSON.stringify(currentPricing) !== JSON.stringify(newPricing)
         
-        if (pricingChanged) {
-          equipmentData.pricing = pricing
+        const changedPricing: any = {}
+        Object.keys(newPricing).forEach((key) => {
+          if (newPricing[key] !== currentPricing[key]) {
+            changedPricing[key] = newPricing[key]
+          }
+        })
+        
+        if (Object.keys(changedPricing).length > 0) {
+          equipmentData.pricing = changedPricing
         }
       } else {
-        // Always include pricing for new equipment
         equipmentData.pricing = pricing
       }
 
@@ -311,20 +319,28 @@ export function useEquipmentForm(equipmentId?: string) {
       const result = await response.json()
 
       if (!response.ok) {
+        if (result.errorCode) {
+          throw new Error(tToast(result.errorCode))
+        }
         throw new Error(
           result.error ||
-            `Failed to ${equipmentId ? "update" : "create"} equipment`
+            `Failed to ${equipmentId ? "update" : "create"} equipment`,
         )
       }
 
       toast.success(
-        tToast(equipmentId ? "equipmentUpdated" : "equipmentCreated")
+        tToast(equipmentId ? "equipmentUpdated" : "equipmentCreated"),
       )
+      if (equipmentId) {
+        invalidateCache()
+      }
       router.push(equipmentId ? "/dashboard/equipment" : "/dashboard")
     } catch (error) {
       console.error("Equipment creation error:", error)
       toast.error(
-        error instanceof Error ? error.message : tToast("equipmentCreateFailed")
+        error instanceof Error
+          ? error.message
+          : tToast("equipmentCreateFailed"),
       )
     } finally {
       setIsSubmitting(false)
@@ -333,8 +349,11 @@ export function useEquipmentForm(equipmentId?: string) {
 
   const hasChanges = () => {
     if (!equipmentId || !initialFormData) return true
-    const formChanged = JSON.stringify(formData) !== JSON.stringify(initialFormData)
-    const imagesChanged = JSON.stringify(images.map(i => i.url)) !== JSON.stringify(initialImages.map(i => i.url))
+    const formChanged =
+      JSON.stringify(formData) !== JSON.stringify(initialFormData)
+    const imagesChanged =
+      JSON.stringify(images.map((i) => i.url)) !==
+      JSON.stringify(initialImages.map((i) => i.url))
     return formChanged || imagesChanged
   }
 

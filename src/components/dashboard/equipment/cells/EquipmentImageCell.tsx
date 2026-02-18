@@ -79,7 +79,7 @@ function EquipmentImageCell({
         </div>
         <div className="space-y-1">
           {referenceNumber && (
-            <div className="text-xs font-semibold text-primary">
+            <div className="text-sm font-semibold text-primary">
               #{referenceNumber}
             </div>
           )}

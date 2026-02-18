@@ -4,7 +4,6 @@ import { authOptions } from "@/src/lib/auth"
 import { connectDB } from "@/src/lib/mongodb"
 import { ObjectId } from "mongodb"
 import { validateBooking } from "@/src/lib/validation"
-import { triggerRealtimeUpdate } from "@/src/lib/realtime-trigger"
 import { generateReferenceNumber } from "@/src/lib/reference-number"
 import {
   calculateSubtotal,
@@ -390,10 +389,6 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    triggerRealtimeUpdate("booking").catch((err) =>
-      console.error("Realtime update error:", err)
-    )
-
     return NextResponse.json(
       {
         success: true,
@@ -502,9 +497,6 @@ export async function PUT(request: NextRequest) {
       adminId ? new ObjectId(adminId) : undefined,
       adminNotes
     )
-
-    await triggerRealtimeUpdate("booking")
-    await triggerRealtimeUpdate("equipment")
 
     return NextResponse.json({
       success: true,

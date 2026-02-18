@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react"
-import { useSSE } from './useSSE'
+import { usePolling } from './usePolling'
 
 interface Pricing {
   dailyRate?: number
@@ -47,9 +47,7 @@ export function useEquipment(selectedCity?: string | null, selectedType?: string
     }
   }, [selectedCity, selectedType, listingType])
 
-  useSSE('equipment', useCallback(() => {
-    fetchEquipment()
-  }, [fetchEquipment]))
+  usePolling(fetchEquipment, { interval: 30000 })
 
   useEffect(() => {
     fetchEquipment()

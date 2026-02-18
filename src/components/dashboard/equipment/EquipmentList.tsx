@@ -13,12 +13,16 @@ interface EquipmentListProps {
   totalPages: number
   totalItems: number
   itemsPerPage: number
-  onStatusChange: (id: string, action: "approve" | "reject", reason?: string) => void
+  onStatusChange: (
+    id: string,
+    action: "approve" | "reject",
+    reason?: string,
+  ) => void
   onAvailabilityChange: (id: string, isAvailable: boolean) => void
   onNavigate: (url: string, id: string) => void
   onPageChange: (page: number) => void
   onPricingReview?: (item: EquipmentWithSupplier) => void
-  t:any
+  t: any
   isSupplier?: boolean
 }
 
@@ -39,7 +43,6 @@ export default function EquipmentList({
   isSupplier = false,
 }: EquipmentListProps) {
   const { getPriceData, formatPrice } = usePriceFormatter()
-
   return (
     <>
       <div className="hidden xl:block">
@@ -78,11 +81,11 @@ export default function EquipmentList({
         {equipment.map((item) => {
           const priceData = getPriceData(
             item.pricing,
-            item.listingType === "forSale"
+            item.listingType === "forSale",
           )
           const { displayPrice, displayUnit } = formatPrice(
             priceData.rate,
-            priceData.unit
+            priceData.unit,
           )
 
           return (

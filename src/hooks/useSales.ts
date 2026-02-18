@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { useSalesStore, SaleWithDetails } from '@/src/stores/salesStore'
-import { useSSE } from './useSSE'
+import { usePolling } from './usePolling'
 
 export function useSales() {
   const { data: session } = useSession()
@@ -49,9 +49,7 @@ export function useSales() {
     }
   }
 
-  useSSE('sales', useCallback(() => {
-    fetchSales()
-  }, [fetchSales]))
+  usePolling(fetchSales, { interval: 30000 })
 
   useEffect(() => {
     if (session?.user && shouldRefetch()) {

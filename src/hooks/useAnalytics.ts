@@ -1,6 +1,6 @@
 import { useEffect, useCallback } from 'react'
 import { useAnalyticsStore } from '@/src/stores/analyticsStore'
-import { useSSE } from './useSSE'
+import { usePolling } from './usePolling'
 
 export function useAnalytics() {
   const { analytics, loading, setAnalytics, setLoading, shouldRefetch } = useAnalyticsStore()
@@ -20,13 +20,7 @@ export function useAnalytics() {
     }
   }, [setAnalytics, setLoading])
 
-  useSSE('equipment', useCallback(() => {
-    fetchAnalytics()
-  }, [fetchAnalytics]))
-
-  useSSE('user', useCallback(() => {
-    fetchAnalytics()
-  }, [fetchAnalytics]))
+  usePolling(fetchAnalytics, { interval: 30000 })
 
   useEffect(() => {
     if (shouldRefetch()) {

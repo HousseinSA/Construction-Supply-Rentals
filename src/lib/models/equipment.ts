@@ -5,7 +5,7 @@ export interface Equipment {
   _id?: ObjectId | string
   referenceNumber?: string
   supplierId?: ObjectId | string
-  name: string 
+  name: string
   description: string
   categoryId: ObjectId | string
   equipmentTypeId: ObjectId | string
@@ -38,14 +38,24 @@ export interface Equipment {
     kilometersUsed?: number
     tonnageUsed?: number
     weight?: number
-    weightUnit?: string 
+    weightUnit?: string
   }
   usageCategory: UsageCategory
   status: EquipmentStatus
   rejectionReason?: string
   rejectedAt?: Date
   lastEditedAt?: Date
-  pricingRejectionReason?: string
+  pricingRejectionReasons?: {
+    [key: string]: string
+  }
+  rejectedPricingValues?: {
+    hourlyRate?: number
+    dailyRate?: number
+    monthlyRate?: number
+    kmRate?: number
+    tonRate?: number
+    salePrice?: number
+  }
   isAvailable: boolean
   isSold?: boolean
   listingType: "forSale" | "forRent"
@@ -58,7 +68,7 @@ export interface Equipment {
 }
 
 export function getUsageCategoryFromEquipmentType(
-  equipmentTypeName: string
+  equipmentTypeName: string,
 ): UsageCategory {
   const lowerName = equipmentTypeName.toLowerCase()
 
@@ -83,32 +93,32 @@ export function getUsageCategoryFromEquipmentType(
 }
 
 export function getInitialEquipmentStatus(
-  creatorRole: "admin" | "user"
+  creatorRole: "admin" | "user",
 ): EquipmentStatus {
   return creatorRole === "admin" ? "approved" : "pending"
 }
 
 export const LOCKED_FIELDS = [
-  'name',
-  'equipmentTypeId',
-  'categoryId',
-  'listingType',
-  'location',
-  'usageCategory',
-  'createdBy',
-  'createdById'
+  "name",
+  "equipmentTypeId",
+  "categoryId",
+  "listingType",
+  "location",
+  "usageCategory",
+  "createdBy",
+  "createdById",
 ] as const
 
 export const SUPPLIER_EDITABLE_FIELDS = [
-  'description',
-  'images',
-  'specifications'
+  "description",
+  "images",
+  "specifications",
 ] as const
 
 export function canEditEquipment(
   equipment: Equipment,
   userRole: "admin" | "user",
-  userId: string
+  userId: string,
 ): { canEdit: boolean; reason?: string } {
   if (userRole === "admin") {
     return { canEdit: true }

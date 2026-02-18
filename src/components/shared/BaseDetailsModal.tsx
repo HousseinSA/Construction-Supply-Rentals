@@ -47,8 +47,8 @@ export default function BaseDetailsModal({
   equipmentId,
   viewDetailsLabel,
 }: BaseDetailsModalProps) {
-  const modalRef = useRef<HTMLDivElement | null>(null)
-  useModalClose(isOpen, onClose, modalRef as RefObject<HTMLElement>)
+  const modalRef = useRef<HTMLDivElement>(null)
+  useModalClose(isOpen, onClose, modalRef)
 
   if (!isOpen) return null
 

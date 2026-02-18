@@ -1,10 +1,13 @@
 "use client"
 
-import { useRef, useState } from "react"
-import { toast } from "sonner"
+import { useRef } from "react"
 import { useTranslations, useLocale } from "next-intl"
 import { useModalClose } from "@/src/hooks/useModalClose"
+import { usePricingReview } from "@/src/hooks/usePricingReview"
 import ModalHeader from "@/src/components/booking/ModalHeader"
+import CustomCheckbox from "@/src/components/ui/CustomCheckbox"
+import PricingRateItem from "./PricingRateItem"
+import { getRateLabel, formatPrice } from "@/src/lib/pricingUtils"
 
 interface PricingReviewModalProps {
   equipmentId: string
@@ -23,80 +26,40 @@ export default function PricingReviewModal({
 }: PricingReviewModalProps) {
   const t = useTranslations("dashboard.equipment")
   const tCommon = useTranslations("common")
+  const locale = useLocale()
+  const isRTL = locale === "ar"
   const modalRef = useRef<HTMLDivElement>(null)
-  const [isApproving, setIsApproving] = useState(false)
-  const [isRejecting, setIsRejecting] = useState(false)
-  const [rejectionReason, setRejectionReason] = useState("")
-  const [showRejectInput, setShowRejectInput] = useState(false)
+
+  const {
+    isApproving,
+    isRejecting,
+    rejectionReason,
+    setRejectionReason,
+    showRejectInput,
+    setShowRejectInput,
+    selectedRates,
+    newRates,
+    changedRates,
+    allRates,
+    allSelected,
+    toggleSelectAll,
+    toggleRate,
+    handleApprove,
+    handleReject,
+  } = usePricingReview({
+    equipmentId,
+    currentPricing,
+    pendingPricing,
+    onSuccess,
+    onClose,
+    t,
+  })
 
   useModalClose(true, onClose, modalRef)
 
-  const handleApprove = async () => {
-    setIsApproving(true)
-    try {
-      const response = await fetch(`/api/equipment/${equipmentId}/pricing`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "approve" }),
-      })
-      if (!response.ok) throw new Error()
-      toast.success(t("pricingApproved"))
-      onSuccess()
-      onClose()
-    } catch (error) {
-      toast.error(t("processingRequest"))
-    } finally {
-      setIsApproving(false)
-    }
-  }
-
-  const handleReject = async () => {
-    if (!rejectionReason.trim()) {
-      toast.error(t("provideRejectionReason"))
-      return
-    }
-    setIsRejecting(true)
-    try {
-      const response = await fetch(`/api/equipment/${equipmentId}/pricing`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "reject", rejectionReason }),
-      })
-      if (!response.ok) throw new Error()
-      toast.success(t("pricingRejected"))
-      onSuccess()
-      onClose()
-    } catch (error) {
-      toast.error(t("processingRequest"))
-    } finally {
-      setIsRejecting(false)
-    }
-  }
-
-  const formatPrice = (price: number | undefined) => {
-    if (!price) return "-"
-    return new Intl.NumberFormat("en-US").format(price)
-  }
-
-  const getRateLabel = (key: string) => {
-    const labelMap: Record<string, string> = {
-      hourlyRate: t("hourly"),
-      dailyRate: t("daily"),
-      kmRate: t("perKm"),
-      tonRate: t("tonRate"),
-      salePrice: t("salePrice"),
-    }
-    return labelMap[key] || key
-  }
-  const locale = useLocale()
-  const isRTL = locale === "ar"
-
   return (
     <div className="fixed inset-0 z-50">
-      <div
-        className="absolute inset-0 bg-black/50"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative h-full flex items-center justify-center p-4">
         <div
           ref={modalRef}
@@ -107,51 +70,43 @@ export default function PricingReviewModal({
             <ModalHeader title={t("reviewPricingRequest")} onClose={onClose} />
             <div className="space-y-6">
               <div className="bg-gradient-to-r from-gray-50 to-orange-50 p-6 rounded-xl border border-gray-200">
-                {Object.entries(pendingPricing)
-                  .filter(([key, value]) => {
-                    if (
-                      key === "monthlyRate" ||
-                      key === "requestedAt" ||
-                      !value ||
-                      typeof value !== "number"
-                    )
-                      return false
-                    return currentPricing[key] !== pendingPricing[key]
-                  })
-                  .map(([key, value]) => (
-                    <div
-                      key={key}
-                      className="flex items-center justify-between py-3 border-b border-gray-200 last:border-0"
-                    >
-                      <span className="text-sm font-medium text-gray-700">
-                        {getRateLabel(key)}
-                      </span>
-                      <div className="flex items-center gap-3">
-                        <span
-                          className="text-sm text-gray-500 line-through"
-                          dir="ltr"
-                        >
-                          {formatPrice(currentPricing[key] as number)} MRU
-                        </span>
-                        <svg
-                          className={`w-4 h-4 text-gray-400 ${isRTL ? 'rotate-180' : ''}`}
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M13 7l5 5m0 0l-5 5m5-5H6"
-                          />
-                        </svg>
-                        <span className="text-lg font-bold text-primary" dir="ltr">
-                          {formatPrice(value as number)} MRU
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+                {allRates.length > 1 && (
+                  <div className="flex items-center gap-3 mb-4 pb-3 border-b border-gray-300">
+                    <CustomCheckbox
+                      checked={allSelected}
+                      onChange={toggleSelectAll}
+                      label={`${t("selectAll")} (${selectedRates.length}/${allRates.length})`}
+                    />
+                  </div>
+                )}
+                {newRates.map((key) => (
+                  <PricingRateItem
+                    key={key}
+                    rateKey={key}
+                    value={pendingPricing[key]}
+                    label={getRateLabel(key, t)}
+                    isSelected={selectedRates.includes(key)}
+                    onToggle={() => toggleRate(key)}
+                    formatPrice={formatPrice}
+                    type="new"
+                    isRTL={isRTL}
+                    newLabel={t("new")}
+                  />
+                ))}
+                {changedRates.map((key) => (
+                  <PricingRateItem
+                    key={key}
+                    rateKey={key}
+                    value={pendingPricing[key]}
+                    oldValue={currentPricing[key]}
+                    label={getRateLabel(key, t)}
+                    isSelected={selectedRates.includes(key)}
+                    onToggle={() => toggleRate(key)}
+                    formatPrice={formatPrice}
+                    type="changed"
+                    isRTL={isRTL}
+                  />
+                ))}
               </div>
 
               {showRejectInput && (
@@ -174,14 +129,18 @@ export default function PricingReviewModal({
                   <>
                     <button
                       onClick={() => setShowRejectInput(true)}
-                      disabled={isRejecting || isApproving}
+                      disabled={
+                        isRejecting || isApproving || selectedRates.length === 0
+                      }
                       className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium disabled:opacity-50 transition-colors"
                     >
                       {t("rejectPricing")}
                     </button>
                     <button
                       onClick={handleApprove}
-                      disabled={isApproving || isRejecting}
+                      disabled={
+                        isApproving || isRejecting || selectedRates.length === 0
+                      }
                       className="flex-1 px-4 py-3 bg-primary text-white rounded-lg hover:bg-green-700 font-medium disabled:opacity-50 transition-colors"
                     >
                       {isApproving

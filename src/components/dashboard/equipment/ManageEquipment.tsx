@@ -31,6 +31,7 @@ export default function ManageEquipment() {
     updating,
     handleStatusChange,
     handleAvailabilityChange,
+    refetch,
     searchValue,
     setSearchValue,
     filterValues,
@@ -95,7 +96,11 @@ export default function ManageEquipment() {
               onClick={() => setIsNavigating(true)}
               className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium"
             >
-              {isNavigating ? <Loader2 className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />}
+              {isNavigating ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <Plus className="w-5 h-5" />
+              )}
               <span className="hidden sm:inline">{t("createEquipment")}</span>
             </Link>
           }
@@ -220,7 +225,7 @@ export default function ManageEquipment() {
             currentPricing={pricingReviewModal.pricing}
             pendingPricing={pricingReviewModal.pendingPricing}
             onClose={() => setPricingReviewModal(null)}
-            onSuccess={() => window.location.reload()}
+            onSuccess={() => refetch()}
           />
         )}
 
@@ -231,7 +236,7 @@ export default function ManageEquipment() {
           title={t("confirmRejectTitle")}
           confirmText={t("reject")}
           cancelText={tCommon("cancel")}
-          placeholder={t("rejectionReasonPlaceholder")}
+          placeholder={t("rejectionReason")}
           isLoading={updating === rejectionModal.equipmentId}
         />
       </div>

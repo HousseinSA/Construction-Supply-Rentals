@@ -1,27 +1,41 @@
 import { useState, useEffect, useCallback, useMemo } from "react"
 import { Equipment } from "@/src/lib/models/equipment"
 import { User } from "@/src/lib/models/user"
-import { useEquipmentStore, EquipmentWithSupplier } from "@/src/stores/equipmentStore"
-import { useSSE } from './useSSE'
-import { useTableFilters } from './useTableFilters'
-import { usePagination } from './usePagination'
+import {
+  useEquipmentStore,
+  EquipmentWithSupplier,
+} from "@/src/stores/equipmentStore"
+import { usePolling } from "./usePolling"
+import { useTableFilters } from "./useTableFilters"
+import { usePagination } from "./usePagination"
 
 interface UseManageEquipmentConfig {
   convertToLocalized: (location: string) => string
   supplierId?: string
 }
 
-export function useManageEquipment({ convertToLocalized, supplierId }: UseManageEquipmentConfig) {
-  const { equipment, loading, setEquipment, setLoading, updateEquipment, shouldRefetch } = useEquipmentStore()
+export function useManageEquipment({
+  convertToLocalized,
+  supplierId,
+}: UseManageEquipmentConfig) {
+  const {
+    equipment,
+    loading,
+    setEquipment,
+    setLoading,
+    updateEquipment,
+    shouldRefetch,
+    invalidateCache,
+  } = useEquipmentStore()
   const [updating, setUpdating] = useState<string | null>(null)
 
   const fetchEquipment = useCallback(async () => {
     try {
       setLoading(true)
-      const url = supplierId 
+      const url = supplierId
         ? `/api/equipment?supplierId=${supplierId}&includeSupplier=true`
         : "/api/equipment?admin=true&includeSupplier=true"
-      const response = await fetch(url)
+      const response = await fetch(url, { cache: "no-store" })
       const data = await response.json()
       if (data.success) {
         setEquipment(data.data || [])
@@ -33,7 +47,11 @@ export function useManageEquipment({ convertToLocalized, supplierId }: UseManage
     }
   }, [setEquipment, setLoading, supplierId])
 
-  const handleStatusChange = async (id: string, newStatus: string, rejectionReason?: string) => {
+  const handleStatusChange = async (
+    id: string,
+    newStatus: string,
+    rejectionReason?: string,
+  ) => {
     setUpdating(id)
     try {
       const body: any = { status: newStatus }
@@ -46,7 +64,10 @@ export function useManageEquipment({ convertToLocalized, supplierId }: UseManage
         body: JSON.stringify(body),
       })
       if (response.ok) {
-        updateEquipment(id, { status: newStatus, ...(rejectionReason && { rejectionReason }) })
+        updateEquipment(id, {
+          status: newStatus,
+          ...(rejectionReason && { rejectionReason }),
+        })
         return true
       }
       return false
@@ -141,9 +162,7 @@ export function useManageEquipment({ convertToLocalized, supplierId }: UseManage
     itemsPerPage,
   } = usePagination({ data: filteredData, itemsPerPage: 10 })
 
-  useSSE('equipment', useCallback(() => {
-    fetchEquipment()
-  }, [fetchEquipment]))
+  usePolling(fetchEquipment, { interval: 30000 })
 
   useEffect(() => {
     if (shouldRefetch()) {
@@ -157,7 +176,10 @@ export function useManageEquipment({ convertToLocalized, supplierId }: UseManage
     updating,
     handleStatusChange,
     handleAvailabilityChange,
-    refetch: fetchEquipment,
+    refetch: useCallback(() => {
+      invalidateCache()
+      return fetchEquipment()
+    }, [invalidateCache, fetchEquipment]),
     searchValue,
     setSearchValue,
     filterValues,

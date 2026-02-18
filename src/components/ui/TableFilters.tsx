@@ -44,7 +44,6 @@ export default function TableFilters({
     <>
       <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 mb-4">
         <div className="flex flex-col lg:flex-row gap-3">
-          {/* Search Bar with Mobile Filter Button */}
           <div className="flex gap-2 lg:flex-1 lg:min-w-0">
             <div className="relative flex-1 min-w-0">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />

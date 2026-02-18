@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { connectDB } from "@/src/lib/mongodb"
 import { ObjectId } from "mongodb"
-import { triggerRealtimeUpdate } from "@/src/lib/realtime-trigger"
 import {
   getInitialEquipmentStatus,
   getUsageCategoryFromEquipmentType,
@@ -347,8 +346,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    await triggerRealtimeUpdate("equipment")
-
     return NextResponse.json(
       {
         success: true,
@@ -420,8 +417,6 @@ export async function PUT(request: NextRequest) {
         { status: 404 }
       )
     }
-
-    await triggerRealtimeUpdate("equipment")
 
     return NextResponse.json({
       success: true,

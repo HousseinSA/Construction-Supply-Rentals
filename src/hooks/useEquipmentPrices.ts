@@ -6,25 +6,38 @@ interface PriceItem {
   suffix: string
 }
 
-export const useEquipmentPrices = (equipment: Equipment): PriceItem[] => {
+export const useEquipmentPrices = (equipment: Equipment, showPending: boolean = false): PriceItem[] => {
   const tCommon = useTranslations("common")
   
   const prices: PriceItem[] = []
   
-  if (equipment.listingType === "forSale" && equipment.pricing.salePrice) {
-    prices.push({ amount: equipment.pricing.salePrice, suffix: "" })
+  const pricing = equipment.pricing
+  if (equipment.listingType === "forSale") {
+    const salePrice = pricing.salePrice
+    if (salePrice) {
+      prices.push({ amount: salePrice, suffix: "" })
+    }
   } else {
-    if (equipment.pricing.hourlyRate) {
-      prices.push({ amount: equipment.pricing.hourlyRate, suffix: ` / ${tCommon("hour")}` })
+    const hourlyRate = pricing.hourlyRate
+    const dailyRate = pricing.dailyRate
+    const monthlyRate = pricing.monthlyRate
+    const kmRate = pricing.kmRate
+    const tonRate = pricing.tonRate
+    
+    if (hourlyRate) {
+      prices.push({ amount: hourlyRate, suffix: ` / ${tCommon("hour")}` })
     }
-    if (equipment.pricing.dailyRate) {
-      prices.push({ amount: equipment.pricing.dailyRate, suffix: ` / ${tCommon("day")}` })
+    if (dailyRate) {
+      prices.push({ amount: dailyRate, suffix: ` / ${tCommon("day")}` })
     }
-    if (equipment.pricing.kmRate) {
-      prices.push({ amount: equipment.pricing.kmRate, suffix: ` / ${tCommon("km")}` })
+    if (monthlyRate) {
+      prices.push({ amount: monthlyRate, suffix: ` / ${tCommon("month")}` })
     }
-    if (equipment.pricing.tonRate) {
-      prices.push({ amount: equipment.pricing.tonRate, suffix: ` / ${tCommon("ton")}` })
+    if (kmRate) {
+      prices.push({ amount: kmRate, suffix: ` / ${tCommon("km")}` })
+    }
+    if (tonRate) {
+      prices.push({ amount: tonRate, suffix: ` / ${tCommon("ton")}` })
     }
   }
   
