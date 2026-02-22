@@ -1,13 +1,9 @@
 import { useState, useEffect, useCallback, useMemo } from "react"
-import { Equipment } from "@/src/lib/models/equipment"
-import { User } from "@/src/lib/models/user"
 import {
   useEquipmentStore,
   EquipmentWithSupplier,
 } from "@/src/stores/equipmentStore"
 import { usePolling } from "./usePolling"
-import { useTableFilters } from "./useTableFilters"
-import { usePagination } from "./usePagination"
 
 interface UseManageEquipmentConfig {
   convertToLocalized: (location: string) => string
@@ -24,28 +20,91 @@ export function useManageEquipment({
     setEquipment,
     setLoading,
     updateEquipment,
-    shouldRefetch,
     invalidateCache,
   } = useEquipmentStore()
   const [updating, setUpdating] = useState<string | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [totalCount, setTotalCount] = useState(0)
+  const [searchValue, setSearchValue] = useState("")
+  const [filterValues, setFilterValues] = useState({
+    status: "all",
+    listingType: "all",
+    availability: "all",
+    location: "all",
+  })
+  const itemsPerPage = 10
 
   const fetchEquipment = useCallback(async () => {
     try {
       setLoading(true)
-      const url = supplierId
-        ? `/api/equipment?supplierId=${supplierId}&includeSupplier=true`
-        : "/api/equipment?admin=true&includeSupplier=true"
+
+      const params = new URLSearchParams()
+      params.set("page", currentPage.toString())
+      params.set("limit", itemsPerPage.toString())
+      params.set("includeSupplier", "true")
+
+      if (supplierId) {
+        params.set("supplierId", supplierId)
+      } else {
+        params.set("admin", "true")
+      }
+
+      if (searchValue.trim()) {
+        params.set("search", searchValue.trim())
+      }
+
+      if (filterValues.status !== "all") {
+        if (filterValues.status === "pendingPricing") {
+          params.set("hasPendingPricing", "true")
+        } else {
+          params.set("status", filterValues.status)
+        }
+      }
+
+      if (filterValues.listingType !== "all") {
+        params.set("listingType", filterValues.listingType)
+      }
+
+      if (filterValues.availability === "available") {
+        params.set("available", "true")
+      } else if (filterValues.availability === "unavailable") {
+        params.set("available", "false")
+        params.set("excludeSold", "true")
+      } else if (filterValues.availability === "sold") {
+        params.set("available", "false")
+        params.set("listingType", "forSale")
+      }
+
+      if (filterValues.location !== "all") {
+        params.set("city", filterValues.location)
+      }
+
+      const url = `/api/equipment?${params.toString()}`
       const response = await fetch(url, { cache: "no-store" })
       const data = await response.json()
+
       if (data.success) {
         setEquipment(data.data || [])
+        if (data.pagination) {
+          setTotalPages(data.pagination.totalPages)
+          setTotalCount(data.pagination.totalCount)
+        }
       }
     } catch (error) {
       console.error("Error fetching equipment:", error)
     } finally {
       setLoading(false)
     }
-  }, [setEquipment, setLoading, supplierId])
+  }, [
+    setEquipment,
+    setLoading,
+    supplierId,
+    currentPage,
+    itemsPerPage,
+    searchValue,
+    filterValues,
+  ])
 
   const handleStatusChange = async (
     id: string,
@@ -98,52 +157,25 @@ export function useManageEquipment({
     }
   }
 
-  const {
-    searchValue,
-    setSearchValue,
-    filterValues,
-    handleFilterChange,
-    filteredData,
-  } = useTableFilters({
-    data: equipment,
-    searchFields: ["name", "location"],
-    persistKey: "equipment",
-    customSearchFilter: (item, search) => {
-      const searchLower = search.toLowerCase()
-      const equipmentName = item.name?.toLowerCase() || ""
-      const location = item.location?.toLowerCase() || ""
-      const supplierName = item.supplier
-        ? `${item.supplier.firstName} ${item.supplier.lastName}`.toLowerCase()
-        : ""
-      return (
-        equipmentName.includes(searchLower) ||
-        location.includes(searchLower) ||
-        supplierName.includes(searchLower)
-      )
+  const handleFilterChange = useCallback(
+    (key: string, value: string) => {
+      setFilterValues((prev) => ({ ...prev, [key]: value }))
+      if (currentPage !== 1) {
+        setCurrentPage(1)
+      }
     },
-    filterFunctions: {
-      status: (item, value) => {
-        if (value === "pendingPricing") return !!item.pendingPricing
-        return item.status === value
-      },
-      listingType: (item, value) => item.listingType === value,
-      availability: (item, value) => {
-        if (value === "sold")
-          return item.listingType === "forSale" && !item.isAvailable
-        if (value === "available") return item.isAvailable
-        if (value === "unavailable")
-          return !item.isAvailable && !(item.listingType === "forSale")
-        return true
-      },
-      location: (item, value) => item.location === value,
+    [currentPage],
+  )
+
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setSearchValue(value)
+      if (currentPage !== 1) {
+        setCurrentPage(1)
+      }
     },
-    defaultFilters: {
-      status: "all",
-      listingType: "all",
-      availability: "all",
-      location: "all",
-    },
-  })
+    [currentPage],
+  )
 
   const locations = useMemo(() => {
     const uniqueLocations = [...new Set(equipment.map((item) => item.location))]
@@ -153,25 +185,16 @@ export function useManageEquipment({
     }))
   }, [equipment, convertToLocalized])
 
-  const {
-    currentPage,
-    totalPages,
-    paginatedData,
-    goToPage,
-    totalItems,
-    itemsPerPage,
-  } = usePagination({ data: filteredData, itemsPerPage: 10 })
+
 
   usePolling(fetchEquipment, { interval: 30000 })
 
   useEffect(() => {
-    if (shouldRefetch()) {
-      fetchEquipment()
-    }
-  }, [fetchEquipment, shouldRefetch])
+    fetchEquipment()
+  }, [fetchEquipment])
 
   return {
-    equipment: paginatedData,
+    equipment,
     loading,
     updating,
     handleStatusChange,
@@ -181,15 +204,14 @@ export function useManageEquipment({
       return fetchEquipment()
     }, [invalidateCache, fetchEquipment]),
     searchValue,
-    setSearchValue,
+    setSearchValue: handleSearchChange,
     filterValues,
     handleFilterChange,
     locations,
     currentPage,
     totalPages,
-    goToPage,
-    totalItems,
+    goToPage: setCurrentPage,
+    totalItems: totalCount,
     itemsPerPage,
-    hasEquipment: equipment.length > 0,
   }
 }

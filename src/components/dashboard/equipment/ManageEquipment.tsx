@@ -42,7 +42,6 @@ export default function ManageEquipment() {
     goToPage,
     totalItems,
     itemsPerPage,
-    hasEquipment,
   } = useManageEquipment({
     convertToLocalized,
     supplierId: isSupplier ? session?.user?.id : undefined,
@@ -106,54 +105,52 @@ export default function ManageEquipment() {
           }
         />
 
-        {hasEquipment && (
-          <TableFilters
-            searchValue={searchValue}
-            onSearchChange={setSearchValue}
-            searchPlaceholder={t("searchPlaceholder")}
-            filters={[
-              {
-                key: "status",
-                label: t("status"),
-                options: [
-                  { value: "all", label: t("filters.allStatus") },
-                  { value: "pending", label: t("pending") },
-                  { value: "approved", label: t("approved") },
-                  { value: "rejected", label: t("rejected") },
-                  { value: "pendingPricing", label: t("pricingUpdateRequest") },
-                ],
-              },
-              {
-                key: "listingType",
-                label: t("listingType"),
-                options: [
-                  { value: "all", label: t("filters.allTypes") },
-                  { value: "forRent", label: t("forRent") },
-                  { value: "forSale", label: t("forSale") },
-                ],
-              },
-              {
-                key: "availability",
-                label: t("availability"),
-                options: [
-                  { value: "all", label: t("filters.allAvailability") },
-                  { value: "available", label: t("available") },
-                  { value: "unavailable", label: t("unavailable") },
-                ],
-              },
-              {
-                key: "location",
-                label: t("location"),
-                options: [
-                  { value: "all", label: t("filters.allLocations") },
-                  ...locations,
-                ],
-              },
-            ]}
-            filterValues={filterValues}
-            onFilterChange={handleFilterChange}
-          />
-        )}
+        <TableFilters
+          searchValue={searchValue}
+          onSearchChange={setSearchValue}
+          searchPlaceholder={t("searchPlaceholder")}
+          filters={[
+            {
+              key: "status",
+              label: t("status"),
+              options: [
+                { value: "all", label: t("filters.allStatus") },
+                { value: "pending", label: t("pending") },
+                { value: "approved", label: t("approved") },
+                { value: "rejected", label: t("rejected") },
+                { value: "pendingPricing", label: t("pricingUpdateRequest") },
+              ],
+            },
+            {
+              key: "listingType",
+              label: t("listingType"),
+              options: [
+                { value: "all", label: t("filters.allTypes") },
+                { value: "forRent", label: t("forRent") },
+                { value: "forSale", label: t("forSale") },
+              ],
+            },
+            {
+              key: "availability",
+              label: t("availability"),
+              options: [
+                { value: "all", label: t("filters.allAvailability") },
+                { value: "available", label: t("available") },
+                { value: "unavailable", label: t("unavailable") },
+              ],
+            },
+            {
+              key: "location",
+              label: t("location"),
+              options: [
+                { value: "all", label: t("filters.allLocations") },
+                ...locations,
+              ],
+            },
+          ]}
+          filterValues={filterValues}
+          onFilterChange={handleFilterChange}
+        />
 
         <div className="xl:bg-white xl:rounded-lg xl:shadow-sm xl:border xl:border-gray-200 min-h-[600px] flex flex-col">
           {loading ? (

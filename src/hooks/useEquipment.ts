@@ -26,6 +26,7 @@ export function useEquipment(selectedCity?: string | null, selectedType?: string
       setError(null)
       const params = new URLSearchParams()
       params.set("available", "true")
+      params.set("limit", "100") // Fetch more for public view
       if (selectedCity && listingType !== 'forSale') {
         params.set("city", selectedCity)
         params.set("listingType", "forRent")

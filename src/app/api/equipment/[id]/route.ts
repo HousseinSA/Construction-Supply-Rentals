@@ -3,6 +3,19 @@ import { connectDB } from "@/src/lib/mongodb"
 import { ObjectId } from "mongodb"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/src/lib/auth"
+import {
+  validateObjectId,
+  errorResponse,
+  successResponse,
+  getBookingStatusForEquipment,
+  getSupplierInfo,
+  checkEquipmentOwnership,
+  checkActiveBookingsOrSales,
+  sendEquipmentApprovalNotification,
+  detectPricingChanges,
+  sendPricingUpdateNotification,
+  getAuthenticatedUser
+} from "@/src/lib/api-helpers"
 
 export async function GET(
   request: NextRequest,
@@ -13,12 +26,8 @@ export async function GET(
     const { searchParams } = new URL(request.url)
     const isAdmin = searchParams.get("admin") === "true"
 
-    if (!ObjectId.isValid(id)) {
-      return NextResponse.json(
-        { success: false, error: "Invalid equipment ID" },
-        { status: 400 },
-      )
-    }
+    const idValidation = validateObjectId(id, "equipment ID")
+    if (!idValidation.valid) return idValidation.error
 
     const db = await connectDB()
     const query: any = { _id: new ObjectId(id) }
@@ -29,66 +38,31 @@ export async function GET(
     const equipment = await db.collection("equipment").findOne(query)
 
     if (!equipment) {
-      return NextResponse.json(
-        { success: false, error: "Equipment not found" },
-        { status: 404 },
-      )
+      return errorResponse("Equipment not found", 404)
     }
 
     let supplierInfo = null
     if (isAdmin && equipment.supplierId) {
-      supplierInfo = await db
-        .collection("users")
-        .findOne({ _id: equipment.supplierId }, { projection: { password: 0 } })
+      supplierInfo = await getSupplierInfo(db, equipment.supplierId)
     }
 
     const session = await getServerSession(authOptions)
-    let userBookingStatus = null
+    const bookingStatus = await getBookingStatusForEquipment(
+      db,
+      id,
+      session?.user?.id
+    )
 
-    if (session?.user?.id) {
-      const pendingBooking = await db.collection("bookings").findOne({
-        renterId: new ObjectId(session.user.id),
-        "bookingItems.equipmentId": new ObjectId(id),
-        status: "pending",
-      })
-
-      if (pendingBooking) {
-        userBookingStatus = "pending"
-      }
-    }
-
-    const now = new Date()
-
-    const hasPendingBookings = await db.collection("bookings").findOne({
-      "bookingItems.equipmentId": new ObjectId(id),
-      status: "pending",
-      startDate: { $lte: now },
-      endDate: { $gte: now },
-    })
-
-    const hasActiveBookings = await db.collection("bookings").findOne({
-      "bookingItems.equipmentId": new ObjectId(id),
-      status: { $in: ["pending", "paid"] },
-      startDate: { $lte: now },
-      endDate: { $gte: now },
-    })
-
-    return NextResponse.json({
-      success: true,
+    return successResponse({
       data: {
         ...equipment,
-        userBookingStatus,
-        hasPendingBookings: !!hasPendingBookings,
-        hasActiveBookings: !!hasActiveBookings,
-        ...(isAdmin && { supplierInfo }),
-      },
+        ...bookingStatus,
+        ...(isAdmin && { supplierInfo })
+      }
     })
   } catch (error) {
     console.error("Error fetching equipment:", error)
-    return NextResponse.json(
-      { success: false, error: "Failed to fetch equipment" },
-      { status: 500 },
-    )
+    return errorResponse("Failed to fetch equipment")
   }
 }
 
@@ -99,63 +73,30 @@ export async function PATCH(
   try {
     const { id } = await params
     const body = await request.json()
-    const session = await getServerSession(authOptions)
 
-    if (!session) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      )
-    }
+    const auth = await getAuthenticatedUser()
+    if (!auth.authenticated) return auth.error
 
-    if (!ObjectId.isValid(id)) {
-      return NextResponse.json(
-        { success: false, error: "Invalid equipment ID" },
-        { status: 400 },
-      )
-    }
+    const idValidation = validateObjectId(id, "equipment ID")
+    if (!idValidation.valid) return idValidation.error
 
     const db = await connectDB()
-    const isAdmin = session.user.role === "admin"
-    const userId = session.user.id
+    const isAdmin = auth.user!.role === "admin"
+    const userId = auth.user!.id
 
-    const equipment = await db
-      .collection("equipment")
-      .findOne({ _id: new ObjectId(id) })
-    if (!equipment) {
-      return NextResponse.json(
-        { success: false, error: "Equipment not found" },
-        { status: 404 },
-      )
-    }
-
-    if (!isAdmin && equipment.supplierId?.toString() !== userId) {
-      return NextResponse.json(
-        { success: false, error: "You don't own this equipment" },
-        { status: 403 },
-      )
-    }
+    const ownership = await checkEquipmentOwnership(db, id, userId, isAdmin)
+    if (!ownership.authorized) return ownership.error
+    const equipment = ownership.equipment
 
     const updateData: any = { updatedAt: new Date() }
 
     if (body.hasOwnProperty("isAvailable")) {
-      const hasActiveBookings = await db.collection("bookings").findOne({
-        "bookingItems.equipmentId": new ObjectId(id),
-        status: { $in: ["pending", "paid"] },
-      })
-      const hasPendingSale = await db.collection("sales").findOne({
-        equipmentId: new ObjectId(id),
-        status: { $in: ["pending", "paid"] },
-      })
+      const { hasActiveBookings, hasPendingSale } = await checkActiveBookingsOrSales(db, new ObjectId(id))
 
       if (hasActiveBookings || hasPendingSale) {
-        return NextResponse.json(
-          {
-            success: false,
-            error:
-              "Cannot change availability - equipment has active bookings or pending sales",
-          },
-          { status: 400 },
+        return errorResponse(
+          "Cannot change availability - equipment has active bookings or pending sales",
+          400
         )
       }
 
@@ -173,22 +114,11 @@ export async function PATCH(
         updateData.rejectionReason = null
         updateData.rejectedAt = null
 
-        try {
-          const supplier = await db
-            .collection("users")
-            .findOne({ _id: equipment.supplierId })
-          if (supplier?.email) {
-            const { sendEquipmentApprovalEmail } =
-              await import("@/src/lib/email")
-            await sendEquipmentApprovalEmail(supplier.email, {
-              equipmentName: equipment.name,
-              supplierName: supplier.firstName,
-            })
-          }
-        } catch (emailError) {
-          console.error("Email error:", emailError)
-        }
+        await sendEquipmentApprovalNotification(db, equipment)
       } else if (body.status === "rejected") {
+        if (!body.rejectionReason || body.rejectionReason.trim() === "") {
+          return errorResponse("Rejection reason is required", 400)
+        }
         updateData.rejectionReason = body.rejectionReason
         updateData.rejectedAt = new Date()
       }
@@ -197,13 +127,10 @@ export async function PATCH(
     await db
       .collection("equipment")
       .updateOne({ _id: new ObjectId(id) }, { $set: updateData })
-    return NextResponse.json({ success: true })
+    return successResponse({})
   } catch (error) {
     console.error("Error updating equipment:", error)
-    return NextResponse.json(
-      { success: false, error: "Failed to update equipment" },
-      { status: 500 },
-    )
+    return errorResponse("Failed to update equipment")
   }
 }
 
@@ -214,42 +141,20 @@ export async function PUT(
   try {
     const { id } = await params
     const body = await request.json()
-    const session = await getServerSession(authOptions)
 
-    if (!session) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      )
-    }
+    const auth = await getAuthenticatedUser()
+    if (!auth.authenticated) return auth.error
 
-    if (!ObjectId.isValid(id)) {
-      return NextResponse.json(
-        { success: false, error: "Invalid equipment ID" },
-        { status: 400 },
-      )
-    }
+    const idValidation = validateObjectId(id, "equipment ID")
+    if (!idValidation.valid) return idValidation.error
 
     const db = await connectDB()
-    const isAdmin = session.user.role === "admin"
-    const userId = session.user.id
+    const isAdmin = auth.user!.role === "admin"
+    const userId = auth.user!.id
 
-    const equipment = await db
-      .collection("equipment")
-      .findOne({ _id: new ObjectId(id) })
-    if (!equipment) {
-      return NextResponse.json(
-        { success: false, error: "Equipment not found" },
-        { status: 404 },
-      )
-    }
-
-    if (!isAdmin && equipment.supplierId?.toString() !== userId) {
-      return NextResponse.json(
-        { success: false, error: "You don't own this equipment" },
-        { status: 403 },
-      )
-    }
+    const ownership = await checkEquipmentOwnership(db, id, userId, isAdmin)
+    if (!ownership.authorized) return ownership.error
+    const equipment = ownership.equipment
 
     const updateData: any = { updatedAt: new Date() }
 
@@ -288,10 +193,7 @@ export async function PUT(
           body[field] !== undefined &&
           body[field] !== equipment[field]?.toString()
         ) {
-          return NextResponse.json(
-            { success: false, error: `Cannot modify locked field: ${field}` },
-            { status: 400 },
-          )
+          return errorResponse(`Cannot modify locked field: ${field}`, 400)
         }
       }
 
@@ -312,26 +214,7 @@ export async function PUT(
       }
 
       if (body.pricing !== undefined) {
-        const changedPricing: any = {}
-        let hasChanges = false
-
-        const priceFields = [
-          "hourlyRate",
-          "dailyRate",
-          "monthlyRate",
-          "kmRate",
-          "tonRate",
-          "salePrice",
-        ]
-        priceFields.forEach((field) => {
-          const newValue = body.pricing[field]
-          const currentValue = equipment.pricing[field]
-
-          if (newValue !== undefined && newValue !== currentValue) {
-            changedPricing[field] = newValue
-            hasChanges = true
-          }
-        })
+        const { changedPricing, hasChanges } = detectPricingChanges(equipment.pricing, body.pricing)
 
         if (hasChanges) {
           // Only create pendingPricing if equipment is already approved
@@ -404,42 +287,7 @@ export async function PUT(
             }
           }
 
-          try {
-            const supplier = await db
-              .collection("users")
-              .findOne({ _id: equipment.supplierId })
-            const adminUser = await db
-              .collection("users")
-              .findOne({ role: "admin" })
-
-            if (adminUser?.email && supplier) {
-              const formatPricing = (pricing: any) => {
-                const parts = []
-                if (pricing.hourlyRate)
-                  parts.push(`${pricing.hourlyRate} MRU/h`)
-                if (pricing.dailyRate)
-                  parts.push(`${pricing.dailyRate} MRU/jour`)
-                if (pricing.kmRate) parts.push(`${pricing.kmRate} MRU/km`)
-                if (pricing.tonRate) parts.push(`${pricing.tonRate} MRU/tonne`)
-                if (pricing.salePrice) parts.push(`${pricing.salePrice} MRU`)
-                return parts.join(", ") || "-"
-              }
-
-              const { sendPricingUpdateRequestEmail } =
-                await import("@/src/lib/email")
-              await sendPricingUpdateRequestEmail(adminUser.email, {
-                equipmentName: equipment.name,
-                equipmentReference: equipment.referenceNumber || "-",
-                supplierName: `${supplier.firstName} ${supplier.lastName}`,
-                supplierPhone: supplier.phone,
-                currentPricing: formatPricing(equipment.pricing),
-                requestedPricing: formatPricing(body.pricing),
-                requestDate: new Date(),
-              })
-            }
-          } catch (emailError) {
-            console.error("Email error:", emailError)
-          }
+          await sendPricingUpdateNotification(db, equipment, body.pricing)
           } else {
             updateData.pricing = { ...equipment.pricing, ...changedPricing }
             updateData.pendingPricing = null
@@ -454,15 +302,11 @@ export async function PUT(
       .collection("equipment")
       .updateOne({ _id: new ObjectId(id) }, { $set: updateData })
 
-    return NextResponse.json({
-      success: true,
-      hasPendingPricing: !!updateData.pendingPricing,
+    return successResponse({
+      hasPendingPricing: !!updateData.pendingPricing
     })
   } catch (error) {
     console.error("Error updating equipment:", error)
-    return NextResponse.json(
-      { success: false, error: "Failed to update equipment" },
-      { status: 500 },
-    )
+    return errorResponse("Failed to update equipment")
   }
 }
