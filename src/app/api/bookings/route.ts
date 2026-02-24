@@ -20,10 +20,9 @@ export async function GET(request: NextRequest) {
     if (!session?.user) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       )
     }
-
     const { searchParams } = new URL(request.url)
     const skip = parseInt(searchParams.get("skip") || "0")
     const limit = parseInt(searchParams.get("limit") || "50")
@@ -80,7 +79,7 @@ export async function GET(request: NextRequest) {
               },
             },
           },
-        }
+        },
       )
     }
 
@@ -170,13 +169,10 @@ export async function GET(request: NextRequest) {
           data: [{ $skip: skip }, { $limit: limit }],
           total: [{ $count: "count" }],
         },
-      }
+      },
     )
 
-    const result = await db
-      .collection("bookings")
-      .aggregate(pipeline)
-      .toArray()
+    const result = await db.collection("bookings").aggregate(pipeline).toArray()
 
     const bookings = result[0]?.data || []
     const total = result[0]?.total[0]?.count || 0
@@ -195,7 +191,7 @@ export async function GET(request: NextRequest) {
         success: false,
         error: "Failed to fetch bookings",
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -210,7 +206,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: validation.errors.join(", "),
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -230,7 +226,7 @@ export async function POST(request: NextRequest) {
           success: false,
           errors: refErrors,
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -255,7 +251,7 @@ export async function POST(request: NextRequest) {
         calculatedEndDate = calculateBookingEndDate(
           body.startDate,
           body.usage,
-          pricingType
+          pricingType,
         )
       }
     }
@@ -264,14 +260,14 @@ export async function POST(request: NextRequest) {
       db,
       equipmentId,
       body.startDate,
-      calculatedEndDate || body.endDate
+      calculatedEndDate || body.endDate,
     )
     if (!available) {
       const conflictingBooking = await getConflictingBooking(
         db,
         equipmentId,
         body.startDate,
-        calculatedEndDate || body.endDate
+        calculatedEndDate || body.endDate,
       )
 
       const equipment = await db
@@ -303,7 +299,7 @@ export async function POST(request: NextRequest) {
               }
             : null,
         },
-        { status: 409 }
+        { status: 409 },
       )
     }
 
@@ -403,7 +399,7 @@ export async function POST(request: NextRequest) {
           equipment: equipment || null,
         },
       },
-      { status: 201 }
+      { status: 201 },
     )
   } catch (error) {
     return NextResponse.json(
@@ -411,7 +407,7 @@ export async function POST(request: NextRequest) {
         success: false,
         error: "Failed to create booking",
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -427,7 +423,7 @@ export async function PUT(request: NextRequest) {
           success: false,
           error: "Missing required fields: bookingId, status",
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -436,13 +432,12 @@ export async function PUT(request: NextRequest) {
     if (!ObjectId.isValid(bookingId)) {
       return NextResponse.json(
         { success: false, error: "Invalid booking ID" },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
     const bookingObjectId = new ObjectId(bookingId)
 
-    // Always validate cancellation
     if (status === "cancelled") {
       const booking = await db
         .collection("bookings")
@@ -450,7 +445,7 @@ export async function PUT(request: NextRequest) {
       if (!booking) {
         return NextResponse.json(
           { success: false, error: "Booking not found" },
-          { status: 404 }
+          { status: 404 },
         )
       }
       if (booking.status !== "pending") {
@@ -460,11 +455,9 @@ export async function PUT(request: NextRequest) {
             error:
               "Only pending bookings can be cancelled. Please contact support for assistance.",
           },
-          { status: 400 }
+          { status: 400 },
         )
       }
-
-      // Send notification email for non-admin cancellations
       if (!adminId) {
         const adminEmail = process.env.ADMIN_EMAIL
         if (adminEmail) {
@@ -472,10 +465,8 @@ export async function PUT(request: NextRequest) {
             .collection("users")
             .findOne({ _id: booking.renterId })
           const firstItem = booking.bookingItems[0]
-
-          const { sendBookingCancellationEmail } = await import(
-            "@/src/lib/email"
-          )
+          const { sendBookingCancellationEmail } =
+            await import("@/src/lib/email")
           await sendBookingCancellationEmail(adminEmail, {
             referenceNumber: booking.referenceNumber,
             equipmentName: firstItem?.equipmentName || "N/A",
@@ -495,7 +486,7 @@ export async function PUT(request: NextRequest) {
       bookingObjectId,
       status,
       adminId ? new ObjectId(adminId) : undefined,
-      adminNotes
+      adminNotes,
     )
 
     return NextResponse.json({
@@ -508,7 +499,7 @@ export async function PUT(request: NextRequest) {
         success: false,
         error: error.message || "Failed to update booking status",
       },
-      { status: 400 }
+      { status: 400 },
     )
   }
 }

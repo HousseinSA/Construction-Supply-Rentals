@@ -11,8 +11,9 @@ import AuthCard from "../auth/AuthCard"
 import ListingTypeSelector from "./ListingTypeSelector"
 import EquipmentFormFields from "./EquipmentFormFields"
 import FormActions from "./FormActions"
-import PendingPricingBanner from "./PendingPricingBanner"
-import PricingRejectionBanner from "./PricingRejectionBanner"
+import PendingPricingBanner from "./banners/PendingPricingBanner"
+import PricingRejectionBanner from "./banners/PricingRejectionBanner"
+import EquipmentRejectionBanner from "./banners/EquipmentRejectionBanner"
 
 interface EditEquipmentFormProps {
   equipmentId: string
@@ -137,6 +138,11 @@ export default function EditEquipmentForm({
             </div>
           ) : (
             <>
+              {!isAdmin && equipment?.status === "rejected" && equipment?.rejectionReason && (
+                <EquipmentRejectionBanner
+                  rejectionReason={equipment.rejectionReason}
+                />
+              )}
               {!isAdmin && equipment?.pendingPricing && (
                 <PendingPricingBanner
                   currentPricing={equipment.pricing}

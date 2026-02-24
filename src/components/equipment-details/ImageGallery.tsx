@@ -1,7 +1,8 @@
 import Image from "next/image"
 import { Tag } from "lucide-react"
 import { useTranslations } from "next-intl"
-import { getOptimizedCloudinaryUrl, getBlurDataURL } from "@/src/lib/cloudinary-url"
+import { getOptimizedCloudinaryUrl } from "@/src/lib/cloudinary-url"
+import { useImagePreload } from "@/src/hooks/useImagePreload"
 
 interface ImageGalleryProps {
   images: string[]
@@ -22,6 +23,8 @@ export default function ImageGallery({
 }: ImageGalleryProps) {
   const t = useTranslations("equipmentDetails")
 
+  useImagePreload(images, selectedImage, { width: 800, height: 600, quality: 'auto:good', format: 'auto', crop: 'limit' })
+
   return (
     <div className="relative flex flex-col">
       <div className="flex flex-col">
@@ -33,9 +36,9 @@ export default function ImageGallery({
             src={
               images[selectedImage]
                 ? getOptimizedCloudinaryUrl(images[selectedImage], {
-                    width: 1200,
-                    height: 900,
-                    quality: 'auto:best',
+                    width: 800,
+                    height: 600,
+                    quality: 'auto:good',
                     format: 'auto',
                     crop: 'limit'
                   })
@@ -45,9 +48,7 @@ export default function ImageGallery({
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1200px"
             className="object-cover"
-            priority
-            placeholder={images[selectedImage] ? "blur" : "empty"}
-            blurDataURL={images[selectedImage] ? getBlurDataURL(images[selectedImage]) : undefined}
+            priority={selectedImage === 0}
           />
           <div className="absolute inset-0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
             <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium text-gray-900">

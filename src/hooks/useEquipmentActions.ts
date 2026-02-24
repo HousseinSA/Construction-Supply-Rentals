@@ -1,9 +1,10 @@
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { useRouter } from "@/src/i18n/navigation"
 import { showToast } from "@/src/lib/toast"
+import { EquipmentStatus } from "@/src/lib/types"
 
 export function useEquipmentActions(
-  handleStatusChange: (id: string, status: string) => Promise<boolean>,
+  handleStatusChange: (id: string, status: EquipmentStatus, reason?: string) => Promise<boolean>,
   handleAvailabilityChange: (id: string, isAvailable: boolean) => Promise<boolean>,
   t: any
 ) {
@@ -14,6 +15,11 @@ export function useEquipmentActions(
     equipmentId: string | null
     action: "approve" | "reject" | null
   }>({ isOpen: false, equipmentId: null, action: null })
+
+  const [modals, setModals] = useState({
+    pricing: null as any,
+    rejection: { isOpen: false, equipmentId: null as string | null },
+  })
 
   const openConfirmModal = (id: string, action: "approve" | "reject") => {
     setConfirmModal({ isOpen: true, equipmentId: id, action })
@@ -60,6 +66,28 @@ export function useEquipmentActions(
     router.push(url)
   }
 
+  const handleReject = async (reason: string) => {
+    if (!modals.rejection.equipmentId) return
+    const success = await handleStatusChange(modals.rejection.equipmentId, "rejected", reason)
+    if (success) setModals((p) => ({ ...p, rejection: { isOpen: false, equipmentId: null } }))
+  }
+
+  const handleStatusChangeCallback = useMemo(
+    () => (id: string, action: "approve" | "reject") =>
+      action === "reject"
+        ? setModals((p) => ({ ...p, rejection: { isOpen: true, equipmentId: id } }))
+        : openConfirmModal(id, action),
+    []
+  )
+
+  const handlePricingReview = useMemo(
+    () => (item: any) => setModals((p) => ({ ...p, pricing: item })),
+    []
+  )
+
+  const closePricingModal = () => setModals((p) => ({ ...p, pricing: null }))
+  const closeRejectionModal = () => setModals((p) => ({ ...p, rejection: { isOpen: false, equipmentId: null } }))
+
   return {
     navigating,
     confirmModal,
@@ -68,5 +96,11 @@ export function useEquipmentActions(
     handleConfirmAction,
     handleAvailabilityChangeWithToast,
     handleNavigation,
+    modals,
+    handleReject,
+    handleStatusChangeCallback,
+    handlePricingReview,
+    closePricingModal,
+    closeRejectionModal,
   }
 }

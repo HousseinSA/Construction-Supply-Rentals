@@ -556,7 +556,7 @@
       "rejectionReasonPlaceholder": "سبب رفض السعر المحدث",
       "resubmit": "إعادة الإرسال",
       "resubmitting": "جاري إعادة الإرسال...",
-      "editBeforeResubmit": "يجب تعديل المعدة قبل إعادة إرسالها",
+      "editBeforeResubmit": "عدل بيانات المعدة لإعادة إرسالها للمراجعة",
       "cannotEditCoreFields": "لا يمكن تعديل الفئات الأساسية أثناء إعادة الإرسال",
       "provideRejectionReason": "يرجى تقديم سبب الرفض",
       "resubmitSuccess": "تمت إعادة إرسال المعدة بنجاح",

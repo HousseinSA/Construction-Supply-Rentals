@@ -1,5 +1,6 @@
 import { useTranslations, useLocale } from "next-intl"
 import { Clock, ArrowRight, ArrowLeft } from "lucide-react"
+import { buildPriceChanges } from "./priceHelpers"
 
 interface PendingPricingBannerProps {
   currentPricing: any
@@ -45,47 +46,7 @@ export default function PendingPricingBanner({
       )
     }
 
-    const prices = []
-    if (pendingPricing.hourlyRate && pendingPricing.hourlyRate !== currentPricing.hourlyRate) {
-      prices.push({
-        label: t("hourlyRate"),
-        current: currentPricing.hourlyRate,
-        pending: pendingPricing.hourlyRate,
-        isNew: !currentPricing.hourlyRate || currentPricing.hourlyRate === 0,
-      })
-    }
-    if (pendingPricing.dailyRate && pendingPricing.dailyRate !== currentPricing.dailyRate) {
-      prices.push({
-        label: t("dailyRate"),
-        current: currentPricing.dailyRate,
-        pending: pendingPricing.dailyRate,
-        isNew: !currentPricing.dailyRate || currentPricing.dailyRate === 0,
-      })
-    }
-    if (pendingPricing.monthlyRate && pendingPricing.monthlyRate !== currentPricing.monthlyRate) {
-      prices.push({
-        label: t("monthlyRate"),
-        current: currentPricing.monthlyRate,
-        pending: pendingPricing.monthlyRate,
-        isNew: !currentPricing.monthlyRate || currentPricing.monthlyRate === 0,
-      })
-    }
-    if (pendingPricing.kmRate && pendingPricing.kmRate !== currentPricing.kmRate) {
-      prices.push({
-        label: t("kmRate"),
-        current: currentPricing.kmRate,
-        pending: pendingPricing.kmRate,
-        isNew: !currentPricing.kmRate || currentPricing.kmRate === 0,
-      })
-    }
-    if (pendingPricing.tonRate && pendingPricing.tonRate !== currentPricing.tonRate) {
-      prices.push({
-        label: t("tonRate"),
-        current: currentPricing.tonRate,
-        pending: pendingPricing.tonRate,
-        isNew: !currentPricing.tonRate || currentPricing.tonRate === 0,
-      })
-    }
+    const prices = buildPriceChanges(currentPricing, pendingPricing, t)
 
     return (
       <div className="space-y-2">

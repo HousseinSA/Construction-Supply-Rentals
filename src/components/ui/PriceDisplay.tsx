@@ -3,7 +3,6 @@ import React from "react"
 interface PriceDisplayProps {
   amount: number
   showMRU?: boolean
-  mruClassName?: string
   amountClassName?: string
   dir?: "ltr" | "rtl"
   suffix?: string
@@ -13,7 +12,6 @@ interface PriceDisplayProps {
 export default function PriceDisplay({
   amount,
   showMRU = true,
-  mruClassName = "text-sm text-gray-500",
   amountClassName,
   dir = "ltr",
   suffix = "",
@@ -35,7 +33,7 @@ export default function PriceDisplay({
       }
     }
     
-    return suffix === "" ? "text-indigo-600" : "text-gray-700"
+    return suffix === "" ? "text-primary" : "text-gray-700"
   }
 
   const rateColor = getRateColor(suffix)

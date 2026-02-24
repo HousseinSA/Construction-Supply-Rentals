@@ -334,7 +334,7 @@ export function useEquipmentForm(equipmentId?: string) {
       if (equipmentId) {
         invalidateCache()
       }
-      router.push(equipmentId ? "/dashboard/equipment" : "/dashboard")
+      router.push("/dashboard/equipment")
     } catch (error) {
       console.error("Equipment creation error:", error)
       toast.error(

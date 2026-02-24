@@ -112,17 +112,17 @@ export default function PricingUpdateTooltip({
                         item.pricing[key as keyof typeof item.pricing]
                       return (
                         <div key={key} className="text-gray-600">
-                          <span className="text-red-600 font-medium" dir="ltr">
-                            {value} MRU{priceType?.suffix || ""}
-                          </span>
-                          {currentPrice && (
-                            <span className="text-red-600"> ✗ </span>
-                          )}
                           {currentPrice && (
                             <span className="text-gray-600" dir="ltr">
                               {currentPrice} MRU{priceType?.suffix || ""}
                             </span>
                           )}
+                          {currentPrice && (
+                            <span className="text-red-600"> ✗ </span>
+                          )}
+                          <span className="text-red-600 font-medium" dir="ltr">
+                            {value} MRU{priceType?.suffix || ""}
+                          </span>
                         </div>
                       )
                     })}
@@ -140,17 +140,17 @@ export default function PricingUpdateTooltip({
                         item.pricing[key as keyof typeof item.pricing]
                       return (
                         <div key={key} className="text-gray-600">
-                          <span className="text-red-600 font-medium" dir="ltr">
-                            {price} MRU{priceType?.suffix || ""}
-                          </span>
-                          {currentPrice && (
-                            <span className="text-red-600"> ✗ </span>
-                          )}
                           {currentPrice && (
                             <span className="text-gray-600" dir="ltr">
                               {currentPrice} MRU{priceType?.suffix || ""}
                             </span>
                           )}
+                          {currentPrice && (
+                            <span className="text-red-600"> ✗ </span>
+                          )}
+                          <span className="text-red-600 font-medium" dir="ltr">
+                            {price} MRU{priceType?.suffix || ""}
+                          </span>
                           {reason && reason.trim() && (
                             <span className="text-gray-600"> - {reason}</span>
                           )}
@@ -165,17 +165,17 @@ export default function PricingUpdateTooltip({
                       item.pricing[key as keyof typeof item.pricing]
                     return (
                       <div key={key} className="text-gray-600">
-                        <span className="text-red-600 font-medium" dir="ltr">
-                          {value} MRU{priceType?.suffix || ""}
-                        </span>
-                        {currentPrice && (
-                          <span className="text-red-600"> ✗ </span>
-                        )}
                         {currentPrice && (
                           <span className="text-gray-600" dir="ltr">
                             {currentPrice} MRU{priceType?.suffix || ""}
                           </span>
                         )}
+                        {currentPrice && (
+                          <span className="text-red-600"> ✗ </span>
+                        )}
+                        <span className="text-red-600 font-medium" dir="ltr">
+                          {value} MRU{priceType?.suffix || ""}
+                        </span>
                       </div>
                     )
                   })

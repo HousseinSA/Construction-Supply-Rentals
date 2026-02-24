@@ -551,7 +551,7 @@
       "rejectionReason": "Reason for rejection (optional)",
       "resubmit": "Resubmit for Approval",
       "resubmitting": "Resubmitting...",
-      "editBeforeResubmit": "Please edit equipment before resubmitting",
+      "editBeforeResubmit": "Edit the equipment details to resubmit it for review.",
       "cannotEditCoreFields": "Cannot edit location, category, or equipment type. These are locked fields.",
       "provideRejectionReason": "Please provide a reason for rejection",
       "rejectionReasonPlaceholder": "Reason for rejecting the updated price",

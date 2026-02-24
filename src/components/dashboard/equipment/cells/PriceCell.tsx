@@ -34,7 +34,9 @@ function PriceCell({
             <PriceDisplay amount={price.amount} suffix={price.suffix} />
             {index === 0 && item.pendingPricing && (
               <button
-                onClick={() => isSupplier ? setShowModal(true) : onPricingReview?.(item)}
+                onClick={() =>
+                  isSupplier ? setShowModal(true) : onPricingReview?.(item)
+                }
                 className="inline-flex items-center gap-0.5 text-xs text-orange-600 hover:text-orange-700 relative group"
                 title={t("viewPricingInfo")}
               >
@@ -49,8 +51,8 @@ function PriceCell({
               Object.keys(item.rejectedPricingValues).length > 0 &&
               isSupplier &&
               !item.pendingPricing && (
-                <button 
-                  onClick={() => setShowModal(true)} 
+                <button
+                  onClick={() => setShowModal(true)}
                   className="inline-flex items-center text-red-600 hover:text-red-700 relative group"
                   title={t("viewPricingInfo")}
                 >

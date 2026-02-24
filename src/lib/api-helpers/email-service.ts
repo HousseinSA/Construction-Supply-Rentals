@@ -25,6 +25,10 @@ export async function sendNewEquipmentNotification(
         .findOne({ _id: new ObjectId(equipmentData.categoryId) }),
     ])
 
+    const capitalizeCity = (city: string) => {
+      return city.charAt(0).toUpperCase() + city.slice(1).toLowerCase()
+    }
+
     let pricingText = ""
     if (
       equipmentData.listingType === "forSale" &&
@@ -41,7 +45,7 @@ export async function sendNewEquipmentNotification(
         prices.push(`${equipmentData.pricing.kmRate} MRU / km`)
       if (equipmentData.pricing.tonRate)
         prices.push(`${equipmentData.pricing.tonRate} MRU / tonne`)
-      pricingText = prices.join(", ")
+      pricingText = prices.join("<br>")
     }
 
     const { sendNewEquipmentEmail } = await import("@/src/lib/email")
@@ -51,7 +55,7 @@ export async function sendNewEquipmentNotification(
         ? `${supplier.firstName} ${supplier.lastName}`
         : "Unknown",
       supplierPhone: supplier?.phone || "N/A",
-      location: equipmentData.location,
+      location: capitalizeCity(equipmentData.location),
       category: category?.name || "N/A",
       listingType:
         equipmentData.listingType === "forSale" ? "Vente" : "Location",
@@ -102,7 +106,7 @@ export async function sendPricingUpdateNotification(
         if (pricing.kmRate) parts.push(`${pricing.kmRate} MRU/km`)
         if (pricing.tonRate) parts.push(`${pricing.tonRate} MRU/tonne`)
         if (pricing.salePrice) parts.push(`${pricing.salePrice} MRU`)
-        return parts.join(", ") || "-"
+        return parts.length > 1 ? parts.join("<br>") : parts.join("") || "-"
       }
 
       const { sendPricingUpdateRequestEmail } = await import("@/src/lib/email")

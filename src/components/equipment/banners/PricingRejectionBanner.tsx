@@ -1,6 +1,8 @@
 import { XCircle } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { Equipment } from "@/src/lib/models/equipment"
+import RejectedPriceRow from "./RejectedPriceRow"
+import { getPriceSuffix } from "./priceHelpers"
 
 interface PricingRejectionBannerProps {
   pricingRejectionReasons?: Equipment["pricingRejectionReasons"]
@@ -15,7 +17,6 @@ export default function PricingRejectionBanner({
   pricingRejectionReasons,
   rejectedPricingValues,
   currentPricing,
-  listingType,
   pendingPricing,
   onDismiss,
 }: PricingRejectionBannerProps) {
@@ -38,12 +39,12 @@ export default function PricingRejectionBanner({
   const formatPrice = (value: number) => `${value} MRU`
 
   const priceTypes = [
-    { key: "hourlyRate" as const, suffix: `/${tCommon("hour")}` },
-    { key: "dailyRate" as const, suffix: `/${tCommon("day")}` },
-    { key: "monthlyRate" as const, suffix: `/${tCommon("month")}` },
-    { key: "kmRate" as const, suffix: `/${tCommon("km")}` },
-    { key: "tonRate" as const, suffix: `/${tCommon("ton")}` },
-    { key: "salePrice" as const, suffix: "" },
+    { key: "hourlyRate" as const },
+    { key: "dailyRate" as const },
+    { key: "monthlyRate" as const },
+    { key: "kmRate" as const },
+    { key: "tonRate" as const },
+    { key: "salePrice" as const },
   ]
 
   const hasAnyReason =
@@ -74,24 +75,14 @@ export default function PricingRejectionBanner({
                 {activeRejections &&
                   Object.entries(activeRejections).map(([key, value]) => {
                     const priceType = priceTypes.find((p) => p.key === key)
-                    const currentPrice =
-                      currentPricing[key as keyof typeof currentPricing]
+                    const currentPrice = currentPricing[key as keyof typeof currentPricing]
                     return (
-                      <div key={key} className="text-sm">
-                        <span className="text-red-600" dir="ltr">
-                          {formatPrice(value)}
-                          {priceType?.suffix || ""}
-                        </span>
-                        {typeof currentPrice === "number" && (
-                          <span className="text-red-600"> ✗ </span>
-                        )}
-                        {typeof currentPrice === "number" && (
-                          <span className="text-gray-700" dir="ltr">
-                            {formatPrice(currentPrice)}
-                            {priceType?.suffix || ""}
-                          </span>
-                        )}
-                      </div>
+                      <RejectedPriceRow
+                        key={key}
+                        rejectedValue={value}
+                        currentValue={typeof currentPrice === "number" ? currentPrice : undefined}
+                        suffix={priceType ? getPriceSuffix(priceType.key, tCommon) : ""}
+                      />
                     )
                   })}
               </div>
@@ -99,31 +90,18 @@ export default function PricingRejectionBanner({
           ) : pricingRejectionReasons ? (
             <div className="space-y-1">
               {Object.entries(pricingRejectionReasons).map(([key, reason]) => {
-                const price =
-                  activeRejections?.[key as keyof typeof rejectedPricingValues]
+                const price = activeRejections?.[key as keyof typeof rejectedPricingValues]
                 if (!price) return null
                 const priceType = priceTypes.find((p) => p.key === key)
-                const currentPrice =
-                  currentPricing[key as keyof typeof currentPricing]
+                const currentPrice = currentPricing[key as keyof typeof currentPricing]
                 return (
-                  <div key={key} className="text-sm">
-                    <span className="text-red-600" dir="ltr">
-                      {formatPrice(price)}
-                      {priceType?.suffix || ""}
-                    </span>
-                    {typeof currentPrice === "number" && (
-                      <span className="text-red-600"> ✗ </span>
-                    )}
-                    {typeof currentPrice === "number" && (
-                      <span className="text-gray-700" dir="ltr">
-                        {formatPrice(currentPrice)}
-                        {priceType?.suffix || ""}
-                      </span>
-                    )}
-                    {reason && reason.trim() && (
-                      <span> - {reason}</span>
-                    )}
-                  </div>
+                  <RejectedPriceRow
+                    key={key}
+                    rejectedValue={price}
+                    currentValue={typeof currentPrice === "number" ? currentPrice : undefined}
+                    suffix={priceType ? getPriceSuffix(priceType.key, tCommon) : ""}
+                    reason={reason}
+                  />
                 )
               })}
             </div>
@@ -132,24 +110,14 @@ export default function PricingRejectionBanner({
               {activeRejections &&
                 Object.entries(activeRejections).map(([key, value]) => {
                   const priceType = priceTypes.find((p) => p.key === key)
-                  const currentPrice =
-                    currentPricing[key as keyof typeof currentPricing]
+                  const currentPrice = currentPricing[key as keyof typeof currentPricing]
                   return (
-                    <div key={key} className="text-sm">
-                      <span className="text-red-600" dir="ltr">
-                        {formatPrice(value)}
-                        {priceType?.suffix || ""}
-                      </span>
-                      {typeof currentPrice === "number" && (
-                        <span className="text-red-600"> ✗ </span>
-                      )}
-                      {typeof currentPrice === "number" && (
-                        <span className="text-gray-700" dir="ltr">
-                          {formatPrice(currentPrice)}
-                          {priceType?.suffix || ""}
-                        </span>
-                      )}
-                    </div>
+                    <RejectedPriceRow
+                      key={key}
+                      rejectedValue={value}
+                      currentValue={typeof currentPrice === "number" ? currentPrice : undefined}
+                      suffix={priceType ? getPriceSuffix(priceType.key, tCommon) : ""}
+                    />
                   )
                 })}
             </div>

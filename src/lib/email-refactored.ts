@@ -18,6 +18,8 @@ const MAIL_FROM = `${process.env.EMAIL_FROM_NAME || "Kriliy Engin"} <${process.e
 const formatDateTime = (date: Date) => new Date(date).toLocaleString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })
 const formatDate = (date: Date) => new Date(date).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" })
 const formatTime = (date: Date) => new Date(date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: true }).replace('AM', ' AM').replace('PM', ' PM')
+const formatPricing = (pricing: string) => pricing.replace(/,\s*/g, '<br>')
+const capitalize = (text: string) => text.charAt(0).toUpperCase() + text.slice(1)
 
 // ============ HTML BUILDERS ============
 const createEmailTemplate = (content: string, buttonText?: string, buttonUrl?: string) => `
@@ -153,8 +155,8 @@ export async function sendNewEquipmentEmail(adminEmail: string, details: {
     { label: "Matériel", value: details.equipmentName },
     ...(details.category ? [{ label: "Catégorie", value: details.category }] : []),
     { label: "Type", value: details.listingType },
-    { label: "Prix", value: details.pricing },
-    { label: "Localisation", value: details.location }
+    { label: "Prix", value: formatPricing(details.pricing) },
+    { label: "Localisation", value: capitalize(details.location) }
   ]
   const content = `
     <h2 style="margin: 0 0 8px 0; font-size: 22px; color: #111;">Nouveau matériel à approuver</h2>
@@ -181,7 +183,7 @@ export async function sendBookingCancellationEmail(adminEmail: string, details: 
   const uniqueSuppliers = Array.from(new Map(details.suppliers.map(s => [s.name + s.phone, s])).values())
   const subsections = [
     { title: "Équipement", rows: [{ label: "Matériel", value: details.equipmentNames.join("<br>") }, { label: "Total", value: `${details.totalPrice.toLocaleString()} MRU` }] },
-    { title: "Client", rows: [{ label: "Nom", value: details.renterName }, { label: "Téléphone", value: formatPhoneNumber(details.renterPhone) }, ...(details.renterLocation ? [{ label: "Ville", value: details.renterLocation }] : [])] },
+    { title: "Client", rows: [{ label: "Nom", value: details.renterName }, { label: "Téléphone", value: formatPhoneNumber(details.renterPhone) }, ...(details.renterLocation ? [{ label: "Localisation", value: capitalize(details.renterLocation) }] : [])] },
     ...uniqueSuppliers.map(s => ({ title: "Fournisseur", rows: [{ label: "Nom", value: s.name }, { label: "Téléphone", value: formatPhoneNumber(s.phone) }] }))
   ]
   const content = `
@@ -270,8 +272,8 @@ export async function sendPricingUpdateRequestEmail(adminEmail: string, details:
     ${createUnifiedSection("Détails", [
       { title: "Équipement", rows: [{ label: "Matériel", value: details.equipmentName }] },
       createPersonSection("Partenaire", details.supplierName, details.supplierPhone),
-      { title: "Tarification actuelle", rows: [{ label: "Prix", value: details.currentPricing }] },
-      { title: "Tarification demandée", rows: [{ label: "Nouveau prix", value: `<span style="color: #f97316; font-weight: 600;">${details.requestedPricing}</span>` }] }
+      { title: "Tarification actuelle", rows: [{ label: "Prix", value: formatPricing(details.currentPricing) }] },
+      { title: "Tarification demandée", rows: [{ label: "Nouveau prix", value: `<span style="color: #f97316; font-weight: 600;">${formatPricing(details.requestedPricing)}</span>` }] }
     ])}
     <div style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 16px; margin-top: 24px; border-radius: 4px;">
       <h3 style="margin: 0 0 12px 0; font-size: 14px; color: #1e40af; font-weight: 600;">📋 Comment trouver cet équipement :</h3>

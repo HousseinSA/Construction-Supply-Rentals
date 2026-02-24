@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useSession } from "next-auth/react"
 import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
 import { useFontClass } from "@/src/hooks/useFontClass"
@@ -30,7 +30,6 @@ export default function EquipmentDetailsView({ equipmentId }: EquipmentDetailsVi
   const fontClass = useFontClass()
   const { convertToLocalized } = useCityData()
   const { formatPrice } = usePriceFormatter()
-  const hasFetchedRef = useRef(false)
 
   const getAllFormattedPrices = (pricing: any, isForSale: boolean) => {
     const prices = []
@@ -79,10 +78,7 @@ export default function EquipmentDetailsView({ equipmentId }: EquipmentDetailsVi
   }
 
   useEffect(() => {
-    hasFetchedRef.current = false
     setLoading(true)
-    if (hasFetchedRef.current) return
-    hasFetchedRef.current = true
     fetchEquipment()
   }, [equipmentId])
   
@@ -90,10 +86,13 @@ export default function EquipmentDetailsView({ equipmentId }: EquipmentDetailsVi
     fetchEquipment()
   }
 
+  const allPrices = useMemo(() => {
+    if (!equipment) return []
+    return getAllFormattedPrices(equipment.pricing, isForSale)
+  }, [equipment?.pricing, isForSale])
+
   if (loading) return <LoadingState />
   if (!equipment) return <NotFoundState />
-
-  const allPrices = equipment ? getAllFormattedPrices(equipment.pricing, isForSale) : []
 
   return (
     <div className={`min-h-screen sm:bg-gray-50 ${fontClass}`}>

@@ -549,7 +549,7 @@
       "rejectionReason": "Motif du refus (facultatif)",
       "resubmit": "Resoumettre pour approbation",
       "resubmitting": "Resoumission...",
-      "editBeforeResubmit": "Veuillez modifier l'équipement avant de le resoumettre",
+      "editBeforeResubmit": "Modifiez les données de l’équipement pour le renvoyer à l’examen.",
       "cannotEditCoreFields": "Impossible de modifier l'emplacement, la catégorie ou le type d'équipement. Ce sont des champs verrouillés.",
       "provideRejectionReason": "Veuillez fournir une raison pour le rejet",
       "rejectionReasonPlaceholder": "Raison du refus du prix mis à jour",

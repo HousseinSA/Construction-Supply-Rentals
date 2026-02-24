@@ -1,28 +1,18 @@
 import { create } from 'zustand'
+import { SaleOrder } from '@/src/lib/models'
 
-export interface SaleWithDetails {
+// Extended interface for frontend with additional fields from API joins
+export interface SaleWithDetails extends Omit<SaleOrder, '_id' | 'buyerId' | 'equipmentId' | 'supplierId' | 'adminHandledBy'> {
   _id?: string
-  referenceNumber: string
   buyerId: string
   equipmentId: string
   supplierId?: string | null
-  equipmentName: string
-  salePrice: number
-  commission: number
-  grandTotal: number
-  status: string
-  buyerMessage?: string
-  createdAt: Date
-  updatedAt: Date
   buyerInfo?: any[]
   supplierInfo?: any[]
   equipmentInfo?: any[]
   isAdminOwned?: boolean
   adminHandledBy?: string
-  adminHandledAt?: Date
-  adminNotes?: string
   paidAt?: Date
-  completedAt?: Date
 }
 
 interface SalesStore {
@@ -36,7 +26,7 @@ interface SalesStore {
   invalidateCache: () => void
 }
 
-const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
+const CACHE_DURATION = 5 * 60 * 1000
 
 export const useSalesStore = create<SalesStore>((set, get) => ({
   sales: [],
@@ -47,7 +37,7 @@ export const useSalesStore = create<SalesStore>((set, get) => ({
   updateSale: (id, updates) =>
     set((state) => ({
       sales: state.sales.map((sale) =>
-        sale._id?.toString() === id ? { ...sale, ...updates } : sale
+        sale._id?.toString() === id ? { ...sale, ...updates } : sale,
       ),
     })),
   shouldRefetch: () => {

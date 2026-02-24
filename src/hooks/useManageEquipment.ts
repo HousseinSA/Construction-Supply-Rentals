@@ -1,9 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react"
-import {
-  useEquipmentStore,
-  EquipmentWithSupplier,
-} from "@/src/stores/equipmentStore"
+import { useEquipmentStore } from "@/src/stores/equipmentStore"
 import { usePolling } from "./usePolling"
+import { EquipmentStatus } from "@/src/lib/types"
 
 interface UseManageEquipmentConfig {
   convertToLocalized: (location: string) => string
@@ -108,7 +106,7 @@ export function useManageEquipment({
 
   const handleStatusChange = async (
     id: string,
-    newStatus: string,
+    newStatus: EquipmentStatus,
     rejectionReason?: string,
   ) => {
     setUpdating(id)
@@ -184,8 +182,6 @@ export function useManageEquipment({
       label: convertToLocalized(loc),
     }))
   }, [equipment, convertToLocalized])
-
-
 
   usePolling(fetchEquipment, { interval: 30000 })
 

@@ -98,8 +98,7 @@ export default function SalesTable() {
             <HomeButton />
           </div>
         </div>
-        {sales.length > 0 && (
-          <TableFilters
+        <TableFilters
             searchValue={searchValue}
             onSearchChange={setSearchValue}
             searchPlaceholder={t("searchPlaceholder")}
@@ -128,7 +127,6 @@ export default function SalesTable() {
             filterValues={filterValues}
             onFilterChange={handleFilterChange}
           />
-        )}
         <div className="xl:bg-white xl:rounded-lg xl:shadow-sm xl:border xl:border-gray-200 overflow-hidden">
           {loading ? (
             <div className="p-12 text-center">

@@ -138,7 +138,7 @@ export default function BookingTable() {
         </div>
 
         {/* Filters */}
-        {session?.user?.userType !== "renter" && bookings.length > 0 && (
+        {session?.user?.userType !== "renter" && (
           <TableFilters
             searchValue={searchValue}
             onSearchChange={setSearchValue}
