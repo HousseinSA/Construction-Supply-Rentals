@@ -20,24 +20,26 @@ export default function PriceDisplay({
   const getRateColor = (suffix: string) => {
     const normalizedSuffix = suffix.toLowerCase()
     const ratePatterns = [
-      { keywords: ['hour', 'heure', 'ساعة'], color: 'text-orange-500' },
-      { keywords: ['day', 'jour', 'يوم'], color: 'text-blue-600' },
-      { keywords: ['month', 'mois', 'شهر'], color: 'text-teal-600' },
-      { keywords: ['km'], color: 'text-emerald-500' },
-      { keywords: ['ton', 'tonne', 'طن'], color: 'text-gray-600' },
+      { keywords: ["hour", "heure", "ساعة"], color: "text-orange-500" },
+      { keywords: ["day", "jour", "يوم"], color: "text-blue-600" },
+      { keywords: ["month", "mois", "شهر"], color: "text-teal-600" },
+      { keywords: ["km"], color: "text-emerald-500" },
+      { keywords: ["ton", "tonne", "طن"], color: "text-gray-600" },
     ]
-    
+
     for (const pattern of ratePatterns) {
-      if (pattern.keywords.some(keyword => normalizedSuffix.includes(keyword))) {
+      if (
+        pattern.keywords.some((keyword) => normalizedSuffix.includes(keyword))
+      ) {
         return pattern.color
       }
     }
-    
+
     return suffix === "" ? "text-primary" : "text-gray-700"
   }
 
   const rateColor = getRateColor(suffix)
-  
+
   const defaultAmountClassName =
     variant === "commission"
       ? "font-semibold text-sm text-green-600"
@@ -46,12 +48,16 @@ export default function PriceDisplay({
   const finalAmountClassName = amountClassName || defaultAmountClassName
   const displayAmount = amount ?? 0
 
+  const mruClassName = variant === "commission" ? "text-green-600" : rateColor
+
   return (
     <span dir={dir} className="inline-flex items-baseline gap-1">
       <span className={finalAmountClassName}>
         {displayAmount.toLocaleString()}
       </span>
-      {showMRU && <span className={`text-sm font-medium ${rateColor}`}>MRU{suffix}</span>}
+      {showMRU && (
+        <span className={`text-sm font-medium ${mruClassName}`}>MRU{suffix}</span>
+      )}
     </span>
   )
 }

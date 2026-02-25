@@ -1,14 +1,11 @@
 'use client'
-import { useState, useMemo, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { useTranslations } from "next-intl"
 import { ArrowLeft } from "lucide-react"
 import { Link } from "@/src/i18n/navigation"
 import { useSearchParams, useRouter } from "next/navigation"
-import { usePagination } from "@/src/hooks/usePagination"
-import { useTableFilters } from "@/src/hooks/useTableFilters"
 import { useSales } from "@/src/hooks/useSales"
 import { SaleWithDetails } from "@/src/stores/salesStore"
-import { getDateFilterMatch } from "@/src/lib/table-utils"
 import SalesTableRow from "./SalesTableRow"
 import SalesMobileCard from "./SalesMobileCard"
 import SalesDetailsModal from "./SalesDetailsModal"
@@ -23,45 +20,19 @@ export default function SalesTable() {
   const highlightRef = searchParams.get("highlight")
   const t = useTranslations("dashboard.sales")
   const tPages = useTranslations("dashboard.pages")
-  const { sales, loading } = useSales()
+  const { sales, loading, searchValue, setSearchValue, filterValues, handleFilterChange, currentPage, totalPages, goToPage, totalItems, itemsPerPage } = useSales()
   const [selectedSale, setSelectedSale] = useState<SaleWithDetails | null>(null)
   const [showDetailsModal, setShowDetailsModal] = useState(false)
   const [highlightId, setHighlightId] = useState<string | null>(null)
   const [hasProcessedHighlight, setHasProcessedHighlight] = useState(false)
 
-  const { searchValue, setSearchValue, filterValues, handleFilterChange, filteredData: baseFiltered } = 
-    useTableFilters({
-      data: sales,
-      searchFields: [],
-      filterFunctions: {
-        status: (sale, value) => value === "all" ? true : sale.status === value,
-        date: (sale, value) => getDateFilterMatch(sale.createdAt, value),
-      },
-      defaultFilters: { status: "all", date: "all" },
-    })
-
-  const filteredData = useMemo(() => {
-    if (!searchValue.trim()) return baseFiltered
-    const searchLower = searchValue.toLowerCase()
-    return baseFiltered.filter((sale) => {
-      const buyerMatch = sale.buyerInfo && 
-        (sale.buyerInfo[0]?.firstName?.toLowerCase().includes(searchLower) ||
-         sale.buyerInfo[0]?.lastName?.toLowerCase().includes(searchLower))
-      const equipmentMatch = sale.equipmentName?.toLowerCase().includes(searchLower)
-      return buyerMatch || equipmentMatch
-    })
-  }, [baseFiltered, searchValue])
-
-  const { currentPage, totalPages, paginatedData, goToPage, totalItems, itemsPerPage } = 
-    usePagination({ data: filteredData, itemsPerPage: 10 })
-
   useEffect(() => {
     if (highlightRef && sales.length > 0 && !hasProcessedHighlight) {
-      const index = filteredData.findIndex(s => s.referenceNumber === highlightRef)
+      const index = sales.findIndex(s => s.referenceNumber === highlightRef)
       if (index !== -1) {
         const page = Math.floor(index / itemsPerPage) + 1
         goToPage(page)
-        const foundSale = filteredData[index]
+        const foundSale = sales[index]
         const saleId = foundSale._id
         if (saleId) {
           setHighlightId(saleId)
@@ -75,7 +46,7 @@ export default function SalesTable() {
         }
       }
     }
-  }, [highlightRef, sales, filteredData, itemsPerPage, goToPage, hasProcessedHighlight, router])
+  }, [highlightRef, sales, itemsPerPage, goToPage, hasProcessedHighlight, router])
 
   const handleViewDetails = (sale: SaleWithDetails) => {
     setSelectedSale(sale)
@@ -155,14 +126,8 @@ export default function SalesTable() {
                           {t("noSales")}
                         </td>
                       </tr>
-                    ) : filteredData.length === 0 ? (
-                      <tr>
-                        <td colSpan={8} className="p-12 text-center text-gray-500 font-medium">
-                          {filterValues.status === "all" ? t("noResults") : t(`no${filterValues.status.charAt(0).toUpperCase()}${filterValues.status.slice(1)}Sales`)}
-                        </td>
-                      </tr>
                     ) : (
-                      paginatedData.map((sale) => (
+                      sales.map((sale) => (
                         <SalesTableRow key={sale._id} sale={sale} onViewDetails={handleViewDetails} t={t} highlight={highlightId === sale._id} />
                       ))
                     )}
@@ -172,15 +137,13 @@ export default function SalesTable() {
               <div className="xl:hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {sales.length === 0 ? (
                   <div className="p-12 text-center text-gray-500 font-medium col-span-full">{t("noSales")}</div>
-                ) : filteredData.length === 0 ? (
-                  <div className="p-12 text-center text-gray-500 font-medium col-span-full">{filterValues.status === "all" ? t("noResults") : t(`no${filterValues.status.charAt(0).toUpperCase()}${filterValues.status.slice(1)}Sales`)}</div>
                 ) : (
-                  paginatedData.map((sale) => (
+                  sales.map((sale) => (
                     <SalesMobileCard key={sale._id} sale={sale} onViewDetails={handleViewDetails} t={t} highlight={highlightId === sale._id} />
                   ))
                 )}
               </div>
-              {sales.length > 0 && filteredData.length > 0 && (
+              {sales.length > 0 && (
                 <Pagination
                   currentPage={currentPage}
                   totalPages={totalPages}

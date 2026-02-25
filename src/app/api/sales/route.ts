@@ -16,8 +16,12 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url)
-    const skip = parseInt(searchParams.get("skip") || "0")
-    const limit = parseInt(searchParams.get("limit") || "50")
+    const page = parseInt(searchParams.get("page") || "1")
+    const limit = parseInt(searchParams.get("limit") || "10")
+    const skip = (page - 1) * limit
+    const search = searchParams.get("search") || ""
+    const status = searchParams.get("status")
+    const date = searchParams.get("date")
 
     const db = await connectDB()
     const pipeline: any[] = []
@@ -27,6 +31,31 @@ export async function GET(request: NextRequest) {
         { success: false, error: "Unauthorized" },
         { status: 403 },
       )
+    }
+
+    const matchStage: any = {}
+
+    if (status && status !== "all") {
+      matchStage.status = status
+    }
+
+    if (date && date !== "all") {
+      const now = new Date()
+      let startDate: Date
+      if (date === "today") {
+        startDate = new Date(now.setHours(0, 0, 0, 0))
+      } else if (date === "week") {
+        startDate = new Date(now.setDate(now.getDate() - 7))
+      } else if (date === "month") {
+        startDate = new Date(now.setDate(now.getDate() - 30))
+      }
+      if (startDate!) {
+        matchStage.createdAt = { $gte: startDate }
+      }
+    }
+
+    if (Object.keys(matchStage).length > 0) {
+      pipeline.push({ $match: matchStage })
     }
 
     pipeline.push(
@@ -70,6 +99,22 @@ export async function GET(request: NextRequest) {
           },
         },
       },
+    )
+
+    if (search.trim()) {
+      pipeline.push({
+        $match: {
+          $or: [
+            { referenceNumber: { $regex: search, $options: "i" } },
+            { "buyerInfo.firstName": { $regex: search, $options: "i" } },
+            { "buyerInfo.lastName": { $regex: search, $options: "i" } },
+            { equipmentName: { $regex: search, $options: "i" } },
+          ],
+        },
+      })
+    }
+
+    pipeline.push(
       { $sort: { createdAt: -1 } },
       {
         $facet: {
@@ -82,14 +127,17 @@ export async function GET(request: NextRequest) {
     const result = await db.collection("sales").aggregate(pipeline).toArray()
     const sales = result[0]?.data || []
     const total = result[0]?.total[0]?.count || 0
+    const totalPages = Math.ceil(total / limit)
 
     return NextResponse.json({
       success: true,
       data: sales,
-      count: sales.length,
-      total,
-      skip,
-      limit,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalCount: total,
+        itemsPerPage: limit,
+      },
     })
   } catch (error) {
     return NextResponse.json(

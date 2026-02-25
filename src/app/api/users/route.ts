@@ -2,17 +2,67 @@ import { NextRequest, NextResponse } from 'next/server'
 import { connectDB } from '@/src/lib/mongodb'
 import { ObjectId } from 'mongodb'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url)
+    const page = parseInt(searchParams.get("page") || "1")
+    const limit = parseInt(searchParams.get("limit") || "10")
+    const skip = (page - 1) * limit
+    const search = searchParams.get("search") || ""
+    const role = searchParams.get("role")
+
     const db = await connectDB()
-    const users = await db.collection('users').find({}, { 
-      projection: { password: 0 } 
-    }).toArray()
+    
+    const query: any = {}
+    
+    if (role && role !== "all") {
+      query.userType = role
+    }
+
+    if (search.trim()) {
+      query.$or = [
+        { firstName: { $regex: search, $options: "i" } },
+        { lastName: { $regex: search, $options: "i" } },
+        { phone: { $regex: search, $options: "i" } },
+      ]
+    }
+
+    const [users, total, statsData] = await Promise.all([
+      db.collection('users')
+        .find(query, { projection: { password: 0 } })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .toArray(),
+      db.collection('users').countDocuments(query),
+      db.collection('users').aggregate([
+        { $match: { role: { $ne: "admin" } } },
+        { $group: {
+          _id: "$userType",
+          count: { $sum: 1 }
+        }}
+      ]).toArray(),
+    ])
+
+    const totalPages = Math.ceil(total / limit)
+
+    const supplierCount = statsData.find(s => s._id === "supplier")?.count || 0
+    const renterCount = statsData.find(s => s._id === "renter")?.count || 0
     
     return NextResponse.json({ 
       success: true, 
       data: users,
-      count: users.length 
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalCount: total,
+        itemsPerPage: limit,
+      },
+      stats: {
+        totalUsers: supplierCount + renterCount,
+        totalSuppliers: supplierCount,
+        totalRenters: renterCount,
+      },
     })
   } catch (error) {
     return NextResponse.json({ 

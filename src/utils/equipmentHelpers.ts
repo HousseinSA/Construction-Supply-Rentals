@@ -1,11 +1,4 @@
-import { Equipment } from "@/src/lib/models/equipment"
-import { User } from "@/src/lib/models/user"
-
-interface EquipmentWithSupplier extends Equipment {
-  supplier?: User
-  hasActiveBookings?: boolean
-  hasPendingSale?: boolean
-}
+import { Equipment, EquipmentWithSupplier } from "@/src/lib/models/equipment"
 
 export const getStatusBadgeStyles = (status: string) => {
   const styles = {

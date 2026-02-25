@@ -3,15 +3,18 @@ import { useEffect, useRef } from 'react'
 interface UsePollingOptions {
   interval?: number
   enabled?: boolean
+  maxInterval?: number
 }
 
 export function usePolling(
   callback: () => void | Promise<void>,
   options: UsePollingOptions = {}
 ) {
-  const { interval = 30000, enabled = true } = options
+  const { interval = 30000, enabled = true, maxInterval = 240000 } = options
   const callbackRef = useRef(callback)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const currentIntervalRef = useRef(interval)
+  const errorCountRef = useRef(0)
 
   useEffect(() => {
     callbackRef.current = callback
@@ -20,14 +23,26 @@ export function usePolling(
   useEffect(() => {
     if (!enabled) return
 
-    const poll = () => {
+    const poll = async () => {
       try {
         const result = callbackRef.current()
         if (result instanceof Promise) {
-          result.catch((error) => console.error('Polling error:', error))
+          await result
         }
+        errorCountRef.current = 0
+        currentIntervalRef.current = interval
       } catch (error) {
         console.error('Polling error:', error)
+        errorCountRef.current++
+        const backoff = Math.min(
+          interval * Math.pow(2, errorCountRef.current),
+          maxInterval
+        )
+        currentIntervalRef.current = backoff
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current)
+          intervalRef.current = setInterval(poll, backoff)
+        }
       }
     }
 
@@ -39,7 +54,7 @@ export function usePolling(
         }
       } else {
         if (!intervalRef.current) {
-          intervalRef.current = setInterval(poll, interval)
+          intervalRef.current = setInterval(poll, currentIntervalRef.current)
         }
       }
     }

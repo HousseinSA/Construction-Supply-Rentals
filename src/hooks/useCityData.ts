@@ -1,63 +1,61 @@
 import { useLocale } from "next-intl"
+import { useMemo } from "react"
 
-const mauritaniaCities = {
-  en: ["Nouakchott", "Nouadhibou", "Rosso", "Kaédi", "Zouérat", "Kiffa", "Atar", "Sélibaby", "Akjoujt", "Tidjikja"],
-  ar: ["نواكشوط", "نواذيبو", "روصو", "كيهيدي", "الزويرات", "كيفة", "أطار", "سيليبابي", "أكجوجت", "تيجيكجة"],
-  fr: ["Nouakchott", "Nouadhibou", "Rosso", "Kaédi", "Zouérat", "Kiffa", "Atar", "Sélibaby", "Akjoujt", "Tidjikja"]
-}
+const CITIES = [
+  { latin: "Nouakchott", ar: "نواكشوط" },
+  { latin: "Nouadhibou", ar: "نواذيبو" },
+  { latin: "Rosso", ar: "روصو" },
+  { latin: "Kaédi", ar: "كيهيدي" },
+  { latin: "Zouérat", ar: "الزويرات" },
+  { latin: "Kiffa", ar: "كيفة" },
+  { latin: "Atar", ar: "أطار" },
+  { latin: "Sélibaby", ar: "سيليبابي" },
+  { latin: "Akjoujt", ar: "أكجوجت" },
+  { latin: "Tidjikja", ar: "تيجيكجة" },
+] as const
 
-const cityToLatinMap: { [key: string]: string } = {
-  "نواكشوط": "Nouakchott",
-  "نواذيبو": "Nouadhibou", 
-  "روصو": "Rosso",
-  "كيهيدي": "Kaédi",
-  "الزويرات": "Zouérat",
-  "كيفة": "Kiffa",
-  "أطار": "Atar",
-  "سيليبابي": "Sélibaby",
-  "أكجوجت": "Akjoujt",
-  "تيجيكجة": "Tidjikja"
-}
-
-const latinToCityMap: { [key: string]: { [key in "en" | "ar" | "fr"]: string } } = {
-  "Nouakchott": { en: "Nouakchott", ar: "نواكشوط", fr: "Nouakchott" },
-  "Nouadhibou": { en: "Nouadhibou", ar: "نواذيبو", fr: "Nouadhibou" },
-  "Rosso": { en: "Rosso", ar: "روصو", fr: "Rosso" },
-  "Kaédi": { en: "Kaédi", ar: "كيهيدي", fr: "Kaédi" },
-  "Zouérat": { en: "Zouérat", ar: "الزويرات", fr: "Zouérat" },
-  "Kiffa": { en: "Kiffa", ar: "كيفة", fr: "Kiffa" },
-  "Atar": { en: "Atar", ar: "أطار", fr: "Atar" },
-  "Sélibaby": { en: "Sélibaby", ar: "سيليبابي", fr: "Sélibaby" },
-  "Akjoujt": { en: "Akjoujt", ar: "أكجوجت", fr: "Akjoujt" },
-  "Tidjikja": { en: "Tidjikja", ar: "تيجيكجة", fr: "Tidjikja" }
-}
+const latinToArMap = new Map(CITIES.map(c => [c.latin.toLowerCase(), c.ar]))
+const arToLatinMap = new Map(CITIES.map(c => [c.ar, c.latin]))
 
 export function useCityData() {
   const locale = useLocale() as "en" | "ar" | "fr"
 
-  const getCitiesForLocale = () => mauritaniaCities[locale]
-  
-  const getDefaultCity = () => mauritaniaCities[locale][0]
-  
-  const convertToLatin = (city: string) => cityToLatinMap[city] || city
-  
-  const convertToLocalized = (latinCity: string) => {
-    if (!latinCity) return latinCity
-    const capitalizedCity = latinCity.charAt(0).toUpperCase() + latinCity.slice(1).toLowerCase()
-    return latinToCityMap[capitalizedCity]?.[locale] || latinCity
-  }
+  const cities = useMemo(
+    () => (locale === "ar" ? CITIES.map(c => c.ar) : CITIES.map(c => c.latin)),
+    [locale]
+  )
 
-  const getDisplayValue = (selectedCity: string) => {
-    if (!selectedCity) return getDefaultCity()
-    return latinToCityMap[selectedCity] ? latinToCityMap[selectedCity][locale] : selectedCity
-  }
+  const convertToLatin = useMemo(
+    () => (city: string) => arToLatinMap.get(city) || city,
+    []
+  )
+
+  const convertToLocalized = useMemo(
+    () => (latinCity: string) => {
+      if (!latinCity) return latinCity
+      return locale === "ar"
+        ? latinToArMap.get(latinCity.toLowerCase()) || latinCity
+        : latinCity
+    },
+    [locale]
+  )
+
+  const getDisplayValue = useMemo(
+    () => (selectedCity: string) => {
+      if (!selectedCity) return cities[0]
+      return locale === "ar"
+        ? latinToArMap.get(selectedCity.toLowerCase()) || selectedCity
+        : selectedCity
+    },
+    [locale, cities]
+  )
 
   return {
-    cities: getCitiesForLocale(),
-    defaultCity: getDefaultCity(),
+    cities,
+    defaultCity: cities[0],
     convertToLatin,
     convertToLocalized,
     getDisplayValue,
-    locale
+    locale,
   }
 }

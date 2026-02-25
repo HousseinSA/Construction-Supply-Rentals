@@ -1,10 +1,5 @@
 import { create } from 'zustand'
-import { Equipment } from '@/src/lib/models/equipment'
-import { User } from '@/src/lib/models/user'
-
-export interface EquipmentWithSupplier extends Equipment {
-  supplier?: User
-}
+import { Equipment, EquipmentWithSupplier } from '@/src/lib/models/equipment'
 
 interface EquipmentStore {
   equipment: EquipmentWithSupplier[]
@@ -17,7 +12,7 @@ interface EquipmentStore {
   invalidateCache: () => void
 }
 
-const CACHE_DURATION = 5 * 60 * 1000 
+const CACHE_DURATION = 2 * 60 * 1000 
 export const useEquipmentStore = create<EquipmentStore>((set, get) => ({
   equipment: [],
   loading: false,

@@ -1,15 +1,12 @@
 "use client"
 
-import { useState, useMemo, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { useTranslations } from "next-intl"
 import { ArrowLeft } from "lucide-react"
 import { Link } from "@/src/i18n/navigation"
 import { useSession } from "next-auth/react"
 import { useSearchParams, useRouter } from "next/navigation"
-import { usePagination } from "@/src/hooks/usePagination"
 import { useBookings } from "@/src/hooks/useBookings"
-import { useTableFilters } from "@/src/hooks/useTableFilters"
-import { getDateFilterMatch } from "@/src/lib/table-utils"
 import BookingDetailsModal from "./BookingDetailsModal"
 import BookingTableRow from "./BookingTableRow"
 import BookingMobileCard from "./BookingMobileCard"
@@ -33,82 +30,31 @@ export default function BookingTable() {
   const t = useTranslations("dashboard.bookings")
   const tPages = useTranslations("dashboard.pages")
   const tEquipment = useTranslations("dashboard.equipment")
-  const { bookings, loading, error, fetchBookings } = useBookings()
+  const { bookings, loading, error, fetchBookings, searchValue, setSearchValue, filterValues, handleFilterChange, currentPage, totalPages, goToPage, totalItems, itemsPerPage } = useBookings()
   const [selectedBooking, setSelectedBooking] =
     useState<BookingWithDetails | null>(null)
   const [showDetailsModal, setShowDetailsModal] = useState(false)
   const [highlightId, setHighlightId] = useState<string | null>(null)
   const [hasProcessedHighlight, setHasProcessedHighlight] = useState(false)
 
-  const {
-    searchValue,
-    setSearchValue,
-    filterValues,
-    handleFilterChange,
-    filteredData: baseFiltered,
-  } = useTableFilters({
-    data: bookings,
-    searchFields: [],
-    filterFunctions: {
-      status: (booking, value) => booking.status === value,
-      date: (booking, value) => getDateFilterMatch(booking.createdAt, value),
-    },
-    defaultFilters: {
-      status: "all",
-      date: "all",
-    },
-  })
-
-  const filteredData = useMemo(() => {
-    if (!searchValue.trim()) return baseFiltered
-    const searchLower = searchValue.toLowerCase()
-    return baseFiltered.filter((booking) => {
-      const renterMatch =
-        booking.renterInfo &&
-        (booking.renterInfo.firstName?.toLowerCase().includes(searchLower) ||
-          booking.renterInfo.lastName?.toLowerCase().includes(searchLower))
-      const supplierMatch = booking.supplierInfo?.some(
-        (supplier) =>
-          supplier.firstName?.toLowerCase().includes(searchLower) ||
-          supplier.lastName?.toLowerCase().includes(searchLower)
-      )
-      const equipmentMatch = booking.equipmentInfo?.some(
-        (equipment) =>
-          equipment.name?.toLowerCase().includes(searchLower) ||
-          equipment.category?.toLowerCase().includes(searchLower)
-      )
-      return renterMatch || supplierMatch || equipmentMatch
-    })
-  }, [baseFiltered, searchValue])
-
-  const {
-    currentPage,
-    totalPages,
-    paginatedData: paginatedBookings,
-    goToPage,
-    totalItems,
-    itemsPerPage,
-  } = usePagination({ data: filteredData, itemsPerPage: 10 })
-
   useEffect(() => {
     if (highlightRef && bookings.length > 0 && !hasProcessedHighlight) {
-      const index = filteredData.findIndex(b => b.referenceNumber === highlightRef)
+      const index = bookings.findIndex(b => b.referenceNumber === highlightRef)
       if (index !== -1) {
         const page = Math.floor(index / itemsPerPage) + 1
         goToPage(page)
-        const foundBooking = filteredData[index]
+        const foundBooking = bookings[index]
         setHighlightId(foundBooking._id)
         setSelectedBooking(foundBooking)
         setShowDetailsModal(true)
         setHasProcessedHighlight(true)
         setTimeout(() => setHighlightId(null), 3000)
         
-        // Clear the highlight parameter from URL
         const newUrl = window.location.pathname
         router.replace(newUrl, { scroll: false })
       }
     }
-  }, [highlightRef, bookings, filteredData, itemsPerPage, goToPage, hasProcessedHighlight, router])
+  }, [highlightRef, bookings, itemsPerPage, goToPage, hasProcessedHighlight, router])
 
   const handleViewDetails = (booking: BookingWithDetails) => {
     setSelectedBooking(booking)
@@ -194,14 +140,6 @@ export default function BookingTable() {
             <div className="p-12 text-center text-gray-500 font-medium">
               {t("noBookings")}
             </div>
-          ) : filteredData.length === 0 ? (
-            <div className="p-12 text-center text-gray-500 font-medium">
-              {t(
-                `no${filterValues.status
-                  .charAt(0)
-                  .toUpperCase()}${filterValues.status.slice(1)}Bookings`
-              )}
-            </div>
           ) : (
             <>
               {/* Desktop Table */}
@@ -222,7 +160,7 @@ export default function BookingTable() {
                     </tr>
                   </TableHeader>
                   <TableBody>
-                    {paginatedBookings.map((booking) => (
+                    {bookings.map((booking) => (
                       <BookingTableRow
                         key={booking._id}
                         booking={booking}
@@ -236,7 +174,7 @@ export default function BookingTable() {
               </div>
 
               <div className="xl:hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {paginatedBookings.map((booking) => (
+                {bookings.map((booking) => (
                   <BookingMobileCard
                     key={booking._id}
                     booking={booking}

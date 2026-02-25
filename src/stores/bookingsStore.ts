@@ -1,6 +1,6 @@
-import { create } from 'zustand'
-import { Booking } from '@/src/lib/models/booking'
-import { User } from '@/src/lib/models/user'
+import { create } from "zustand"
+import { Booking } from "@/src/lib/models/booking"
+import { User } from "@/src/lib/models/user"
 
 export interface BookingWithDetails extends Booking {
   renterInfo?: User[]
@@ -18,7 +18,7 @@ interface BookingsStore {
   invalidateCache: () => void
 }
 
-const CACHE_DURATION = 5 * 60 * 1000 
+const CACHE_DURATION = 5 * 60 * 1000
 
 export const useBookingsStore = create<BookingsStore>((set, get) => ({
   bookings: [],
@@ -29,7 +29,7 @@ export const useBookingsStore = create<BookingsStore>((set, get) => ({
   updateBooking: (id, updates) =>
     set((state) => ({
       bookings: state.bookings.map((booking) =>
-        booking._id?.toString() === id ? { ...booking, ...updates } : booking
+        booking._id?.toString() === id ? { ...booking, ...updates } : booking,
       ),
     })),
   shouldRefetch: () => {

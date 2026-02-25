@@ -1,24 +1,33 @@
-import { useEffect, useCallback } from 'react'
+import { useCallback } from 'react'
 import { useUsersStore } from '@/src/stores/usersStore'
-import { usePolling } from './usePolling'
+import { useServerTableData } from './useServerTableData'
+import { User } from '@/src/lib/types'
 
 export function useUsers() {
-  const { users, loading, setUsers, setLoading, updateUser, shouldRefetch } = useUsersStore()
+  const { setUsers, updateUser } = useUsersStore()
 
-  const fetchUsers = useCallback(async () => {
-    try {
-      setLoading(true)
-      const response = await fetch('/api/users')
-      if (response.ok) {
-        const result = await response.json()
-        setUsers(result.data || [])
-      }
-    } catch (error) {
-      console.error('Error fetching users:', error)
-    } finally {
-      setLoading(false)
-    }
-  }, [setUsers, setLoading])
+  const {
+    data: users,
+    loading,
+    searchValue,
+    setSearchValue,
+    filterValues,
+    handleFilterChange,
+    currentPage,
+    totalPages,
+    goToPage,
+    totalItems,
+    itemsPerPage,
+    refetch,
+    stats,
+  } = useServerTableData<User>({
+    endpoint: '/api/users',
+    itemsPerPage: 10,
+    transformResponse: (data) => {
+      setUsers(data)
+      return data
+    },
+  })
 
   const updateUserStatus = async (userId: string, status: string) => {
     try {
@@ -38,18 +47,20 @@ export function useUsers() {
     }
   }
 
-  usePolling(fetchUsers, { interval: 30000 })
-
-  useEffect(() => {
-    if (shouldRefetch()) {
-      fetchUsers()
-    }
-  }, [fetchUsers, shouldRefetch])
-
   return {
     users,
     loading,
-    fetchUsers,
+    fetchUsers: refetch,
     updateUserStatus,
+    searchValue,
+    setSearchValue,
+    filterValues,
+    handleFilterChange,
+    currentPage,
+    totalPages,
+    goToPage,
+    totalItems,
+    itemsPerPage,
+    stats,
   }
 }

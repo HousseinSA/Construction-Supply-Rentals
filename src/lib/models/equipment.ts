@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb"
 import { EquipmentStatus, UsageCategory, PricingType } from "../types"
+import { User } from "./user"
 
 export interface Equipment {
   _id?: ObjectId | string
@@ -65,6 +66,12 @@ export interface Equipment {
   approvedAt?: Date
   createdAt: Date
   updatedAt: Date
+}
+
+export interface EquipmentWithSupplier extends Equipment {
+  supplier?: User
+  hasActiveBookings?: boolean
+  hasPendingSale?: boolean
 }
 
 export function getUsageCategoryFromEquipmentType(

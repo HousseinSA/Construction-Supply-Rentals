@@ -570,7 +570,7 @@
       "email": "Email",
       "phone": "Phone",
       "company": "Company",
-      "location": "Location",
+      "location": "City",
       "availability": "Availability",
       "available": "Available",
       "unavailable": "Unavailable",

@@ -1,8 +1,6 @@
-import { useLocale, useTranslations } from "next-intl"
-import { useCityData } from "@/src/hooks/useCityData"
+import { useLocale } from "next-intl"
+import { Equipment, EquipmentWithSupplier } from "@/src/lib/models/equipment"
 import { useEquipmentPrices } from "@/src/hooks/useEquipmentPrices"
-import { Equipment } from "@/src/lib/models/equipment"
-import { User } from "@/src/lib/models/user"
 import EquipmentImageCell from "./cells/EquipmentImageCell"
 import { MemoizedLocationCell, MemoizedDateCell } from "./cells/SimpleCells"
 import PriceCell from "./cells/PriceCell"
@@ -10,12 +8,6 @@ import SupplierCell from "./cells/SupplierCell"
 import StatusCell from "./cells/StatusCell"
 import AvailabilityCell from "./cells/AvailabilityCell"
 import ActionsCell from "./cells/ActionsCell"
-
-interface EquipmentWithSupplier extends Equipment {
-  supplier?: User
-  hasActiveBookings?: boolean
-  hasPendingSale?: boolean
-}
 
 interface EquipmentTableRowProps {
   item: EquipmentWithSupplier
@@ -30,6 +22,8 @@ interface EquipmentTableRowProps {
   onNavigate?: (url: string, id: string) => void
   onPricingReview?: (item: EquipmentWithSupplier) => void
   isSupplier?: boolean
+  localizedLocation: string
+  t: (key: string) => string
 }
 
 export default function EquipmentTableRow({
@@ -41,12 +35,12 @@ export default function EquipmentTableRow({
   onNavigate,
   onPricingReview,
   isSupplier = false,
+  localizedLocation,
+  t,
 }: EquipmentTableRowProps) {
-  const t = useTranslations("dashboard.equipment")
-  const { convertToLocalized } = useCityData()
-  const allPrices = useEquipmentPrices(item, false)
   const equipmentId = item._id?.toString() || ""
   const locale = useLocale()
+  const prices = useEquipmentPrices(item, false)
   const isRTL = locale === "ar"
   const borderSide = isRTL ? "border-r-4" : "border-l-4"
   const borderClass = item.pendingPricing
@@ -70,9 +64,9 @@ export default function EquipmentTableRow({
         onNavigate={onNavigate}
         t={t}
       />
-      <MemoizedLocationCell location={convertToLocalized(item.location)} />
+      <MemoizedLocationCell location={localizedLocation} />
       <PriceCell
-        prices={allPrices}
+        prices={prices}
         item={item}
         isSupplier={isSupplier}
         onPricingReview={onPricingReview}

@@ -1,14 +1,9 @@
 import { RefreshCw, AlertCircle } from "lucide-react"
 import PriceDisplay from "@/src/components/ui/PriceDisplay"
-import { Equipment } from "@/src/lib/models/equipment"
-import { User } from "@/src/lib/models/user"
+import { EquipmentWithSupplier } from "@/src/lib/models/equipment"
 import { memo, useState } from "react"
 import { useTranslations } from "next-intl"
 import PricingInfoModal from "../PricingInfoModal"
-
-interface EquipmentWithSupplier extends Equipment {
-  supplier?: User
-}
 
 interface PriceCellProps {
   prices: Array<{ amount: number; suffix: string }>
@@ -75,13 +70,16 @@ function PriceCell({
   )
 }
 
-export default memo(PriceCell, (prevProps, nextProps) => {
-  return (
-    prevProps.item._id === nextProps.item._id &&
-    prevProps.item.pendingPricing === nextProps.item.pendingPricing &&
-    prevProps.item.pricingRejectionReasons ===
-      nextProps.item.pricingRejectionReasons &&
-    prevProps.isSupplier === nextProps.isSupplier &&
-    JSON.stringify(prevProps.prices) === JSON.stringify(nextProps.prices)
-  )
+export default memo(PriceCell, (prev, next) => {
+  if (prev.item._id !== next.item._id) return false
+  if (prev.item.pendingPricing !== next.item.pendingPricing) return false
+  if (prev.isSupplier !== next.isSupplier) return false
+  if (prev.prices.length !== next.prices.length) return false
+
+  for (let i = 0; i < prev.prices.length; i++) {
+    if (prev.prices[i].amount !== next.prices[i].amount) return false
+    if (prev.prices[i].suffix !== next.prices[i].suffix) return false
+  }
+
+  return true
 })

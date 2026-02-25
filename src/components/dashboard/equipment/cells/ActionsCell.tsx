@@ -2,16 +2,8 @@ import { useTranslations } from "next-intl"
 import { useRouter } from "@/src/i18n/navigation"
 import { Edit, Eye, Loader2 } from "lucide-react"
 import { canEditEquipment } from "@/src/utils/equipmentHelpers"
-import { Equipment } from "@/src/lib/models/equipment"
-import { User } from "@/src/lib/models/user"
+import { EquipmentWithSupplier } from "@/src/lib/models/equipment"
 import { memo, useMemo, useCallback } from "react"
-
-interface EquipmentWithSupplier extends Equipment {
-  supplier?: User
-  hasActiveBookings?: boolean
-  hasPendingSale?: boolean
-}
-
 interface ActionsCellProps {
   item: EquipmentWithSupplier
   isSupplier: boolean

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react"
+import { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import { useEquipmentStore } from "@/src/stores/equipmentStore"
 import { usePolling } from "./usePolling"
 import { EquipmentStatus } from "@/src/lib/types"
@@ -6,6 +6,11 @@ import { EquipmentStatus } from "@/src/lib/types"
 interface UseManageEquipmentConfig {
   convertToLocalized: (location: string) => string
   supplierId?: string
+}
+
+interface LocationOption {
+  value: string
+  label: string
 }
 
 export function useManageEquipment({
@@ -19,6 +24,7 @@ export function useManageEquipment({
     setLoading,
     updateEquipment,
     invalidateCache,
+    shouldRefetch,
   } = useEquipmentStore()
   const [updating, setUpdating] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
@@ -31,17 +37,48 @@ export function useManageEquipment({
     availability: "all",
     location: "all",
   })
+  const [allLocations, setAllLocations] = useState<LocationOption[]>([])
+  const [initialLoad, setInitialLoad] = useState(true)
   const itemsPerPage = 10
+  const abortControllerRef = useRef<AbortController | null>(null)
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
 
-  const fetchEquipment = useCallback(async () => {
+  const fetchLocations = useCallback(async () => {
     try {
-      setLoading(true)
+      const response = await fetch("/api/equipment/locations")
+      const data = await response.json()
+      if (data.success) {
+        setAllLocations(
+          data.data.map((loc: string) => ({
+            value: loc,
+            label: loc,
+          }))
+        )
+      }
+    } catch (error) {
+      console.error("Error fetching locations:", error)
+    }
+  }, [])
 
+  const fetchEquipment = useCallback(async (skipCache = false) => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+    }
+    abortControllerRef.current = new AbortController()
+    
+    if (!skipCache && !shouldRefetch()) {
+      setInitialLoad(false)
+      return
+    }
+    
+    try {
+      if (initialLoad) {
+        setLoading(true)
+      }
       const params = new URLSearchParams()
       params.set("page", currentPage.toString())
       params.set("limit", itemsPerPage.toString())
       params.set("includeSupplier", "true")
-
       if (supplierId) {
         params.set("supplierId", supplierId)
       } else {
@@ -79,7 +116,10 @@ export function useManageEquipment({
       }
 
       const url = `/api/equipment?${params.toString()}`
-      const response = await fetch(url, { cache: "no-store" })
+      const response = await fetch(url, {
+        cache: "no-store",
+        signal: abortControllerRef.current.signal,
+      })
       const data = await response.json()
 
       if (data.success) {
@@ -88,11 +128,17 @@ export function useManageEquipment({
           setTotalPages(data.pagination.totalPages)
           setTotalCount(data.pagination.totalCount)
         }
+        setInitialLoad(false)
       }
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === "AbortError") {
+        return
+      }
       console.error("Error fetching equipment:", error)
     } finally {
-      setLoading(false)
+      if (initialLoad) {
+        setLoading(false)
+      }
     }
   }, [
     setEquipment,
@@ -102,6 +148,8 @@ export function useManageEquipment({
     itemsPerPage,
     searchValue,
     filterValues,
+    shouldRefetch,
+    initialLoad,
   ])
 
   const handleStatusChange = async (
@@ -161,8 +209,9 @@ export function useManageEquipment({
       if (currentPage !== 1) {
         setCurrentPage(1)
       }
+      invalidateCache()
     },
-    [currentPage],
+    [currentPage, invalidateCache],
   )
 
   const handleSearchChange = useCallback(
@@ -171,23 +220,52 @@ export function useManageEquipment({
       if (currentPage !== 1) {
         setCurrentPage(1)
       }
+      invalidateCache()
     },
-    [currentPage],
+    [currentPage, invalidateCache],
   )
 
-  const locations = useMemo(() => {
-    const uniqueLocations = [...new Set(equipment.map((item) => item.location))]
-    return uniqueLocations.sort().map((loc) => ({
-      value: loc,
-      label: convertToLocalized(loc),
-    }))
-  }, [equipment, convertToLocalized])
-
-  usePolling(fetchEquipment, { interval: 30000 })
+  useEffect(() => {
+    fetchLocations()
+  }, [fetchLocations])
 
   useEffect(() => {
-    fetchEquipment()
-  }, [fetchEquipment])
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current)
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      fetchEquipment()
+    }, 500)
+
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current)
+      }
+    }
+  }, [searchValue, filterValues, currentPage, supplierId])
+
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current)
+      }
+    }
+  }, [])
+
+  const locations = useMemo(
+    () =>
+      allLocations.map((loc) => ({
+        value: loc.value,
+        label: convertToLocalized(loc.value),
+      })),
+    [allLocations, convertToLocalized]
+  )
+
+  usePolling(() => fetchEquipment(true), { interval: 60000 })
 
   return {
     equipment,
@@ -197,7 +275,7 @@ export function useManageEquipment({
     handleAvailabilityChange,
     refetch: useCallback(() => {
       invalidateCache()
-      return fetchEquipment()
+      return fetchEquipment(true)
     }, [invalidateCache, fetchEquipment]),
     searchValue,
     setSearchValue: handleSearchChange,

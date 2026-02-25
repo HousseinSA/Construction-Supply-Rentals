@@ -1,33 +1,33 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { useSalesStore, SaleWithDetails } from '@/src/stores/salesStore'
-import { usePolling } from './usePolling'
+import { useServerTableData } from './useServerTableData'
 
 export function useSales() {
   const { data: session } = useSession()
-  const { sales, loading, setSales, setLoading, updateSale, shouldRefetch, invalidateCache } = useSalesStore()
-  const [error, setError] = useState<string | null>(null)
+  const { setSales, invalidateCache } = useSalesStore()
 
-  const fetchSales = useCallback(async (skip: number = 0, limit: number = 50) => {
-    try {
-      setLoading(true)
-      setError(null)
-      
-      let url = `/api/sales?skip=${skip}&limit=${limit}`
-      const response = await fetch(url)
-      const data = await response.json()
-      if (data.success) {
-        setSales(data.data || [])
-      } else {
-        setError(data.error || 'Failed to fetch sales')
-      }
-    } catch (error) {
-      console.error('Failed to fetch sales:', error)
-      setError('Network error')
-    } finally {
-      setLoading(false)
-    }
-  }, [setSales, setLoading])
+  const {
+    data: sales,
+    loading,
+    searchValue,
+    setSearchValue,
+    filterValues,
+    handleFilterChange,
+    currentPage,
+    totalPages,
+    goToPage,
+    totalItems,
+    itemsPerPage,
+    refetch,
+  } = useServerTableData<SaleWithDetails>({
+    endpoint: '/api/sales',
+    itemsPerPage: 10,
+    transformResponse: (data) => {
+      setSales(data)
+      return data
+    },
+  })
 
   const updateSaleStatus = async (saleId: string, status: string, adminId?: string, adminNotes?: string) => {
     try {
@@ -39,7 +39,7 @@ export function useSales() {
 
       if (response.ok) {
         invalidateCache()
-        await fetchSales()
+        await refetch()
         return true
       }
       return false
@@ -49,19 +49,20 @@ export function useSales() {
     }
   }
 
-  usePolling(fetchSales, { interval: 30000 })
-
-  useEffect(() => {
-    if (session?.user && shouldRefetch()) {
-      fetchSales()
-    }
-  }, [session?.user, fetchSales, shouldRefetch])
-
   return {
     sales,
     loading,
-    error,
-    fetchSales,
+    error: null,
+    fetchSales: refetch,
     updateSaleStatus,
+    searchValue,
+    setSearchValue,
+    filterValues,
+    handleFilterChange,
+    currentPage,
+    totalPages,
+    goToPage,
+    totalItems,
+    itemsPerPage,
   }
 }

@@ -1,6 +1,8 @@
-import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
+import { useTranslations } from "next-intl"
+import { useCityData } from "@/src/hooks/useCityData"
+import { useEquipmentPrices } from "@/src/hooks/useEquipmentPrices"
 import { Table, TableHeader, TableBody, TableHead } from "../../ui/Table"
-import { EquipmentWithSupplier } from "@/src/stores/equipmentStore"
+import { EquipmentWithSupplier } from "@/src/lib/models/equipment"
 import EquipmentTableRow from "./EquipmentTableRow"
 import EquipmentMobileCard from "./EquipmentMobileCard"
 import Pagination from "../../ui/Pagination"
@@ -42,7 +44,9 @@ export default function EquipmentList({
   t,
   isSupplier = false,
 }: EquipmentListProps) {
-  const { getPriceData, formatPrice } = usePriceFormatter()
+  const tDashboard = useTranslations("dashboard.equipment")
+  const { convertToLocalized } = useCityData()
+
   return (
     <>
       <div className="hidden xl:block">
@@ -71,6 +75,8 @@ export default function EquipmentList({
                 onNavigate={onNavigate}
                 onPricingReview={onPricingReview}
                 isSupplier={isSupplier}
+                localizedLocation={convertToLocalized(item.location)}
+                t={tDashboard}
               />
             ))}
           </TableBody>
@@ -78,31 +84,20 @@ export default function EquipmentList({
       </div>
 
       <div className="xl:hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {equipment.map((item) => {
-          const priceData = getPriceData(
-            item.pricing,
-            item.listingType === "forSale",
-          )
-          const { displayPrice, displayUnit } = formatPrice(
-            priceData.rate,
-            priceData.unit,
-          )
-
-          return (
-            <EquipmentMobileCard
-              key={item._id?.toString()}
-              item={item}
-              updating={updating}
-              navigating={navigating}
-              onStatusChange={onStatusChange}
-              onAvailabilityChange={onAvailabilityChange}
-              onNavigate={onNavigate}
-              onPricingReview={onPricingReview}
-              t={t}
-              isSupplier={isSupplier}
-            />
-          )
-        })}
+        {equipment.map((item) => (
+          <EquipmentMobileCard
+            key={item._id?.toString()}
+            item={item}
+            updating={updating}
+            navigating={navigating}
+            onStatusChange={onStatusChange}
+            onAvailabilityChange={onAvailabilityChange}
+            onNavigate={onNavigate}
+            onPricingReview={onPricingReview}
+            t={t}
+            isSupplier={isSupplier}
+          />
+        ))}
       </div>
 
       <Pagination

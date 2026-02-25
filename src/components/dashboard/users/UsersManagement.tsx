@@ -1,27 +1,23 @@
 "use client"
-
 import { useState } from "react"
 import { useTranslations, useLocale } from "next-intl"
 import {
   Users,
-  Search,
   Phone,
   MapPin,
   Calendar,
   Shield,
   ShieldOff,
   AlertTriangle,
-  X,
 } from "lucide-react"
 import { User } from "@/src/lib/types"
 import { useUsers } from "@/src/hooks/useUsers"
-import Dropdown from "@/src/components/ui/Dropdown"
-import { usePagination } from "@/src/hooks/usePagination"
 import Pagination from "@/src/components/ui/Pagination"
 import ConfirmModal from "@/src/components/ui/ConfirmModal"
 import { showToast } from "@/src/lib/toast"
 import CopyButton from "@/src/components/ui/CopyButton"
 import { formatPhoneNumber } from "@/src/lib/format"
+import TableFilters from "@/src/components/ui/TableFilters"
 import {
   Table,
   TableHeader,
@@ -34,9 +30,7 @@ export default function UsersManagement() {
   const t = useTranslations("dashboard")
   const tCommon = useTranslations("common")
   const locale = useLocale()
-  const { users, loading, updateUserStatus } = useUsers()
-  const [searchTerm, setSearchTerm] = useState("")
-  const [filterRole, setFilterRole] = useState<string>("all")
+  const { users, loading, updateUserStatus, searchValue, setSearchValue, filterValues, handleFilterChange, currentPage, totalPages, goToPage, totalItems, itemsPerPage, stats } = useUsers()
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean
     userId: string | null
@@ -45,29 +39,7 @@ export default function UsersManagement() {
   }>({ isOpen: false, userId: null, action: null, userName: "" })
   const [updating, setUpdating] = useState<string | null>(null)
 
-  const filteredUsers = users.filter((user) => {
-    if (user.role === "admin") return false
-
-    const matchesSearch =
-      user.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.phone?.includes(searchTerm)
-
-    const matchesRole = filterRole === "all" || user.userType === filterRole
-
-    return matchesSearch && matchesRole
-  })
-
   const nonAdminUsers = users.filter((user) => user.role !== "admin")
-
-  const {
-    currentPage,
-    totalPages,
-    paginatedData: paginatedUsers,
-    goToPage,
-    totalItems,
-    itemsPerPage,
-  } = usePagination({ data: filteredUsers, itemsPerPage: 10 })
 
   const getRoleText = (user: User) => {
     if (user.role === "admin") return t("users.roles.admin")
@@ -144,7 +116,7 @@ export default function UsersManagement() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="text-3xl font-bold text-gray-900">
-            {nonAdminUsers.length}
+            {stats?.totalUsers || 0}
           </div>
           <div className="text-sm text-gray-600 mt-1">
             {t("users.totalUsers")}
@@ -152,7 +124,7 @@ export default function UsersManagement() {
         </div>
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="text-3xl font-bold text-green-600">
-            {nonAdminUsers.filter((u) => u.userType === "supplier").length}
+            {stats?.totalSuppliers || 0}
           </div>
           <div className="text-sm text-gray-600 mt-1">
             {t("users.suppliers")}
@@ -160,56 +132,35 @@ export default function UsersManagement() {
         </div>
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="text-3xl font-bold text-blue-600">
-            {nonAdminUsers.filter((u) => u.userType === "renter").length}
+            {stats?.totalRenters || 0}
           </div>
           <div className="text-sm text-gray-600 mt-1">{t("users.renters")}</div>
         </div>
       </div>
 
       {/* Search and Filters */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <input
-              type="text"
-              placeholder={t("users.searchPlaceholder")}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-            />
-          </div>
-          <div className="flex gap-2">
-            <Dropdown
-              options={[
-                { value: "all", label: t("users.allRoles") },
-                { value: "supplier", label: t("users.roles.supplier") },
-                { value: "renter", label: t("users.roles.renter") },
-              ]}
-              value={filterRole}
-              onChange={setFilterRole}
-              placeholder={t("users.allRoles")}
-              compact
-            />
-            {(searchTerm || filterRole !== "all") && (
-              <button
-                onClick={() => {
-                  setSearchTerm("")
-                  setFilterRole("all")
-                }}
-                className="flex items-center gap-1 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <X className="w-4 h-4" />
-                {tCommon("clearFilters")}
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
+      <TableFilters
+        searchValue={searchValue}
+        onSearchChange={setSearchValue}
+        searchPlaceholder={t("users.searchPlaceholder")}
+        filters={[
+          {
+            key: "role",
+            label: t("users.allRoles"),
+            options: [
+              { value: "all", label: t("users.allRoles") },
+              { value: "supplier", label: t("users.roles.supplier") },
+              { value: "renter", label: t("users.roles.renter") },
+            ],
+          },
+        ]}
+        filterValues={filterValues}
+        onFilterChange={handleFilterChange}
+      />
 
       {/* Users Table */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        {filteredUsers.length === 0 ? (
+        {users.length === 0 ? (
           <div className="p-12 text-center text-gray-500 font-medium">
             <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">
@@ -233,7 +184,7 @@ export default function UsersManagement() {
                   </tr>
                 </TableHeader>
                 <TableBody>
-                    {paginatedUsers.map((user) => (
+                    {users.map((user) => (
                       <tr key={user._id}>
                         <TableCell>
                           <div className="flex items-center">
@@ -329,7 +280,7 @@ export default function UsersManagement() {
 
             {/* Mobile/Tablet Cards */}
             <div className="xl:hidden divide-y divide-gray-200 space-y-4 p-4">
-              {paginatedUsers.map((user) => (
+              {users.map((user) => (
                 <div key={user._id} className="p-4 hover:bg-gray-50 border rounded-lg">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-start space-x-3">
@@ -424,7 +375,7 @@ export default function UsersManagement() {
 
             {/* Mobile Cards - Screen below lg */}
             <div className="lg:hidden divide-y divide-gray-200">
-              {paginatedUsers.map((user) => (
+              {users.map((user) => (
                 <div key={user._id} className="p-4 hover:bg-gray-50">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-start space-x-3">

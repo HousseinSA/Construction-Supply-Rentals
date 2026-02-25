@@ -1,32 +1,30 @@
-import { useEffect, useState, useCallback } from 'react'
-import { useSession } from 'next-auth/react'
 import { useBookingsStore, BookingWithDetails } from '@/src/stores/bookingsStore'
-import { usePolling } from './usePolling'
+import { useServerTableData } from './useServerTableData'
 
 export function useBookings() {
-  const { data: session } = useSession()
-  const { bookings, loading, setBookings, setLoading, updateBooking, shouldRefetch, invalidateCache } = useBookingsStore()
-  const [error, setError] = useState<string | null>(null)
+  const { setBookings, updateBooking, invalidateCache } = useBookingsStore()
 
-  const fetchBookings = useCallback(async () => {
-    try {
-      setLoading(true)
-      setError(null)
-      
-      const response = await fetch('/api/bookings')
-      const data = await response.json()
-      if (data.success) {
-        setBookings(data.data || [])
-      } else {
-        setError(data.error || 'Failed to fetch bookings')
-      }
-    } catch (error) {
-      console.error('Failed to fetch bookings:', error)
-      setError('Network error')
-    } finally {
-      setLoading(false)
-    }
-  }, [setBookings, setLoading, session?.user?.userType, session?.user?.id])
+  const {
+    data: bookings,
+    loading,
+    searchValue,
+    setSearchValue,
+    filterValues,
+    handleFilterChange,
+    currentPage,
+    totalPages,
+    goToPage,
+    totalItems,
+    itemsPerPage,
+    refetch,
+  } = useServerTableData<BookingWithDetails>({
+    endpoint: '/api/bookings',
+    itemsPerPage: 10,
+    transformResponse: (data) => {
+      setBookings(data)
+      return data
+    },
+  })
 
   const updateBookingStatus = async (bookingId: string, status: string, adminId?: string, adminNotes?: string) => {
     try {
@@ -52,19 +50,20 @@ export function useBookings() {
     }
   }
 
-  usePolling(fetchBookings, { interval: 30000 })
-
-  useEffect(() => {
-    if (shouldRefetch()) {
-      fetchBookings()
-    }
-  }, [fetchBookings, shouldRefetch])
-
   return {
     bookings,
     loading,
-    error,
-    fetchBookings,
+    error: null,
+    fetchBookings: refetch,
     updateBookingStatus,
+    searchValue,
+    setSearchValue,
+    filterValues,
+    handleFilterChange,
+    currentPage,
+    totalPages,
+    goToPage,
+    totalItems,
+    itemsPerPage,
   }
 }

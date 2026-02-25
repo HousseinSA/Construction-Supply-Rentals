@@ -1,4 +1,4 @@
-import { Loader2, RefreshCw, AlertCircle } from "lucide-react"
+import { memo, useState } from "react"
 import EquipmentImage from "@/src/components/ui/EquipmentImage"
 import Dropdown from "@/src/components/ui/Dropdown"
 import CopyButton from "@/src/components/ui/CopyButton"
@@ -6,12 +6,12 @@ import PriceDisplay from "@/src/components/ui/PriceDisplay"
 import PricingInfoModal from "./PricingInfoModal"
 import CardHeader from "./mobile-card/CardHeader"
 import CardActions from "./mobile-card/CardActions"
-import { EquipmentWithSupplier } from "@/src/stores/equipmentStore"
+import { EquipmentWithSupplier } from "@/src/lib/models/equipment"
+import { Loader2, RefreshCw, AlertCircle } from "lucide-react"
 import { useCityData } from "@/src/hooks/useCityData"
 import { useTooltip } from "@/src/hooks/useTooltip"
 import { useCardData } from "./mobile-card/useCardData"
 import { formatPhoneNumber } from "@/src/lib/format"
-import { useState } from "react"
 
 interface EquipmentMobileCardProps {
   item: EquipmentWithSupplier & { hasActiveBookings?: boolean; hasPendingSale?: boolean }
@@ -25,7 +25,7 @@ interface EquipmentMobileCardProps {
   isSupplier?: boolean
 }
 
-export default function EquipmentMobileCard({
+function EquipmentMobileCard({
   item,
   updating,
   navigating,
@@ -175,3 +175,14 @@ export default function EquipmentMobileCard({
   </>
   )
 }
+
+export default memo(EquipmentMobileCard, (prev, next) => {
+  if (prev.item._id !== next.item._id) return false
+  if (prev.item.status !== next.item.status) return false
+  if (prev.item.isAvailable !== next.item.isAvailable) return false
+  if (prev.item.pendingPricing !== next.item.pendingPricing) return false
+  if (prev.updating !== next.updating) return false
+  if (prev.navigating !== next.navigating) return false
+  if (prev.isSupplier !== next.isSupplier) return false
+  return true
+})
