@@ -14,6 +14,7 @@ import { createEquipmentFilters } from "@/src/lib/equipment-filters"
 import DashboardPageHeader from "../DashboardPageHeader"
 import EquipmentList from "./EquipmentList"
 import EquipmentModals from "./EquipmentModals"
+import TableLoading from "@/src/components/ui/TableLoading"
 
 export default function ManageEquipment() {
   const { user } = useUserSession()
@@ -87,11 +88,7 @@ export default function ManageEquipment() {
 
         <div className="xl:bg-white xl:rounded-lg xl:shadow-sm xl:border xl:border-gray-200 min-h-[600px] flex flex-col">
           {loading ? (
-            <div className="p-12 text-center">
-              <div className="animate-pulse text-gray-600 font-medium">
-                {t("loading")}
-              </div>
-            </div>
+            <TableLoading message={t("loading")} />
           ) : equipment.length === 0 ? (
             <div className="p-12 text-center text-gray-500 font-medium">
               {t("noEquipmentFound")}

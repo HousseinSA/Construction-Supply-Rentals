@@ -43,7 +43,7 @@ const CACHE_DURATION = 2 * 60 * 1000
 export const useEquipmentStore = create<EquipmentStore>((set, get) => ({
   equipment: [],
   equipmentMap: new Map(),
-  loading: false,
+  loading: true,
   lastFetch: null,
   updating: null,
   navigating: null,

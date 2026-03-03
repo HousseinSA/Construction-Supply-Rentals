@@ -31,7 +31,7 @@ const CACHE_DURATION = 5 * 60 * 1000
 
 export const useAnalyticsStore = create<AnalyticsStore>((set, get) => ({
   analytics: null,
-  loading: false,
+  loading: true,
   lastFetch: null,
   setAnalytics: (analytics) => set({ analytics, lastFetch: Date.now() }),
   setLoading: (loading) => set({ loading }),

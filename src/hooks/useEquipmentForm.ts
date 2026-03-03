@@ -39,7 +39,6 @@ export function useEquipmentForm(equipmentId?: string) {
   const [images, setImages] = useState<UploadedImage[]>([])
   const [equipment, setEquipment] = useState<any>(null)
   const [hasActiveBookings, setHasActiveBookings] = useState(false)
-  const [ownershipError, setOwnershipError] = useState(false)
   const [loading, setLoading] = useState(true)
   const [initialFormData, setInitialFormData] = useState<FormData | null>(null)
   const [initialImages, setInitialImages] = useState<UploadedImage[]>([])
@@ -72,8 +71,7 @@ export function useEquipmentForm(equipmentId?: string) {
       const response = await fetch(`/api/equipment/${equipmentId}?admin=true`)
       const data = await response.json()
       if (!data.success) {
-        setOwnershipError(true)
-        setLoading(false)
+        router.back()
         return
       }
 
@@ -124,8 +122,7 @@ export function useEquipmentForm(equipmentId?: string) {
       setLoading(false)
     } catch (error) {
       console.error("Error loading equipment:", error)
-      setOwnershipError(true)
-      setLoading(false)
+      router.back()
     }
   }
 
@@ -363,7 +360,6 @@ export function useEquipmentForm(equipmentId?: string) {
     isSubmitting,
     equipment,
     hasActiveBookings,
-    ownershipError,
     loading,
     setImages,
     handleInputChange,

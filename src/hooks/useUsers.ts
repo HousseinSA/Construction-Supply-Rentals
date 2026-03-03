@@ -1,4 +1,3 @@
-import { useCallback } from 'react'
 import { useUsersStore } from '@/src/stores/usersStore'
 import { useServerTableData } from './useServerTableData'
 import { User } from '@/src/lib/types'

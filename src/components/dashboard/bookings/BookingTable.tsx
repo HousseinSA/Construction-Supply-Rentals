@@ -14,6 +14,7 @@ import RenterBookingView from "./RenterBookingView"
 import Pagination from "@/src/components/ui/Pagination"
 import HomeButton from "@/src/components/ui/HomeButton"
 import TableFilters from "@/src/components/ui/TableFilters"
+import TableLoading from "@/src/components/ui/TableLoading"
 import {
   Table,
   TableHeader,
@@ -121,11 +122,7 @@ export default function BookingTable() {
           {session?.user?.userType === "renter" ? (
             <RenterBookingView />
           ) : loading ? (
-            <div className="p-12 text-center">
-              <div className="animate-pulse text-gray-600 font-medium">
-                {tEquipment("loading")}
-              </div>
-            </div>
+            <TableLoading message={tEquipment("loading")} />
           ) : error ? (
             <div className="p-12 text-center">
               <div className="text-red-500 text-lg mb-4">{t("error")}</div>

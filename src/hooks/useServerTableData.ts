@@ -17,14 +17,13 @@ export function useServerTableData<T>({
   transformResponse,
 }: UseServerTableDataConfig<T>) {
   const [data, setData] = useState<T[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
   const [searchValue, setSearchValue] = useState("")
   const [filterValues, setFilterValues] = useState<Record<string, string>>({})
   const [stats, setStats] = useState<any>(null)
-  
   const abortControllerRef = useRef<AbortController | null>(null)
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -33,7 +32,6 @@ export function useServerTableData<T>({
       abortControllerRef.current.abort()
     }
     abortControllerRef.current = new AbortController()
-
     try {
       setLoading(true)
       const params = new URLSearchParams()
@@ -64,11 +62,11 @@ export function useServerTableData<T>({
       const result = await response.json()
 
       if (result.success) {
-        const transformedData = transformResponse 
-          ? transformResponse(result.data) 
+        const transformedData = transformResponse
+          ? transformResponse(result.data)
           : result.data || []
         setData(transformedData)
-        
+
         if (result.pagination) {
           setTotalPages(result.pagination.totalPages)
           setTotalCount(result.pagination.totalCount)
@@ -84,7 +82,15 @@ export function useServerTableData<T>({
     } finally {
       setLoading(false)
     }
-  }, [endpoint, currentPage, itemsPerPage, searchValue, filterValues, additionalParams, transformResponse])
+  }, [
+    endpoint,
+    currentPage,
+    itemsPerPage,
+    searchValue,
+    filterValues,
+    additionalParams,
+    transformResponse,
+  ])
 
   const handleFilterChange = useCallback(
     (key: string, value: string) => {
@@ -93,7 +99,7 @@ export function useServerTableData<T>({
         setCurrentPage(1)
       }
     },
-    [currentPage]
+    [currentPage],
   )
 
   const handleSearchChange = useCallback(
@@ -103,7 +109,7 @@ export function useServerTableData<T>({
         setCurrentPage(1)
       }
     },
-    [currentPage]
+    [currentPage],
   )
 
   useEffect(() => {

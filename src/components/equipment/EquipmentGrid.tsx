@@ -1,20 +1,7 @@
 import EquipmentCard from "./EquipmentCard"
 import LoadingSkeleton from "./LoadingSkeleton"
 import EmptyState from "@/components/ui/EmptyState"
-
-interface Pricing {
-  dailyRate?: number
-  hourlyRate?: number
-  kmRate?: number
-}
-
-interface Equipment {
-  _id: string
-  name: string
-  description: string
-  location: string
-  pricing: Pricing
-}
+import type { Equipment } from "@/src/lib/models/equipment"
 
 interface EquipmentGridProps {
   equipment: Equipment[]
@@ -36,7 +23,7 @@ export default function EquipmentGrid({ equipment, loading, selectedCity, listin
   return (
     <div className="grid grid-cols-1 min-[500px]:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 items-stretch max-w-7xl mx-auto">
       {equipment.map((item) => (
-        <EquipmentCard key={item._id} equipment={item} />
+        <EquipmentCard key={item._id?.toString()} equipment={item} />
       ))}
     </div>
   )

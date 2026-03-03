@@ -2,12 +2,13 @@
 
 import { useEffect } from "react"
 import { useTranslations } from "next-intl"
-import { Link } from "@/src/i18n/navigation"
-import { ArrowLeft, AlertTriangle } from "lucide-react"
+import { Link, useRouter } from "@/src/i18n/navigation"
+import { ArrowLeft } from "lucide-react"
 import { useFontClass } from "@/src/hooks/useFontClass"
 import { useEquipmentForm } from "@/src/hooks/useEquipmentForm"
 import { useSession } from "next-auth/react"
 import { useEquipmentStore } from "@/src/stores/equipmentStore"
+import PageLoading from "../ui/PageLoading"
 import AuthCard from "../auth/AuthCard"
 import ListingTypeSelector from "./ListingTypeSelector"
 import EquipmentFormFields from "./EquipmentFormFields"
@@ -25,6 +26,7 @@ export default function EditEquipmentForm({
 }: EditEquipmentFormProps) {
   const t = useTranslations("dashboard.equipment")
   const fontClass = useFontClass()
+  const router = useRouter()
   const { data: session } = useSession()
   const isAdmin = session?.user?.role === "admin"
   const resetNavigating = useEquipmentStore((state) => state.resetNavigating)
@@ -46,7 +48,6 @@ export default function EditEquipmentForm({
     loadEquipment,
     equipment,
     hasActiveBookings,
-    ownershipError,
     loading,
     hasChanges,
   } = useEquipmentForm(equipmentId)
@@ -61,48 +62,14 @@ export default function EditEquipmentForm({
     }
   }, [equipmentId])
 
-  if (loading) {
-    return (
-      <div
-        className={`min-h-screen bg-gray-50 flex items-center justify-center ${fontClass}`}
-      >
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-600">{t("loading")}</p>
-        </div>
-      </div>
-    )
-  }
+  useEffect(() => {
+    if (!loading && hasActiveBookings) {
+      router.back()
+    }
+  }, [loading, hasActiveBookings, router])
 
-  if (ownershipError) {
-    return (
-      <div
-        className={`min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 ${fontClass}`}
-      >
-        <div className="max-w-4xl mx-auto">
-          <AuthCard>
-            <div className="p-8 text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
-                <AlertTriangle className="w-8 h-8 text-red-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Access Denied
-              </h3>
-              <p className="text-gray-600 mb-6">
-                You don't have permission to edit this equipment.
-              </p>
-              <Link
-                href="/dashboard/equipment"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Back to Equipment
-              </Link>
-            </div>
-          </AuthCard>
-        </div>
-      </div>
-    )
+  if (loading) {
+    return <PageLoading message={t("loading")} className={fontClass} />
   }
 
   return (
@@ -129,78 +96,58 @@ export default function EditEquipmentForm({
         </div>
 
         <AuthCard>
-          {hasActiveBookings ? (
-            <div className="p-8 text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-yellow-100 rounded-full mb-4">
-                <span className="text-3xl">🔒</span>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                {t("cannotEditActiveBooking")}
-              </h3>
-              <p className="text-gray-600">
-                This equipment has active bookings and cannot be edited at this
-                time.
-              </p>
-            </div>
-          ) : (
-            <>
-              {!isAdmin && equipment?.status === "rejected" && equipment?.rejectionReason && (
-                <EquipmentRejectionBanner
-                  rejectionReason={equipment.rejectionReason}
-                />
-              )}
-              {!isAdmin && equipment?.pendingPricing && (
-                <PendingPricingBanner
-                  currentPricing={equipment.pricing}
-                  pendingPricing={equipment.pendingPricing}
-                  listingType={equipment.listingType}
-                />
-              )}
-              {!isAdmin &&
-                equipment?.rejectedPricingValues &&
-                Object.keys(equipment.rejectedPricingValues).length > 0 &&
-                (
-                  <PricingRejectionBanner
-                    pricingRejectionReasons={equipment.pricingRejectionReasons}
-                    rejectedPricingValues={equipment.rejectedPricingValues}
-                    currentPricing={equipment.pricing}
-                    listingType={equipment.listingType}
-                    pendingPricing={equipment.pendingPricing}
-                  />
-                )}
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <ListingTypeSelector
-                  value={formData.listingType}
-                  onChange={handleListingTypeChange}
-                  disabled={true}
-                />
-                <EquipmentFormFields
-                  formData={formData}
-                  images={images}
-                  isSubmitting={isSubmitting}
-                  onInputChange={handleInputChange}
-                  onNumericInputChange={handleNumericInputChange}
-                  onCategoryChange={handleCategoryChange}
-                  onTypeChange={handleTypeChange}
-                  onLocationChange={handleLocationChange}
-                  onConditionChange={handleConditionChange}
-                  onWeightUnitChange={handleWeightUnitChange}
-                  onUsageUnitChange={handleUsageUnitChange}
-                  onImagesChange={setImages}
-                  isAdmin={isAdmin}
-                  equipmentCreatedBy={equipment?.createdBy}
-                  hasPendingPricing={!!equipment?.pendingPricing}
-                  isEditMode={true}
-                  hasActiveBookings={hasActiveBookings}
-                />
-                <FormActions
-                  isSubmitting={isSubmitting}
-                  isEdit
-                  hasChanges={hasChanges}
-                />
-              </form>
-            </>
+          {!isAdmin && equipment?.status === "rejected" && equipment?.rejectionReason && (
+            <EquipmentRejectionBanner
+              rejectionReason={equipment.rejectionReason}
+            />
           )}
+          {!isAdmin && equipment?.pendingPricing && (
+            <PendingPricingBanner
+              currentPricing={equipment.pricing}
+              pendingPricing={equipment.pendingPricing}
+              listingType={equipment.listingType}
+            />
+          )}
+          {!isAdmin &&
+            equipment?.rejectedPricingValues &&
+            Object.keys(equipment.rejectedPricingValues).length > 0 &&
+            (
+              <PricingRejectionBanner
+                pricingRejectionReasons={equipment.pricingRejectionReasons}
+                rejectedPricingValues={equipment.rejectedPricingValues}
+                currentPricing={equipment.pricing}
+                listingType={equipment.listingType}
+                pendingPricing={equipment.pendingPricing}
+              />
+            )}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <ListingTypeSelector
+              value={formData.listingType}
+              onChange={handleListingTypeChange}
+              disabled={true}
+            />
+            <EquipmentFormFields
+              formData={formData}
+              images={images}
+              isSubmitting={isSubmitting}
+              onInputChange={handleInputChange}
+              onNumericInputChange={handleNumericInputChange}
+              onCategoryChange={handleCategoryChange}
+              onTypeChange={handleTypeChange}
+              onLocationChange={handleLocationChange}
+              onConditionChange={handleConditionChange}
+              onWeightUnitChange={handleWeightUnitChange}
+              onUsageUnitChange={handleUsageUnitChange}
+              onImagesChange={setImages}
+              isAdmin={isAdmin}
+              isEditMode={true}
+            />
+            <FormActions
+              isSubmitting={isSubmitting}
+              isEdit
+              hasChanges={hasChanges}
+            />
+          </form>
         </AuthCard>
       </div>
     </div>

@@ -623,7 +623,11 @@
       },
       "activeBookingWarning": "Active Bookings Warning",
       "activeBookingWarningMessage": "This equipment has active bookings. Editing may affect ongoing rentals. Please proceed with caution.",
-      "equipmentSold": "This equipment has been sold"
+      "equipmentSold": "This equipment has been sold",
+      "accessDenied": "Access Denied",
+      "noPermissionToEdit": "You don't have permission to edit this equipment.",
+      "backToEquipment": "Back to Equipment",
+      "activeBookingMessage": "This equipment has active bookings and cannot be edited at this time."
     },
     "pages": {
       "equipment": {

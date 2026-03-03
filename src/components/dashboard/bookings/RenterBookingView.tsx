@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl"
 import { useBookings } from "@/src/hooks/useBookings"
 import { usePagination } from "@/src/hooks/usePagination"
 import { formatDate, getTranslatedUnit } from "@/src/lib/table-utils"
+import TableLoading from "@/src/components/ui/TableLoading"
 import {
   Table,
   TableHeader,
@@ -94,13 +95,7 @@ export default function RenterBookingView() {
   }
 
   if (loading) {
-    return (
-      <div className="p-12 text-center">
-        <div className="animate-pulse text-gray-600 font-medium">
-          {t("loading")}
-        </div>
-      </div>
-    )
+    return <TableLoading message={t("loading")} />
   }
 
   if (bookings.length === 0) {

@@ -1,7 +1,10 @@
-import { create } from 'zustand'
-import { SaleOrder } from '@/src/lib/models'
+import { create } from "zustand"
+import { SaleOrder } from "@/src/lib/models"
 
-export interface SaleWithDetails extends Omit<SaleOrder, '_id' | 'buyerId' | 'equipmentId' | 'supplierId' | 'adminHandledBy'> {
+export interface SaleWithDetails extends Omit<
+  SaleOrder,
+  "_id" | "buyerId" | "equipmentId" | "supplierId" | "adminHandledBy"
+> {
   _id?: string
   buyerId: string
   equipmentId: string
@@ -29,7 +32,7 @@ const CACHE_DURATION = 5 * 60 * 1000
 
 export const useSalesStore = create<SalesStore>((set, get) => ({
   sales: [],
-  loading: false,
+  loading: true,
   lastFetch: null,
   setSales: (sales) => set({ sales, lastFetch: Date.now() }),
   setLoading: (loading) => set({ loading }),

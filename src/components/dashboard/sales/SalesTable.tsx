@@ -12,6 +12,7 @@ import SalesDetailsModal from "./SalesDetailsModal"
 import Pagination from "@/src/components/ui/Pagination"
 import HomeButton from "@/src/components/ui/HomeButton"
 import TableFilters from "@/src/components/ui/TableFilters"
+import TableLoading from "@/src/components/ui/TableLoading"
 import { Table, TableHeader, TableBody, TableHead } from "@/src/components/ui/Table"
 
 export default function SalesTable() {
@@ -100,9 +101,7 @@ export default function SalesTable() {
           />
         <div className="xl:bg-white xl:rounded-lg xl:shadow-sm xl:border xl:border-gray-200 overflow-hidden">
           {loading ? (
-            <div className="p-12 text-center">
-              <div className="animate-pulse text-gray-600 font-medium">{t("loading")}</div>
-            </div>
+            <TableLoading message={t("loading")} />
           ) : (
             <>
               <div className="hidden xl:block">

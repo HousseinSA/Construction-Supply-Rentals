@@ -18,6 +18,7 @@ import { showToast } from "@/src/lib/toast"
 import CopyButton from "@/src/components/ui/CopyButton"
 import { formatPhoneNumber } from "@/src/lib/format"
 import TableFilters from "@/src/components/ui/TableFilters"
+import TableLoading from "@/src/components/ui/TableLoading"
 import {
   Table,
   TableHeader,
@@ -101,11 +102,7 @@ export default function UsersManagement() {
   if (loading) {
     return (
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <div className="p-12 text-center">
-          <div className="animate-pulse text-gray-600 font-medium">
-            {t("equipment.loading")}
-          </div>
-        </div>
+        <TableLoading message={t("equipment.loading")} />
       </div>
     )
   }

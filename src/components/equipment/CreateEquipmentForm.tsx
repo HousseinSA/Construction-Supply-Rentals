@@ -55,7 +55,6 @@ export default function CreateEquipmentForm() {
             </div>
           </div>
         </div>
-
         <div className="space-y-6">
           <AuthCard>
             <form onSubmit={handleSubmit} className="space-y-6">

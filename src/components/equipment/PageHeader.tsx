@@ -12,7 +12,6 @@ interface PageHeaderProps {
 export default function PageHeader({ selectedCity, selectedType, listingType }: PageHeaderProps) {
   const t = useTranslations("equipment")
   const commonT = useTranslations("common")
-  const tCategories = useTranslations("categories.equipmentTypes")
   const locale = useLocale()
   const { getDisplayValue } = useCityData()
   const [equipmentTypeName, setEquipmentTypeName] = useState<string>('')

@@ -12,18 +12,9 @@ interface SupplierInfoProps {
   showEmail?: boolean
 }
 
-export default function SupplierInfo({
-  supplier,
-  variant = "card",
-  showContactButtons = true,
-  title,
-  bgColor = "bg-orange-50",
-  iconColor = "text-orange-600",
-  showEmail = true,
-}: SupplierInfoProps) {
+export default function SupplierInfo({ supplier, title }: SupplierInfoProps) {
   const t = useTranslations("equipmentDetails")
-  const tBooking = useTranslations("dashboard.bookings.details")
-  
+
   if (!supplier) return null
 
   return (
