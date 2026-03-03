@@ -1,7 +1,6 @@
 import { create } from 'zustand'
 import { SaleOrder } from '@/src/lib/models'
 
-// Extended interface for frontend with additional fields from API joins
 export interface SaleWithDetails extends Omit<SaleOrder, '_id' | 'buyerId' | 'equipmentId' | 'supplierId' | 'adminHandledBy'> {
   _id?: string
   buyerId: string

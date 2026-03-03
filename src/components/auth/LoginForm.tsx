@@ -24,7 +24,18 @@ export default function LoginForm() {
   })
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
+    const { name, value } = e.target
+    if (name === "emailOrPhone") {
+      const firstChar = value[0]
+      if (firstChar && firstChar >= '0' && firstChar <= '9') {
+        const digits = value.replace(/\D/g, "")
+        if (digits.length <= 8) {
+          setFormData({ ...formData, emailOrPhone: digits })
+        }
+        return
+      }
+    }
+    setFormData({ ...formData, [name]: value })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

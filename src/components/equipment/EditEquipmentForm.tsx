@@ -7,6 +7,7 @@ import { ArrowLeft, AlertTriangle } from "lucide-react"
 import { useFontClass } from "@/src/hooks/useFontClass"
 import { useEquipmentForm } from "@/src/hooks/useEquipmentForm"
 import { useSession } from "next-auth/react"
+import { useEquipmentStore } from "@/src/stores/equipmentStore"
 import AuthCard from "../auth/AuthCard"
 import ListingTypeSelector from "./ListingTypeSelector"
 import EquipmentFormFields from "./EquipmentFormFields"
@@ -26,6 +27,7 @@ export default function EditEquipmentForm({
   const fontClass = useFontClass()
   const { data: session } = useSession()
   const isAdmin = session?.user?.role === "admin"
+  const resetNavigating = useEquipmentStore((state) => state.resetNavigating)
   const {
     formData,
     images,
@@ -48,6 +50,10 @@ export default function EditEquipmentForm({
     loading,
     hasChanges,
   } = useEquipmentForm(equipmentId)
+
+  useEffect(() => {
+    resetNavigating()
+  }, [])
 
   useEffect(() => {
     if (equipmentId) {

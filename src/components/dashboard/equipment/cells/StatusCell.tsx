@@ -1,38 +1,34 @@
 import { useTranslations } from "next-intl"
 import TooltipWrapper from "@/src/components/ui/TooltipWrapper"
 import { getStatusBadgeStyles } from "@/src/utils/equipmentHelpers"
+import { useEquipmentStore } from "@/src/stores/equipmentStore"
+import { EquipmentWithSupplier } from "@/src/lib/models/equipment"
 import { memo, useMemo, useCallback } from "react"
 
 interface StatusCellProps {
-  status: string
-  isSupplier: boolean
-  isPending: boolean
-  isRejected: boolean
-  updating: string | null
-  equipmentId: string
-  onStatusChange: (id: string, action: "approve" | "reject") => void
+  item: EquipmentWithSupplier
 }
 
-function StatusCell({
-  status,
-  isSupplier,
-  isPending,
-  isRejected,
-  updating,
-  equipmentId,
-  onStatusChange,
-}: StatusCellProps) {
+function StatusCell({ item }: StatusCellProps) {
   const t = useTranslations("dashboard.equipment")
+  const isSupplier = useEquipmentStore((state) => state.isSupplier)
+  const updating = useEquipmentStore((state) => state.updating)
+  const updateStatus = useEquipmentStore((state) => state.updateEquipmentStatus)
+  
+  const { status } = item
+  const equipmentId = item._id?.toString() || ""
+  const isPending = status === "pending"
+  const isRejected = status === "rejected"
 
   const badgeStyles = useMemo(() => getStatusBadgeStyles(status), [status])
 
   const handleApprove = useCallback(() => {
-    onStatusChange(equipmentId, "approve")
-  }, [equipmentId, onStatusChange])
+    updateStatus(equipmentId, "approved", undefined, t)
+  }, [equipmentId, updateStatus, t])
 
   const handleReject = useCallback(() => {
-    onStatusChange(equipmentId, "reject")
-  }, [equipmentId, onStatusChange])
+    updateStatus(equipmentId, "rejected", undefined, t)
+  }, [equipmentId, updateStatus, t])
 
   return (
     <td className="px-6 py-4 text-center">

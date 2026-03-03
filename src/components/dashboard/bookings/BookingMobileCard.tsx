@@ -16,6 +16,7 @@ interface BookingMobileCardProps {
 
 export default function BookingMobileCard({ booking, onViewDetails, t, highlight = true, isAdminView = true }: BookingMobileCardProps) {
   const tCommon = useTranslations("common")
+  const tBooking = useTranslations("booking")
   const commission = booking.totalCommission || booking.bookingItems[0]?.commission || 0
   const equipmentTitle = `${booking.bookingItems[0]?.equipmentName}${
     booking.bookingItems.length > 1 ? ` +${booking.bookingItems.length - 1}` : ""
@@ -38,9 +39,18 @@ export default function BookingMobileCard({ booking, onViewDetails, t, highlight
 
   const getRentalPeriod = () => {
     if (booking.startDate && booking.endDate) {
-      return `${formatDate(booking.startDate)} - ${formatDate(booking.endDate)}`
+      return (
+        <div className="space-y-0.5">
+          <div className="text-xs font-medium text-gray-700">
+            {tBooking("from")}: {formatDate(booking.startDate)}
+          </div>
+          <div className="text-xs font-medium text-gray-700">
+            {tBooking("to")}: {formatDate(booking.endDate)}
+          </div>
+        </div>
+      )
     } else if (booking.startDate) {
-      return formatDate(booking.startDate)
+      return `${tBooking("startDate")}: ${formatDate(booking.startDate)}`
     }
     return '-'
   }

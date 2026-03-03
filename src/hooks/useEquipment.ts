@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react"
-import { usePolling } from './usePolling'
+import { usePolling } from "./usePolling"
 
 interface Pricing {
   dailyRate?: number
@@ -15,7 +15,11 @@ interface Equipment {
   pricing: Pricing
 }
 
-export function useEquipment(selectedCity?: string | null, selectedType?: string | null, listingType?: string | null) {
+export function useEquipment(
+  selectedCity?: string | null,
+  selectedType?: string | null,
+  listingType?: string | null,
+) {
   const [equipment, setEquipment] = useState<Equipment[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -26,8 +30,8 @@ export function useEquipment(selectedCity?: string | null, selectedType?: string
       setError(null)
       const params = new URLSearchParams()
       params.set("available", "true")
-      params.set("limit", "100") // Fetch more for public view
-      if (selectedCity && listingType !== 'forSale') {
+      params.set("limit", "100")
+      if (selectedCity && listingType !== "forSale") {
         params.set("city", selectedCity)
         params.set("listingType", "forRent")
       }

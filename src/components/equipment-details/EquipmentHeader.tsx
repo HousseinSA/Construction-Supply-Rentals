@@ -1,12 +1,10 @@
-import { useTranslations } from "next-intl"
 
 interface EquipmentHeaderProps {
   name: string
   description?: string
-  referenceNumber?: string
 }
 
-export default function EquipmentHeader({ name, description, referenceNumber }: EquipmentHeaderProps) {
+export default function EquipmentHeader({ name, description }: EquipmentHeaderProps) {
   return (
     <div>
       <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-2">

@@ -1,25 +1,22 @@
 import { RefreshCw, AlertCircle } from "lucide-react"
 import PriceDisplay from "@/src/components/ui/PriceDisplay"
 import { EquipmentWithSupplier } from "@/src/lib/models/equipment"
+import { useEquipmentStore } from "@/src/stores/equipmentStore"
+import { useEquipmentPrices } from "@/src/hooks/useEquipmentPrices"
 import { memo, useState } from "react"
 import { useTranslations } from "next-intl"
 import PricingInfoModal from "../PricingInfoModal"
 
 interface PriceCellProps {
-  prices: Array<{ amount: number; suffix: string }>
   item: EquipmentWithSupplier
-  isSupplier: boolean
-  onPricingReview?: (item: EquipmentWithSupplier) => void
 }
 
-function PriceCell({
-  prices,
-  item,
-  isSupplier,
-  onPricingReview,
-}: PriceCellProps) {
+function PriceCell({ item }: PriceCellProps) {
   const [showModal, setShowModal] = useState(false)
   const t = useTranslations("dashboard.equipment")
+  const isSupplier = useEquipmentStore(state => state.isSupplier)
+  const onPricingReview = useEquipmentStore(state => state.onPricingReview)
+  const prices = useEquipmentPrices(item, false)
 
   return (
     <td className="px-6 py-4">
@@ -70,16 +67,4 @@ function PriceCell({
   )
 }
 
-export default memo(PriceCell, (prev, next) => {
-  if (prev.item._id !== next.item._id) return false
-  if (prev.item.pendingPricing !== next.item.pendingPricing) return false
-  if (prev.isSupplier !== next.isSupplier) return false
-  if (prev.prices.length !== next.prices.length) return false
-
-  for (let i = 0; i < prev.prices.length; i++) {
-    if (prev.prices[i].amount !== next.prices[i].amount) return false
-    if (prev.prices[i].suffix !== next.prices[i].suffix) return false
-  }
-
-  return true
-})
+export default memo(PriceCell)

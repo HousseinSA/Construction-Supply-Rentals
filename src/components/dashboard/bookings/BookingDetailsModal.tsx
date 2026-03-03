@@ -131,13 +131,13 @@ export default function BookingDetailsModal({
       closeLabel={t("actions.close")}
     >
       <div className="bg-gray-50 py-4 border-b border-gray-200 -mx-6 px-6">
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
             <div className="text-xs font-medium text-gray-600 mb-2">
               {t("details.createdAt")}
             </div>
             <div
-              className={`text-sm flex  font-semibold text-gray-900 ${direction}`}
+              className={`text-sm flex font-semibold text-gray-900 ${direction}`}
               dir="ltr"
             >
               {formatDateTime(booking.createdAt)}
@@ -145,10 +145,18 @@ export default function BookingDetailsModal({
           </div>
           <div>
             <div className="text-xs font-medium text-gray-600 mb-2">
-              {t("table.rentalPeriod")}
+              {tBooking("startDate")}
             </div>
             <div className="text-sm font-semibold text-gray-900">
-              {getRentalPeriod()}
+              {booking.startDate ? formatDate(booking.startDate) : "-"}
+            </div>
+          </div>
+          <div>
+            <div className="text-xs font-medium text-gray-600 mb-2">
+              {tBooking("endDate")}
+            </div>
+            <div className="text-sm font-semibold text-gray-900">
+              {booking.endDate ? formatDate(booking.endDate) : "-"}
             </div>
           </div>
         </div>

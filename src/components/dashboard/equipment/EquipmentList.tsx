@@ -1,6 +1,4 @@
-import { useTranslations } from "next-intl"
-import { useCityData } from "@/src/hooks/useCityData"
-import { useEquipmentPrices } from "@/src/hooks/useEquipmentPrices"
+import { useEquipmentStore } from "@/src/stores/equipmentStore"
 import { Table, TableHeader, TableBody, TableHead } from "../../ui/Table"
 import { EquipmentWithSupplier } from "@/src/lib/models/equipment"
 import EquipmentTableRow from "./EquipmentTableRow"
@@ -9,43 +7,24 @@ import Pagination from "../../ui/Pagination"
 
 interface EquipmentListProps {
   equipment: EquipmentWithSupplier[]
-  updating: string | null
-  navigating: string | null
   currentPage: number
   totalPages: number
   totalItems: number
   itemsPerPage: number
-  onStatusChange: (
-    id: string,
-    action: "approve" | "reject",
-    reason?: string,
-  ) => void
-  onAvailabilityChange: (id: string, isAvailable: boolean) => void
-  onNavigate: (url: string, id: string) => void
   onPageChange: (page: number) => void
-  onPricingReview?: (item: EquipmentWithSupplier) => void
   t: any
-  isSupplier?: boolean
 }
 
 export default function EquipmentList({
   equipment,
-  updating,
-  navigating,
   currentPage,
   totalPages,
   totalItems,
   itemsPerPage,
-  onStatusChange,
-  onAvailabilityChange,
-  onNavigate,
   onPageChange,
-  onPricingReview,
   t,
-  isSupplier = false,
 }: EquipmentListProps) {
-  const tDashboard = useTranslations("dashboard.equipment")
-  const { convertToLocalized } = useCityData()
+  const isSupplier = useEquipmentStore((state) => state.isSupplier)
 
   return (
     <>
@@ -68,15 +47,6 @@ export default function EquipmentList({
               <EquipmentTableRow
                 key={item._id?.toString()}
                 item={item}
-                updating={updating}
-                navigating={navigating}
-                onStatusChange={onStatusChange}
-                onAvailabilityChange={onAvailabilityChange}
-                onNavigate={onNavigate}
-                onPricingReview={onPricingReview}
-                isSupplier={isSupplier}
-                localizedLocation={convertToLocalized(item.location)}
-                t={tDashboard}
               />
             ))}
           </TableBody>
@@ -88,14 +58,6 @@ export default function EquipmentList({
           <EquipmentMobileCard
             key={item._id?.toString()}
             item={item}
-            updating={updating}
-            navigating={navigating}
-            onStatusChange={onStatusChange}
-            onAvailabilityChange={onAvailabilityChange}
-            onNavigate={onNavigate}
-            onPricingReview={onPricingReview}
-            t={t}
-            isSupplier={isSupplier}
           />
         ))}
       </div>

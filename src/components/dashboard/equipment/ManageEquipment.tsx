@@ -3,6 +3,7 @@
 import { useMemo } from "react"
 import { useTranslations } from "next-intl"
 import { Plus } from "lucide-react"
+
 import { useCityData } from "@/src/hooks/useCityData"
 import { useManageEquipment } from "@/src/hooks/useManageEquipment"
 import { useEquipmentActions } from "@/src/hooks/useEquipmentActions"
@@ -11,7 +12,7 @@ import { Link } from "@/src/i18n/navigation"
 import TableFilters from "../../ui/TableFilters"
 import { createEquipmentFilters } from "@/src/lib/equipment-filters"
 import DashboardPageHeader from "../DashboardPageHeader"
-import EquipmentContent from "./EquipmentContent"
+import EquipmentList from "./EquipmentList"
 import EquipmentModals from "./EquipmentModals"
 
 export default function ManageEquipment() {
@@ -19,13 +20,21 @@ export default function ManageEquipment() {
   const t = useTranslations("dashboard.equipment")
   const tCommon = useTranslations("common")
   const { convertToLocalized } = useCityData()
+  const {
+    confirmModal,
+    handleConfirmAction,
+    modals,
+    handleReject,
+    handlePricingReview,
+    closePricingModal,
+    closeRejectionModal,
+    closeConfirmModal,
+  } = useEquipmentActions(t)
 
   const {
     equipment,
     loading,
     updating,
-    handleStatusChange,
-    handleAvailabilityChange,
     refetch,
     searchValue,
     setSearchValue,
@@ -40,26 +49,15 @@ export default function ManageEquipment() {
   } = useManageEquipment({
     convertToLocalized,
     supplierId: user?.isSupplier ? user.id : undefined,
-  })
+    onPricingReview: handlePricingReview,
+})
 
-  const {
-    navigating,
-    confirmModal,
-    handleConfirmAction,
-    handleAvailabilityChangeWithToast,
-    handleNavigation,
-    modals,
-    handleReject,
-    handleStatusChangeCallback,
-    handlePricingReview,
-    closePricingModal,
-    closeRejectionModal,
-    closeConfirmModal,
-  } = useEquipmentActions(handleStatusChange, handleAvailabilityChange, t)
+  const filters = useMemo(
+    () => createEquipmentFilters(t, locations),
+    [t, locations],
+  )
 
   if (!user || (!user.isAdmin && !user.isSupplier)) return null
-
-  const filters = useMemo(() => createEquipmentFilters(t, locations), [t, locations])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -88,23 +86,27 @@ export default function ManageEquipment() {
         />
 
         <div className="xl:bg-white xl:rounded-lg xl:shadow-sm xl:border xl:border-gray-200 min-h-[600px] flex flex-col">
-          <EquipmentContent
-            loading={loading}
-            equipment={equipment}
-            updating={updating}
-            navigating={navigating}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalItems={totalItems}
-            itemsPerPage={itemsPerPage}
-            onStatusChange={handleStatusChangeCallback}
-            onAvailabilityChange={handleAvailabilityChangeWithToast}
-            onNavigate={handleNavigation}
-            onPageChange={goToPage}
-            onPricingReview={handlePricingReview}
-            isSupplier={user.isSupplier}
-            t={t}
-          />
+          {loading ? (
+            <div className="p-12 text-center">
+              <div className="animate-pulse text-gray-600 font-medium">
+                {t("loading")}
+              </div>
+            </div>
+          ) : equipment.length === 0 ? (
+            <div className="p-12 text-center text-gray-500 font-medium">
+              {t("noEquipmentFound")}
+            </div>
+          ) : (
+            <EquipmentList
+              equipment={equipment}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              itemsPerPage={itemsPerPage}
+              onPageChange={goToPage}
+              t={t}
+            />
+          )}
         </div>
 
         <EquipmentModals

@@ -1,13 +1,14 @@
 import { useState } from "react"
 import { useRouter } from "@/src/i18n/navigation"
+import { useEquipmentStore } from "@/src/stores/equipmentStore"
 
 export function useEquipmentNavigation() {
   const router = useRouter()
-  const [navigating, setNavigating] = useState<string | null>(null)
+  const navigateToEquipment = useEquipmentStore(state => state.navigateToEquipment)
+  const navigating = useEquipmentStore(state => state.navigating)
 
   const handleNavigation = (url: string, equipmentId: string) => {
-    setNavigating(equipmentId)
-    router.push(url)
+    navigateToEquipment(url, equipmentId, router)
   }
 
   return {

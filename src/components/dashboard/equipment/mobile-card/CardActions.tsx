@@ -1,4 +1,7 @@
 import { Edit, Eye, Loader2 } from "lucide-react"
+import { useEquipmentStore } from "@/src/stores/equipmentStore"
+import { useTranslations } from "next-intl"
+import { useRouter } from "@/src/i18n/navigation"
 
 interface CardActionsProps {
   itemId: string
@@ -7,16 +10,17 @@ interface CardActionsProps {
   isAvailable: boolean
   hasActiveBookings: boolean
   createdBy: string
-  isSupplier: boolean
-  navigating: string | null
-  onNavigate: (url: string, id: string) => void
-  t: (key: string) => string
 }
 
 export default function CardActions({
-  itemId, status, listingType, isAvailable, hasActiveBookings, createdBy,
-  isSupplier, navigating, onNavigate, t
+  itemId, status, listingType, isAvailable, hasActiveBookings, createdBy
 }: CardActionsProps) {
+  const isSupplier = useEquipmentStore((state) => state.isSupplier)
+  const navigating = useEquipmentStore((state) => state.navigating)
+  const navigateToEquipment = useEquipmentStore((state) => state.navigateToEquipment)
+  const t = useTranslations("dashboard.equipment")
+  const router = useRouter()
+
   const canEdit = !isSupplier && createdBy === "admin" && !(listingType === "forSale" && !isAvailable)
   const canEditSupplier = isSupplier && (status === "rejected" || (status === "approved" && !hasActiveBookings)) && !(listingType === "forSale" && !isAvailable)
 
@@ -25,7 +29,7 @@ export default function CardActions({
       {canEdit && (
         <div className="relative group">
           <button
-            onClick={() => !hasActiveBookings && onNavigate(`/dashboard/equipment/edit/${itemId}`, `edit-${itemId}`)}
+            onClick={() => !hasActiveBookings && navigateToEquipment(`/dashboard/equipment/edit/${itemId}`, `edit-${itemId}`, router)}
             disabled={navigating === `edit-${itemId}` || hasActiveBookings}
             className={`px-3 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-1.5 ${
               hasActiveBookings ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "text-blue-600 bg-blue-50 hover:bg-blue-100"
@@ -43,7 +47,7 @@ export default function CardActions({
       )}
       {canEditSupplier && (
         <button
-          onClick={() => onNavigate(`/dashboard/equipment/edit/${itemId}`, `edit-${itemId}`)}
+          onClick={() => navigateToEquipment(`/dashboard/equipment/edit/${itemId}`, `edit-${itemId}`, router)}
           disabled={navigating === `edit-${itemId}`}
           className="px-3 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-1.5 text-blue-600 bg-blue-50 hover:bg-blue-100"
         >
@@ -51,7 +55,7 @@ export default function CardActions({
         </button>
       )}
       <button
-        onClick={() => onNavigate(`/equipment/${itemId}?admin=true`, itemId)}
+        onClick={() => navigateToEquipment(`/equipment/${itemId}?admin=true`, itemId, router)}
         disabled={navigating === itemId}
         className="flex-1 px-3 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 text-sm font-medium flex items-center justify-center gap-1.5"
       >

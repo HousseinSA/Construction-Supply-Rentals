@@ -1,8 +1,9 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import { Users, Package, MapPin } from "lucide-react"
+import { Users, MapPin } from "lucide-react"
 import { useAnalytics } from "@/src/hooks/useAnalytics"
+import { ColoredIcon } from "@/src/components/ui/EquipmentImage"
 
 export default function AnalyticsManagement() {
   const t = useTranslations("dashboard")
@@ -59,7 +60,7 @@ export default function AnalyticsManagement() {
               </p>
             </div>
             <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-              <Package className="h-5 w-5 text-green-600" />
+              <ColoredIcon src="/digger.png" alt="Equipment" size={20} color="green" />
             </div>
           </div>
         </div>
@@ -75,7 +76,7 @@ export default function AnalyticsManagement() {
               </p>
             </div>
             <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
-              <Package className="h-5 w-5 text-emerald-600" />
+              <ColoredIcon src="/digger.png" alt="Equipment" size={20} color="green" />
             </div>
           </div>
         </div>
@@ -140,7 +141,7 @@ export default function AnalyticsManagement() {
               Object.entries(analytics.usersByRole).map(([role, count]) => {
                 const totalUsers = Object.values(analytics.usersByRole).reduce(
                   (sum, c) => sum + c,
-                  0
+                  0,
                 )
                 let roleLabel = role
                 if (role === "supplier") {

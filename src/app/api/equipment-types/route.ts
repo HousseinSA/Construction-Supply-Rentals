@@ -25,11 +25,12 @@ export async function GET(request: Request) {
     if (categoryId) {
       query.categoryId = new ObjectId(categoryId)
     } else if (category) {
+      const escapedCategory = category.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
       const categoryDoc = await db.collection("categories").findOne({
         $or: [
           { slug: category },
-          { name: { $regex: new RegExp(category.replace(/-/g, " "), "i") } },
-          { name: { $regex: new RegExp(category, "i") } },
+          { name: { $regex: new RegExp(escapedCategory.replace(/-/g, " "), "i") } },
+          { name: { $regex: new RegExp(escapedCategory, "i") } },
         ],
       })
       if (categoryDoc) {

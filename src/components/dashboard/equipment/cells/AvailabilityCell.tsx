@@ -2,16 +2,19 @@ import { useTranslations } from "next-intl"
 import Dropdown from "@/src/components/ui/Dropdown"
 import TooltipWrapper from "@/src/components/ui/TooltipWrapper"
 import { getAvailabilityTooltipMessage, isAvailabilityDisabled } from "@/src/utils/equipmentHelpers"
+import { useEquipmentStore } from "@/src/stores/equipmentStore"
 import { EquipmentWithSupplier } from "@/src/lib/models/equipment"
 import { memo, useMemo, useCallback } from "react"
 
 interface AvailabilityCellProps {
   item: EquipmentWithSupplier
-  onAvailabilityChange: (id: string, isAvailable: boolean) => void
 }
 
-function AvailabilityCell({ item, onAvailabilityChange }: AvailabilityCellProps) {
+function AvailabilityCell({ item }: AvailabilityCellProps) {
   const t = useTranslations("dashboard.equipment")
+  const updateEquipmentAvailability = useEquipmentStore(
+    state => state.updateEquipmentAvailability
+  )
   
   const options = useMemo(
     () => [
@@ -21,29 +24,18 @@ function AvailabilityCell({ item, onAvailabilityChange }: AvailabilityCellProps)
     [t]
   )
 
-  const tooltipMessage = useMemo(() => getAvailabilityTooltipMessage(item, t), [
-    item.listingType,
-    item.hasActiveBookings,
-    item.hasPendingSale,
-    item.status,
-    t,
-  ])
+  const tooltipMessage = useMemo(() => getAvailabilityTooltipMessage(item, t), [item, t])
 
-  const disabled = useMemo(() => isAvailabilityDisabled(item), [
-    item.listingType,
-    item.hasActiveBookings,
-    item.hasPendingSale,
-    item.status,
-  ])
+  const disabled = useMemo(() => isAvailabilityDisabled(item), [item])
 
   const currentValue = item.isAvailable ? "available" : "unavailable"
   const equipmentId = item._id?.toString() || ""
 
   const handleChange = useCallback(
     (val: string) => {
-      onAvailabilityChange(equipmentId, val === "available")
+      updateEquipmentAvailability(item._id?.toString() || "", val === "available", t)
     },
-    [equipmentId, onAvailabilityChange]
+    [item._id, updateEquipmentAvailability, t]
   )
 
   return (

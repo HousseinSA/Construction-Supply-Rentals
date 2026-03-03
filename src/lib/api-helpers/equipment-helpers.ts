@@ -4,10 +4,6 @@ import { authOptions } from "@/src/lib/auth"
 import { ObjectId } from "mongodb"
 import type { Db } from "mongodb"
 
-// ============================================
-// RESPONSE HELPERS
-// ============================================
-
 export function successResponse(data: any, status = 200) {
   return NextResponse.json({ success: true, ...data }, { status })
 }
@@ -15,10 +11,6 @@ export function successResponse(data: any, status = 200) {
 export function errorResponse(error: string, status = 500) {
   return NextResponse.json({ success: false, error }, { status })
 }
-
-// ============================================
-// VALIDATION HELPERS
-// ============================================
 
 export function validateObjectId(id: string, fieldName = "ID"): { valid: boolean; error?: NextResponse } {
   if (!ObjectId.isValid(id)) {
@@ -37,10 +29,6 @@ export function validateObjectIds(ids: Record<string, string>): { valid: boolean
   }
   return { valid: true }
 }
-
-// ============================================
-// AUTHENTICATION HELPERS
-// ============================================
 
 export async function getAuthenticatedUser() {
   const session = await getServerSession(authOptions)
@@ -79,9 +67,6 @@ export async function requireAdmin() {
   return { authorized: true, user: auth.user }
 }
 
-// ============================================
-// OWNERSHIP HELPERS
-// ============================================
 
 export async function checkEquipmentOwnership(
   db: Db,
@@ -107,10 +92,6 @@ export async function checkEquipmentOwnership(
 
   return { authorized: true, equipment }
 }
-
-// ============================================
-// BOOKING STATUS HELPERS
-// ============================================
 
 export async function checkActiveBookingsOrSales(
   db: Db,
@@ -185,9 +166,6 @@ export async function getBookingStatusForEquipment(
   }
 }
 
-// ============================================
-// PRICING HELPERS
-// ============================================
 
 export function formatPricing(pricing: any, listingType?: string): string {
   if (listingType === "forSale" && pricing.salePrice) {
@@ -227,9 +205,6 @@ export function detectPricingChanges(
   return { changedPricing, hasChanges }
 }
 
-// ============================================
-// USER LOOKUP HELPERS
-// ============================================
 
 export async function getSupplierInfo(db: Db, supplierId: ObjectId) {
   return await db.collection("users").findOne(
@@ -241,10 +216,6 @@ export async function getSupplierInfo(db: Db, supplierId: ObjectId) {
 export async function getAdminUser(db: Db) {
   return await db.collection("users").findOne({ role: "admin" })
 }
-
-// ============================================
-// BATCH BOOKING STATUS HELPER (FIX N+1)
-// ============================================
 
 export async function getBatchBookingStatus(
   db: Db,

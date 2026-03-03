@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef } from "react"
 
 interface UsePollingOptions {
   interval?: number
@@ -8,7 +8,7 @@ interface UsePollingOptions {
 
 export function usePolling(
   callback: () => void | Promise<void>,
-  options: UsePollingOptions = {}
+  options: UsePollingOptions = {},
 ) {
   const { interval = 30000, enabled = true, maxInterval = 240000 } = options
   const callbackRef = useRef(callback)
@@ -22,7 +22,6 @@ export function usePolling(
 
   useEffect(() => {
     if (!enabled) return
-
     const poll = async () => {
       try {
         const result = callbackRef.current()
@@ -32,11 +31,11 @@ export function usePolling(
         errorCountRef.current = 0
         currentIntervalRef.current = interval
       } catch (error) {
-        console.error('Polling error:', error)
+        console.error("Polling error:", error)
         errorCountRef.current++
         const backoff = Math.min(
           interval * Math.pow(2, errorCountRef.current),
-          maxInterval
+          maxInterval,
         )
         currentIntervalRef.current = backoff
         if (intervalRef.current) {
@@ -60,13 +59,13 @@ export function usePolling(
     }
 
     intervalRef.current = setInterval(poll, interval)
-    document.addEventListener('visibilitychange', handleVisibilityChange)
+    document.addEventListener("visibilitychange", handleVisibilityChange)
 
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current)
       }
-      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
     }
   }, [interval, enabled])
 }

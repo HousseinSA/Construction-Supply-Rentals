@@ -8,38 +8,28 @@ import CardHeader from "./mobile-card/CardHeader"
 import CardActions from "./mobile-card/CardActions"
 import { EquipmentWithSupplier } from "@/src/lib/models/equipment"
 import { Loader2, RefreshCw, AlertCircle } from "lucide-react"
-import { useCityData } from "@/src/hooks/useCityData"
 import { useTooltip } from "@/src/hooks/useTooltip"
 import { useCardData } from "./mobile-card/useCardData"
+import { useEquipmentStore } from "@/src/stores/equipmentStore"
+import { useTranslations } from "next-intl"
+import { useRouter } from "@/src/i18n/navigation"
 import { formatPhoneNumber } from "@/src/lib/format"
 
 interface EquipmentMobileCardProps {
   item: EquipmentWithSupplier & { hasActiveBookings?: boolean; hasPendingSale?: boolean }
-  updating: string | null
-  navigating: string | null
-  onStatusChange: (id: string, action: "approve" | "reject") => void
-  onAvailabilityChange: (id: string, isAvailable: boolean) => void
-  onNavigate: (url: string, id: string) => void
-  onPricingReview?: (item: EquipmentWithSupplier) => void
-  t: (key: string) => string
-  isSupplier?: boolean
 }
 
-function EquipmentMobileCard({
-  item,
-  updating,
-  navigating,
-  onStatusChange,
-  onAvailabilityChange,
-  onNavigate,
-  onPricingReview,
-  t,
-  isSupplier = false,
-}: EquipmentMobileCardProps) {
-  const { convertToLocalized } = useCityData()
+function EquipmentMobileCard({ item }: EquipmentMobileCardProps) {
   const { ref: tooltipRef, isOpen: showTooltip, toggle: toggleTooltip } = useTooltip()
   const [showPricingModal, setShowPricingModal] = useState(false)
   const { pricesList, supplierName, cardBorderClass } = useCardData(item)
+  const updating = useEquipmentStore((state) => state.updating)
+  const navigating = useEquipmentStore((state) => state.navigating)
+  const isSupplier = useEquipmentStore((state) => state.isSupplier)
+  const updateEquipmentAvailability = useEquipmentStore((state) => state.updateEquipmentAvailability)
+  const navigateToEquipment = useEquipmentStore((state) => state.navigateToEquipment)
+  const t = useTranslations("dashboard.equipment")
+  const router = useRouter()
 
   return (
     <>
@@ -54,24 +44,20 @@ function EquipmentMobileCard({
         isAvailable={item.isAvailable}
         location={item.location}
         createdAt={item.createdAt}
-        isSupplier={isSupplier}
-        updating={updating}
         itemId={item._id?.toString() || ""}
-        onStatusChange={onStatusChange}
-        convertToLocalized={convertToLocalized}
-        t={t}
       />
 
       <div className="flex gap-4 pb-3 border-b border-gray-200">
         <div className="w-36 sm:w-44 md:w-48 lg:w-52 h-36 relative rounded-lg flex-shrink-0 overflow-hidden">
           <EquipmentImage
-            src={item.images[0] || "/equipement-images/default-fallback-image.png"}
+            src={item.images?.[0] || "/equipement-images/default-fallback-image.png"}
             alt={item.name}
             cover
             onClick={() =>
-              onNavigate(
+              navigateToEquipment(
                 `/equipment/${item._id?.toString()}?admin=true`,
-                item._id?.toString() || ""
+                item._id?.toString() || "",
+                router
               )
             }
           />
@@ -90,7 +76,7 @@ function EquipmentMobileCard({
                   <PriceDisplay amount={price.amount} suffix={price.suffix} />
                   {idx === 0 && item.pendingPricing && (
                     <button
-                      onClick={() => isSupplier ? setShowPricingModal(true) : onPricingReview?.(item)}
+                      onClick={() => setShowPricingModal(true)}
                       className="inline-flex items-center text-orange-600 hover:text-orange-700"
                     >
                       <RefreshCw className="w-3.5 h-3.5" />
@@ -135,9 +121,10 @@ function EquipmentMobileCard({
             value={item.isAvailable ? "available" : "unavailable"}
             onChange={(val) =>
               item.status === "approved" && !(item.listingType === "forSale" && !item.isAvailable) && !item.hasActiveBookings && !item.hasPendingSale &&
-              onAvailabilityChange(
+              updateEquipmentAvailability(
                 item._id?.toString() || "",
-                val === "available"
+                val === "available",
+                t
               )
             }
             disabled={item.status !== "approved" || (item.listingType === "forSale" && !item.isAvailable) || item.hasActiveBookings || item.hasPendingSale}
@@ -151,7 +138,6 @@ function EquipmentMobileCard({
             </div>
           )}
         </div>
-
         <CardActions
           itemId={item._id?.toString() || ""}
           status={item.status}
@@ -159,10 +145,6 @@ function EquipmentMobileCard({
           isAvailable={item.isAvailable}
           hasActiveBookings={item.hasActiveBookings || false}
           createdBy={item.createdBy}
-          isSupplier={isSupplier}
-          navigating={navigating}
-          onNavigate={onNavigate}
-          t={t}
         />
       </div>
     </div>
@@ -181,8 +163,5 @@ export default memo(EquipmentMobileCard, (prev, next) => {
   if (prev.item.status !== next.item.status) return false
   if (prev.item.isAvailable !== next.item.isAvailable) return false
   if (prev.item.pendingPricing !== next.item.pendingPricing) return false
-  if (prev.updating !== next.updating) return false
-  if (prev.navigating !== next.navigating) return false
-  if (prev.isSupplier !== next.isSupplier) return false
   return true
 })

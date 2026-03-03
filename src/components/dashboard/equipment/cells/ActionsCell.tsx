@@ -2,44 +2,32 @@ import { useTranslations } from "next-intl"
 import { useRouter } from "@/src/i18n/navigation"
 import { Edit, Eye, Loader2 } from "lucide-react"
 import { canEditEquipment } from "@/src/utils/equipmentHelpers"
+import { useEquipmentStore } from "@/src/stores/equipmentStore"
 import { EquipmentWithSupplier } from "@/src/lib/models/equipment"
 import { memo, useMemo, useCallback } from "react"
 interface ActionsCellProps {
   item: EquipmentWithSupplier
-  isSupplier: boolean
-  navigating?: string | null
-  onNavigate?: (url: string, id: string) => void
 }
 
-function ActionsCell({ item, isSupplier, navigating, onNavigate }: ActionsCellProps) {
+function ActionsCell({ item }: ActionsCellProps) {
   const t = useTranslations("dashboard.equipment")
   const router = useRouter()
+  const isSupplier = useEquipmentStore((state) => state.isSupplier)
+  const navigating = useEquipmentStore((state) => state.navigating)
+  const navigateToEquipment = useEquipmentStore((state) => state.navigateToEquipment)
   
-  const canEdit = useMemo(() => canEditEquipment(item, isSupplier), [
-    item.status,
-    item.hasActiveBookings,
-    item.hasPendingSale,
-    isSupplier,
-  ])
+  const canEdit = useMemo(() => canEditEquipment(item, isSupplier), [item, isSupplier])
 
   const equipmentId = item._id?.toString() || ""
   const editNavId = `edit-${equipmentId}`
 
   const handleEdit = useCallback(() => {
-    if (onNavigate) {
-      onNavigate(`/dashboard/equipment/edit/${equipmentId}`, editNavId)
-    } else {
-      router.push(`/dashboard/equipment/edit/${equipmentId}`)
-    }
-  }, [onNavigate, equipmentId, editNavId, router])
+    navigateToEquipment(`/dashboard/equipment/edit/${equipmentId}`, editNavId, router)
+  }, [navigateToEquipment, equipmentId, editNavId, router])
 
   const handleView = useCallback(() => {
-    if (onNavigate) {
-      onNavigate(`/equipment/${equipmentId}?admin=true`, equipmentId)
-    } else {
-      router.push(`/equipment/${equipmentId}?admin=true`)
-    }
-  }, [onNavigate, equipmentId, router])
+    navigateToEquipment(`/equipment/${equipmentId}?admin=true`, equipmentId, router)
+  }, [navigateToEquipment, equipmentId, router])
 
   return (
     <td className="px-6 py-4">

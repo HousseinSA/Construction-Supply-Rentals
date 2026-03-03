@@ -999,6 +999,7 @@
     "usage": "Usage Required",
     "estimatedDistance": "Estimated Distance",
     "startDate": "Start Date",
+    "endDate": "End Date",
     "rentalPeriod": "Rental Period",
     "selectDate": "Select a date",
     "from": "From",

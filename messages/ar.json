@@ -998,6 +998,7 @@
     "usage": "الاستخدام المطلوب",
     "estimatedDistance": "المسافة التقديرية",
     "startDate": "تاريخ البدء",
+    "endDate":"تاريخ الانتهاء",
     "rentalPeriod": "فترة الإيجار",
     "selectDate": " اختر التاريخ",
     "from": "من",

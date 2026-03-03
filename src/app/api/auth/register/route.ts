@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
       phone: phone.replace(/\s+/g, ''),
       location: userType === "supplier" ? location.trim() : "",
       userType,
-      role: "user" as const,
+      role: "user" as const,  
       status: "approved" as const,
       ...(userType === "supplier" && { companyName: companyName.trim() }),
       createdAt: new Date(),

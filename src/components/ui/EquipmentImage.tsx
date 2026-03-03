@@ -11,6 +11,36 @@ interface EquipmentImageProps {
   cover?: boolean
 }
 
+interface ColoredIconProps {
+  src: string
+  alt: string
+  size?: number
+  color?: "primary" | "amber" | "blue" | "green"
+  className?: string
+}
+
+export function ColoredIcon({ src, alt, size = 20, color = "primary", className = "" }: ColoredIconProps) {
+  return (
+    <div className={`relative flex-shrink-0 ${className}`} style={{ width: size, height: size }}>
+      <Image
+        src={src}
+        alt={alt}
+        width={size}
+        height={size}
+        style={{
+          filter: color === "primary" 
+            ? "brightness(0) saturate(100%) invert(47%) sepia(100%) saturate(3000%) hue-rotate(345deg) brightness(95%) contrast(105%)"
+            : color === "amber"
+            ? "brightness(0) saturate(100%) invert(60%) sepia(98%) saturate(1500%) hue-rotate(0deg) brightness(95%)"
+            : color === "blue"
+            ? "brightness(0) saturate(100%) invert(40%) sepia(100%) saturate(2000%) hue-rotate(200deg) brightness(90%)"
+            : "brightness(0) saturate(100%) invert(50%) sepia(100%) saturate(1000%) hue-rotate(100deg) brightness(90%)"
+        }}
+      />
+    </div>
+  )
+}
+
 export default function EquipmentImage({ src, alt, size = "md", onClick, className, cover = false }: EquipmentImageProps) {
   const imageSrc = Array.isArray(src) ? src[0] : src
   const fallback = "/equipement-images/default-fallback-image.png"

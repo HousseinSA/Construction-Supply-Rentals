@@ -20,7 +20,7 @@ import { type Session } from "next-auth"
 import { useSession } from "next-auth/react"
 
 interface HeaderProps {
-  session: Session
+  session: Session |null
 }
 
 export default function Header({ session: serverSession }: HeaderProps) {

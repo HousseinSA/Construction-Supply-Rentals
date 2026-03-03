@@ -1,4 +1,6 @@
 import { AlertCircle, MapPin, Tag } from "lucide-react"
+import { useEquipmentStore } from "@/src/stores/equipmentStore"
+import { useTranslations } from "next-intl"
 
 interface CardHeaderProps {
   referenceNumber?: string
@@ -10,19 +12,21 @@ interface CardHeaderProps {
   isAvailable: boolean
   location: string
   createdAt: Date
-  isSupplier: boolean
-  updating: string | null
   itemId: string
-  onStatusChange: (id: string, action: "approve" | "reject") => void
-  convertToLocalized: (city: string) => string
-  t: (key: string) => string
 }
 
 export default function CardHeader({
   referenceNumber, name, status, rejectionReason, createdBy, listingType,
-  isAvailable, location, createdAt, isSupplier, updating, itemId,
-  onStatusChange, convertToLocalized, t
+  isAvailable, location, createdAt, itemId
 }: CardHeaderProps) {
+  const isSupplier = useEquipmentStore((state) => state.isSupplier)
+  const updating = useEquipmentStore((state) => state.updating)
+  const updateEquipmentStatus = useEquipmentStore((state) => state.updateEquipmentStatus)
+  const convertToLocalized = useEquipmentStore((state) => state.convertToLocalized)
+  const t = useTranslations("dashboard.equipment")
+  
+  if (!convertToLocalized) return null
+
   return (
     <div className="flex items-start justify-between gap-2">
       <div className="flex-1">
@@ -61,11 +65,11 @@ export default function CardHeader({
       <div className="flex-shrink-0 flex flex-col items-end gap-1.5">
         {status === "pending" && !isSupplier ? (
           <>
-            <button onClick={() => onStatusChange(itemId, "approve")} disabled={updating === itemId}
+            <button onClick={() => updateEquipmentStatus(itemId, "approved", undefined, t)} disabled={updating === itemId}
               className="px-3 py-1.5 text-xs font-medium bg-green-500 text-white rounded-md hover:bg-green-600 min-w-[70px]">
               {t("approve")}
             </button>
-            <button onClick={() => onStatusChange(itemId, "reject")} disabled={updating === itemId}
+            <button onClick={() => updateEquipmentStatus(itemId, "rejected", undefined, t)} disabled={updating === itemId}
               className="px-3 py-1.5 text-xs font-medium bg-red-500 text-white rounded-md hover:bg-red-600 min-w-[70px]">
               {t("reject")}
             </button>

@@ -1,6 +1,10 @@
 import { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { setRequestLocale, getTranslations, getMessages } from "next-intl/server"
+import {
+  setRequestLocale,
+  getTranslations,
+  getMessages,
+} from "next-intl/server"
 import { NextIntlClientProvider } from "next-intl"
 import { Toaster } from "sonner"
 import SessionProvider from "@/src/components/providers/SessionProvider"
@@ -12,6 +16,7 @@ import { routing } from "@/i18n/routing"
 import { inter, cairo, poppins } from "@/lib/fonts"
 import Header from "@/components/layout/Header"
 import { generateSiteMetadata, generateStructuredData } from "@/lib/seo"
+import StructuredData from "./StructuredData"
 import "../globals.css"
 import { Analytics } from "@vercel/analytics/next"
 
@@ -51,15 +56,16 @@ export default async function LocaleLayout({
   const isArabic = locale === "ar"
   const direction = isArabic ? "rtl" : "ltr"
   const fontClasses = `${inter.variable} ${cairo.variable} ${poppins.variable}`
-  const baseFont = isArabic ? cairo.className : locale === "fr" ? poppins.className : inter.className
+  const baseFont = isArabic
+    ? cairo.className
+    : locale === "fr"
+      ? poppins.className
+      : inter.className
 
   return (
     <html lang={locale} dir={direction} className={fontClasses}>
       <head>
-        <script 
-          type="application/ld+json" 
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} 
-        />
+        <StructuredData data={structuredData} />
       </head>
       <body className={`${baseFont} antialiased`}>
         <SessionProvider session={session}>

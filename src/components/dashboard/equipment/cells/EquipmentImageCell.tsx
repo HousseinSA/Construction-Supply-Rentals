@@ -3,41 +3,35 @@ import { Loader2, AlertCircle, Tag } from "lucide-react"
 import Image from "next/image"
 import { getOptimizedCloudinaryUrl } from "@/src/lib/cloudinary-url"
 import TooltipWrapper from "@/src/components/ui/TooltipWrapper"
+import { useEquipmentStore } from "@/src/stores/equipmentStore"
+import { useTranslations } from "next-intl"
+import { EquipmentWithSupplier } from "@/src/lib/models/equipment"
 import { memo, useMemo, useCallback } from "react"
 
 interface EquipmentImageCellProps {
-  images: string[]
-  name: string
-  referenceNumber?: string
-  status: string
-  rejectionReason?: string
-  createdBy: string
-  listingType: string
-  isAvailable: boolean
-  equipmentId: string
-  navigating?: string | null
-  onNavigate?: (url: string, id: string) => void
-  t: (key: string) => string
+  item: EquipmentWithSupplier
 }
 
-function EquipmentImageCell({
-  images,
-  name,
-  referenceNumber,
-  status,
-  rejectionReason,
-  createdBy,
-  listingType,
-  isAvailable,
-  equipmentId,
-  navigating,
-  onNavigate,
-  t,
-}: EquipmentImageCellProps) {
+function EquipmentImageCell({ item }: EquipmentImageCellProps) {
   const router = useRouter()
-  
+  const navigating = useEquipmentStore((state) => state.navigating)
+  const navigateToEquipment = useEquipmentStore((state) => state.navigateToEquipment)
+  const t = useTranslations("dashboard.equipment")
+
+  const equipmentId = item._id?.toString() || ""
+  const {
+    images,
+    name,
+    referenceNumber,
+    status,
+    rejectionReason,
+    createdBy,
+    listingType,
+    isAvailable,
+  } = item
+
   const imageSrc = useMemo(() => {
-    const firstImage = images[0]
+    const firstImage = images?.[0]
     return firstImage
       ? getOptimizedCloudinaryUrl(firstImage, {
           width: 200,
@@ -50,12 +44,8 @@ function EquipmentImageCell({
   }, [images])
 
   const handleImageClick = useCallback(() => {
-    if (onNavigate) {
-      onNavigate(`/equipment/${equipmentId}?admin=true`, equipmentId)
-    } else {
-      router.push(`/equipment/${equipmentId}?admin=true`)
-    }
-  }, [onNavigate, equipmentId, router])
+    navigateToEquipment(`/equipment/${equipmentId}?admin=true`, equipmentId, router)
+  }, [navigateToEquipment, equipmentId, router])
 
   return (
     <td className="px-6 py-4 sticky left-0 z-10 bg-white">
