@@ -1,6 +1,5 @@
 "use client"
 
-import { useTranslations } from "next-intl"
 import { Clock, Gauge } from "lucide-react"
 
 interface EquipmentSpecsProps {
@@ -15,7 +14,6 @@ interface EquipmentSpecsProps {
 }
 
 export default function EquipmentSpecs({ specs }: EquipmentSpecsProps) {
-  const tDetails = useTranslations("equipmentDetails")
 
   if (!specs || (!specs.brand && !specs.model && !specs.year && !specs.hoursUsed && !specs.kilometersUsed)) {
     return null

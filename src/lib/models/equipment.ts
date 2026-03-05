@@ -27,7 +27,7 @@ export interface Equipment {
     tonRate?: number
     salePrice?: number
     requestedAt?: Date
-  }
+  } | null
   location: string
   images: string[]
   specifications?: {
@@ -43,12 +43,12 @@ export interface Equipment {
   }
   usageCategory: UsageCategory
   status: EquipmentStatus
-  rejectionReason?: string
-  rejectedAt?: Date
+  rejectionReason?: string | null
+  rejectedAt?: Date | null
   lastEditedAt?: Date
   pricingRejectionReasons?: {
     [key: string]: string
-  }
+  } | null
   rejectedPricingValues?: {
     hourlyRate?: number
     dailyRate?: number
@@ -56,7 +56,7 @@ export interface Equipment {
     kmRate?: number
     tonRate?: number
     salePrice?: number
-  }
+  } | null
   isAvailable: boolean
   isSold?: boolean
   listingType: "forSale" | "forRent"
@@ -114,6 +114,14 @@ export const LOCKED_FIELDS = [
   "usageCategory",
   "createdBy",
   "createdById",
+] as const
+
+export const LOCKED_FIELDS_FOR_EDIT = [
+  "categoryId",
+  "equipmentTypeId",
+  "location",
+  "listingType",
+  "usageCategory",
 ] as const
 
 export const SUPPLIER_EDITABLE_FIELDS = [

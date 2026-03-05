@@ -1,10 +1,6 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextRequest } from "next/server"
 import { connectDB } from "@/src/lib/mongodb"
 import { ObjectId } from "mongodb"
-import {
-  getInitialEquipmentStatus,
-  getUsageCategoryFromEquipmentType,
-} from "@/src/lib/models/equipment"
 import { generateReferenceNumber } from "@/src/lib/reference-number"
 import {
   buildEquipmentQuery,
@@ -14,8 +10,14 @@ import {
   getAuthenticatedUser,
   requireAdmin,
   sendNewEquipmentNotification,
-  getBatchBookingStatus
 } from "@/src/lib/api-helpers"
+import {
+  fetchEquipmentWithPagination,
+  enrichEquipmentWithBookingStatus,
+  validateEquipmentCreation,
+  buildEquipmentDocument,
+} from "@/src/lib/api-helpers/equipment-route-helpers"
+import type { EquipmentType } from "@/src/lib/api-helpers/types"
 
 
 export async function GET(request: NextRequest) {
@@ -23,118 +25,49 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const db = await connectDB()
 
+    const getParam = (key: string) => searchParams.get(key)
+    const getBoolParam = (key: string) => getParam(key) === "true"
+    
+    const available = getParam("available")
+    const isAdmin = getBoolParam("admin")
+
     const query = await buildEquipmentQuery(db, {
-      status: searchParams.get("status"),
-      categoryId: searchParams.get("categoryId"),
-      category: searchParams.get("category"),
-      type: searchParams.get("type"),
-      city: searchParams.get("city"),
-      listingType: searchParams.get("listingType"),
-      availableOnly: searchParams.get("available") === "true" ? true : searchParams.get("available") === "false" ? false : undefined,
-      isAdmin: searchParams.get("admin") === "true",
-      supplierId: searchParams.get("supplierId"),
-      search: searchParams.get("search"),
-      hasPendingPricing: searchParams.get("hasPendingPricing"),
-      excludeSold: searchParams.get("excludeSold"),
+      status: getParam("status"),
+      categoryId: getParam("categoryId"),
+      category: getParam("category"),
+      type: getParam("type"),
+      city: getParam("city"),
+      listingType: getParam("listingType"),
+      availableOnly: available === "true" ? true : available === "false" ? false : undefined,
+      isAdmin,
+      supplierId: getParam("supplierId"),
+      search: getParam("search"),
+      hasPendingPricing: getParam("hasPendingPricing"),
+      excludeSold: getParam("excludeSold"),
     })
 
-    const isAdmin = searchParams.get("admin") === "true"
-    const includeSupplier = searchParams.get("includeSupplier") === "true"
-
-    const page = parseInt(searchParams.get("page") || "1")
-    const limit = parseInt(searchParams.get("limit") || "10")
-    const skip = (page - 1) * limit
-
-    if (!isAdmin) {
-      const equipment = await db
-        .collection("equipment")
-        .find(query)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .toArray()
-
-      const totalCount = await db.collection("equipment").countDocuments(query)
-
-      return successResponse({
-        data: equipment,
-        pagination: {
-          page,
-          limit,
-          totalCount,
-          totalPages: Math.ceil(totalCount / limit)
-        }
-      })
-    }
-
-    let equipment
-    if (includeSupplier) {
-      equipment = await db
-        .collection("equipment")
-        .aggregate([
-          { $match: query },
-          {
-            $lookup: {
-              from: "users",
-              localField: "supplierId",
-              foreignField: "_id",
-              as: "supplierData",
-            },
-          },
-          {
-            $addFields: {
-              supplier: {
-                $cond: {
-                  if: { $eq: ["$createdBy", "supplier"] },
-                  then: { $arrayElemAt: ["$supplierData", 0] },
-                  else: null,
-                },
-              },
-            },
-          },
-          { $project: { supplierData: 0 } },
-          { $sort: { createdAt: -1 } },
-          { $skip: skip },
-          { $limit: limit }
-        ])
-        .toArray()
-    } else {
-      equipment = await db
-        .collection("equipment")
-        .find(query)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .toArray()
-    }
-
-    const equipmentIds = equipment.map((item) => item._id)
-    const bookingStatusMap = await getBatchBookingStatus(db, equipmentIds)
-
-    const equipmentWithBookingStatus = equipment.map((item) => {
-      const status = bookingStatusMap.get(item._id.toString()) || {
-        hasActiveBookings: false,
-        hasPendingSale: false
-      }
-      return {
-        ...item,
-        ...status
-      }
+    const { equipment, pagination } = await fetchEquipmentWithPagination(db, query, {
+      page: parseInt(getParam("page") || "1"),
+      limit: parseInt(getParam("limit") || "10"),
+      includeSupplier: getBoolParam("includeSupplier"),
+      isAdmin
     })
 
-    const totalCount = await db.collection("equipment").countDocuments(query)
+    if (!isAdmin || equipment.length === 0) {
+      return successResponse({ data: equipment, pagination })
+    }
+
+    const enrichedEquipment = await enrichEquipmentWithBookingStatus(db, equipment)
 
     return successResponse({
-      data: equipmentWithBookingStatus,
-      pagination: {
-        page,
-        limit,
-        totalCount,
-        totalPages: Math.ceil(totalCount / limit)
-      }
+      data: enrichedEquipment,
+      pagination
     })
   } catch (error) {
-    return errorResponse("Failed to fetch equipment")
+    console.error("[GET /equipment] Error:", error)
+    return errorResponse(
+      error instanceof Error ? error.message : "Failed to fetch equipment"
+    )
   }
 }
 
@@ -142,98 +75,43 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
 
-    const {
-      description,
-      categoryId,
-      equipmentTypeId,
-      pricing,
-      location,
-      images,
-      specifications,
-      usage,
-      listingType,
-    } = body
-
-    if (!categoryId || !equipmentTypeId || !pricing || !location) {
-      return errorResponse(
-        "Missing required fields: categoryId, equipmentTypeId, pricing, location",
-        400
-      )
-    }
-
-    if (listingType === "forSale" && (!specifications || !specifications.condition)) {
-      return errorResponse("Condition is required for sale equipment", 400)
-    }
-
-    const validation = validateObjectIds({ categoryId, equipmentTypeId })
+    const validation = validateEquipmentCreation(body)
     if (!validation.valid) return validation.error
+
+    const { categoryId, equipmentTypeId } = body
+    const objectIdValidation = validateObjectIds({ categoryId, equipmentTypeId })
+    if (!objectIdValidation.valid) return objectIdValidation.error
 
     const db = await connectDB()
 
-    const equipmentType = await db
+    const equipmentTypeDoc = await db
       .collection("equipmentTypes")
-      .findOne({ _id: new ObjectId(equipmentTypeId) })
-    if (!equipmentType) {
+      .findOne({ _id: ObjectId.createFromHexString(equipmentTypeId) })
+    if (!equipmentTypeDoc) {
       return errorResponse("Equipment type not found", 404)
-    }
-
-    if (!images || !Array.isArray(images) || images.length === 0) {
-      return errorResponse("At least one image is required", 400)
-    }
-
-    if (images.length > 10) {
-      return errorResponse("Maximum 10 images allowed", 400)
     }
 
     const auth = await getAuthenticatedUser()
     if (!auth.authenticated) return auth.error
 
-    const userId = auth.user!.id
-    const userRole = auth.user!.role
-    const userType = auth.user!.userType
-
-    const usageCategory = getUsageCategoryFromEquipmentType(equipmentType.name)
-    const status = getInitialEquipmentStatus(userRole as "admin" | "user")
-
-    const equipmentName = equipmentType.name
     const referenceNumber = await generateReferenceNumber("equipment")
+    const equipmentDoc = buildEquipmentDocument(
+      body,
+      { id: auth.user!.id, role: auth.user!.role, userType: auth.user!.userType },
+      equipmentTypeDoc as EquipmentType,
+      referenceNumber
+    )
 
-    const result = await db.collection("equipment").insertOne({
-      referenceNumber,
-      supplierId: new ObjectId(userId),
-      name: equipmentName,
-      description: description || "",
-      categoryId: new ObjectId(categoryId),
-      equipmentTypeId: new ObjectId(equipmentTypeId),
-      pricing,
-      location,
-      images,
-      specifications: specifications || {},
-      usage: usage || {},
-      usageCategory,
-      status,
-      isAvailable: true,
-      listingType: listingType || "forRent",
-      createdBy:
-        userRole === "admin"
-          ? "admin"
-          : userType === "supplier"
-          ? "supplier"
-          : "admin",
-      createdById: new ObjectId(userId),
-      ...(status === "approved" && { approvedAt: new Date() }),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    })
+    const result = await db.collection("equipment").insertOne(equipmentDoc)
 
-    if (userRole !== "admin" && userType === "supplier") {
+    if (auth.user!.userType === "supplier") {
       await sendNewEquipmentNotification(db, {
-        equipmentName,
-        userId,
-        categoryId,
-        location,
-        pricing,
-        listingType
+        equipmentName: equipmentTypeDoc.name,
+        userId: auth.user!.id,
+        categoryId: body.categoryId,
+        location: body.location,
+        pricing: body.pricing,
+        listingType: body.listingType
       })
     }
 
@@ -241,16 +119,16 @@ export async function POST(request: NextRequest) {
       {
         data: {
           id: result.insertedId,
-          name: equipmentName,
-          status,
-          usageCategory,
+          name: equipmentTypeDoc.name,
+          status: equipmentDoc.status,
+          usageCategory: equipmentDoc.usageCategory,
           isAvailable: true
         }
       },
       201
     )
   } catch (error) {
-    console.error("Equipment creation error:", error)
+    console.error("[POST /equipment] Error:", error)
     return errorResponse(
       error instanceof Error ? error.message : "Failed to create equipment"
     )
@@ -269,20 +147,20 @@ export async function PUT(request: NextRequest) {
       return errorResponse("Missing required fields: equipmentId, status", 400)
     }
 
-    const validation = validateObjectIds({ equipmentId })
+    const validation = validateObjectIds({ equipmentId, ...(adminId && { adminId }) })
     if (!validation.valid) return validation.error
 
     const db = await connectDB()
-    const updateData: any = { status, updatedAt: new Date() }
+    const updateData: Record<string, unknown> = { status, updatedAt: new Date() }
 
     if (status === "approved" && adminId) {
-      updateData.approvedBy = new ObjectId(adminId)
+      updateData.approvedBy = ObjectId.createFromHexString(adminId)
       updateData.approvedAt = new Date()
     }
 
     const result = await db
       .collection("equipment")
-      .updateOne({ _id: new ObjectId(equipmentId) }, { $set: updateData })
+      .updateOne({ _id: ObjectId.createFromHexString(equipmentId) }, { $set: updateData })
 
     if (result.matchedCount === 0) {
       return errorResponse("Equipment not found", 404)
@@ -290,7 +168,9 @@ export async function PUT(request: NextRequest) {
 
     return successResponse({ message: "Equipment status updated successfully" })
   } catch (error) {
-    console.error("Equipment status update error:", error)
-    return errorResponse("Failed to update equipment status")
+    console.error("[PUT /equipment] Error:", error)
+    return errorResponse(
+      error instanceof Error ? error.message : "Failed to update equipment status"
+    )
   }
 }

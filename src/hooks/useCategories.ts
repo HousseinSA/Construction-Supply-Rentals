@@ -34,6 +34,7 @@ export function useCategories() {
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error")
       console.error("Failed to fetch categories:", err)
+      setLoading(false)
     }
   }, [categories.length, setCategories, setLoading, setError])
 

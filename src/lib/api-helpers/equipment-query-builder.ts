@@ -1,5 +1,7 @@
-import { ObjectId } from "mongodb"
+import { ObjectId, Filter } from "mongodb"
 import type { Db } from "mongodb"
+import type { Equipment } from "@/src/lib/models/equipment"
+import type { EquipmentStatus } from "@/src/lib/types"
 
 let cachedExcludedCategoryIds: ObjectId[] | null = null
 
@@ -40,7 +42,7 @@ export interface EquipmentQueryParams {
 export async function buildEquipmentQuery(
   db: Db,
   params: EquipmentQueryParams,
-): Promise<any> {
+): Promise<Filter<Equipment>> {
   const {
     status,
     categoryId,
@@ -57,7 +59,7 @@ export async function buildEquipmentQuery(
   } = params
 
   const excludedCategoryIds = await getExcludedCategoryIds(db)
-  const query: any = {
+  const query: Filter<Equipment> = {
     categoryId: { $nin: excludedCategoryIds },
   }
 
@@ -71,7 +73,7 @@ export async function buildEquipmentQuery(
   }
 
   if (status) {
-    query.status = status
+    query.status = status as EquipmentStatus
   }
 
   if (categoryId) {
@@ -104,7 +106,7 @@ export async function buildEquipmentQuery(
   if ((city || type) && !listingType) {
     query.listingType = "forRent"
   } else if (listingType) {
-    query.listingType = listingType
+    query.listingType = listingType as "forSale" | "forRent"
   }
 
   if (category) {

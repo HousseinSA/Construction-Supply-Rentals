@@ -26,14 +26,19 @@ export function useServerTableData<T>({
   const [stats, setStats] = useState<any>(null)
   const abortControllerRef = useRef<AbortController | null>(null)
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const hasLoadedRef = useRef(false)
 
   const fetchData = useCallback(async () => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort()
     }
     abortControllerRef.current = new AbortController()
+    
+    const isInitialLoad = !hasLoadedRef.current
     try {
-      setLoading(true)
+      if (isInitialLoad) {
+        setLoading(true)
+      }
       const params = new URLSearchParams()
       params.set("page", currentPage.toString())
       params.set("limit", itemsPerPage.toString())
@@ -75,12 +80,16 @@ export function useServerTableData<T>({
         if (result.stats) {
           setStats(result.stats)
         }
+        
+        hasLoadedRef.current = true
       }
     } catch (error: any) {
       if (error.name === "AbortError") return
       console.error(`Error fetching data from ${endpoint}:`, error)
     } finally {
-      setLoading(false)
+      if (isInitialLoad) {
+        setLoading(false)
+      }
     }
   }, [
     endpoint,
@@ -98,6 +107,7 @@ export function useServerTableData<T>({
       if (currentPage !== 1) {
         setCurrentPage(1)
       }
+      hasLoadedRef.current = false
     },
     [currentPage],
   )
@@ -108,6 +118,7 @@ export function useServerTableData<T>({
       if (currentPage !== 1) {
         setCurrentPage(1)
       }
+      hasLoadedRef.current = false
     },
     [currentPage],
   )

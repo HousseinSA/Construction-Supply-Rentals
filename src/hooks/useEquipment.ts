@@ -52,11 +52,11 @@ export function useEquipment(
     }
   }, [selectedCity, selectedType, listingType])
 
-  usePolling(fetchEquipment, { interval: 30000 })
-
   useEffect(() => {
     fetchEquipment()
   }, [fetchEquipment])
+
+  usePolling(fetchEquipment, { interval: 30000 })
 
   return { equipment, loading, error }
 }

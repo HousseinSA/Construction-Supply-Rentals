@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useRef } from 'react'
 import { useSettingsStore } from '@/src/stores/settingsStore'
 
 const ALLOWED_ENDPOINTS = ['/api/settings', '/api/admin/settings'];
@@ -9,14 +9,18 @@ const validateEndpoint = (endpoint: string): boolean => {
 
 export function useSettings(apiEndpoint: string) {
   const { settings, loading, setSettings, setLoading, shouldRefetch, invalidateCache } = useSettingsStore()
+  const hasLoadedRef = useRef(false)
 
   const fetchSettings = useCallback(async () => {
     if (!validateEndpoint(apiEndpoint)) {
       console.error('Invalid API endpoint');
       return;
     }
+    const isInitialLoad = !hasLoadedRef.current
     try {
-      setLoading(true)
+      if (isInitialLoad) {
+        setLoading(true)
+      }
       const response = await fetch(apiEndpoint)
       if (response.ok) {
         const data = await response.json()
@@ -24,13 +28,16 @@ export function useSettings(apiEndpoint: string) {
           phone: data.phone || data.adminPhone || '',
           password: data.password || data.adminPassword || ''
         })
+        hasLoadedRef.current = true
       } else {
         console.error('Failed to fetch settings:', response.status);
       }
     } catch (error) {
       console.error('Error loading settings:', error)
     } finally {
-      setLoading(false)
+      if (isInitialLoad) {
+        setLoading(false)
+      }
     }
   }, [apiEndpoint, setSettings, setLoading])
 
