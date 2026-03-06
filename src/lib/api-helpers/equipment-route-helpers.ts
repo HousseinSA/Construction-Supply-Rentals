@@ -16,12 +16,16 @@ import type {
 const MAX_IMAGES = 10
 const COLLECTION_NAME = "equipment"
 
-const buildPagination = (page: number, limit: number, totalCount: number) => ({
-  page,
-  limit,
-  totalCount,
-  totalPages: Math.ceil(totalCount / limit)
-})
+const buildPagination = (page: number, limit: number, totalCount: number) => {
+  const totalPages = Math.ceil(totalCount / limit)
+  return {
+    page,
+    limit,
+    totalCount,
+    totalPages,
+    hasMore: page < totalPages
+  }
+}
 
 async function fetchWithPagination(
   db: Db,
@@ -164,11 +168,11 @@ export function buildEquipmentDocument(
 
   return {
     referenceNumber,
-    supplierId: ObjectId.createFromHexString(auth.id),
+    supplierId: new ObjectId(auth.id),
     name: equipmentType.name,
     description: body.description ?? "",
-    categoryId: ObjectId.createFromHexString(body.categoryId),
-    equipmentTypeId: ObjectId.createFromHexString(body.equipmentTypeId),
+    categoryId: new ObjectId(body.categoryId),
+    equipmentTypeId: new ObjectId(body.equipmentTypeId),
     pricing: body.pricing,
     location: body.location,
     images: body.images,
@@ -179,7 +183,7 @@ export function buildEquipmentDocument(
     isAvailable: true,
     listingType: body.listingType ?? "forRent",
     createdBy,
-    createdById: ObjectId.createFromHexString(auth.id),
+    createdById: new ObjectId(auth.id),
     ...(status === "approved" && { approvedAt: new Date() }),
     createdAt: new Date(),
     updatedAt: new Date(),

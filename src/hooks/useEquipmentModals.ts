@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react"
+import { useState, useMemo, useCallback } from "react"
 
 export function useEquipmentModals() {
   const [confirmModal, setConfirmModal] = useState<{
@@ -20,11 +20,14 @@ export function useEquipmentModals() {
     setConfirmModal({ isOpen: false, equipmentId: null, action: null })
   }
 
-  const handleStatusChangeCallback = useMemo(
-    () => (id: string, action: "approve" | "reject") =>
-      action === "reject"
-        ? setModals((p) => ({ ...p, rejection: { isOpen: true, equipmentId: id } }))
-        : openConfirmModal(id, action),
+  const handleStatusChangeCallback = useCallback(
+    (id: string, action: "approve" | "reject") => {
+      if (action === "reject") {
+        setModals((p) => ({ ...p, rejection: { isOpen: true, equipmentId: id } }))
+      } else {
+        openConfirmModal(id, action)
+      }
+    },
     []
   )
 

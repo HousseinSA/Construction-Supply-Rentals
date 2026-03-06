@@ -167,7 +167,7 @@ export async function POST(request: NextRequest) {
     const db = await connectDB()
     const equipment = await db
       .collection("equipment")
-      .findOne({ _id: ObjectId.createFromHexString(equipmentId) })
+      .findOne({ _id: new ObjectId(equipmentId) })
 
     if (!equipment) {
       return NextResponse.json(
@@ -190,8 +190,8 @@ export async function POST(request: NextRequest) {
 
     const result = await db.collection("sales").insertOne({
       referenceNumber,
-      buyerId: ObjectId.createFromHexString(buyerId),
-      equipmentId: ObjectId.createFromHexString(equipmentId),
+      buyerId: new ObjectId(buyerId),
+      equipmentId: new ObjectId(equipmentId),
       supplierId:
         equipment.supplierId && equipment.createdBy !== "admin"
           ? equipment.supplierId
@@ -212,7 +212,7 @@ export async function POST(request: NextRequest) {
         try {
           const buyer = await db
             .collection("users")
-            .findOne({ _id: ObjectId.createFromHexString(buyerId) })
+            .findOne({ _id: new ObjectId(buyerId) })
 
           let supplierName, supplierPhone
           if (equipment.supplierId) {
@@ -250,7 +250,7 @@ export async function POST(request: NextRequest) {
       await db
         .collection("equipment")
         .updateOne(
-          { _id: ObjectId.createFromHexString(equipmentId) },
+          { _id: new ObjectId(equipmentId) },
           { $set: { isAvailable: false, updatedAt: new Date() } },
         )
     } catch (e) {
@@ -297,7 +297,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const db = await connectDB()
-    const saleObjectId = ObjectId.createFromHexString(saleId)
+    const saleObjectId = new ObjectId(saleId)
 
     if (status === "cancelled") {
       const sale = await db.collection("sales").findOne({ _id: saleObjectId })
@@ -361,7 +361,7 @@ export async function PUT(request: NextRequest) {
     }
 
     if (adminId) {
-      updateData.adminHandledBy = ObjectId.createFromHexString(adminId)
+      updateData.adminHandledBy = new ObjectId(adminId)
       updateData.adminHandledAt = new Date()
     }
 

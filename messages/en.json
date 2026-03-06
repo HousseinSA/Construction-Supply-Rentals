@@ -55,6 +55,7 @@
     "noEquipmentForSaleInCity": "No Equipment For Sale In This City",
     "noEquipmentForSaleInCityDesc": "No equipment is currently available for purchase in",
     "loading": "Loading...",
+    "loadingMore": "Loading more...",
     "equipmentNotFound": "Equipment Not Found",
     "equipmentNotFoundDesc": "The equipment you're looking for doesn't exist or has been removed.",
     "pricing": "Pricing",

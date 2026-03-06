@@ -55,6 +55,7 @@
     "noEquipmentForSaleInCity": "Aucun Matériel À Vendre Dans Cette Ville",
     "noEquipmentForSaleInCityDesc": "Aucun matériel n'est actuellement disponible à l'achat à",
     "loading": "Chargement...",
+    "loadingMore": "Chargement de plus...",
     "equipmentNotFound": "Matériel Introuvable",
     "equipmentNotFoundDesc": "Le matériel que vous recherchez n'existe pas ou a été supprimé.",
     "pricing": "Tarification",

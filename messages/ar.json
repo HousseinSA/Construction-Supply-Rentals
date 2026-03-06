@@ -54,6 +54,7 @@
     "noEquipmentForSaleInCity": "لا توجد معدات للبيع في هذه المدينة",
     "noEquipmentForSaleInCityDesc": "لا توجد معدات متاحة حالياً للشراء في",
     "loading": "جاري التحميل...",
+    "loadingMore": "جاري تحميل المزيد...",
     "equipmentNotFound": "لم يتم العثور على المعدة",
     "equipmentNotFoundDesc": "المعدة التي تبحث عنها غير موجودة أو تم حذفها.",
     "pricing": "الأسعار",

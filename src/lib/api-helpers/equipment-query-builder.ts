@@ -3,26 +3,10 @@ import type { Db } from "mongodb"
 import type { Equipment } from "@/src/lib/models/equipment"
 import type { EquipmentStatus } from "@/src/lib/types"
 
-let cachedExcludedCategoryIds: ObjectId[] | null = null
-
-export async function getExcludedCategoryIds(db: Db): Promise<ObjectId[]> {
-  if (cachedExcludedCategoryIds) {
-    return cachedExcludedCategoryIds
-  }
-
-  const excludedCategories = [
-    "Engins spécialisés",
-    "Engins légers et auxiliaires",
-  ]
-  const excludedCategoryDocs = await db
-    .collection("categories")
-    .find({ name: { $in: excludedCategories } })
-    .project({ _id: 1 })
-    .toArray()
-
-  cachedExcludedCategoryIds = excludedCategoryDocs.map((cat) => cat._id)
-  return cachedExcludedCategoryIds
-}
+const EXCLUDED_CATEGORY_IDS = [
+  new ObjectId("68f9fa232008e59cb126784b"),
+  new ObjectId("68f9fa232008e59cb126784c"),
+]
 
 export interface EquipmentQueryParams {
   status?: string | null
@@ -58,9 +42,8 @@ export async function buildEquipmentQuery(
     excludeSold,
   } = params
 
-  const excludedCategoryIds = await getExcludedCategoryIds(db)
   const query: Filter<Equipment> = {
-    categoryId: { $nin: excludedCategoryIds },
+    categoryId: { $nin: EXCLUDED_CATEGORY_IDS },
   }
 
   if (!isAdmin && !supplierId) {

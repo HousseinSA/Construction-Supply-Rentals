@@ -17,9 +17,10 @@ import { formatPhoneNumber } from "@/src/lib/format"
 
 interface EquipmentMobileCardProps {
   item: EquipmentWithSupplier & { hasActiveBookings?: boolean; hasPendingSale?: boolean }
+  onStatusChange: (id: string, action: "approve" | "reject") => void
 }
 
-function EquipmentMobileCard({ item }: EquipmentMobileCardProps) {
+function EquipmentMobileCard({ item, onStatusChange }: EquipmentMobileCardProps) {
   const { ref: tooltipRef, isOpen: showTooltip, toggle: toggleTooltip } = useTooltip()
   const [showPricingModal, setShowPricingModal] = useState(false)
   const { pricesList, supplierName, cardBorderClass } = useCardData(item)
@@ -45,6 +46,7 @@ function EquipmentMobileCard({ item }: EquipmentMobileCardProps) {
         location={item.location}
         createdAt={item.createdAt}
         itemId={item._id?.toString() || ""}
+        onStatusChange={onStatusChange}
       />
 
       <div className="flex gap-4 pb-3 border-b border-gray-200">

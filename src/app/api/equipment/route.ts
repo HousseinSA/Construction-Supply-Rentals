@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
 
     const equipmentTypeDoc = await db
       .collection("equipmentTypes")
-      .findOne({ _id: ObjectId.createFromHexString(equipmentTypeId) })
+      .findOne({ _id: new ObjectId(equipmentTypeId) })
     if (!equipmentTypeDoc) {
       return errorResponse("Equipment type not found", 404)
     }
@@ -154,13 +154,13 @@ export async function PUT(request: NextRequest) {
     const updateData: Record<string, unknown> = { status, updatedAt: new Date() }
 
     if (status === "approved" && adminId) {
-      updateData.approvedBy = ObjectId.createFromHexString(adminId)
+      updateData.approvedBy = new ObjectId(adminId)
       updateData.approvedAt = new Date()
     }
 
     const result = await db
       .collection("equipment")
-      .updateOne({ _id: ObjectId.createFromHexString(equipmentId) }, { $set: updateData })
+      .updateOne({ _id: new ObjectId(equipmentId) }, { $set: updateData })
 
     if (result.matchedCount === 0) {
       return errorResponse("Equipment not found", 404)

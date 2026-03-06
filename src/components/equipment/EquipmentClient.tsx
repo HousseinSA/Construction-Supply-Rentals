@@ -1,8 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
 import { useEquipment } from "@/src/hooks/useEquipment"
-import { useSearchStore } from "@/src/stores"
 import { useCityData } from "@/src/hooks/useCityData"
 import PageHeader from "./PageHeader"
 import EquipmentGrid from "./EquipmentGrid"
@@ -18,20 +16,10 @@ export default function EquipmentClient({
   selectedType,
   listingType,
 }: EquipmentClientProps) {
-  const { selectedCity, setSelectedCity } = useSearchStore()
   const { convertToLatin } = useCityData()
 
-  useEffect(() => {
-    if (urlCity) {
-      const latinCity = convertToLatin(urlCity)
-      if (latinCity !== selectedCity) {
-        setSelectedCity(latinCity)
-      }
-    }
-  }, [urlCity, selectedCity, setSelectedCity, convertToLatin])
-
-  const currentCity = selectedType ? null : selectedCity || urlCity
-  const { equipment, loading } = useEquipment(
+  const currentCity = selectedType ? null : (urlCity ? convertToLatin(urlCity) : null)
+  const { equipment, loading, loadingMore, hasMore, loadMore } = useEquipment(
     currentCity,
     selectedType,
     listingType
@@ -47,6 +35,9 @@ export default function EquipmentClient({
         <EquipmentGrid
           equipment={equipment}
           loading={loading}
+          loadingMore={loadingMore}
+          hasMore={hasMore}
+          onLoadMore={loadMore}
           selectedCity={currentCity}
           listingType={listingType}
         />

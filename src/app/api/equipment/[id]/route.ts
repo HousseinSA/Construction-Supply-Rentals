@@ -109,10 +109,7 @@ export async function PATCH(
 
         await sendEquipmentApprovalNotification(db, equipment)
       } else if (body.status === "rejected") {
-        if (!body.rejectionReason || body.rejectionReason.trim() === "") {
-          return errorResponse("Rejection reason is required", 400)
-        }
-        updateData.rejectionReason = body.rejectionReason
+        updateData.rejectionReason = body.rejectionReason?.trim() || null
         updateData.rejectedAt = new Date()
       }
     }

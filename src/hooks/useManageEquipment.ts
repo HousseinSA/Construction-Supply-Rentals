@@ -104,6 +104,7 @@ export function useManageEquipment({
   const abortControllerRef = useRef<AbortController | null>(null)
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
   const initialLoadRef = useRef(true)
+  const fetchEquipmentRef = useRef<(skipCache?: boolean) => Promise<void>>(async () => {})
 
   const fetchLocations = useCallback(async () => {
     try {
@@ -129,7 +130,8 @@ export function useManageEquipment({
       }
       abortControllerRef.current = new AbortController()
 
-      if (!skipCache && !shouldRefetch()) {
+      const shouldFetch = skipCache || useEquipmentStore.getState().shouldRefetch()
+      if (!shouldFetch) {
         initialLoadRef.current = false
         return
       }
@@ -177,7 +179,6 @@ export function useManageEquipment({
       currentPage,
       searchValue,
       filterValues,
-      shouldRefetch,
     ],
   )
 
@@ -224,6 +225,10 @@ export function useManageEquipment({
   }, [supplierId, convertToLocalized, onPricingReview])
 
   useEffect(() => {
+    fetchEquipmentRef.current = fetchEquipment
+  }, [fetchEquipment])
+
+  useEffect(() => {
     return () => {
       abortControllerRef.current?.abort()
       if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current)
@@ -233,11 +238,15 @@ export function useManageEquipment({
   useEffect(() => {
     if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current)
     debounceTimerRef.current = setTimeout(() => {
-      fetchEquipment()
+      fetchEquipmentRef.current()
     }, 500)
+
+    return () => {
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current)
+    }
   }, [searchValue, filterValues, currentPage, supplierId])
 
-  const pollingInterval = supplierId ? 60000 : 30000
+  const pollingInterval = 20000
   usePolling(() => fetchEquipment(true), { interval: pollingInterval })
 
   return {

@@ -12,6 +12,7 @@ interface EquipmentListProps {
   totalItems: number
   itemsPerPage: number
   onPageChange: (page: number) => void
+  onStatusChange: (id: string, action: "approve" | "reject") => void
   t: any
 }
 
@@ -22,6 +23,7 @@ export default function EquipmentList({
   totalItems,
   itemsPerPage,
   onPageChange,
+  onStatusChange,
   t,
 }: EquipmentListProps) {
   const isSupplier = useEquipmentStore((state) => state.isSupplier)
@@ -47,6 +49,7 @@ export default function EquipmentList({
               <EquipmentTableRow
                 key={item._id?.toString()}
                 item={item}
+                onStatusChange={onStatusChange}
               />
             ))}
           </TableBody>
@@ -58,6 +61,7 @@ export default function EquipmentList({
           <EquipmentMobileCard
             key={item._id?.toString()}
             item={item}
+            onStatusChange={onStatusChange}
           />
         ))}
       </div>

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { ObjectId } from "mongodb"
 
-export function successResponse(data: any, status = 200) {
+export function successResponse(data: Record<string, unknown>, status = 200) {
   return NextResponse.json({ success: true, ...data }, { status })
 }
 

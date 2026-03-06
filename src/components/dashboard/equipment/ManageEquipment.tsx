@@ -27,6 +27,7 @@ export default function ManageEquipment() {
     modals,
     handleReject,
     handlePricingReview,
+    handleStatusChangeCallback,
     closePricingModal,
     closeRejectionModal,
     closeConfirmModal,
@@ -101,6 +102,7 @@ export default function ManageEquipment() {
               totalItems={totalItems}
               itemsPerPage={itemsPerPage}
               onPageChange={goToPage}
+              onStatusChange={handleStatusChangeCallback}
               t={t}
             />
           )}

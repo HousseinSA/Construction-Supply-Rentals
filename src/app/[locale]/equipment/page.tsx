@@ -1,13 +1,14 @@
 import EquipmentClient from "@/src/components/equipment/EquipmentClient"
 
 interface EquipmentPageProps {
-  searchParams: { city?: string; type?: string; listingType?: string }
+  searchParams: Promise<{ city?: string; type?: string; listingType?: string }>
 }
 
-export default function EquipmentPage({ searchParams }: EquipmentPageProps) {
-  const selectedCity = searchParams.city || null
-  const selectedType = searchParams.type || null
-  const listingType = searchParams.listingType || null
+export default async function EquipmentPage({ searchParams }: EquipmentPageProps) {
+  const params = await searchParams
+  const selectedCity = params.city || null
+  const selectedType = params.type || null
+  const listingType = params.listingType || null
   
   return <EquipmentClient selectedCity={selectedCity} selectedType={selectedType} listingType={listingType} />
 }

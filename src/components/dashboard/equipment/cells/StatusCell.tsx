@@ -7,13 +7,13 @@ import { memo, useMemo, useCallback } from "react"
 
 interface StatusCellProps {
   item: EquipmentWithSupplier
+  onStatusChange: (id: string, action: "approve" | "reject") => void
 }
 
-function StatusCell({ item }: StatusCellProps) {
+function StatusCell({ item, onStatusChange }: StatusCellProps) {
   const t = useTranslations("dashboard.equipment")
   const isSupplier = useEquipmentStore((state) => state.isSupplier)
   const updating = useEquipmentStore((state) => state.updating)
-  const updateStatus = useEquipmentStore((state) => state.updateEquipmentStatus)
   
   const { status } = item
   const equipmentId = item._id?.toString() || ""
@@ -23,12 +23,12 @@ function StatusCell({ item }: StatusCellProps) {
   const badgeStyles = useMemo(() => getStatusBadgeStyles(status), [status])
 
   const handleApprove = useCallback(() => {
-    updateStatus(equipmentId, "approved", undefined, t)
-  }, [equipmentId, updateStatus, t])
+    onStatusChange(equipmentId, "approve")
+  }, [equipmentId, onStatusChange])
 
   const handleReject = useCallback(() => {
-    updateStatus(equipmentId, "rejected", undefined, t)
-  }, [equipmentId, updateStatus, t])
+    onStatusChange(equipmentId, "reject")
+  }, [equipmentId, onStatusChange])
 
   return (
     <td className="px-6 py-4 text-center">

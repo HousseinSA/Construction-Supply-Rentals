@@ -13,15 +13,15 @@ interface CardHeaderProps {
   location: string
   createdAt: Date
   itemId: string
+  onStatusChange: (id: string, action: "approve" | "reject") => void
 }
 
 export default function CardHeader({
   referenceNumber, name, status, rejectionReason, createdBy, listingType,
-  isAvailable, location, createdAt, itemId
+  isAvailable, location, createdAt, itemId, onStatusChange
 }: CardHeaderProps) {
   const isSupplier = useEquipmentStore((state) => state.isSupplier)
   const updating = useEquipmentStore((state) => state.updating)
-  const updateEquipmentStatus = useEquipmentStore((state) => state.updateEquipmentStatus)
   const convertToLocalized = useEquipmentStore((state) => state.convertToLocalized)
   const t = useTranslations("dashboard.equipment")
   
@@ -65,11 +65,11 @@ export default function CardHeader({
       <div className="flex-shrink-0 flex flex-col items-end gap-1.5">
         {status === "pending" && !isSupplier ? (
           <>
-            <button onClick={() => updateEquipmentStatus(itemId, "approved", undefined, t)} disabled={updating === itemId}
+            <button onClick={() => onStatusChange(itemId, "approve")} disabled={updating === itemId}
               className="px-3 py-1.5 text-xs font-medium bg-green-500 text-white rounded-md hover:bg-green-600 min-w-[70px]">
               {t("approve")}
             </button>
-            <button onClick={() => updateEquipmentStatus(itemId, "rejected", undefined, t)} disabled={updating === itemId}
+            <button onClick={() => onStatusChange(itemId, "reject")} disabled={updating === itemId}
               className="px-3 py-1.5 text-xs font-medium bg-red-500 text-white rounded-md hover:bg-red-600 min-w-[70px]">
               {t("reject")}
             </button>

@@ -11,9 +11,10 @@ import ActionsCell from "./cells/ActionsCell"
 
 interface EquipmentTableRowProps {
   item: EquipmentWithSupplier
+  onStatusChange: (id: string, action: "approve" | "reject") => void
 }
 
-export default function EquipmentTableRow({ item }: EquipmentTableRowProps) {
+export default function EquipmentTableRow({ item, onStatusChange }: EquipmentTableRowProps) {
   const locale = useLocale()
   const isSupplier = useEquipmentStore((state) => state.isSupplier)
   const convertToLocalized = useEquipmentStore((state) => state.convertToLocalized)
@@ -37,7 +38,7 @@ export default function EquipmentTableRow({ item }: EquipmentTableRowProps) {
         <SupplierCell createdBy={item.createdBy} supplier={item.supplier} />
       )}
       <MemoizedDateCell date={item.createdAt} />
-      <StatusCell item={item} />
+      <StatusCell item={item} onStatusChange={onStatusChange} />
       <AvailabilityCell item={item} />
       <ActionsCell item={item} />
     </tr>
