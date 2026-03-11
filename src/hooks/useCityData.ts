@@ -33,9 +33,12 @@ export function useCityData() {
   const convertToLocalized = useMemo(
     () => (latinCity: string) => {
       if (!latinCity) return latinCity
-      return locale === "ar"
-        ? latinToArMap.get(latinCity.toLowerCase()) || latinCity
-        : latinCity
+      if (locale === "ar") {
+        return latinToArMap.get(latinCity.toLowerCase()) || latinCity
+      }
+      // For Latin languages, find proper capitalization from CITIES array
+      const foundCity = CITIES.find(c => c.latin.toLowerCase() === latinCity.toLowerCase())
+      return foundCity ? foundCity.latin : latinCity
     },
     [locale]
   )

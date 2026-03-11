@@ -75,20 +75,18 @@ export async function buildEquipmentQuery(
     query.pendingPricing = { $exists: true, $ne: null }
   }
 
-  if (availableOnly === false || params.availableOnly === false) {
+  if (availableOnly === false) {
     query.isAvailable = false
     if (excludeSold === "true") {
       query.listingType = { $ne: "forSale" }
     }
   }
 
-  if (city && listingType !== "forSale") {
+  if (city) {
     query.location = { $regex: new RegExp(city, "i") }
   }
 
-  if ((city || type) && !listingType) {
-    query.listingType = "forRent"
-  } else if (listingType) {
+  if (listingType) {
     query.listingType = listingType as "forSale" | "forRent"
   }
 
@@ -102,16 +100,6 @@ export async function buildEquipmentQuery(
     if (categoryDoc) {
       query.categoryId = categoryDoc._id
     }
-  }
-
-  if (search && search.trim()) {
-    const searchRegex = new RegExp(search.trim(), "i")
-    query.$or = [
-      { name: searchRegex },
-      { location: searchRegex },
-      { description: searchRegex },
-      { referenceNumber: searchRegex }
-    ]
   }
 
   return query

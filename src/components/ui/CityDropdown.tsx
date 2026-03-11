@@ -1,7 +1,7 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import { useParams } from "next/navigation"
+import { useCityData } from "@/src/hooks/useCityData"
 import Dropdown from "./Dropdown"
 
 interface CityDropdownProps {
@@ -20,24 +20,12 @@ export default function CityDropdown({
   className = ""
 }: CityDropdownProps) {
   const t = useTranslations("dashboard.equipment")
-  const params = useParams()
-  const locale = params.locale as string
+  const { cities } = useCityData()
 
   const getCityOptions = () => {
-    const cities = [
-      { value: "nouakchott", ar: "نواكشوط", fr: "Nouakchott", en: "Nouakchott" },
-      { value: "nouadhibou", ar: "نواذيبو", fr: "Nouadhibou", en: "Nouadhibou" },
-      { value: "rosso", ar: "روصو", fr: "Rosso", en: "Rosso" },
-      { value: "kaedi", ar: "كيهيدي", fr: "Kaédi", en: "Kaedi" },
-      { value: "zouerate", ar: "الزويرات", fr: "Zouérat", en: "Zouerat" },
-      { value: "atar", ar: "أطار", fr: "Atar", en: "Atar" },
-      { value: "kiffa", ar: "كيفة", fr: "Kiffa", en: "Kiffa" },
-      { value: "nema", ar: "النعمة", fr: "Néma", en: "Nema" }
-    ]
-
     return cities.map(city => ({
-      value: city.value,
-      label: city[locale as keyof typeof city] || city.en
+      value: city,
+      label: city
     }))
   }
 

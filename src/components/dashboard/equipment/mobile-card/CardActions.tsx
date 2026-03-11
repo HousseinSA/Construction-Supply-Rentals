@@ -2,24 +2,21 @@ import { Edit, Eye, Loader2 } from "lucide-react"
 import { useEquipmentStore } from "@/src/stores/equipmentStore"
 import { useTranslations } from "next-intl"
 import { useRouter } from "@/src/i18n/navigation"
+import { EquipmentWithSupplier } from "@/src/lib/models/equipment"
 
 interface CardActionsProps {
-  itemId: string
-  status: string
-  listingType: string
-  isAvailable: boolean
-  hasActiveBookings: boolean
-  createdBy: string
+  item: EquipmentWithSupplier & { hasActiveBookings?: boolean }
 }
 
-export default function CardActions({
-  itemId, status, listingType, isAvailable, hasActiveBookings, createdBy
-}: CardActionsProps) {
+export default function CardActions({ item }: CardActionsProps) {
   const isSupplier = useEquipmentStore((state) => state.isSupplier)
   const navigating = useEquipmentStore((state) => state.navigating)
   const navigateToEquipment = useEquipmentStore((state) => state.navigateToEquipment)
   const t = useTranslations("dashboard.equipment")
   const router = useRouter()
+
+  const { _id, status, listingType, isAvailable, hasActiveBookings, createdBy } = item
+  const itemId = _id?.toString() || ""
 
   const canEdit = !isSupplier && createdBy === "admin" && !(listingType === "forSale" && !isAvailable)
   const canEditSupplier = isSupplier && (status === "rejected" || (status === "approved" && !hasActiveBookings)) && !(listingType === "forSale" && !isAvailable)
@@ -59,7 +56,7 @@ export default function CardActions({
         disabled={navigating === itemId}
         className="flex-1 px-3 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 text-sm font-medium flex items-center justify-center gap-1.5"
       >
-        <Eye className="w-4 h-4" />
+        {navigating === itemId ? <Loader2 className="w-4 h-4 animate-spin" /> : <Eye className="w-4 h-4" />}
         {t("viewDetails")}
       </button>
     </div>

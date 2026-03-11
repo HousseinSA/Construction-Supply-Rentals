@@ -19,8 +19,12 @@ import TableLoading from "@/src/components/ui/TableLoading"
 export default function ManageEquipment() {
   const { user } = useUserSession()
   const t = useTranslations("dashboard.equipment")
-  const tCommon = useTranslations("common")
   const { convertToLocalized } = useCityData()
+  
+  const supplierId = useMemo(
+    () => (user?.isSupplier ? user.id : undefined),
+    [user?.isSupplier, user?.id]
+  )
   const {
     confirmModal,
     handleConfirmAction,
@@ -48,11 +52,15 @@ export default function ManageEquipment() {
     goToPage,
     totalItems,
     itemsPerPage,
+    mobileEquipment,
+    loadingMoreMobile,
+    hasMoreMobile,
+    loadMoreMobile,
   } = useManageEquipment({
     convertToLocalized,
-    supplierId: user?.isSupplier ? user.id : undefined,
+    supplierId,
     onPricingReview: handlePricingReview,
-})
+  })
 
   const filters = useMemo(
     () => createEquipmentFilters(t, locations),
@@ -77,7 +85,6 @@ export default function ManageEquipment() {
             </Link>
           }
         />
-
         <TableFilters
           searchValue={searchValue}
           onSearchChange={setSearchValue}
@@ -86,7 +93,6 @@ export default function ManageEquipment() {
           filterValues={filterValues}
           onFilterChange={handleFilterChange}
         />
-
         <div className="xl:bg-white xl:rounded-lg xl:shadow-sm xl:border xl:border-gray-200 min-h-[600px] flex flex-col">
           {loading ? (
             <TableLoading message={t("loading")} />
@@ -103,11 +109,14 @@ export default function ManageEquipment() {
               itemsPerPage={itemsPerPage}
               onPageChange={goToPage}
               onStatusChange={handleStatusChangeCallback}
-              t={t}
+              mobileEquipment={mobileEquipment}
+              loadingMoreMobile={loadingMoreMobile}
+              hasMoreMobile={hasMoreMobile}
+              onLoadMoreMobile={loadMoreMobile}
+              loading={loading}
             />
           )}
         </div>
-
         <EquipmentModals
           confirmModal={confirmModal}
           pricingModal={modals.pricing}
@@ -119,8 +128,6 @@ export default function ManageEquipment() {
           onPricingSuccess={refetch}
           onRejectionClose={closeRejectionModal}
           onRejectionConfirm={handleReject}
-          t={t}
-          tCommon={tCommon}
         />
       </div>
     </div>

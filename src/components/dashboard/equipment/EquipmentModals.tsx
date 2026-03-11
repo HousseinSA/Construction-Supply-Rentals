@@ -1,6 +1,7 @@
 "use client"
 
 import { AlertTriangle, CheckCircle } from "lucide-react"
+import { useTranslations } from "next-intl"
 import ConfirmModal from "../../ui/ConfirmModal"
 import RejectionModal from "./RejectionModal"
 import PricingReviewModal from "./PricingReviewModal"
@@ -16,8 +17,6 @@ interface EquipmentModalsProps {
   onPricingSuccess: () => void
   onRejectionClose: () => void
   onRejectionConfirm: (reason: string) => void
-  t: any
-  tCommon: any
 }
 
 export default function EquipmentModals({
@@ -31,9 +30,9 @@ export default function EquipmentModals({
   onPricingSuccess,
   onRejectionClose,
   onRejectionConfirm,
-  t,
-  tCommon,
 }: EquipmentModalsProps) {
+  const t = useTranslations("dashboard.equipment")
+  const tCommon = useTranslations("common")
   return (
     <>
       <ConfirmModal

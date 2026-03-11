@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import { useEquipmentStore } from "@/src/stores/equipmentStore"
 import { usePolling } from "./usePolling"
+import { buildEquipmentQueryParams } from "@/src/lib/equipment-query-params"
+import { useInfiniteScrollEquipment } from "./useInfiniteScrollEquipment"
 
 interface UseManageEquipmentConfig {
   convertToLocalized: (location: string) => string
@@ -18,57 +20,12 @@ interface FilterValues {
   listingType: string
   availability: string
   location: string
+  [key: string]: string
 }
 
-function buildQueryParams(
-  currentPage: number,
-  itemsPerPage: number,
-  supplierId: string | undefined,
-  searchValue: string,
-  filterValues: FilterValues,
-) {
-  const params = new URLSearchParams()
-  params.set("page", currentPage.toString())
-  params.set("limit", itemsPerPage.toString())
-  params.set("includeSupplier", "true")
-
-  if (supplierId) {
-    params.set("supplierId", supplierId)
-  } else {
-    params.set("admin", "true")
-  }
-
-  if (searchValue.trim()) {
-    params.set("search", searchValue.trim())
-  }
-
-  if (filterValues.status !== "all") {
-    if (filterValues.status === "pendingPricing") {
-      params.set("hasPendingPricing", "true")
-    } else {
-      params.set("status", filterValues.status)
-    }
-  }
-
-  if (filterValues.listingType !== "all") {
-    params.set("listingType", filterValues.listingType)
-  }
-
-  if (filterValues.availability === "available") {
-    params.set("available", "true")
-  } else if (filterValues.availability === "unavailable") {
-    params.set("available", "false")
-    params.set("excludeSold", "true")
-  } else if (filterValues.availability === "sold") {
-    params.set("available", "false")
-    params.set("listingType", "forSale")
-  }
-
-  if (filterValues.location !== "all") {
-    params.set("city", filterValues.location)
-  }
-  return params
-}
+const ITEMS_PER_PAGE = 10
+const POLLING_INTERVAL = 20000
+const DEBOUNCE_DELAY = 500
 
 export function useManageEquipment({
   convertToLocalized,
@@ -79,16 +36,16 @@ export function useManageEquipment({
     equipment,
     loading,
     updating,
+    currentPage,
     setEquipment,
     setLoading,
+    setCurrentPage,
     invalidateCache,
-    shouldRefetch,
     setIsSupplier,
     setConvertToLocalized,
     setOnPricingReview,
   } = useEquipmentStore()
 
-  const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
   const [searchValue, setSearchValue] = useState("")
@@ -99,24 +56,30 @@ export function useManageEquipment({
     location: "all",
   })
   const [locations, setLocations] = useState<LocationOption[]>([])
+  const [isMobile, setIsMobile] = useState(false)
 
-  const itemsPerPage = 10
   const abortControllerRef = useRef<AbortController | null>(null)
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
   const initialLoadRef = useRef(true)
   const fetchEquipmentRef = useRef<(skipCache?: boolean) => Promise<void>>(async () => {})
+
+  const mobileInfiniteScroll = useInfiniteScrollEquipment({
+    buildParams: (pageNum: number, itemsPerPage: number) => {
+      return buildEquipmentQueryParams(pageNum, itemsPerPage, supplierId, searchValue, filterValues)
+    },
+    itemsPerPage: ITEMS_PER_PAGE,
+    dependencies: [supplierId, searchValue, filterValues],
+    initialEquipment: equipment,
+    startFromPage: 1,
+    totalPages: totalPages
+  })
 
   const fetchLocations = useCallback(async () => {
     try {
       const response = await fetch("/api/equipment/locations")
       const data = await response.json()
       if (data.success) {
-        setLocations(
-          data.data.map((loc: string) => ({
-            value: loc,
-            label: loc,
-          })),
-        )
+        setLocations(data.data.map((loc: string) => ({ value: loc, label: loc })))
       }
     } catch (error) {
       console.error("Error fetching locations:", error)
@@ -124,39 +87,41 @@ export function useManageEquipment({
   }, [])
 
   const fetchEquipment = useCallback(
-    async (skipCache = false) => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort()
-      }
+    async (skipCache = false, isPolling = false) => {
+      if (abortControllerRef.current) abortControllerRef.current.abort()
       abortControllerRef.current = new AbortController()
-
-      const shouldFetch = skipCache || useEquipmentStore.getState().shouldRefetch()
+      const params = buildEquipmentQueryParams(
+        currentPage,
+        ITEMS_PER_PAGE,
+        supplierId,
+        searchValue,
+        filterValues,
+      )
+      const queryString = params.toString()
+      const isInitialLoad = initialLoadRef.current
+      const shouldFetch = skipCache || useEquipmentStore.getState().shouldRefetch(queryString)
+      
       if (!shouldFetch) {
-        initialLoadRef.current = false
+        if (isInitialLoad) {
+          initialLoadRef.current = false
+        }
         return
       }
-
-      const isInitialLoad = initialLoadRef.current
+      
+      const hasData = useEquipmentStore.getState().equipment.length > 0
+      const shouldShowLoading = (isInitialLoad && !hasData) && !isPolling
+      
       try {
-        if (isInitialLoad) {
-          setLoading(true)
-        }
+        if (shouldShowLoading) setLoading(true)
 
-        const params = buildQueryParams(
-          currentPage,
-          itemsPerPage,
-          supplierId,
-          searchValue,
-          filterValues,
-        )
-        const response = await fetch(`/api/equipment?${params.toString()}`, {
+        const response = await fetch(`/api/equipment?${queryString}`, {
           cache: "no-store",
           signal: abortControllerRef.current.signal,
         })
         const data = await response.json()
 
         if (data.success) {
-          setEquipment(data.data || [])
+          setEquipment(data.data || [], queryString)
           if (data.pagination) {
             setTotalPages(data.pagination.totalPages)
             setTotalCount(data.pagination.totalCount)
@@ -167,26 +132,17 @@ export function useManageEquipment({
         if (error.name === "AbortError") return
         console.error("Error fetching equipment:", error)
       } finally {
-        if (isInitialLoad) {
-          setLoading(false)
-        }
+        if (shouldShowLoading) setLoading(false)
       }
     },
-    [
-      setEquipment,
-      setLoading,
-      supplierId,
-      currentPage,
-      searchValue,
-      filterValues,
-    ],
+    [setEquipment, setLoading, supplierId, currentPage, searchValue, filterValues],
   )
 
   const handleFilterChange = useCallback(
     (key: string, value: string) => {
       setFilterValues((prev) => ({ ...prev, [key]: value }))
       setCurrentPage(1)
-      invalidateCache()
+      invalidateCache(true)
     },
     [invalidateCache],
   )
@@ -195,34 +151,46 @@ export function useManageEquipment({
     (value: string) => {
       setSearchValue(value)
       setCurrentPage(1)
-      invalidateCache()
+      invalidateCache(true)
     },
     [invalidateCache],
   )
-
   const refetch = useCallback(() => {
     invalidateCache()
     return fetchEquipment(true)
   }, [invalidateCache, fetchEquipment])
 
-  useEffect(() => {
-    fetchLocations()
-  }, [])
-
   const localizedLocations = useMemo(
-    () =>
-      locations.map((loc) => ({
-        value: loc.value,
-        label: convertToLocalized(loc.label),
-      })),
+    () => locations.map((loc) => ({ value: loc.value, label: convertToLocalized(loc.label) })),
     [locations, convertToLocalized],
   )
+
+
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 1280
+      if (mobile !== isMobile) {
+        setIsMobile(mobile)
+        if (mobile && currentPage > 1) {
+          setCurrentPage(1)
+        }
+      }
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [isMobile, currentPage])
+
+  useEffect(() => {
+    fetchLocations()
+  }, [fetchLocations])
 
   useEffect(() => {
     setIsSupplier(!!supplierId)
     setConvertToLocalized(convertToLocalized)
     if (onPricingReview) setOnPricingReview(onPricingReview)
-  }, [supplierId, convertToLocalized, onPricingReview])
+  }, [supplierId, convertToLocalized, onPricingReview, setIsSupplier, setConvertToLocalized, setOnPricingReview])
 
   useEffect(() => {
     fetchEquipmentRef.current = fetchEquipment
@@ -238,16 +206,17 @@ export function useManageEquipment({
   useEffect(() => {
     if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current)
     debounceTimerRef.current = setTimeout(() => {
-      fetchEquipmentRef.current()
-    }, 500)
-
+      fetchEquipmentRef.current(true)
+    }, DEBOUNCE_DELAY)
     return () => {
       if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current)
     }
   }, [searchValue, filterValues, currentPage, supplierId])
 
-  const pollingInterval = 20000
-  usePolling(() => fetchEquipment(true), { interval: pollingInterval })
+  usePolling(() => fetchEquipment(true, true), { 
+    interval: POLLING_INTERVAL,
+    enabled: typeof window !== 'undefined' && window.location.pathname.includes('/dashboard/equipment') && !mobileInfiniteScroll.loadingMore
+  })
 
   return {
     equipment,
@@ -263,6 +232,10 @@ export function useManageEquipment({
     totalPages,
     goToPage: setCurrentPage,
     totalItems: totalCount,
-    itemsPerPage,
+    itemsPerPage: ITEMS_PER_PAGE,
+    mobileEquipment: mobileInfiniteScroll.equipment,
+    loadingMoreMobile: mobileInfiniteScroll.loadingMore,
+    hasMoreMobile: mobileInfiniteScroll.hasMore,
+    loadMoreMobile: mobileInfiniteScroll.loadMore,
   }
 }

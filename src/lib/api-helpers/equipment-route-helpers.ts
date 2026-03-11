@@ -50,10 +50,11 @@ async function fetchWithSupplierAggregation(
   db: Db,
   query: EquipmentQuery,
   skip: number,
-  limit: number
+  limit: number,
+  searchTerm?: string
 ) {
   const collection = db.collection<Equipment>(COLLECTION_NAME)
-  const pipeline = [
+  const pipeline: any[] = [
     { $match: query },
     { $sort: { createdAt: -1 } },
     { $skip: skip },
@@ -79,6 +80,25 @@ async function fetchWithSupplierAggregation(
     }
   ]
 
+  if (searchTerm) {
+    const searchRegex = new RegExp(searchTerm, "i")
+    pipeline.push({
+      $match: {
+        $or: [
+          { name: searchRegex },
+          { location: searchRegex },
+          { description: searchRegex },
+          { referenceNumber: searchRegex },
+          { "specifications.brand": searchRegex },
+          { "specifications.model": searchRegex },
+          { "specifications.condition": searchRegex },
+          { "supplier.businessName": searchRegex },
+          { "supplier.fullName": searchRegex }
+        ]
+      }
+    })
+  }
+
   const [equipment, totalCount] = await Promise.all([
     collection.aggregate<Equipment>(pipeline).toArray(),
     collection.countDocuments(query)
@@ -90,13 +110,14 @@ async function fetchWithSupplierAggregation(
 export async function fetchEquipmentWithPagination(
   db: Db,
   query: EquipmentQuery,
-  options: FetchEquipmentOptions
+  options: FetchEquipmentOptions,
+  searchTerm?: string
 ): Promise<PaginationResult> {
   const { page, limit, includeSupplier, isAdmin } = options
   const skip = (page - 1) * limit
 
   const { equipment, totalCount } = (isAdmin && includeSupplier)
-    ? await fetchWithSupplierAggregation(db, query, skip, limit)
+    ? await fetchWithSupplierAggregation(db, query, skip, limit, searchTerm)
     : await fetchWithPagination(db, query, skip, limit)
 
   return {

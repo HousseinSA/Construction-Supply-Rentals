@@ -26,6 +26,7 @@ export const createEquipmentFilters = (t: any, locations: Array<{ value: string;
       { value: "all", label: t("filters.allAvailability") },
       { value: "available", label: t("available") },
       { value: "unavailable", label: t("unavailable") },
+      { value: "sold", label: t("sold") },
     ],
   },
   {

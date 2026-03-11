@@ -12,9 +12,9 @@ import {
   getSupplierInfo,
   checkActiveBookingsOrSales,
   sendEquipmentApprovalNotification,
+  validateAndGetEquipmentAccess,
   detectPricingChanges,
   sendPricingUpdateNotification,
-  validateAndGetEquipmentAccess,
 } from "@/src/lib/api-helpers"
 
 export async function GET(
@@ -22,7 +22,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = await params
+    const { id } = await params 
     const { searchParams } = new URL(request.url)
     const isAdmin = searchParams.get("admin") === "true"
 

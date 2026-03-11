@@ -22,7 +22,7 @@ export default function MobileFilterDrawer({
   onFilterChange,
 }: MobileFilterDrawerProps) {
   const t = useTranslations("common")
-  const [tempFilters, setTempFilters] = useState(filterValues)
+  const [tempFilters, setTempFilters] = useState<Record<string, string>>(filterValues)
 
   useEffect(() => {
     if (isOpen) {
@@ -44,7 +44,7 @@ export default function MobileFilterDrawer({
   }
 
   const handleClear = () => {
-    const clearedFilters = Object.keys(tempFilters).reduce((acc, key) => ({ ...acc, [key]: "all" }), {})
+    const clearedFilters = Object.keys(tempFilters).reduce<Record<string, string>>((acc, key) => ({ ...acc, [key]: "all" }), {})
     setTempFilters(clearedFilters)
     Object.entries(clearedFilters).forEach(([key, value]) => {
       onFilterChange(key, value)
@@ -56,22 +56,18 @@ export default function MobileFilterDrawer({
 
   return (
     <>
-      {/* Backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={onClose}
         />
       )}
-
-      {/* Drawer */}
       <div
         className={`fixed top-0 left-0 h-full w-80 bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out lg:hidden ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="flex flex-col h-full">
-          {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900">{t("filters")}</h3>
             <button
@@ -82,7 +78,6 @@ export default function MobileFilterDrawer({
             </button>
           </div>
 
-          {/* Filters */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {filters.map((filter) => (
               <div key={filter.key}>
@@ -99,7 +94,6 @@ export default function MobileFilterDrawer({
             ))}
           </div>
 
-          {/* Footer */}
           <div className="p-4 border-t border-gray-200 space-y-2">
             <button
               onClick={handleApply}

@@ -15,10 +15,6 @@ export default function PricingUpdateTooltip({
   const locale = useLocale()
   const isRTL = locale === "ar"
 
-  if (!isSupplier) {
-    return <>{t("clickToShowNewPrices")}</>
-  }
-
   const priceTypes = [
     { key: "hourlyRate" as const, suffix: `/${tCommon("hour")}` },
     { key: "dailyRate" as const, suffix: `/${tCommon("day")}` },

@@ -40,7 +40,7 @@ export default function PricingRateItem({
             </>
           ) : (
             <>
-              <span className="text-sm text-gray-500 line-through" dir="ltr">
+              <span className="text-sm text-gray-500" dir="ltr">
                 {formatPrice(oldValue!)} MRU
               </span>
               <svg

@@ -41,17 +41,19 @@ export async function GET(request: NextRequest) {
       availableOnly: available === "true" ? true : available === "false" ? false : undefined,
       isAdmin,
       supplierId: getParam("supplierId"),
-      search: getParam("search"),
+      search: null,
       hasPendingPricing: getParam("hasPendingPricing"),
       excludeSold: getParam("excludeSold"),
     })
+
+    const searchTerm = getParam("search")
 
     const { equipment, pagination } = await fetchEquipmentWithPagination(db, query, {
       page: parseInt(getParam("page") || "1"),
       limit: parseInt(getParam("limit") || "10"),
       includeSupplier: getBoolParam("includeSupplier"),
       isAdmin
-    })
+    }, searchTerm || undefined)
 
     if (!isAdmin || equipment.length === 0) {
       return successResponse({ data: equipment, pagination })

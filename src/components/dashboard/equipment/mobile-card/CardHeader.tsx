@@ -1,31 +1,34 @@
 import { AlertCircle, MapPin, Tag } from "lucide-react"
 import { useEquipmentStore } from "@/src/stores/equipmentStore"
 import { useTranslations } from "next-intl"
+import { EquipmentWithSupplier } from "@/src/lib/models/equipment"
 
 interface CardHeaderProps {
-  referenceNumber?: string
-  name: string
-  status: string
-  rejectionReason?: string
-  createdBy: string
-  listingType: string
-  isAvailable: boolean
-  location: string
-  createdAt: Date
-  itemId: string
+  item: EquipmentWithSupplier
   onStatusChange: (id: string, action: "approve" | "reject") => void
 }
 
-export default function CardHeader({
-  referenceNumber, name, status, rejectionReason, createdBy, listingType,
-  isAvailable, location, createdAt, itemId, onStatusChange
-}: CardHeaderProps) {
+export default function CardHeader({ item, onStatusChange }: CardHeaderProps) {
   const isSupplier = useEquipmentStore((state) => state.isSupplier)
   const updating = useEquipmentStore((state) => state.updating)
   const convertToLocalized = useEquipmentStore((state) => state.convertToLocalized)
   const t = useTranslations("dashboard.equipment")
   
   if (!convertToLocalized) return null
+
+  const {
+    referenceNumber,
+    name,
+    status,
+    rejectionReason,
+    createdBy,
+    listingType,
+    isAvailable,
+    location,
+    createdAt,
+    _id
+  } = item
+  const itemId = _id?.toString() || ""
 
   return (
     <div className="flex items-start justify-between gap-2">
@@ -57,7 +60,7 @@ export default function CardHeader({
               <Tag className="w-3.5 h-3.5" />{t("forSale")}
             </span>
           )}
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs text-gray-600 bg-gray-100 rounded">
+          <span className="inline-flex items-center gap-1 capitalize px-2 py-0.5 text-xs text-gray-600 bg-gray-100 rounded">
             <MapPin className="w-3.5 h-3.5 text-primary" />{convertToLocalized(location)}
           </span>
         </div>
@@ -66,11 +69,11 @@ export default function CardHeader({
         {status === "pending" && !isSupplier ? (
           <>
             <button onClick={() => onStatusChange(itemId, "approve")} disabled={updating === itemId}
-              className="px-3 py-1.5 text-xs font-medium bg-green-500 text-white rounded-md hover:bg-green-600 min-w-[70px]">
+              className="w-24 px-3 py-1.5 text-xs font-medium bg-green-500 text-white rounded-md hover:bg-green-600">
               {t("approve")}
             </button>
             <button onClick={() => onStatusChange(itemId, "reject")} disabled={updating === itemId}
-              className="px-3 py-1.5 text-xs font-medium bg-red-500 text-white rounded-md hover:bg-red-600 min-w-[70px]">
+              className="w-24 px-3 py-1.5 text-xs font-medium bg-red-500 text-white rounded-md hover:bg-red-600">
               {t("reject")}
             </button>
           </>

@@ -4,6 +4,7 @@ import Dropdown from "@/src/components/ui/Dropdown"
 import CopyButton from "@/src/components/ui/CopyButton"
 import PriceDisplay from "@/src/components/ui/PriceDisplay"
 import PricingInfoModal from "./PricingInfoModal"
+import PricingReviewModal from "./PricingReviewModal"
 import CardHeader from "./mobile-card/CardHeader"
 import CardActions from "./mobile-card/CardActions"
 import { EquipmentWithSupplier } from "@/src/lib/models/equipment"
@@ -27,6 +28,7 @@ function EquipmentMobileCard({ item, onStatusChange }: EquipmentMobileCardProps)
   const updating = useEquipmentStore((state) => state.updating)
   const navigating = useEquipmentStore((state) => state.navigating)
   const isSupplier = useEquipmentStore((state) => state.isSupplier)
+  const onPricingReview = useEquipmentStore((state) => state.onPricingReview)
   const updateEquipmentAvailability = useEquipmentStore((state) => state.updateEquipmentAvailability)
   const navigateToEquipment = useEquipmentStore((state) => state.navigateToEquipment)
   const t = useTranslations("dashboard.equipment")
@@ -35,19 +37,7 @@ function EquipmentMobileCard({ item, onStatusChange }: EquipmentMobileCardProps)
   return (
     <>
     <div className={`p-4 bg-white rounded-lg border shadow-sm hover:shadow-md transition-all grid grid-rows-[minmax(50px,auto)_auto_auto] gap-2 ${cardBorderClass}`}>
-      <CardHeader
-        referenceNumber={item.referenceNumber}
-        name={item.name}
-        status={item.status}
-        rejectionReason={item.rejectionReason}
-        createdBy={item.createdBy}
-        listingType={item.listingType}
-        isAvailable={item.isAvailable}
-        location={item.location}
-        createdAt={item.createdAt}
-        itemId={item._id?.toString() || ""}
-        onStatusChange={onStatusChange}
-      />
+      <CardHeader item={item} onStatusChange={onStatusChange} />
 
       <div className="flex gap-4 pb-3 border-b border-gray-200">
         <div className="w-36 sm:w-44 md:w-48 lg:w-52 h-36 relative rounded-lg flex-shrink-0 overflow-hidden">
@@ -140,22 +130,28 @@ function EquipmentMobileCard({ item, onStatusChange }: EquipmentMobileCardProps)
             </div>
           )}
         </div>
-        <CardActions
-          itemId={item._id?.toString() || ""}
-          status={item.status}
-          listingType={item.listingType}
-          isAvailable={item.isAvailable}
-          hasActiveBookings={item.hasActiveBookings || false}
-          createdBy={item.createdBy}
-        />
+        <CardActions item={item} />
       </div>
     </div>
-    <PricingInfoModal
-      isOpen={showPricingModal}
-      onClose={() => setShowPricingModal(false)}
-      item={item}
-      isSupplier={isSupplier}
-    />
+    {!isSupplier && item.pendingPricing && showPricingModal ? (
+      <PricingReviewModal
+        equipmentId={item._id?.toString() || ""}
+        currentPricing={item.pricing}
+        pendingPricing={item.pendingPricing}
+        onClose={() => setShowPricingModal(false)}
+        onSuccess={() => {
+          setShowPricingModal(false)
+          onPricingReview?.()
+        }}
+      />
+    ) : (
+      <PricingInfoModal
+        isOpen={showPricingModal}
+        onClose={() => setShowPricingModal(false)}
+        item={item}
+        isSupplier={isSupplier}
+      />
+    )}
   </>
   )
 }
