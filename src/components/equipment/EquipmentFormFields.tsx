@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl"
-import { UploadedImage } from "@/src/hooks/useEquipmentForm"
+import { UploadedImage } from "@/src/hooks/equipment/useEquipmentForm"
 import { usePricingTypes } from "@/src/hooks/usePricingTypes"
 import BasicInfoFields from "./form-fields/BasicInfoFields"
 import SpecificationFields from "./form-fields/SpecificationFields"

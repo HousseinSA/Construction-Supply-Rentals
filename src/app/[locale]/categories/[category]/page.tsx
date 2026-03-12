@@ -1,7 +1,7 @@
 "use client"
 
 import { useParams } from "next/navigation"
-import { useEquipmentTypes } from "@/src/hooks/useEquipmentTypes"
+import { useEquipmentTypes } from "@/src/hooks/equipment/useEquipmentTypes"
 import { useCategoryMapping } from "@/src/hooks/useCategoryMapping"
 import CategoryHeader from "@/src/components/category/CategoryHeader"
 import EquipmentTypesGrid from "@/src/components/category/EquipmentTypesGrid"

@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
-import { useEquipment } from "@/src/hooks/useEquipment"
+import { useEquipment } from "@/src/hooks/equipment/useEquipment"
 import { useCityData } from "@/src/hooks/useCityData"
 import { useEquipmentStore } from "@/src/stores/equipmentStore"
 import PageHeader from "./PageHeader"

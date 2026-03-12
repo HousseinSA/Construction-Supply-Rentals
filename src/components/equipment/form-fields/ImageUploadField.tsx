@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl"
 import ImageUpload from "../../ui/ImageUpload"
-import { UploadedImage } from "@/src/hooks/useEquipmentForm"
+import { UploadedImage } from "@/src/hooks/equipment/useEquipmentForm"
 
 interface ImageUploadFieldProps {
   images: UploadedImage[]

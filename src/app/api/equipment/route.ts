@@ -41,7 +41,6 @@ export async function GET(request: NextRequest) {
       availableOnly: available === "true" ? true : available === "false" ? false : undefined,
       isAdmin,
       supplierId: getParam("supplierId"),
-      search: null,
       hasPendingPricing: getParam("hasPendingPricing"),
       excludeSold: getParam("excludeSold"),
     })
