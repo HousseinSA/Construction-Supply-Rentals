@@ -382,7 +382,7 @@ export async function PUT(request: NextRequest) {
             {
               $set: {
                 isAvailable: false,
-                soldViaTransaction: true,
+                isSold: true,
                 updatedAt: new Date(),
               },
             },

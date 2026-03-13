@@ -42,7 +42,7 @@ export default function ImageGallery({
                     format: 'auto',
                     crop: 'limit'
                   })
-                : "/equipement-images/default-fallback-image.png"
+                : "/equipment-images/default-fallback-image.png"
             }
             alt={name}
             fill

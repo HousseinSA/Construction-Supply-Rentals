@@ -24,6 +24,7 @@ export default function CardHeader({ item, onStatusChange }: CardHeaderProps) {
     createdBy,
     listingType,
     isAvailable,
+    isSold,
     location,
     createdAt,
     _id
@@ -50,12 +51,12 @@ export default function CardHeader({ item, onStatusChange }: CardHeaderProps) {
         </div>
         <div className="flex flex-wrap items-center gap-1.5 mb-1">
           {createdBy === "admin" && <span className="inline-flex px-2 py-0.5 text-xs bg-blue-100 text-blue-700 rounded">{t("createdByAdmin")}</span>}
-          {listingType === "forSale" && !isAvailable && (
+          {listingType === "forSale" && isSold && (
             <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs text-white rounded bg-red-600">
               <Tag className="w-3.5 h-3.5" />{t("sold")}
             </span>
           )}
-          {listingType === "forSale" && isAvailable && (
+          {listingType === "forSale" && !isSold && (
             <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs text-white rounded bg-gradient-to-r from-orange-500 to-red-500">
               <Tag className="w-3.5 h-3.5" />{t("forSale")}
             </span>

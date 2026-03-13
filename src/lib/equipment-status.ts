@@ -13,7 +13,7 @@ export function getUnifiedStatus(item: any): UnifiedStatus {
   if (item.pricingRejectionReasons && Object.keys(item.pricingRejectionReasons).length > 0) return "PRICING_REJECTED"
   if (item.status === "pending") return "PENDING_REVIEW"
   if (item.pendingPricing) return "PRICING_PENDING"
-  if (item.listingType === "forSale" && !item.isAvailable) return "SOLD"
+  if (item.isSold === true) return "SOLD"
   return "ACTIVE"
 }
 

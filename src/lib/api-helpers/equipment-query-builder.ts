@@ -21,6 +21,7 @@ export interface EquipmentQueryParams {
   search?: string | null
   hasPendingPricing?: string | null
   excludeSold?: string | null
+  isSold?: string | null
 }
 
 export async function buildEquipmentQuery(
@@ -40,6 +41,7 @@ export async function buildEquipmentQuery(
     search,
     hasPendingPricing,
     excludeSold,
+    isSold,
   } = params
 
   const query: Filter<Equipment> = {
@@ -67,7 +69,7 @@ export async function buildEquipmentQuery(
     query.equipmentTypeId = new ObjectId(type)
   }
 
-  if (availableOnly) {
+  if (availableOnly === true) {
     query.isAvailable = true
   }
 
@@ -75,10 +77,16 @@ export async function buildEquipmentQuery(
     query.pendingPricing = { $exists: true, $ne: null }
   }
 
-  if (availableOnly === false) {
+  if (isSold === "true") {
+    query.isSold = true
+  } else if (availableOnly === false) {
     query.isAvailable = false
     if (excludeSold === "true") {
-      query.listingType = { $ne: "forSale" }
+      query.$or = [
+        { isSold: { $exists: false } },
+        { isSold: false },
+        { isSold: null }
+      ]
     }
   }
 

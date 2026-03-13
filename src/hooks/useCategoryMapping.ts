@@ -4,19 +4,19 @@ const categoryMapping: {
   [key: string]: { image: string; translationKey: string }
 } = {
   terrassement: {
-    image: "/equipement-images/Pelle hydraulique.jpg",
+    image: "/equipment-images/Pelle hydraulique.jpg",
     translationKey: "terrassement",
   },
   "nivellement-et-compactage": {
-    image: "/equipement-images/Niveuleuse.jpg",
+    image: "/equipment-images/Niveuleuse.jpg",
     translationKey: "nivellementcompactage",
   },
   transport: {
-    image: "/equipement-images/Camion-benne.jpg",
+    image: "/equipment-images/Camion-benne.jpg",
     translationKey: "transport",
   },
   "levage-et-manutention": {
-    image: "/equipement-images/Grue mobile.jpg",
+    image: "/equipment-images/Grue mobile.jpg",
     translationKey: "levageemanutention",
   },
 }
@@ -74,7 +74,7 @@ export function useCategoryMapping() {
 
   const getCategoryInfo = (category: string) => {
     return categoryMapping[category] || {
-      image: "/equipement-images/Pelle hydraulique.jpg",
+      image: "/equipment-images/Pelle hydraulique.jpg",
       translationKey: category,
     }
   }

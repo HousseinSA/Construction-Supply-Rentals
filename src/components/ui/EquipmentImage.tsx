@@ -12,18 +12,17 @@ interface EquipmentImageProps {
 }
 
 interface ColoredIconProps {
-  src: string
   alt: string
   size?: number
   color?: "primary" | "amber" | "blue" | "green"
   className?: string
 }
 
-export function ColoredIcon({ src, alt, size = 20, color = "primary", className = "" }: ColoredIconProps) {
+export function ColoredIcon({  alt, size = 20, color = "primary", className = "" }: ColoredIconProps) {
   return (
     <div className={`relative flex-shrink-0 ${className}`} style={{ width: size, height: size }}>
       <Image
-        src={src}
+        src={'/digger.png'}
         alt={alt}
         width={size}
         height={size}
@@ -43,7 +42,7 @@ export function ColoredIcon({ src, alt, size = 20, color = "primary", className 
 
 export default function EquipmentImage({ src, alt, size = "md", onClick, className, cover = false }: EquipmentImageProps) {
   const imageSrc = Array.isArray(src) ? src[0] : src
-  const fallback = "/equipement-images/default-fallback-image.png"
+  const fallback = "/equipment-images/default-fallback-image.png"
   const [loading, setLoading] = useState(true)
 
   const sizes = {

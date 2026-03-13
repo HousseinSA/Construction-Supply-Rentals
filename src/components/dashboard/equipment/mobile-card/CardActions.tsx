@@ -15,11 +15,11 @@ export default function CardActions({ item }: CardActionsProps) {
   const t = useTranslations("dashboard.equipment")
   const router = useRouter()
 
-  const { _id, status, listingType, isAvailable, hasActiveBookings, createdBy } = item
+  const { _id, status, listingType, isAvailable, hasActiveBookings, createdBy, isSold } = item
   const itemId = _id?.toString() || ""
 
-  const canEdit = !isSupplier && createdBy === "admin" && !(listingType === "forSale" && !isAvailable)
-  const canEditSupplier = isSupplier && (status === "rejected" || (status === "approved" && !hasActiveBookings)) && !(listingType === "forSale" && !isAvailable)
+  const canEdit = !isSupplier && createdBy === "admin" && !isSold
+  const canEditSupplier = isSupplier && (status === "rejected" || (status === "approved" && !hasActiveBookings)) && !isSold
 
   return (
     <div className="flex gap-2">

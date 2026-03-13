@@ -32,7 +32,7 @@ export async function checkEquipmentOwnership(
   return { authorized: true, equipment }
 }
 
-export async function validateAndGetEquipmentAccess(equipmentId: string) {
+export async function validateAndGetEquipmentAccess(equipmentId: string, checkOwnership: boolean = true) {
   const auth = await getAuthenticatedUser()
   if (!auth.authenticated) return { error: auth.error }
 
@@ -43,12 +43,27 @@ export async function validateAndGetEquipmentAccess(equipmentId: string) {
   const isAdmin = auth.user!.role === "admin"
   const userId = auth.user!.id
 
-  const ownership = await checkEquipmentOwnership(db, equipmentId, userId, isAdmin)
-  if (!ownership.authorized) return { error: ownership.error }
+  if (checkOwnership) {
+    const ownership = await checkEquipmentOwnership(db, equipmentId, userId, isAdmin)
+    if (!ownership.authorized) return { error: ownership.error }
+
+    return {
+      db,
+      equipment: ownership.equipment!,
+      isAdmin,
+      userId,
+    }
+  }
+
+  const equipment = await db.collection("equipment").findOne({ _id: new ObjectId(equipmentId) }) as Equipment | null
+
+  if (!equipment) {
+    return { error: errorResponse("Equipment not found", 404) }
+  }
 
   return {
     db,
-    equipment: ownership.equipment!,
+    equipment,
     isAdmin,
     userId,
   }

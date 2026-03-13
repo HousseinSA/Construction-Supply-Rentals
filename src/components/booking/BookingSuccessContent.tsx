@@ -59,7 +59,7 @@ export default function BookingSuccessContent({
               </p>
               {mainEquipment || equipmentName ? (
                 <div className="flex items-center justify-center lg:justify-start gap-2 text-primary px-0 py-0 rounded-lg">
-                  <ColoredIcon src="/digger.png" alt="Equipment" size={20} color="primary" />
+                  <ColoredIcon alt="Equipment" size={20} color="primary" />
                   <span className="font-medium text-amber-600 break-words">
                     {mainEquipment?.name || equipmentName}
                   </span>
@@ -138,7 +138,7 @@ export default function BookingSuccessContent({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="bg-amber-100 p-3 rounded-full group-hover:bg-amber-200 transition-colors">
-                  <ColoredIcon src="/digger.png" alt="Equipment" size={24} color="amber" />
+                  <ColoredIcon  alt="Equipment" size={24} color="amber" />
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">

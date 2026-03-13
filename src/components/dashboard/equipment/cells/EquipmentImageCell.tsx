@@ -28,6 +28,7 @@ function EquipmentImageCell({ item }: EquipmentImageCellProps) {
     createdBy,
     listingType,
     isAvailable,
+    isSold
   } = item
 
   const imageSrc = useMemo(() => {
@@ -40,7 +41,7 @@ function EquipmentImageCell({ item }: EquipmentImageCellProps) {
           format: "auto",
           crop: "fill",
         })
-      : "/equipement-images/default-fallback-image.png"
+      : "/equipment-images/default-fallback-image.png"
   }, [images])
 
   const handleImageClick = useCallback(() => {
@@ -89,13 +90,13 @@ function EquipmentImageCell({ item }: EquipmentImageCellProps) {
                 {t("createdByAdmin")}
               </span>
             )}
-            {listingType === "forSale" && !isAvailable && (
+            {listingType === "forSale" && isSold && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-white rounded bg-red-600 w-fit">
                 <Tag className="w-3 h-3" />
                 {t("sold")}
               </span>
             )}
-            {listingType === "forSale" && isAvailable && (
+            {listingType === "forSale" && !isSold && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-white rounded bg-gradient-to-r from-orange-500 to-red-500 w-fit">
                 <Tag className="w-3 h-3" />
                 {t("forSale")}

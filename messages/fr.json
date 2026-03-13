@@ -588,7 +588,11 @@
       "equipmentApproved": "Matériel approuvé",
       "equipmentRejected": "Matériel rejeté",
       "availabilityUpdated": "Disponibilité mise à jour",
-      "cannotEditActiveBooking": "le matériel a des réservations actives ou une vente en attente",
+      "cannotEditActiveBooking": "Le matériel a des réservations actives ou une vente en attente",
+      "hasActiveBookings": "Le matériel a des réservations actives",
+      "hasPendingSale": "Le matériel a une vente en attente",
+     "equipmentSold": "Matériel a été vendu"
+,
       "confirmApproveTitle": "Approuver le Matériel",
       "confirmApproveMessage": "Approuver ce matériel ?",
       "confirmRejectTitle": "Rejeter le Matériel",
@@ -622,8 +626,7 @@
         "allLocations": "Localisations"
       },
       "activeBookingWarning": "Avertissement Réservations Actives",
-      "activeBookingWarningMessage": "Cet équipement a des réservations actives. La modification peut affecter les locations en cours. Veuillez procéder avec prudence.",
-      "equipmentSold": "Ce matériel a été vendu"
+      "activeBookingWarningMessage": "Cet équipement a des réservations actives. La modification peut affecter les locations en cours. Veuillez procéder avec prudence."
     },
     "pages": {
       "equipment": {

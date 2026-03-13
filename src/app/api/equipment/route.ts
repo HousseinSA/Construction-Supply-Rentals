@@ -43,6 +43,7 @@ export async function GET(request: NextRequest) {
       supplierId: getParam("supplierId"),
       hasPendingPricing: getParam("hasPendingPricing"),
       excludeSold: getParam("excludeSold"),
+      isSold: getParam("isSold"),
     })
 
     const searchTerm = getParam("search")

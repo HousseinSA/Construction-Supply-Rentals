@@ -1,4 +1,4 @@
-import { memo, useState } from "react"
+import { useState } from "react"
 import EquipmentImage from "@/src/components/ui/EquipmentImage"
 import Dropdown from "@/src/components/ui/Dropdown"
 import CopyButton from "@/src/components/ui/CopyButton"
@@ -42,7 +42,7 @@ function EquipmentMobileCard({ item, onStatusChange }: EquipmentMobileCardProps)
       <div className="flex gap-4 pb-3 border-b border-gray-200">
         <div className="w-36 sm:w-44 md:w-48 lg:w-52 h-36 relative rounded-lg flex-shrink-0 overflow-hidden">
           <EquipmentImage
-            src={item.images?.[0] || "/equipement-images/default-fallback-image.png"}
+            src={item.images?.[0] || "/equipment-images/default-fallback-image.png"}
             alt={item.name}
             cover
             onClick={() =>
@@ -112,20 +112,21 @@ function EquipmentMobileCard({ item, onStatusChange }: EquipmentMobileCardProps)
             ]}
             value={item.isAvailable ? "available" : "unavailable"}
             onChange={(val) =>
-              item.status === "approved" && !(item.listingType === "forSale" && !item.isAvailable) && !item.hasActiveBookings && !item.hasPendingSale &&
+              item.status === "approved" && !item.isSold && !item.hasActiveBookings && !item.hasPendingSale &&
               updateEquipmentAvailability(
                 item._id?.toString() || "",
                 val === "available",
                 t
               )
             }
-            disabled={item.status !== "approved" || (item.listingType === "forSale" && !item.isAvailable) || item.hasActiveBookings || item.hasPendingSale}
+            disabled={item.status !== "approved" || item.isSold || item.hasActiveBookings || item.hasPendingSale}
           />
-          {(item.status !== "approved" || (item.status === "approved" && (item.hasActiveBookings || item.hasPendingSale)) || (item.status === "approved" && item.listingType === "forSale" && !item.isAvailable)) && (
+          {(item.status !== "approved" || (item.status === "approved" && (item.hasActiveBookings || item.hasPendingSale)) || item.isSold) && (
             <div onClick={toggleTooltip} className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap transition-opacity pointer-events-auto z-10 cursor-pointer ${showTooltip ? 'opacity-100' : 'opacity-0'}`}>
               {item.status !== "approved" && t("pendingVerification")}
-              {item.status === "approved" && (item.hasActiveBookings || item.hasPendingSale) && t("cannotEditActiveBooking")}
-              {item.status === "approved" && item.listingType === "forSale" && !item.isAvailable && t("equipmentSold")}
+              {item.status === "approved" && item.isSold && t("equipmentSold")}
+              {item.status === "approved" && !item.isSold && item.listingType === "forSale" && item.hasPendingSale && t("hasPendingSale")}
+              {item.status === "approved" && !item.isSold && item.hasActiveBookings && t("hasActiveBookings")}
               <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
             </div>
           )}
@@ -156,10 +157,4 @@ function EquipmentMobileCard({ item, onStatusChange }: EquipmentMobileCardProps)
   )
 }
 
-export default memo(EquipmentMobileCard, (prev, next) => {
-  if (prev.item._id !== next.item._id) return false
-  if (prev.item.status !== next.item.status) return false
-  if (prev.item.isAvailable !== next.item.isAvailable) return false
-  if (prev.item.pendingPricing !== next.item.pendingPricing) return false
-  return true
-})
+export default EquipmentMobileCard

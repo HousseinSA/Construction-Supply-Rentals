@@ -56,17 +56,17 @@ export function getEquipmentImage(equipmentName: string): string {
   const normalizedName = equipmentName.toLowerCase().trim()
 
   const directMatch = NAME_MAPPINGS[normalizedName]
-  if (directMatch) return `/equipement-images/${directMatch}`
+  if (directMatch) return `/equipment-images/${directMatch}`
 
   if (normalizedName.includes("pied de mouton")) {
-    return `/equipement-images/Compacteur Pied de Mouton.avif`
+    return `/equipment-images/Compacteur Pied de Mouton.avif`
   }
 
   for (const [key, image] of Object.entries(NAME_MAPPINGS)) {
     if (normalizedName.includes(key) || key.includes(normalizedName)) {
-      return `/equipement-images/${image}`
+      return `/equipment-images/${image}`
     }
   }
 
-  return "/equipement-images/default-fallback-image.png"
+  return "/equipment-images/default-fallback-image.png"
 }

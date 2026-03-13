@@ -13,7 +13,7 @@ export const canEditEquipment = (
   item: EquipmentWithSupplier,
   isSupplier: boolean
 ) => {
-  const isSold = item.listingType === "forSale" && !item.isAvailable
+  const isSold = item.isSold === true
   const hasActiveItems = item.hasActiveBookings || item.hasPendingSale
 
   if (isSupplier) {
@@ -34,11 +34,14 @@ export const getAvailabilityTooltipMessage = (
   if (item.status !== "approved") {
     return t("pendingVerification")
   }
-  if (item.hasActiveBookings || item.hasPendingSale) {
-    return t("cannotEditActiveBooking")
-  }
-  if (item.listingType === "forSale" && !item.isAvailable) {
+  if (item.isSold === true) {
     return t("equipmentSold")
+  }
+  if (item.listingType === "forSale" && item.hasPendingSale) {
+    return t("hasPendingSale")
+  }
+  if (item.hasActiveBookings) {
+    return t("hasActiveBookings")
   }
   return ""
 }
@@ -46,7 +49,7 @@ export const getAvailabilityTooltipMessage = (
 export const isAvailabilityDisabled = (item: EquipmentWithSupplier) => {
   return (
     item.status !== "approved" ||
-    (item.listingType === "forSale" && !item.isAvailable) ||
+    item.isSold === true ||
     item.hasActiveBookings ||
     item.hasPendingSale
   )

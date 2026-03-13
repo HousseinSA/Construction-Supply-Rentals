@@ -45,8 +45,7 @@ export function buildEquipmentQueryParams(
     params.set("available", "false")
     params.set("excludeSold", "true")
   } else if (filterValues.availability === "sold") {
-    params.set("available", "false")
-    params.set("listingType", "forSale")
+    params.set("isSold", "true")
   }
 
   if (filterValues.location !== "all") {

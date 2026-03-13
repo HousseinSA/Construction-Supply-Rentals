@@ -147,7 +147,7 @@ export function canEditEquipment(
     return { canEdit: false, reason: "Cannot edit rejected equipment" }
   }
 
-  if (equipment.status === "sold" || equipment.isSold) {
+  if (equipment.isSold === true) {
     return { canEdit: false, reason: "Cannot edit sold equipment" }
   }
 

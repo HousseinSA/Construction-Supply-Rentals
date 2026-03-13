@@ -28,7 +28,7 @@ export async function GET(
     const idValidation = validateObjectId(id, "equipment ID")
     if (!idValidation.valid) return idValidation.error
 
-    const access = await validateAndGetEquipmentAccess(id)
+    const access = await validateAndGetEquipmentAccess(id, false)
     if ('error' in access) return access.error
 
     const { db, equipment } = access

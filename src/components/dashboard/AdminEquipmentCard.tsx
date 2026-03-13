@@ -139,7 +139,7 @@ export default function AdminEquipmentCard({ equipment }: EquipmentCardProps) {
                     format: 'auto',
                     crop: 'fill'
                   })
-                : "/equipement-images/default-fallback-image.png"
+                : "/equipment-images/default-fallback-image.png"
             }
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

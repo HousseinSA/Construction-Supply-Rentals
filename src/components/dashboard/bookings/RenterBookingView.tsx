@@ -128,7 +128,7 @@ export default function RenterBookingView() {
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <EquipmentImage
-                      src={booking.bookingItems[0]?.equipmentImage || "/equipement-images/default-fallback-image.png"}
+                      src={booking.bookingItems[0]?.equipmentImage || "/equipment-images/default-fallback-image.png"}
                       alt={booking.bookingItems[0]?.equipmentName || "Equipment"}
                       size="lg"
                     />

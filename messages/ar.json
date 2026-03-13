@@ -600,6 +600,9 @@
       "equipmentRejected": "تم رفض المعدة",
       "availabilityUpdated": "تم تحديث التوفر",
       "cannotEditActiveBooking": "المعدة لديها حجوزات نشطة أو عملية بيع معلقة",
+      "hasActiveBookings": "يوجد حجز نشط",
+      "hasPendingSale": "يوجد بيع معلق",
+      "equipmentSold": "تم بيع هذه المعدة",
       "confirmApproveTitle": "الموافقة على المعدة",
       "confirmApproveMessage": "متأكد من الموافقة على هذه المعدة؟",
       "confirmRejectTitle": "رفض المعدة",
@@ -611,8 +614,8 @@
         "allTypes": "جميع الأنواع",
         "allAvailability": "الكل",
         "allLocations": "جميع المواقع"
-      },
-      "equipmentSold": "تم بيع هذه المعدة"
+      }
+      
     },
     "pages": {
       "equipment": {
