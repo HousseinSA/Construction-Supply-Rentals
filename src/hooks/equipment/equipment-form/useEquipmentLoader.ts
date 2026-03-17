@@ -14,7 +14,7 @@ export function useEquipmentLoader(
   setLoading: (loading: boolean) => void,
 ) {
   const router = useRouter()
-  const { getEquipmentById, setIndividualEquipment } = useEquipmentStore()
+  const { getEquipmentById } = useEquipmentStore()
 
   const populateForm = (eq: EquipmentWithSupplier) => {
     setEquipment(eq)
@@ -48,7 +48,6 @@ export function useEquipmentLoader(
       }
 
       const eq = result.data
-      setIndividualEquipment(eq)
       populateForm(eq)
     } catch (error) {
       console.error("Error loading equipment:", error)

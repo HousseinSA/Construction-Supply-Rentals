@@ -6,7 +6,6 @@ import { showToast } from "@/src/lib/toast"
 interface EquipmentStore {
   equipment: EquipmentWithSupplier[]
   equipmentMap: Map<string, number>
-  individualEquipment: Map<string, EquipmentWithSupplier>
   loading: boolean
   lastFetch: number | null
   lastQuery: string | null
@@ -26,7 +25,6 @@ interface EquipmentStore {
   setCurrentPage: (page: number) => void
   updateEquipment: (id: string, updates: Partial<Equipment>) => void
   getEquipmentById: (id: string) => EquipmentWithSupplier | null
-  setIndividualEquipment: (equipment: EquipmentWithSupplier) => void
   updateEquipmentStatus: (
     id: string,
     status: EquipmentStatus,
@@ -49,7 +47,6 @@ export const useEquipmentStore = create<EquipmentStore>((set, get) => {
   return {
   equipment: [],
   equipmentMap: new Map(),
-  individualEquipment: new Map(),
   loading: true,
   lastFetch: null,
   lastQuery: null,
@@ -63,16 +60,9 @@ export const useEquipmentStore = create<EquipmentStore>((set, get) => {
     const map = new Map(
       equipment.map((item, idx) => [item._id?.toString() || "", idx]),
     )
-    const individualMap = new Map(get().individualEquipment)
-    equipment.forEach(item => {
-      if (item._id) {
-        individualMap.set(item._id.toString(), item)
-      }
-    })
     set({ 
       equipment, 
-      equipmentMap: map, 
-      individualEquipment: individualMap,
+      equipmentMap: map,
       lastFetch: Date.now(),
       lastQuery: query || null
     })
@@ -86,30 +76,18 @@ export const useEquipmentStore = create<EquipmentStore>((set, get) => {
   setCurrentPage: (page) => set({ currentPage: page }),
   getEquipmentById: (id) => {
     const state = get()
-    return state.individualEquipment.get(id) || null
-  },
-  setIndividualEquipment: (equipment) => {
-    if (!equipment._id) return
-    const individualMap = new Map(get().individualEquipment)
-    individualMap.set(equipment._id.toString(), equipment)
-    set({ individualEquipment: individualMap })
+    const idx = state.equipmentMap.get(id)
+    return idx !== undefined ? state.equipment[idx] : null
   },
   updateEquipment: (id, updates) =>
     set((state) => {
       const idx = state.equipmentMap.get(id)
+      if (idx === undefined) return state
+      
       const newEquipment = [...state.equipment]
-      const individualMap = new Map(state.individualEquipment)
+      newEquipment[idx] = { ...newEquipment[idx], ...updates }
       
-      if (idx !== undefined) {
-        newEquipment[idx] = { ...newEquipment[idx], ...updates }
-      }
-      
-      const existing = individualMap.get(id)
-      if (existing) {
-        individualMap.set(id, { ...existing, ...updates })
-      }
-      
-      return { equipment: newEquipment, individualEquipment: individualMap }
+      return { equipment: newEquipment }
     }),
   updateEquipmentStatus: async (id, status, reason, t) => {
     set({ updating: id })

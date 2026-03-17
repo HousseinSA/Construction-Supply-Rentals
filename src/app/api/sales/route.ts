@@ -320,7 +320,6 @@ export async function PUT(request: NextRequest) {
           { status: 400 },
         )
       }
-
       if (!adminId) {
         const adminEmail = process.env.ADMIN_EMAIL
         if (adminEmail) {
@@ -371,10 +370,9 @@ export async function PUT(request: NextRequest) {
     await db
       .collection("sales")
       .updateOne({ _id: saleObjectId }, { $set: updateData })
-
     if (status === "paid") {
-      const sale = await db.collection("sales").findOne({ _id: saleObjectId })
-      if (sale) {
+      const sale  = await db.collection("sales").findOne({ _id: saleObjectId })
+      if(sale){
         await db
           .collection("equipment")
           .updateOne(

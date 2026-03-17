@@ -47,10 +47,8 @@ export function buildEquipmentQueryParams(
   } else if (filterValues.availability === "sold") {
     params.set("isSold", "true")
   }
-
   if (filterValues.location !== "all") {
     params.set("city", filterValues.location)
   }
-
   return params
 }

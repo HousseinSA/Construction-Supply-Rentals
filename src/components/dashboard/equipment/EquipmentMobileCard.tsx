@@ -142,7 +142,7 @@ function EquipmentMobileCard({ item, onStatusChange }: EquipmentMobileCardProps)
         onClose={() => setShowPricingModal(false)}
         onSuccess={() => {
           setShowPricingModal(false)
-          onPricingReview?.()
+          onPricingReview?.(item)
         }}
       />
     ) : (

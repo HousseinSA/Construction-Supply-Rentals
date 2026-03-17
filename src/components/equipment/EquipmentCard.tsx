@@ -8,7 +8,7 @@ import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
 import { useFontClass } from "@/src/hooks/useFontClass"
 import { useCityData } from "@/src/hooks/useCityData"
 import Button from "../ui/Button"
-import EquipmentImage from "./EquipmentImage"
+import EquipmentCardImage from "./EquipmentCardImage"
 import PricingDisplay from "./PricingDisplay"
 import EquipmentSpecs from "./EquipmentSpecs"
 import { MapPin, Loader2 } from "lucide-react"
@@ -49,7 +49,7 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
           : "border-gray-100 hover:border-primary/20"
       } group ${fontClass} ${isNavigating ? 'pointer-events-none' : ''}`}
     >
-      <EquipmentImage
+      <EquipmentCardImage
         images={equipment.images}
         name={equipment.name}
         isOwnEquipment={isOwnEquipment}
@@ -75,7 +75,6 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
               </span>
             )}
           </div>
-
           <EquipmentSpecs specs={equipment.specifications} />
         </div>
         <div className="space-y-2.5 mt-auto border-t border-gray-100 pt-3">

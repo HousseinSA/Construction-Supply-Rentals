@@ -38,6 +38,7 @@ export interface Equipment {
     hoursUsed?: number
     kilometersUsed?: number
     tonnageUsed?: number
+    usageUnit?: string 
     weight?: number
     weightUnit?: string
   }

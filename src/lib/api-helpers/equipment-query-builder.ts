@@ -11,7 +11,6 @@ const EXCLUDED_CATEGORY_IDS = [
 export interface EquipmentQueryParams {
   status?: string | null
   categoryId?: string | null
-  category?: string | null
   type?: string | null
   city?: string | null
   listingType?: string | null
@@ -24,57 +23,45 @@ export interface EquipmentQueryParams {
   isSold?: string | null
 }
 
-export async function buildEquipmentQuery(
-  db: Db,
-  params: EquipmentQueryParams,
-): Promise<Filter<Equipment>> {
-  const {
-    status,
-    categoryId,
-    category,
-    type,
-    city,
-    listingType,
-    availableOnly,
-    isAdmin,
-    supplierId,
-    search,
-    hasPendingPricing,
-    excludeSold,
-    isSold,
-  } = params
-
-  const query: Filter<Equipment> = {
-    categoryId: { $nin: EXCLUDED_CATEGORY_IDS },
-  }
-
+function applyDefaultFilters(query: Filter<Equipment>, isAdmin?: boolean, supplierId?: string | null) {
   if (!isAdmin && !supplierId) {
     query.status = "approved"
     query.isAvailable = true
   }
+}
 
+function applySupplierFilter(query: Filter<Equipment>, supplierId?: string | null) {
   if (supplierId && ObjectId.isValid(supplierId)) {
     query.supplierId = new ObjectId(supplierId)
   }
+}
 
+function applyStatusFilter(query: Filter<Equipment>, status?: string | null) {
   if (status) {
     query.status = status as EquipmentStatus
   }
+}
 
+function applyCategoryFilter(query: Filter<Equipment>, categoryId?: string | null) {
   if (categoryId) {
     query.categoryId = new ObjectId(categoryId)
   }
+}
 
+function applyTypeFilter(query: Filter<Equipment>, type?: string | null) {
   if (type) {
     query.equipmentTypeId = new ObjectId(type)
   }
+}
 
+function applyAvailabilityFilters(
+  query: Filter<Equipment>,
+  availableOnly?: boolean,
+  isSold?: string | null,
+  excludeSold?: string | null
+) {
   if (availableOnly === true) {
     query.isAvailable = true
-  }
-
-  if (hasPendingPricing === "true") {
-    query.pendingPricing = { $exists: true, $ne: null }
   }
 
   if (isSold === "true") {
@@ -84,31 +71,61 @@ export async function buildEquipmentQuery(
     if (excludeSold === "true") {
       query.$or = [
         { isSold: { $exists: false } },
-        { isSold: false },
-        { isSold: null }
+        { isSold: false }
       ]
     }
   }
+}
 
+function applyPendingPricingFilter(query: Filter<Equipment>, hasPendingPricing?: string | null) {
+  if (hasPendingPricing === "true") {
+    query.pendingPricing = { $exists: true, $ne: null }
+  }
+}
+
+function applyCityFilter(query: Filter<Equipment>, city?: string | null) {
   if (city) {
     query.location = { $regex: new RegExp(city, "i") }
   }
+}
 
+function applyListingTypeFilter(query: Filter<Equipment>, listingType?: string | null) {
   if (listingType) {
     query.listingType = listingType as "forSale" | "forRent"
   }
+}
 
-  if (category) {
-    const categoryDoc = await db.collection("categories").findOne({
-      $or: [
-        { name: { $regex: new RegExp(category.replace(/-/g, " "), "i") } },
-        { name: { $regex: new RegExp(category, "i") } },
-      ],
-    })
-    if (categoryDoc) {
-      query.categoryId = categoryDoc._id
-    }
+export async function buildEquipmentQuery(
+  db: Db,
+  params: EquipmentQueryParams,
+): Promise<Filter<Equipment>> {
+  const {
+    status,
+    categoryId,
+    type,
+    city,
+    listingType,
+    availableOnly,
+    isAdmin,
+    supplierId,
+    hasPendingPricing,
+    excludeSold,
+    isSold,
+  } = params
+
+  const query: Filter<Equipment> = {
+    categoryId: { $nin: EXCLUDED_CATEGORY_IDS },
   }
+
+  applyDefaultFilters(query, isAdmin, supplierId)
+  applySupplierFilter(query, supplierId)
+  applyStatusFilter(query, status)
+  applyCategoryFilter(query, categoryId)
+  applyTypeFilter(query, type)
+  applyAvailabilityFilters(query, availableOnly, isSold, excludeSold)
+  applyPendingPricingFilter(query, hasPendingPricing)
+  applyCityFilter(query, city)
+  applyListingTypeFilter(query, listingType)
 
   return query
 }

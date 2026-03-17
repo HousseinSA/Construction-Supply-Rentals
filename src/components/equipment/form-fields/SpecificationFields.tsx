@@ -4,14 +4,16 @@ import InputWithUnitSelect from "../../ui/InputWithUnitSelect"
 import CityDropdown from "../../ui/CityDropdown"
 
 interface SpecificationFieldsProps {
-  equipmentTypeId: string
-  usageValue: string
-  usageUnit: string
-  weight: string
-  weightUnit: string
-  location: string
-  listingType: "forSale" | "forRent"
-  condition: string
+  formData: {
+    type: string
+    usageValue: string
+    usageUnit: string
+    weight: string
+    weightUnit: string
+    location: string
+    listingType: "forSale" | "forRent"
+    condition: string
+  }
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   onUsageUnitChange: (value: string) => void
   onWeightUnitChange: (value: string) => void
@@ -21,14 +23,7 @@ interface SpecificationFieldsProps {
 }
 
 export default function SpecificationFields({
-  equipmentTypeId,
-  usageValue,
-  usageUnit,
-  weight,
-  weightUnit,
-  location,
-  listingType,
-  condition,
+  formData,
   onInputChange,
   onUsageUnitChange,
   onWeightUnitChange,
@@ -37,15 +32,15 @@ export default function SpecificationFields({
   isSubmitting,
 }: SpecificationFieldsProps) {
   const t = useTranslations("dashboard.equipment")
-  const showUsage = !(listingType === "forSale" && condition === "new")
+  const showUsage = !(formData.listingType === "forSale" && formData.condition === "new")
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {showUsage && (
         <UsageInput
-          equipmentTypeId={equipmentTypeId}
-          value={usageValue}
-          unitValue={usageUnit}
+          equipmentTypeId={formData.type}
+          value={formData.usageValue}
+          unitValue={formData.usageUnit}
           onValueChange={onInputChange}
           onUnitChange={onUsageUnitChange}
           disabled={isSubmitting}
@@ -54,14 +49,14 @@ export default function SpecificationFields({
       <InputWithUnitSelect
         label={t("weight")}
         name="weight"
-        value={weight}
-        unitValue={weightUnit}
+        value={formData.weight}
+        unitValue={formData.weightUnit}
         onValueChange={onInputChange}
         onUnitChange={onWeightUnitChange}
         placeholder={t("weightPlaceholder")}
       />
       <CityDropdown
-        value={location}
+        value={formData.location}
         onChange={onLocationChange}
         disabled={shouldLockFields}
       />

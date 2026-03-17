@@ -71,22 +71,6 @@ export async function validateAndGetEquipmentAccess(equipmentId: string, checkOw
 
 type PricingFields = "hourlyRate" | "dailyRate" | "monthlyRate" | "kmRate" | "tonRate" | "salePrice"
 
-export function formatPricing(pricing: Equipment['pricing'], listingType?: string): string {
-  if (listingType === "forSale" && pricing.salePrice) {
-    return `${pricing.salePrice.toFixed(2)} MRU`
-  }
-
-  const parts: string[] = []
-  if (pricing.hourlyRate) parts.push(`${pricing.hourlyRate} MRU/h`)
-  if (pricing.dailyRate) parts.push(`${pricing.dailyRate} MRU/jour`)
-  if (pricing.monthlyRate) parts.push(`${pricing.monthlyRate} MRU/mois`)
-  if (pricing.kmRate) parts.push(`${pricing.kmRate} MRU/km`)
-  if (pricing.tonRate) parts.push(`${pricing.tonRate} MRU/tonne`)
-  if (pricing.salePrice) parts.push(`${pricing.salePrice} MRU`)
-
-  return parts.join(", ") || "-"
-}
-
 export function detectPricingChanges(
   currentPricing: Equipment['pricing'],
   newPricing: Partial<Equipment['pricing']>
@@ -114,8 +98,4 @@ export async function getSupplierInfo(db: Db, supplierId: ObjectId): Promise<Use
     { _id: supplierId },
     { projection: { password: 0 } }
   ) as User | null
-}
-
-export async function getAdminUser(db: Db): Promise<User | null> {
-  return await db.collection("users").findOne({ role: "admin" }) as User | null
 }

@@ -34,7 +34,6 @@ export async function GET(request: NextRequest) {
     const query = await buildEquipmentQuery(db, {
       status: getParam("status"),
       categoryId: getParam("categoryId"),
-      category: getParam("category"),
       type: getParam("type"),
       city: getParam("city"),
       listingType: getParam("listingType"),

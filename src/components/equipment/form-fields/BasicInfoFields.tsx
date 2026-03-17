@@ -6,13 +6,15 @@ import YearPicker from "../../ui/YearPicker"
 import ConditionDropdown from "../../ui/ConditionDropdown"
 
 interface BasicInfoFieldsProps {
-  category: string
-  type: string
-  brand: string
-  model: string
-  year: string
-  condition: string
-  listingType: "forSale" | "forRent"
+  formData: {
+    category: string
+    type: string
+    brand: string
+    model: string
+    year: string
+    condition: string
+    listingType: "forSale" | "forRent"
+  }
   onCategoryChange: (value: string) => void
   onTypeChange: (value: string) => void
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void
@@ -23,13 +25,7 @@ interface BasicInfoFieldsProps {
 }
 
 export default function BasicInfoFields({
-  category,
-  type,
-  brand,
-  model,
-  year,
-  condition,
-  listingType,
+  formData,
   onCategoryChange,
   onTypeChange,
   onInputChange,
@@ -43,14 +39,14 @@ export default function BasicInfoFields({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <CategoryDropdown
-        value={category}
+        value={formData.category}
         onChange={onCategoryChange}
         disabled={shouldLockFields}
       />
 
       <EquipmentTypeDropdown
-        category={category}
-        value={type}
+        category={formData.category}
+        value={formData.type}
         onChange={onTypeChange}
         disabled={isEditMode && !isAdmin}
       />
@@ -58,7 +54,7 @@ export default function BasicInfoFields({
       <Input
         label={t("brand")}
         name="brand"
-        value={brand}
+        value={formData.brand}
         onChange={onInputChange}
         placeholder={t("brandPlaceholder")}
         required
@@ -67,14 +63,14 @@ export default function BasicInfoFields({
       <Input
         label={t("model")}
         name="model"
-        value={model}
+        value={formData.model}
         onChange={onInputChange}
         placeholder={t("modelPlaceholder")}
       />
 
       <YearPicker
         label={t("year")}
-        value={year}
+        value={formData.year}
         onChange={(yearValue) => {
           const event = {
             target: { name: "year", value: yearValue },
@@ -85,9 +81,9 @@ export default function BasicInfoFields({
       />
 
       <ConditionDropdown
-        value={condition}
+        value={formData.condition}
         onChange={onConditionChange}
-        required={listingType === "forSale"}
+        required={formData.listingType === "forSale"}
       />
     </div>
   )

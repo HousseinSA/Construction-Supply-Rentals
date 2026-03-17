@@ -69,13 +69,7 @@ export default function EquipmentFormFields({
   return (
     <>
       <BasicInfoFields
-        category={formData.category}
-        type={formData.type}
-        brand={formData.brand}
-        model={formData.model}
-        year={formData.year}
-        condition={formData.condition}
-        listingType={formData.listingType}
+        formData={formData}
         onCategoryChange={onCategoryChange}
         onTypeChange={onTypeChange}
         onInputChange={onInputChange}
@@ -84,16 +78,8 @@ export default function EquipmentFormFields({
         isEditMode={isEditMode}
         isAdmin={isAdmin}
       />
-
       <SpecificationFields
-        equipmentTypeId={formData.type}
-        usageValue={formData.usageValue}
-        usageUnit={formData.usageUnit}
-        weight={formData.weight}
-        weightUnit={formData.weightUnit}
-        location={formData.location}
-        listingType={formData.listingType}
-        condition={formData.condition}
+        formData={formData}
         onInputChange={onInputChange}
         onUsageUnitChange={onUsageUnitChange}
         onWeightUnitChange={onWeightUnitChange}
@@ -103,13 +89,7 @@ export default function EquipmentFormFields({
       />
 
       <PricingFields
-        listingType={formData.listingType}
-        salePrice={formData.salePrice}
-        hourlyRate={formData.hourlyRate}
-        dailyRate={formData.dailyRate}
-        monthlyRate={formData.monthlyRate}
-        kmRate={formData.kmRate}
-        tonRate={formData.tonRate}
+        formData={formData}
         pricingTypes={pricingTypes}
         onNumericInputChange={onNumericInputChange}
       />

@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb"
 import type { Db } from "mongodb"
 import type { Equipment } from "@/src/lib/models/equipment"
+import type { EquipmentStatus } from "@/src/lib/types"
 import { sendPricingUpdateNotification } from "./email-service"
 
 type PricingKey = 'hourlyRate' | 'dailyRate' | 'monthlyRate' | 'kmRate' | 'tonRate' | 'salePrice'
@@ -143,7 +144,7 @@ export function buildCommonUpdateData(
 export async function handleStatusUpdate(
   db: Db,
   equipment: Equipment,
-  newStatus: string,
+  newStatus: EquipmentStatus,
   userId: string,
   rejectionReason?: string
 ): Promise<Partial<Equipment>> {
