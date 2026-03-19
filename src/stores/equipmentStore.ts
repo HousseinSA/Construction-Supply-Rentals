@@ -3,6 +3,11 @@ import { Equipment, EquipmentWithSupplier } from "@/src/lib/models/equipment"
 import { EquipmentStatus } from "@/src/lib/types"
 import { showToast } from "@/src/lib/toast"
 
+interface PublicEquipmentCache {
+  equipment: Equipment[]
+  timestamp: number
+}
+
 interface EquipmentStore {
   equipment: EquipmentWithSupplier[]
   equipmentMap: Map<string, number>
@@ -15,6 +20,8 @@ interface EquipmentStore {
   convertToLocalized: ((city: string) => string) | null
   onPricingReview: ((item: EquipmentWithSupplier) => void) | null
   currentPage: number
+  publicCache: Map<string, PublicEquipmentCache>
+  publicLoading: boolean
   setEquipment: (equipment: EquipmentWithSupplier[], query?: string) => void
   setLoading: (loading: boolean) => void
   setUpdating: (id: string | null) => void
@@ -40,6 +47,11 @@ interface EquipmentStore {
   resetNavigating: () => void
   shouldRefetch: (query?: string) => boolean
   invalidateCache: (selective?: boolean) => void
+  getPublicEquipment: (query: string) => Equipment[] | null
+  setPublicEquipment: (query: string, equipment: Equipment[]) => void
+  setPublicLoading: (loading: boolean) => void
+  shouldRefetchPublic: (query: string) => boolean
+  invalidatePublicCache: (query?: string) => void
 }
 
 const CACHE_DURATION = 5 * 60 * 1000
@@ -56,6 +68,8 @@ export const useEquipmentStore = create<EquipmentStore>((set, get) => {
   convertToLocalized: null,
   onPricingReview: null,
   currentPage: 1,
+  publicCache: new Map(),
+  publicLoading: false,
   setEquipment: (equipment, query) => {
     const map = new Map(
       equipment.map((item, idx) => [item._id?.toString() || "", idx]),

@@ -10,7 +10,9 @@
     "seed": "node scripts/seed.js",
     "ngrok": "ngrok http 3000 --domain=margarette-floretty-ivory.ngrok-free.dev",
     "test:emails": "tsx scripts/test-all-emails.ts",
-    "test:cron": "node scripts/test-cron-instant.js"
+    "test:cron": "node scripts/test-cron-instant.js",
+    "demo:generate": "node scripts/generate-demo-equipment.js",
+    "demo:delete": "node scripts/delete-demo-equipment.js"
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.11.0",

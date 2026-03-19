@@ -28,7 +28,7 @@ export function useEquipment(
 
   return useInfiniteScrollEquipment({
     buildParams,
-    itemsPerPage: 10,
+    itemsPerPage: 12,
     dependencies: [selectedCity, selectedType, listingType],
   })
 }

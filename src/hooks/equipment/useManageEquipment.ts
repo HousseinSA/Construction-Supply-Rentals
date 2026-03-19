@@ -15,7 +15,7 @@ interface UseManageEquipmentConfig {
   onPricingReview?: (item: any) => void
 }
 
-const ITEMS_PER_PAGE = 10
+const ITEMS_PER_PAGE = 12
 
 export function useManageEquipment({
   convertToLocalized,

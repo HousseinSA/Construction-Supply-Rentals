@@ -372,6 +372,7 @@
       "rentals": "الإيجارات",
       "purchases": "المشتريات"
     },
+    "loading": "جاري التحميل...",
     "purchases": {
       "loading": "جاري التحميل...",
       "noPurchases": "لا توجد مشتريات",
@@ -673,7 +674,9 @@
       "phoneCopied": "تم نسخ رقم الهاتف",
       "status": "الحالة",
       "active": "نشط",
+      "processing":"جاري المعالجة...",
       "blocked": "محظور",
+      "role":"الدور",
       "confirmBlockTitle": "حظر المستخدم",
       "confirmBlockMessage": "متأكد من حظر هذا المستخدم؟",
       "confirmUnblockTitle": "إلغاء حظر المستخدم",

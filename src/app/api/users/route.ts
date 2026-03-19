@@ -1,117 +1,96 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { connectDB } from '@/src/lib/mongodb'
 import { ObjectId } from 'mongodb'
+import {
+  successResponse,
+  errorResponse,
+  validateObjectId,
+  validatePagination,
+  buildUserQuery,
+  formatUserStats,
+  buildUserAggregation,
+  validateUserStatus,
+  parseEmailOrPhone,
+  shouldRefreshStats,
+  getCachedStats,
+  updateStatsCache
+} from '@/src/lib/api-helpers'
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const page = parseInt(searchParams.get("page") || "1")
-    const limit = parseInt(searchParams.get("limit") || "10")
-    const skip = (page - 1) * limit
-    const search = searchParams.get("search") || ""
-    const role = searchParams.get("role")
+    const { page, limit, skip } = validatePagination(
+      searchParams.get('page'),
+      searchParams.get('limit')
+    )
+    const search = searchParams.get('search') || ''
+    const role = searchParams.get('role')
 
     const db = await connectDB()
+    const query = buildUserQuery(search, role)
+    const needsStats = shouldRefreshStats()
+    const pipeline = buildUserAggregation(query, skip, limit, needsStats)
+
+    const result = await db.collection('users').aggregate(pipeline).toArray()
+
+    const users = result[0]?.users || []
+    const total = result[0]?.totalCount[0]?.count || 0
     
-    const query: any = {}
-    
-    if (role && role !== "all") {
-      query.userType = role
+    let stats
+    if (needsStats && result[0]?.stats) {
+      stats = formatUserStats(result[0].stats)
+      updateStatsCache(stats)
+    } else {
+      stats = getCachedStats() || { totalUsers: 0, totalSuppliers: 0, totalRenters: 0 }
     }
-
-    if (search.trim()) {
-      query.$or = [
-        { firstName: { $regex: search, $options: "i" } },
-        { lastName: { $regex: search, $options: "i" } },
-        { phone: { $regex: search, $options: "i" } },
-      ]
-    }
-
-    const [users, total, statsData] = await Promise.all([
-      db.collection('users')
-        .find(query, { projection: { password: 0 } })
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .toArray(),
-      db.collection('users').countDocuments(query),
-      db.collection('users').aggregate([
-        { $match: { role: { $ne: "admin" } } },
-        { $group: {
-          _id: "$userType",
-          count: { $sum: 1 }
-        }}
-      ]).toArray(),
-    ])
-
-    const totalPages = Math.ceil(total / limit)
-
-    const supplierCount = statsData.find(s => s._id === "supplier")?.count || 0
-    const renterCount = statsData.find(s => s._id === "renter")?.count || 0
     
-    return NextResponse.json({ 
-      success: true, 
+    return successResponse({
       data: users,
       pagination: {
         currentPage: page,
-        totalPages,
+        totalPages: Math.ceil(total / limit),
         totalCount: total,
         itemsPerPage: limit,
       },
-      stats: {
-        totalUsers: supplierCount + renterCount,
-        totalSuppliers: supplierCount,
-        totalRenters: renterCount,
-      },
+      stats,
     })
   } catch (error) {
-    return NextResponse.json({ 
-      success: false, 
-      error: 'Failed to fetch users' 
-    }, { status: 500 })
+    console.error('GET /api/users error:', error)
+    return errorResponse('Failed to fetch users')
   }
 }
 
 export async function PATCH(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { userId, status } = body
+    const { userId, status } = await request.json()
 
-    if (!userId || !status || !['approved', 'blocked'].includes(status)) {
-      return NextResponse.json({ 
-        success: false, 
-        error: 'Invalid userId or status' 
-      }, { status: 400 })
+    if (!userId || !status) {
+      return errorResponse('Missing required fields: userId, status', 400)
     }
 
+    if (!validateUserStatus(status)) {
+      return errorResponse('Invalid status. Must be "approved" or "blocked"', 400)
+    }
+
+    const validation = validateObjectId(userId, 'userId')
+    if (!validation.valid) return validation.error!
+
     const db = await connectDB()
-    
     const result = await db.collection('users').updateOne(
       { _id: new ObjectId(userId) },
-      { 
-        $set: { 
-          status,
-          updatedAt: new Date()
-        }
-      }
+      { $set: { status, updatedAt: new Date() } }
     )
 
     if (result.matchedCount === 0) {
-      return NextResponse.json({ 
-        success: false, 
-        error: 'User not found' 
-      }, { status: 404 })
+      return errorResponse('User not found', 404)
     }
 
-    return NextResponse.json({ 
-      success: true, 
+    return successResponse({
       message: `User ${status === 'blocked' ? 'blocked' : 'unblocked'} successfully`
     })
   } catch (error) {
-    return NextResponse.json({ 
-      success: false, 
-      error: 'Failed to update user status' 
-    }, { status: 500 })
+    console.error('PATCH /api/users error:', error)
+    return errorResponse('Failed to update user status')
   }
 }
 
@@ -120,80 +99,70 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     
     if (body.action === 'checkStatus') {
-      const { emailOrPhone, password } = body
-      
-      const db = await connectDB()
-      const isEmail = emailOrPhone.includes("@")
-      const query = isEmail
-        ? { email: emailOrPhone }
-        : { phone: emailOrPhone }
-
-      const user = await db.collection('users').findOne(query)
-
-      if (!user || user.password !== password) {
-        return NextResponse.json({ 
-          success: false, 
-          error: 'INVALID_CREDENTIALS' 
-        }, { status: 401 })
-      }
-
-      if (user.status === "blocked") {
-        return NextResponse.json({ 
-          success: false, 
-          error: 'ACCOUNT_BLOCKED' 
-        }, { status: 403 })
-      }
-
-      return NextResponse.json({ 
-        success: true, 
-        userType: user.userType 
-      })
+      return handleCheckStatus(body)
     }
     
-    const { name, email, phone, role = 'customer' } = body
+    return handleCreateUser(body)
+  } catch (error) {
+    console.error('POST /api/users error:', error)
+    return errorResponse('Invalid request or server error')
+  }
+}
 
-    if (!name || !email) {
-      return NextResponse.json({ 
-        success: false, 
-        error: 'Missing required fields: name, email' 
-      }, { status: 400 })
-    }
+async function handleCheckStatus(body: any) {
+  const { emailOrPhone, password } = body
+  
+  if (!emailOrPhone || !password) {
+    return errorResponse('Missing required fields: emailOrPhone, password', 400)
+  }
 
-    const db = await connectDB()
-    
-    const existingUser = await db.collection('users').findOne({ email })
-    if (existingUser) {
-      return NextResponse.json({ 
-        success: false, 
-        error: 'User with this email already exists' 
-      }, { status: 409 })
-    }
+  const db = await connectDB()
+  const { query } = parseEmailOrPhone(emailOrPhone)
+  const user = await db.collection('users').findOne(query)
 
-    const result = await db.collection('users').insertOne({
+  if (!user || user.password !== password) {
+    return errorResponse('INVALID_CREDENTIALS', 401)
+  }
+
+  if (user.status === 'blocked') {
+    return errorResponse('ACCOUNT_BLOCKED', 403)
+  }
+
+  return successResponse({ userType: user.userType })
+}
+
+async function handleCreateUser(body: any) {
+  const { name, email, phone, role = 'customer' } = body
+
+  if (!name || !email) {
+    return errorResponse('Missing required fields: name, email', 400)
+  }
+
+  const db = await connectDB()
+  const existingUser = await db.collection('users').findOne({ email })
+  
+  if (existingUser) {
+    return errorResponse('User with this email already exists', 409)
+  }
+
+  const result = await db.collection('users').insertOne({
+    name,
+    email,
+    phone: phone || '',
+    role,
+    active: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  })
+
+  return successResponse({
+    data: { 
+      id: result.insertedId,
       name,
       email,
-      phone: phone || '',
+      phone,
       role,
-      active: true,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    })
-
-    return NextResponse.json({ 
-      success: true, 
-      data: { 
-        id: result.insertedId,
-        name,
-        email,
-        phone,
-        role,
-        active: true
-      }
-    }, { status: 201 })
-  } catch (error) {
-    return NextResponse.json({ 
-      success: false, 
-      error: 'Failed to create user' 
-    }, { status: 500 })
-  }
+      active: true
+    }
+  }, 201)
 }

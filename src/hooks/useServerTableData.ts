@@ -7,6 +7,9 @@ interface UseServerTableDataConfig<T> {
   additionalParams?: Record<string, string>
   pollingInterval?: number
   transformResponse?: (data: any) => T[]
+  shouldRefetch?: () => boolean
+  onStatsUpdate?: (stats: any) => void
+  invalidateCache?: () => void
 }
 
 export function useServerTableData<T>({
@@ -15,9 +18,12 @@ export function useServerTableData<T>({
   additionalParams = {},
   pollingInterval = 30000,
   transformResponse,
+  shouldRefetch,
+  onStatsUpdate,
+  invalidateCache,
 }: UseServerTableDataConfig<T>) {
   const [data, setData] = useState<T[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(() => shouldRefetch ? shouldRefetch() : true)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
@@ -26,7 +32,6 @@ export function useServerTableData<T>({
   const [stats, setStats] = useState<any>(null)
   const abortControllerRef = useRef<AbortController | null>(null)
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
-  const hasLoadedRef = useRef(false)
 
   const fetchData = useCallback(async () => {
     if (abortControllerRef.current) {
@@ -34,11 +39,13 @@ export function useServerTableData<T>({
     }
     abortControllerRef.current = new AbortController()
     
-    const isInitialLoad = !hasLoadedRef.current
+    const needsRefetch = shouldRefetch ? shouldRefetch() : true
+    
+    if (!needsRefetch) {
+      return
+    }
     try {
-      if (isInitialLoad) {
-        setLoading(true)
-      }
+      setLoading(true)
       const params = new URLSearchParams()
       params.set("page", currentPage.toString())
       params.set("limit", itemsPerPage.toString())
@@ -79,17 +86,16 @@ export function useServerTableData<T>({
 
         if (result.stats) {
           setStats(result.stats)
+          if (onStatsUpdate) {
+            onStatsUpdate(result.stats)
+          }
         }
-        
-        hasLoadedRef.current = true
       }
     } catch (error: any) {
       if (error.name === "AbortError") return
       console.error(`Error fetching data from ${endpoint}:`, error)
     } finally {
-      if (isInitialLoad) {
-        setLoading(false)
-      }
+      setLoading(false)
     }
   }, [
     endpoint,
@@ -99,6 +105,8 @@ export function useServerTableData<T>({
     filterValues,
     additionalParams,
     transformResponse,
+    shouldRefetch,
+    onStatsUpdate,
   ])
 
   const handleFilterChange = useCallback(
@@ -107,9 +115,11 @@ export function useServerTableData<T>({
       if (currentPage !== 1) {
         setCurrentPage(1)
       }
-      hasLoadedRef.current = false
+      if (invalidateCache) {
+        invalidateCache()
+      }
     },
-    [currentPage],
+    [currentPage, invalidateCache],
   )
 
   const handleSearchChange = useCallback(
@@ -118,9 +128,11 @@ export function useServerTableData<T>({
       if (currentPage !== 1) {
         setCurrentPage(1)
       }
-      hasLoadedRef.current = false
+      if (invalidateCache) {
+        invalidateCache()
+      }
     },
-    [currentPage],
+    [currentPage, invalidateCache],
   )
 
   useEffect(() => {

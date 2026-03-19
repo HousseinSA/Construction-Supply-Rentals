@@ -1,9 +1,34 @@
+import { useEffect } from 'react'
 import { useUsersStore } from '@/src/stores/usersStore'
 import { useServerTableData } from './useServerTableData'
-import { User } from '@/src/lib/types'
+import { User, UserStatus } from '@/src/lib/types'
+
+const API_ENDPOINT = '/api/users'
+
+async function apiCall(url: string, options?: RequestInit) {
+  try {
+    const response = await fetch(url, options)
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.error || 'Request failed')
+    }
+    return response.json()
+  } catch (error) {
+    console.error('API Error:', error)
+    throw error
+  }
+}
 
 export function useUsers() {
-  const { setUsers, updateUser } = useUsersStore()
+  const { 
+    users: cachedUsers, 
+    stats: cachedStats, 
+    setUsers, 
+    setStats, 
+    updateUser, 
+    shouldRefetch, 
+    invalidateCache
+  } = useUsersStore()
 
   const {
     data: users,
@@ -20,25 +45,40 @@ export function useUsers() {
     refetch,
     stats,
   } = useServerTableData<User>({
-    endpoint: '/api/users',
+    endpoint: API_ENDPOINT,
     itemsPerPage: 10,
+    shouldRefetch,
     transformResponse: (data) => {
       setUsers(data)
       return data
     },
+    onStatsUpdate: setStats,
+    invalidateCache,
   })
 
-  const updateUserStatus = async (userId: string, status: string) => {
+  const displayUsers = users.length > 0 ? users : cachedUsers
+  const displayStats = stats || cachedStats
+
+  useEffect(() => {
+    const hasNoSearch = searchValue === ""
+    const hasNoFilter = !filterValues.role || filterValues.role === "all"
+    
+    if (hasNoSearch && hasNoFilter) {
+      invalidateCache()
+    }
+  }, []) 
+
+  const updateUserStatus = async (userId: string, status: UserStatus) => {
     try {
-      const response = await fetch('/api/users', {
+      await apiCall(API_ENDPOINT, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, status })
       })
 
-      if (!response.ok) throw new Error('Failed to update user')
-
       updateUser(userId, { status })
+      invalidateCache()
+      await refetch()
       return true
     } catch (error) {
       console.error('Error updating user:', error)
@@ -47,7 +87,7 @@ export function useUsers() {
   }
 
   return {
-    users,
+    users: displayUsers,
     loading,
     fetchUsers: refetch,
     updateUserStatus,
@@ -60,6 +100,6 @@ export function useUsers() {
     goToPage,
     totalItems,
     itemsPerPage,
-    stats,
+    stats: displayStats,
   }
 }

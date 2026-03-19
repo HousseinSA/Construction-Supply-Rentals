@@ -676,6 +676,8 @@
       "emailCopied": "Email copié dans le presse-papiers",
       "phoneCopied": "Téléphone copié dans le presse-papiers",
       "status": "Statut",
+      "role":"Rôle",
+      "processing":"Traitement...",
       "active": "Actif",
       "blocked": "Bloqué",
       "confirmBlockTitle": "Bloquer Utilisateur",

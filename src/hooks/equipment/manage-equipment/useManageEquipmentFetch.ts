@@ -10,7 +10,7 @@ interface FilterValues {
   [key: string]: string
 }
 
-const ITEMS_PER_PAGE = 10
+const ITEMS_PER_PAGE = 12
 
 export function useManageEquipmentFetch(
   currentPage: number,

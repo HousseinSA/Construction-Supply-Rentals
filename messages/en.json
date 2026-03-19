@@ -680,6 +680,8 @@
       "emailCopied": "Email copied to clipboard",
       "phoneCopied": "Phone copied to clipboard",
       "status": "Status",
+      "role":"Role",
+      "processing":"Processing...",
       "active": "Active",
       "blocked": "Blocked",
       "confirmBlockTitle": "Block User",
