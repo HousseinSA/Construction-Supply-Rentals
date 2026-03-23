@@ -68,12 +68,6 @@ export function buildUserAggregation(query: any, skip: number, limit: number, in
     totalCount: [{ $count: 'count' }]
   }
   
-  if (includeStats) {
-    facets.stats = [
-      { $group: { _id: '$userType', count: { $sum: 1 } } }
-    ]
-  }
-  
   return [
     { $match: query },
     { $facet: facets }

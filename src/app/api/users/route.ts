@@ -37,8 +37,14 @@ export async function GET(request: NextRequest) {
     const total = result[0]?.totalCount[0]?.count || 0
     
     let stats
-    if (needsStats && result[0]?.stats) {
-      stats = formatUserStats(result[0].stats)
+    if (needsStats) {
+      const allUsersStats = await db.collection('users')
+        .aggregate([
+          { $match: { role: { $ne: 'admin' } } },
+          { $group: { _id: '$userType', count: { $sum: 1 } } }
+        ])
+        .toArray()
+      stats = formatUserStats(allUsersStats)
       updateStatsCache(stats)
     } else {
       stats = getCachedStats() || { totalUsers: 0, totalSuppliers: 0, totalRenters: 0 }

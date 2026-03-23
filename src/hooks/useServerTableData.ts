@@ -115,7 +115,7 @@ export function useServerTableData<T>({
       if (currentPage !== 1) {
         setCurrentPage(1)
       }
-      if (invalidateCache) {
+      if (invalidateCache && value !== 'all') {
         invalidateCache()
       }
     },
@@ -134,6 +134,12 @@ export function useServerTableData<T>({
     },
     [currentPage, invalidateCache],
   )
+
+  const resetFilters = useCallback(() => {
+    setSearchValue('')
+    setFilterValues({})
+    setCurrentPage(1)
+  }, [])
 
   useEffect(() => {
     if (debounceTimerRef.current) {
@@ -178,5 +184,6 @@ export function useServerTableData<T>({
     itemsPerPage,
     refetch: fetchData,
     stats,
+    resetFilters,
   }
 }

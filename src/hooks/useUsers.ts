@@ -44,6 +44,7 @@ export function useUsers() {
     itemsPerPage,
     refetch,
     stats,
+    resetFilters,
   } = useServerTableData<User>({
     endpoint: API_ENDPOINT,
     itemsPerPage: 10,
@@ -60,13 +61,21 @@ export function useUsers() {
   const displayStats = stats || cachedStats
 
   useEffect(() => {
-    const hasNoSearch = searchValue === ""
-    const hasNoFilter = !filterValues.role || filterValues.role === "all"
-    
-    if (hasNoSearch && hasNoFilter) {
-      invalidateCache()
+    resetFilters()
+    if (!shouldRefetch()) {
+      return
     }
-  }, []) 
+    invalidateCache()
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      const hasFilters = searchValue !== '' || (filterValues.role && filterValues.role !== 'all')
+      if (hasFilters) {
+        invalidateCache()
+      }
+    }
+  }, [searchValue, filterValues, invalidateCache]) 
 
   const updateUserStatus = async (userId: string, status: UserStatus) => {
     try {
