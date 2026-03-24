@@ -84,13 +84,14 @@ export function useInfiniteScrollEquipment({
   const reset = useCallback(() => {
     setPage(startFromPage)
     setEquipment(initialEquipment)
+    updateLoading(initialEquipment.length === 0) 
     const shouldHaveMore = totalPages > startFromPage || (totalPages === 0 && initialEquipment.length >= itemsPerPage)
     setHasMore(shouldHaveMore)
-  }, [startFromPage, initialEquipment, totalPages, itemsPerPage])
+  }, [startFromPage, initialEquipment, totalPages, itemsPerPage, updateLoading])
 
   useEffect(() => {
     reset()
-    if (startFromPage === 1 || initialEquipment.length === 0) {
+    if (initialEquipment.length === 0) {
       const timer = setTimeout(() => fetchEquipment(startFromPage, false), 0)
       return () => clearTimeout(timer)
     }

@@ -1,11 +1,9 @@
 "use client"
 
-import { useEffect } from "react"
-import { useEquipment } from "@/src/hooks/equipment/useEquipment"
+import { usePublicEquipment } from "@/src/hooks/equipment/usePublicEquipment"
 import { useCityData } from "@/src/hooks/useCityData"
-import { useEquipmentStore } from "@/src/stores/equipmentStore"
 import PageHeader from "./PageHeader"
-import EquipmentGrid from "./EquipmentGrid"
+import PublicEquipmentList from "./PublicEquipmentList"
 
 interface EquipmentClientProps {
   selectedCity: string | null
@@ -19,18 +17,16 @@ export default function EquipmentClient({
   listingType,
 }: EquipmentClientProps) {
   const { convertToLatin } = useCityData()
-  const { setCurrentPage } = useEquipmentStore()
-
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [setCurrentPage])
 
   const currentCity = selectedType ? null : (urlCity ? convertToLatin(urlCity) : null)
-  const { equipment, loading, loadingMore, hasMore, loadMore } = useEquipment(
-    currentCity,
-    selectedType,
-    listingType
-  )
+  const {
+    loading,
+    equipment,
+    loadingMore,
+    hasMore,
+    loadMore,
+  } = usePublicEquipment(currentCity, selectedType, listingType)
+
   return (
     <div className="min-h-screen bg-gray-50">
       <PageHeader
@@ -39,14 +35,14 @@ export default function EquipmentClient({
         listingType={listingType}
       />
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <EquipmentGrid
-          equipment={equipment}
+        <PublicEquipmentList
           loading={loading}
+          selectedCity={currentCity}
+          listingType={listingType}
+          equipment={equipment}
           loadingMore={loadingMore}
           hasMore={hasMore}
           onLoadMore={loadMore}
-          selectedCity={currentCity}
-          listingType={listingType}
         />
       </div>
     </div>

@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react"
 import { useEquipmentStore } from "@/src/stores/equipmentStore"
-import { buildEquipmentQueryParams } from "@/src/lib/equipment-query-params"
+import { buildEquipmentQueryParams, EQUIPMENT_ITEMS_PER_PAGE } from "@/src/lib/equipment-query-params"
 import { useInfiniteScrollEquipment } from "./useInfiniteScrollEquipment"
 import {
   useManageEquipmentState,
@@ -14,8 +14,6 @@ interface UseManageEquipmentConfig {
   supplierId?: string
   onPricingReview?: (item: any) => void
 }
-
-const ITEMS_PER_PAGE = 12
 
 export function useManageEquipment({
   convertToLocalized,
@@ -67,7 +65,7 @@ export function useManageEquipment({
     buildParams: (pageNum: number, itemsPerPage: number) => {
       return buildEquipmentQueryParams(pageNum, itemsPerPage, supplierId, searchValue, filterValues)
     },
-    itemsPerPage: ITEMS_PER_PAGE,
+    itemsPerPage: EQUIPMENT_ITEMS_PER_PAGE,
     dependencies: [supplierId, searchValue, filterValues],
     initialEquipment: equipment,
     startFromPage: 1,
@@ -114,7 +112,7 @@ export function useManageEquipment({
     totalPages,
     goToPage: setCurrentPage,
     totalItems: totalCount,
-    itemsPerPage: ITEMS_PER_PAGE,
+    itemsPerPage: EQUIPMENT_ITEMS_PER_PAGE,
     mobileEquipment: mobileInfiniteScroll.equipment,
     loadingMoreMobile: mobileInfiniteScroll.loadingMore,
     hasMoreMobile: mobileInfiniteScroll.hasMore,

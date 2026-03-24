@@ -1,3 +1,7 @@
+export const EQUIPMENT_ITEMS_PER_PAGE = 12
+export const CACHE_DURATION = 5 * 60 * 1000
+export const MAX_CACHE_ENTRIES = 20 
+
 interface FilterValues {
   status: string
   listingType: string

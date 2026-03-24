@@ -1,6 +1,6 @@
 import { useCallback, useRef } from "react"
 import { useEquipmentStore } from "@/src/stores/equipmentStore"
-import { buildEquipmentQueryParams } from "@/src/lib/equipment-query-params"
+import { buildEquipmentQueryParams, EQUIPMENT_ITEMS_PER_PAGE } from "@/src/lib/equipment-query-params"
 
 interface FilterValues {
   status: string
@@ -9,8 +9,6 @@ interface FilterValues {
   location: string
   [key: string]: string
 }
-
-const ITEMS_PER_PAGE = 12
 
 export function useManageEquipmentFetch(
   currentPage: number,
@@ -41,7 +39,7 @@ export function useManageEquipmentFetch(
       abortControllerRef.current = new AbortController()
       const params = buildEquipmentQueryParams(
         currentPage,
-        ITEMS_PER_PAGE,
+        EQUIPMENT_ITEMS_PER_PAGE,
         supplierId,
         searchValue,
         filterValues,

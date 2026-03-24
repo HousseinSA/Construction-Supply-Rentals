@@ -62,7 +62,7 @@ export default function EquipmentList({
     observer.observe(sentinelRef.current)
 
     return () => observer.disconnect()
-  }, [loading, loadingMoreMobile, hasMoreMobile, onLoadMoreMobile, mobileEquipment.length])
+  }, [loading, loadingMoreMobile, hasMoreMobile])
 
   return (
     <>

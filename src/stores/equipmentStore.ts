@@ -2,6 +2,7 @@ import { create } from "zustand"
 import { Equipment, EquipmentWithSupplier } from "@/src/lib/models/equipment"
 import { EquipmentStatus } from "@/src/lib/types"
 import { showToast } from "@/src/lib/toast"
+import { CACHE_DURATION, MAX_CACHE_ENTRIES } from "@/src/lib/equipment-query-params"
 
 interface PublicEquipmentCache {
   equipment: Equipment[]
@@ -54,7 +55,6 @@ interface EquipmentStore {
   invalidatePublicCache: (query?: string) => void
 }
 
-const CACHE_DURATION = 5 * 60 * 1000
 export const useEquipmentStore = create<EquipmentStore>((set, get) => {
   return {
   equipment: [],
@@ -69,7 +69,7 @@ export const useEquipmentStore = create<EquipmentStore>((set, get) => {
   onPricingReview: null,
   currentPage: 1,
   publicCache: new Map(),
-  publicLoading: false,
+  publicLoading: true,
   setEquipment: (equipment, query) => {
     const map = new Map(
       equipment.map((item, idx) => [item._id?.toString() || "", idx]),
@@ -177,6 +177,56 @@ export const useEquipmentStore = create<EquipmentStore>((set, get) => {
       set({ lastFetch: null })
     } else {
       set({ lastFetch: null, lastQuery: null })
+    }
+  },
+
+  getPublicEquipment: (query) => {
+    const cached = get().publicCache.get(query)
+    if (!cached) return null
+    
+    const isExpired = Date.now() - cached.timestamp > CACHE_DURATION
+    if (isExpired) {
+      const newCache = new Map(get().publicCache)
+      newCache.delete(query)
+      set({ publicCache: newCache })
+      return null
+    }
+    
+    return cached.equipment
+  },
+
+  setPublicEquipment: (query, equipment) => {
+    const newCache = new Map(get().publicCache)
+    
+    if (newCache.size >= MAX_CACHE_ENTRIES && !newCache.has(query)) {
+      const firstKey = newCache.keys().next().value
+      if (firstKey) newCache.delete(firstKey)
+    }
+    
+    newCache.set(query, {
+      equipment,
+      timestamp: Date.now()
+    })
+    set({ publicCache: newCache })
+  },
+
+  setPublicLoading: (loading) => set({ publicLoading: loading }),
+
+  shouldRefetchPublic: (query) => {
+    const cached = get().publicCache.get(query)
+    if (!cached) return true
+    
+    const isExpired = Date.now() - cached.timestamp > CACHE_DURATION
+    return isExpired
+  },
+
+  invalidatePublicCache: (query) => {
+    if (query) {
+      const newCache = new Map(get().publicCache)
+      newCache.delete(query)
+      set({ publicCache: newCache })
+    } else {
+      set({ publicCache: new Map() })
     }
   },
 }})
