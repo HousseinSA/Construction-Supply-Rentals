@@ -6,7 +6,6 @@ import { getToken } from "next-auth/jwt"
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Skip middleware entirely for API routes
   if (pathname.startsWith('/api')) {
     return NextResponse.next()
   }

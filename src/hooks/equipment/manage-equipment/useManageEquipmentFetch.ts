@@ -1,6 +1,7 @@
 import { useCallback, useRef } from "react"
 import { useEquipmentStore } from "@/src/stores/equipmentStore"
 import { buildEquipmentQueryParams, EQUIPMENT_ITEMS_PER_PAGE } from "@/src/lib/equipment-query-params"
+import { useEquipmentFetch } from "../core"
 
 interface FilterValues {
   status: string
@@ -18,9 +19,16 @@ export function useManageEquipmentFetch(
   setTotalPages: (pages: number) => void,
   setTotalCount: (count: number) => void,
 ) {
-  const { setEquipment, setLoading } = useEquipmentStore()
-  const abortControllerRef = useRef<AbortController | null>(null)
-  const initialLoadRef = useRef(true)
+  const { setEquipment, shouldRefetch } = useEquipmentStore()
+  const queryStringRef = useRef<string>("")
+
+  const { fetchEquipment: coreFetch, loading: coreLoading } = useEquipmentFetch({
+    onLoadingChange: (loading) => {
+      if (loading !== coreLoading) {
+        useEquipmentStore.getState().setLoading(loading)
+      }
+    },
+  })
 
   const fetchLocations = useCallback(async () => {
     try {
@@ -35,8 +43,6 @@ export function useManageEquipmentFetch(
 
   const fetchEquipment = useCallback(
     async (skipCache = false, isPolling = false) => {
-      if (abortControllerRef.current) abortControllerRef.current.abort()
-      abortControllerRef.current = new AbortController()
       const params = buildEquipmentQueryParams(
         currentPage,
         EQUIPMENT_ITEMS_PER_PAGE,
@@ -45,50 +51,27 @@ export function useManageEquipmentFetch(
         filterValues,
       )
       const queryString = params.toString()
-      const isInitialLoad = initialLoadRef.current
-      const shouldFetch = skipCache || useEquipmentStore.getState().shouldRefetch(queryString)
-      
-      if (!shouldFetch) {
-        if (isInitialLoad) {
-          initialLoadRef.current = false
-        }
+      queryStringRef.current = queryString
+
+      if (!skipCache && !shouldRefetch(queryString)) {
         return
       }
-      
-      const hasData = useEquipmentStore.getState().equipment.length > 0
-      const shouldShowLoading = (isInitialLoad && !hasData) && !isPolling
-      
-      try {
-        if (shouldShowLoading) setLoading(true)
 
-        const response = await fetch(`/api/equipment?${queryString}`, {
-          cache: "no-store",
-          signal: abortControllerRef.current.signal,
-        })
-        const data = await response.json()
+      const result = await coreFetch(params, { isPolling, skipCache })
 
-        if (data.success) {
-          setEquipment(data.data || [], queryString)
-          if (data.pagination) {
-            setTotalPages(data.pagination.totalPages)
-            setTotalCount(data.pagination.totalCount)
-          }
-          initialLoadRef.current = false
+      if (result) {
+        setEquipment(result.data, queryString)
+        if (result.pagination) {
+          setTotalPages(result.pagination.totalPages)
+          setTotalCount(result.pagination.totalCount)
         }
-      } catch (error: any) {
-        if (error.name === "AbortError") return
-        console.error("Error fetching equipment:", error)
-      } finally {
-        if (shouldShowLoading) setLoading(false)
       }
     },
-    [setEquipment, setLoading, setTotalPages, setTotalCount, currentPage, supplierId, searchValue, filterValues],
+    [coreFetch, setEquipment, setTotalPages, setTotalCount, currentPage, supplierId, searchValue, filterValues, shouldRefetch],
   )
 
   return {
     fetchLocations,
     fetchEquipment,
-    abortControllerRef,
-    initialLoadRef,
   }
 }
