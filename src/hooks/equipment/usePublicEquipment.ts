@@ -1,8 +1,8 @@
-import { useEffect, useCallback, useMemo } from "react"
+import { useEffect, useCallback, useMemo, useState, useRef } from "react"
 import { useEquipmentStore } from "@/src/stores/equipmentStore"
 import { useInfiniteScrollEquipment } from "./useInfiniteScrollEquipment"
 import { EQUIPMENT_ITEMS_PER_PAGE } from "@/src/lib/equipment-query-params"
-import { useEquipmentCache } from "./core"
+import { useEquipmentCache, useEquipmentSSE } from "./core"
 
 function buildPublicEquipmentParams(
   page: number,
@@ -35,6 +35,8 @@ export function usePublicEquipment(
   listingType?: string | null
 ) {
   const { setPublicEquipment, getPublicEquipment, shouldRefetchPublic } = useEquipmentStore()
+  const [initialFetchDone, setInitialFetchDone] = useState(false)
+  const lastCachedLength = useRef(0)
 
   const queryKey = useMemo(() => {
     return buildPublicEquipmentParams(1, selectedCity, selectedType, listingType).toString()
@@ -43,9 +45,15 @@ export function usePublicEquipment(
   const { cachedData, updateCache } = useEquipmentCache({
     cacheKey: queryKey,
     getCached: getPublicEquipment,
-    setCached: setPublicEquipment,
+    setCached: (key, data) => setPublicEquipment(key, data, 'api'),
     shouldRefetch: shouldRefetchPublic,
   })
+
+  const shouldFetch = useMemo(() => {
+    if (!initialFetchDone && !cachedData) return true
+    if (shouldRefetchPublic(queryKey)) return true
+    return false
+  }, [initialFetchDone, cachedData, queryKey, shouldRefetchPublic])
 
   const buildParams = useCallback(
     (pageNum: number) => buildPublicEquipmentParams(pageNum, selectedCity, selectedType, listingType),
@@ -60,20 +68,34 @@ export function usePublicEquipment(
     startFromPage: 1,
   })
 
+  useEquipmentSSE({ 
+    enabled: true,
+    onUpdate: () => {
+      if (!mobileInfiniteScroll.loading) {
+        mobileInfiniteScroll.fetchEquipment(1, false)
+      }
+    }
+  })
+
   useEffect(() => {
-    if (!mobileInfiniteScroll.loading && mobileInfiniteScroll.equipment.length > 0) {
+    if (shouldFetch && !mobileInfiniteScroll.loading) {
+      mobileInfiniteScroll.fetchEquipment(1, false)
+      setInitialFetchDone(true)
+    }
+  }, [shouldFetch])
+
+  useEffect(() => {
+    const currentLength = mobileInfiniteScroll.equipment.length
+    if (!mobileInfiniteScroll.loading && currentLength > 0 && currentLength !== lastCachedLength.current) {
+      lastCachedLength.current = currentLength
       updateCache(mobileInfiniteScroll.equipment)
     }
-  }, [
-    mobileInfiniteScroll.loading,
-    mobileInfiniteScroll.equipment,
-    updateCache,
-  ])
+  }, [mobileInfiniteScroll.loading, mobileInfiniteScroll.equipment, updateCache])
 
   const refetch = useCallback(() => {
     mobileInfiniteScroll.reset()
     mobileInfiniteScroll.fetchEquipment(1, false)
-  }, [])
+  }, [mobileInfiniteScroll])
 
   return {
     loading: mobileInfiniteScroll.loading,

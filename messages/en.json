@@ -74,7 +74,7 @@
       "new": "New",
       "excellent": "Like New",
       "good": "Good Condition",
-      "Fair ": "Fair"
+      "fair ": "Fair"
     },
     "hoursUsed": "Hours Used",
     "kilometersUsed": "Kilometers Used",
@@ -509,7 +509,7 @@
         "Fair": "Fair"
       },
       "brand": "Brand",
-      "brandPlaceholder": "e.g., Caterpillar, Komatsu, Volvo",
+      "brandPlaceholder": "e.g., Caterpillar, Komatsu, Volvo", 
       "model": "Model",
       "modelPlaceholder": "e.g., 320D, PC200",
       "year": "Year of Manufacturing",
@@ -984,7 +984,7 @@
     "equipmentTypeRequired": "Please select equipment type",
     "locationRequired": "Please select a city",
     "priceTypeRequired": "Please select a pricing type",
-    "priceRequired": "Please enter a valid price",
+    "priceRequired": "At least add one price",
     "imagesRequired": "Please upload at least one image",
     "equipmentCreated": "Equipment created!",
     "equipmentUpdated": "Equipment updated!",
@@ -1055,3 +1055,4 @@
     "browseEquipment": "Explore available equipment"
   }
 }
+

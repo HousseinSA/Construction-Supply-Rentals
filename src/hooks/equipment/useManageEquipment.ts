@@ -20,14 +20,11 @@ export function useManageEquipment({
   supplierId,
   onPricingReview,
 }: UseManageEquipmentConfig) {
-  const {
-    equipment,
-    loading,
-    updating,
-    currentPage,
-    setCurrentPage,
-    invalidateCache,
-  } = useEquipmentStore()
+const loading = useEquipmentStore((state) => state.loading)
+const updating = useEquipmentStore((state) => state.updating)
+const currentPage = useEquipmentStore((state) => state.currentPage)
+const setCurrentPage = useEquipmentStore((state) => state.setCurrentPage)
+const invalidateCache = useEquipmentStore((state) => state.invalidateCache)
 
   const {
     totalPages,
@@ -67,7 +64,7 @@ export function useManageEquipment({
     },
     itemsPerPage: EQUIPMENT_ITEMS_PER_PAGE,
     dependencies: [supplierId, searchValue, filterValues],
-    initialEquipment: equipment,
+    initialEquipment: [],
     startFromPage: 1,
     totalPages: totalPages,
   })
@@ -93,13 +90,7 @@ export function useManageEquipment({
     return fetchEquipment(true)
   }, [invalidateCache, fetchEquipment])
 
-  const localizedLocations = useMemo(
-    () => locations.map((loc) => ({ value: loc.value, label: convertToLocalized(loc.label) })),
-    [locations, convertToLocalized],
-  )
-
   return {
-    equipment,
     loading,
     updating,
     refetch,
@@ -107,7 +98,7 @@ export function useManageEquipment({
     setSearchValue: handleSearchChange,
     filterValues,
     handleFilterChange,
-    locations: localizedLocations,
+    locations,
     currentPage,
     totalPages,
     goToPage: setCurrentPage,

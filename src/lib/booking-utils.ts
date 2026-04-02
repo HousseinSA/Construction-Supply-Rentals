@@ -70,7 +70,7 @@ export async function calculateSubtotal(
     rate,
     subtotal: rate * usage,
     equipmentName: equipment.name,
-    supplierId: equipment.supplierId || equipment.createdById,
+    supplierId: equipment.supplierId,
     usageUnit,
     pricingType: selectedPricingType
   };

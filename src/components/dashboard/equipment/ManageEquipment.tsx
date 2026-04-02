@@ -4,6 +4,7 @@ import { useMemo } from "react"
 import { useTranslations } from "next-intl"
 import { Plus } from "lucide-react"
 
+import { useEquipmentStore } from "@/src/stores/equipmentStore"
 import { useCityData } from "@/src/hooks/useCityData"
 import { useManageEquipment } from "@/src/hooks/equipment/useManageEquipment"
 import { useEquipmentActions } from "@/src/hooks/equipment/useEquipmentActions"
@@ -20,6 +21,8 @@ export default function ManageEquipment() {
   const { user } = useUserSession()
   const t = useTranslations("dashboard.equipment")
   const { convertToLocalized } = useCityData()
+  
+  const equipment = useEquipmentStore((state) => state.equipment)
   
   const supplierId = useMemo(
     () => (user?.isSupplier ? user.id : undefined),
@@ -38,7 +41,6 @@ export default function ManageEquipment() {
   } = useEquipmentActions(t)
 
   const {
-    equipment,
     loading,
     updating,
     refetch,

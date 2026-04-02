@@ -287,6 +287,7 @@ export async function POST(request: NextRequest) {
     } = await calculateSubtotal(db, equipmentId, body.usage, body.pricingType)
 
     let calculatedEndDate: Date | undefined
+    
     if (body.startDate) {
       if (body.endDate && pricingType === "daily") {
         calculatedEndDate = new Date(body.endDate)
@@ -302,7 +303,7 @@ export async function POST(request: NextRequest) {
         )
       }
     }
-
+    
     const available = await checkEquipmentAvailability(
       db,
       equipmentId,

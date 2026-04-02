@@ -1,4 +1,4 @@
-import { Db, ObjectId, WithId, Document } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 import {
   sendBookingStartReminderEmail,
   sendBookingPendingReminderEmail,
@@ -11,17 +11,11 @@ import {
   type SaleEmailDetails,
   type SaleCancellationDetails
 } from '@/src/lib/email';
-import { formatPhoneNumber } from './format';
 
-type Booking = WithId<Document>;
-type Sale = WithId<Document>;
+const SALE_REMINDER_DAYS = 6;
+const SALE_CANCEL_DAYS = 7;
+const BOOKING_REMINDER_DAYS = 1;
 
-// Configuration constants
-const SALE_REMINDER_DAYS = 6;  // Send reminder when sale is 6 days old
-const SALE_CANCEL_DAYS = 7;    // Cancel sale when 7 days old
-const BOOKING_REMINDER_DAYS = 1; // Send reminder 1 day before
-
-// Helper to get start/end of a specific day offset from now
 const getDayRange = (daysOffset: number) => {
   const start = new Date();
   start.setDate(start.getDate() + daysOffset);
@@ -58,49 +52,61 @@ const safeUpdate = async (fn: () => Promise<any>, errorMsg: string): Promise<boo
   }
 };
 
+async function sendEmailsInParallel<T>(
+  items: T[],
+  emailFn: (item: T) => Promise<void>,
+  adminEmail?: string
+): Promise<number> {
+  if (!adminEmail || items.length === 0) return 0;
+
+  const emailPromises = items.map(async (item) => {
+    try {
+      await emailFn(item);
+    } catch (err) {
+      console.error('Email sending error:', err);
+      throw err;
+    }
+  });
+
+  const results = await Promise.allSettled(emailPromises);
+  return results.filter(r => r.status === 'fulfilled').length;
+}
+
 async function sendBookingStartReminders(db: Db, adminEmail: string, tomorrowStart: Date, tomorrowEnd: Date) {
   const items = await safeQuery(
     () => db.collection('bookings').find({ startDate: { $gte: tomorrowStart, $lt: tomorrowEnd }, status: { $in: ['pending', 'paid'] } }).toArray(),
     'Error fetching bookings starting soon:'
   );
 
-  let count = 0;
-  for (const booking of items) {
-    try {
-      if (!adminEmail) continue;
-      const renter = await db.collection('users').findOne({ _id: new ObjectId(booking.renterId) });
-      const suppliers = await Promise.all(
-        (booking.bookingItems || []).map(async (item: any) => {
-          if (!item.supplierId) return null;
-          const supplier = await db.collection('users').findOne({ _id: new ObjectId(item.supplierId) });
-          return supplier ? { name: `${supplier.firstName} ${supplier.lastName}`, phone: supplier.phone || 'N/A' } : null;
-        })
-      );
-      const uniqueSuppliers = Array.from(
-        new Map(suppliers.filter(s => s !== null).map((s: any) => [s.phone, s])).values()
-      );
-      
-      const details: BookingStartReminderDetails = {
-        referenceNumber: booking.referenceNumber,
-        equipmentNames: formatEquipmentNames(booking.bookingItems || []),
-        equipmentReferences: getEquipmentReferences(booking.bookingItems || []),
-        totalPrice: booking.totalPrice,
-        renterName: renter ? `${renter.firstName} ${renter.lastName}` : 'Unknown',
-        renterPhone: renter?.phone || 'N/A',
-        suppliers: uniqueSuppliers,
-        createdAt: booking.createdAt,
-        startDate: booking.startDate,
-        endDate: booking.endDate,
-        status: booking.status
-      };
-      
-      await sendBookingStartReminderEmail(adminEmail, details);
-      count++;
-    } catch (err) {
-      console.error('Booking start reminder email error:', err);
-    }
-  }
-  return count;
+  return sendEmailsInParallel(items, async (booking) => {
+    const renter = await db.collection('users').findOne({ _id: new ObjectId(booking.renterId) });
+    const suppliers = await Promise.all(
+      (booking.bookingItems || []).map(async (item: any) => {
+        if (!item.supplierId) return null;
+        const supplier = await db.collection('users').findOne({ _id: new ObjectId(item.supplierId) });
+        return supplier ? { name: `${supplier.firstName} ${supplier.lastName}`, phone: supplier.phone || 'N/A' } : null;
+      })
+    );
+    const uniqueSuppliers = Array.from(
+      new Map(suppliers.filter(s => s !== null).map((s: any) => [s.phone, s])).values()
+    );
+    
+    const details: BookingStartReminderDetails = {
+      referenceNumber: booking.referenceNumber,
+      equipmentNames: formatEquipmentNames(booking.bookingItems || []),
+      equipmentReferences: getEquipmentReferences(booking.bookingItems || []),
+      totalPrice: booking.totalPrice,
+      renterName: renter ? `${renter.firstName} ${renter.lastName}` : 'Unknown',
+      renterPhone: renter?.phone || 'N/A',
+      suppliers: uniqueSuppliers,
+      createdAt: booking.createdAt,
+      startDate: booking.startDate,
+      endDate: booking.endDate,
+      status: booking.status
+    };
+    
+    await sendBookingStartReminderEmail(adminEmail!, details);
+  }, adminEmail);
 }
 
 async function sendBookingEndReminders(db: Db, adminEmail: string, tomorrowStart: Date, tomorrowEnd: Date) {
@@ -109,41 +115,33 @@ async function sendBookingEndReminders(db: Db, adminEmail: string, tomorrowStart
     'Error fetching pending bookings near end:'
   );
 
-  let count = 0;
-  for (const booking of items) {
-    try {
-      if (!adminEmail) continue;
-      const renter = await db.collection('users').findOne({ _id: new ObjectId(booking.renterId) });
-      const suppliers = await Promise.all(
-        (booking.bookingItems || []).map(async (item: any) => {
-          if (!item.supplierId) return null;
-          const supplier = await db.collection('users').findOne({ _id: new ObjectId(item.supplierId) });
-          return supplier ? { name: `${supplier.firstName} ${supplier.lastName}`, phone: supplier.phone || 'N/A' } : null;
-        })
-      );
-      const uniqueSuppliers = Array.from(
-        new Map(suppliers.filter(s => s !== null).map((s: any) => [s.phone, s])).values()
-      );
-      
-      const details: BookingEmailDetails & { endDate: Date } = {
-        referenceNumber: booking.referenceNumber,
-        equipmentNames: formatEquipmentNames(booking.bookingItems || []),
-        equipmentReferences: getEquipmentReferences(booking.bookingItems || []),
-        totalPrice: booking.totalPrice,
-        renterName: renter ? `${renter.firstName} ${renter.lastName}` : 'Unknown',
-        renterPhone: renter?.phone || 'N/A',
-        suppliers: uniqueSuppliers,
-        createdAt: booking.createdAt,
-        endDate: booking.endDate
-      };
-      
-      await sendBookingPendingReminderEmail(adminEmail, details);
-      count++;
-    } catch (err) {
-      console.error('Booking reminder email error:', err);
-    }
-  }
-  return count;
+  return sendEmailsInParallel(items, async (booking) => {
+    const renter = await db.collection('users').findOne({ _id: new ObjectId(booking.renterId) });
+    const suppliers = await Promise.all(
+      (booking.bookingItems || []).map(async (item: any) => {
+        if (!item.supplierId) return null;
+        const supplier = await db.collection('users').findOne({ _id: new ObjectId(item.supplierId) });
+        return supplier ? { name: `${supplier.firstName} ${supplier.lastName}`, phone: supplier.phone || 'N/A' } : null;
+      })
+    );
+    const uniqueSuppliers = Array.from(
+      new Map(suppliers.filter(s => s !== null).map((s: any) => [s.phone, s])).values()
+    );
+    
+    const details: BookingEmailDetails & { endDate: Date } = {
+      referenceNumber: booking.referenceNumber,
+      equipmentNames: formatEquipmentNames(booking.bookingItems || []),
+      equipmentReferences: getEquipmentReferences(booking.bookingItems || []),
+      totalPrice: booking.totalPrice,
+      renterName: renter ? `${renter.firstName} ${renter.lastName}` : 'Unknown',
+      renterPhone: renter?.phone || 'N/A',
+      suppliers: uniqueSuppliers,
+      createdAt: booking.createdAt,
+      endDate: booking.endDate
+    };
+    
+    await sendBookingPendingReminderEmail(adminEmail!, details);
+  }, adminEmail);
 }
 
 async function cancelExpiredPendingBookings(db: Db, adminEmail: string, now: Date) {
@@ -152,49 +150,50 @@ async function cancelExpiredPendingBookings(db: Db, adminEmail: string, now: Dat
     'Error fetching expired pending bookings:'
   );
 
-  let count = 0;
-  for (const booking of items) {
-    const updated = await safeUpdate(
-      () => db.collection('bookings').updateOne({ _id: booking._id }, { $set: { status: 'cancelled', updatedAt: now } }),
-      'Error cancelling booking:'
+  const updateResults = await Promise.allSettled(
+    items.map(booking => 
+      safeUpdate(
+        () => db.collection('bookings').updateOne({ _id: booking._id }, { $set: { status: 'cancelled', updatedAt: now } }),
+        'Error cancelling booking:'
+      )
+    )
+  );
+  const count = updateResults.filter(r => r.status === 'fulfilled' && r.value === true).length;
+
+  await sendEmailsInParallel(items, async (booking) => {
+    const renter = await db.collection('users').findOne({ _id: new ObjectId(booking.renterId) });
+    const suppliers = await Promise.all(
+      (booking.bookingItems || []).map(async (item: any) => {
+        if (!item.supplierId) return null;
+        const supplier = await db.collection('users').findOne({ _id: new ObjectId(item.supplierId) });
+        return supplier ? {
+          name: `${supplier.firstName} ${supplier.lastName}`,
+          phone: supplier.phone || 'N/A',
+          equipment: item.equipmentName,
+          duration: `${item.usage} ${item.usageUnit || ''}`
+        } : null;
+      })
     );
-    if (!updated) continue;
-    count++;
 
-    try {
-      if (!adminEmail) continue;
-      const renter = await db.collection('users').findOne({ _id: new ObjectId(booking.renterId) });
-      const suppliers = await Promise.all(
-        (booking.bookingItems || []).map(async (item: any) => {
-          if (!item.supplierId) return null;
-          const supplier = await db.collection('users').findOne({ _id: new ObjectId(item.supplierId) });
-          return supplier ? {
-            name: `${supplier.firstName} ${supplier.lastName}`,
-            phone: supplier.phone || 'N/A',
-            equipment: item.equipmentName,
-            duration: `${item.usage} ${item.usageUnit || ''}`
-          } : null;
-        })
-      );
+    const details: BookingCancellationDetails = {
+      referenceNumber: booking.referenceNumber,
+      equipmentNames: formatEquipmentNames(booking.bookingItems || []),
+      equipmentReferences: getEquipmentReferences(booking.bookingItems || []),
+      totalPrice: booking.totalPrice,
+      renterName: renter ? `${renter.firstName} ${renter.lastName}` : 'Unknown',
+      renterPhone: renter?.phone || 'N/A',
+      renterLocation: renter?.city,
+      suppliers: suppliers.filter(s => s !== null).map((s, idx) => ({
+        ...s!,
+        equipmentRef: (booking.bookingItems || [])[idx]?.equipmentReference || ''
+      })),
+      createdAt: booking.createdAt,
+      cancellationDate: now
+    };
 
-      const details: BookingCancellationDetails = {
-        referenceNumber: booking.referenceNumber,
-        equipmentNames: formatEquipmentNames(booking.bookingItems || []),
-        equipmentReferences: getEquipmentReferences(booking.bookingItems || []),
-        totalPrice: booking.totalPrice,
-        renterName: renter ? `${renter.firstName} ${renter.lastName}` : 'Unknown',
-        renterPhone: renter?.phone || 'N/A',
-        renterLocation: renter?.city,
-        suppliers: suppliers.filter(s => s !== null),
-        createdAt: booking.createdAt,
-        cancellationDate: now
-      };
+    await sendBookingCancellationEmail(adminEmail!, details);
+  }, adminEmail);
 
-      await sendBookingCancellationEmail(adminEmail, details);
-    } catch (err) {
-      console.error('Booking cancellation email error:', err);
-    }
-  }
   return count;
 }
 
@@ -204,15 +203,15 @@ async function completeExpiredPaidBookings(db: Db, now: Date) {
     'Error fetching expired paid bookings:'
   );
 
-  let count = 0;
-  for (const booking of items) {
-    const updated = await safeUpdate(
-      () => db.collection('bookings').updateOne({ _id: booking._id }, { $set: { status: 'completed', completedAt: now, updatedAt: now } }),
-      'Error completing booking:'
-    );
-    if (updated) count++;
-  }
-  return count;
+  const updateResults = await Promise.allSettled(
+    items.map(booking => 
+      safeUpdate(
+        () => db.collection('bookings').updateOne({ _id: booking._id }, { $set: { status: 'completed', completedAt: now, updatedAt: now } }),
+        'Error completing booking:'
+      )
+    )
+  );
+  return updateResults.filter(r => r.status === 'fulfilled' && r.value === true).length;
 }
 
 async function sendSaleReminders(db: Db, adminEmail: string, sixDaysAgoStart: Date, sixDaysAgoEnd: Date) {
@@ -221,33 +220,25 @@ async function sendSaleReminders(db: Db, adminEmail: string, sixDaysAgoStart: Da
     'Error fetching pending sales near deadline:'
   );
 
-  let count = 0;
-  for (const sale of items) {
-    try {
-      if (!adminEmail) continue;
-      const equipment = await db.collection('equipment').findOne({ _id: new ObjectId(sale.equipmentId) });
-      const buyer = await db.collection('users').findOne({ _id: new ObjectId(sale.buyerId) });
-      const supplier = sale.supplierId ? await db.collection('users').findOne({ _id: new ObjectId(sale.supplierId) }) : null;
-      
-      const details: SaleEmailDetails = {
-        referenceNumber: sale.referenceNumber,
-        equipmentName: equipment?.name || 'Unknown',
-        equipmentReference: equipment?.referenceNumber,
-        salePrice: sale.salePrice,
-        createdAt: sale.createdAt,
-        buyerName: buyer ? `${buyer.firstName} ${buyer.lastName}` : 'Unknown',
-        buyerPhone: buyer?.phone || 'N/A',
-        supplierName: supplier ? `${supplier.firstName} ${supplier.lastName}` : 'Administration',
-        supplierPhone: supplier?.phone || '-'
-      };
-      
-      await sendSalePendingReminderEmail(adminEmail, details);
-      count++;
-    } catch (err) {
-      console.error('Sale reminder email error:', err);
-    }
-  }
-  return count;
+  return sendEmailsInParallel(items, async (sale) => {
+    const equipment = await db.collection('equipment').findOne({ _id: new ObjectId(sale.equipmentId) });
+    const buyer = await db.collection('users').findOne({ _id: new ObjectId(sale.buyerId) });
+    const supplier = sale.supplierId ? await db.collection('users').findOne({ _id: new ObjectId(sale.supplierId) }) : null;
+    
+    const details: SaleEmailDetails = {
+      referenceNumber: sale.referenceNumber,
+      equipmentName: equipment?.name || 'Unknown',
+      equipmentReference: equipment?.referenceNumber || '',
+      salePrice: sale.salePrice,
+      createdAt: sale.createdAt,
+      buyerName: buyer ? `${buyer.firstName} ${buyer.lastName}` : 'Unknown',
+      buyerPhone: buyer?.phone || 'N/A',
+      supplierName: supplier ? `${supplier.firstName} ${supplier.lastName}` : 'Administration',
+      supplierPhone: supplier?.phone || '-'
+    };
+    
+    await sendSalePendingReminderEmail(adminEmail!, details);
+  }, adminEmail);
 }
 
 async function cancelOldPendingSales(db: Db, adminEmail: string, now: Date, sevenDaysAgo: Date) {
@@ -256,45 +247,51 @@ async function cancelOldPendingSales(db: Db, adminEmail: string, now: Date, seve
     'Error fetching old pending sales:'
   );
 
-  let count = 0;
-  for (const sale of items) {
-    const updated = await safeUpdate(
-      () => db.collection('sales').updateOne({ _id: sale._id }, { $set: { status: 'cancelled', updatedAt: now } }),
-      'Error cancelling sale:'
-    );
-    if (!updated) continue;
-    count++;
+  const updateResults = await Promise.allSettled(
+    items.map(sale => 
+      safeUpdate(
+        () => db.collection('sales').updateOne({ _id: sale._id }, { $set: { status: 'cancelled', updatedAt: now } }),
+        'Error cancelling sale:'
+      )
+    )
+  );
+  const count = updateResults.filter(r => r.status === 'fulfilled' && r.value === true).length;
 
-    try {
-      if (!adminEmail) continue;
-      const equipment = await db.collection('equipment').findOne({ _id: new ObjectId(sale.equipmentId) });
-      const buyer = await db.collection('users').findOne({ _id: new ObjectId(sale.buyerId) });
-      const supplier = sale.supplierId ? await db.collection('users').findOne({ _id: new ObjectId(sale.supplierId) }) : null;
-      
-      const details: SaleCancellationDetails = {
-        referenceNumber: sale.referenceNumber,
-        equipmentName: equipment?.name || 'Unknown',
-        equipmentReference: equipment?.referenceNumber,
-        salePrice: sale.salePrice,
-        buyerName: buyer ? `${buyer.firstName} ${buyer.lastName}` : 'Unknown',
-        buyerPhone: buyer?.phone || 'N/A',
-        supplierName: supplier ? `${supplier.firstName} ${supplier.lastName}` : 'Administration',
-        supplierPhone: supplier?.phone || '-',
-        cancellationDate: now,
-        createdAt: sale.createdAt
-      };
-      
-      await sendSaleCancellationEmail(adminEmail, details);
-    } catch (err) {
-      console.error('Sale cancellation email error:', err);
-    }
-  }
+  await sendEmailsInParallel(items, async (sale) => {
+    const equipment = await db.collection('equipment').findOne({ _id: new ObjectId(sale.equipmentId) });
+    const buyer = await db.collection('users').findOne({ _id: new ObjectId(sale.buyerId) });
+    const supplier = sale.supplierId ? await db.collection('users').findOne({ _id: new ObjectId(sale.supplierId) }) : null;
+    
+    const details: SaleCancellationDetails = {
+      referenceNumber: sale.referenceNumber,
+      equipmentName: equipment?.name || 'Unknown',
+      equipmentReference: equipment?.referenceNumber || '',
+      salePrice: sale.salePrice,
+      buyerName: buyer ? `${buyer.firstName} ${buyer.lastName}` : 'Unknown',
+      buyerPhone: buyer?.phone || 'N/A',
+      supplierName: supplier ? `${supplier.firstName} ${supplier.lastName}` : 'Administration',
+      supplierPhone: supplier?.phone || '-',
+      cancellationDate: now,
+      createdAt: sale.createdAt
+    };
+    
+    await sendSaleCancellationEmail(adminEmail!, details);
+  }, adminEmail);
+
   return count;
 }
 
 export async function processAutoCompletion(db: Db) {
   const now = new Date();
-  const adminEmail = process.env.ADMIN_EMAIL || '';
+  const adminEmail = process.env.ADMIN_EMAIL;
+  
+  if (!adminEmail) {
+    console.error('ADMIN_EMAIL environment variable is not set');
+    return {
+      bookings: { completed: 0, cancelled: 0, reminders: 0, startReminders: 0 },
+      sales: { cancelled: 0, reminders: 0 }
+    };
+  }
   
   const tomorrow = getDayRange(BOOKING_REMINDER_DAYS);
   const saleReminderDay = getDayRange(-SALE_REMINDER_DAYS);

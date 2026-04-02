@@ -1,14 +1,18 @@
 import Image from "next/image"
 import { Loader2 } from "lucide-react"
 import { useState } from "react"
+import { getOptimizedCloudinaryUrl } from "@/src/lib/cloudinary-url"
 
 interface EquipmentImageProps {
   src: string | string[]
   alt: string
-  size?: "sm" | "md" | "lg" | "xl"
+  size?: "sm" | "md" | "lg" | "xl" | "custom"
+  width?: number
+  height?: number
   onClick?: () => void
   className?: string
   cover?: boolean
+  optimize?: boolean
 }
 
 interface ColoredIconProps {
@@ -40,7 +44,7 @@ export function ColoredIcon({  alt, size = 20, color = "primary", className = ""
   )
 }
 
-export default function EquipmentImage({ src, alt, size = "md", onClick, className, cover = false }: EquipmentImageProps) {
+export default function EquipmentImage({ src, alt, size = "md", width: customWidth, height: customHeight, onClick, className, cover = false, optimize = true }: EquipmentImageProps) {
   const imageSrc = Array.isArray(src) ? src[0] : src
   const fallback = "/equipment-images/default-fallback-image.png"
   const [loading, setLoading] = useState(true)
@@ -50,9 +54,20 @@ export default function EquipmentImage({ src, alt, size = "md", onClick, classNa
     md: { width: 80, height: 64, class: "w-20 h-16" },
     lg: { width: 96, height: 80, class: "w-24 h-20" },
     xl: { width: 200, height: 150, class: "w-50 h-38" },
+    custom: { width: customWidth || 200, height: customHeight || 150, class: "" },
   }
 
   const { width, height, class: sizeClass } = sizes[size]
+
+  const optimizedSrc = optimize && imageSrc && !imageSrc.startsWith('/equipment-images/')
+    ? getOptimizedCloudinaryUrl(imageSrc, {
+        width: cover ? 400 : width,
+        height: cover ? 400 : height,
+        quality: "auto:good",
+        format: "auto",
+        crop: "fill",
+      })
+    : imageSrc || fallback
 
   if (cover) {
     return (
@@ -63,9 +78,10 @@ export default function EquipmentImage({ src, alt, size = "md", onClick, classNa
           </div>
         )}
         <Image
-          src={imageSrc || fallback}
+          src={optimizedSrc}
           alt={alt}
           fill
+          sizes="(max-width: 640px) 144px, (max-width: 768px) 176px, (max-width: 1024px) 192px, 208px"
           className={`object-cover ${onClick ? "cursor-pointer hover:opacity-90 transition-opacity" : ""} ${className || ""}`}
           onClick={onClick}
           onLoad={() => setLoading(false)}
@@ -74,12 +90,13 @@ export default function EquipmentImage({ src, alt, size = "md", onClick, classNa
     )
   }
 
-  return imageSrc ? (
+  return optimizedSrc ? (
     <Image
-      src={imageSrc}
+      src={optimizedSrc}
       alt={alt}
       width={width}
       height={height}
+      sizes={`${width}px`}
       className={`${sizeClass} object-scale-down rounded-lg shadow-sm ${onClick ? "cursor-pointer hover:opacity-80 transition-opacity" : ""} ${className || ""}`}
       onClick={onClick}
     />

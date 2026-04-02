@@ -20,13 +20,16 @@ export default function CityDropdown({
   className = ""
 }: CityDropdownProps) {
   const t = useTranslations("dashboard.equipment")
-  const { cities } = useCityData()
+  const { cities, convertToLatin } = useCityData()
 
   const getCityOptions = () => {
-    return cities.map(city => ({
-      value: city,
-      label: city
-    }))
+    return cities.map(city => {
+      const latinValue = convertToLatin(city)
+      return {
+        value: latinValue,
+        label: city
+      }
+    })
   }
 
   return (

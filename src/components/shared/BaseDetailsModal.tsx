@@ -77,14 +77,16 @@ export default function BaseDetailsModal({
                   className="flex-shrink-0 group cursor-pointer"
                   title="View equipment details"
                 >
-                  <div className="relative">
+                  <div className="relative w-44 h-32">
                     <EquipmentImage
                       src={equipmentImage}
                       alt={equipmentName}
-                      size="xl"
-                      className="rounded-lg shadow-sm group-hover:shadow-lg transition-shadow duration-200"
+                      size="custom"
+                      width={200}
+                      height={160}
+                      cover
                     />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 rounded-lg transition-colors duration-200 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-200 flex items-center justify-center">
                       <ExternalLinkIcon className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                     </div>
                   </div>

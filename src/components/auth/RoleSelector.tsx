@@ -12,7 +12,7 @@ export default function RoleSelector({ selectedRole, onRoleChange }: RoleSelecto
 
   return (
     <div className=" sm:p-2 lg:p-4 border-b border-gray-100">
-      <h2 className="text-xl font-semibold text-gray-800 mb-4 text-center">
+      <h2 className="text-xl font-semibold text-primary mb-4 text-center">
         {t("register.selectRole")}
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

@@ -74,7 +74,7 @@
       "new": "Neuf",
       "excellent": "Excellent",
       "good": "Bon",
-      "Fair": "Satisfaisant"
+      "fair": "Satisfaisant"
     },
     "hoursUsed": "Heures d'Utilisation",
     "kilometersUsed": "Kilomètres Parcourus",
@@ -981,7 +981,7 @@
     "equipmentTypeRequired": "Veuillez sélectionner le type de matériel",
     "locationRequired": "Veuillez sélectionner une ville",
     "priceTypeRequired": "Veuillez sélectionner un type de prix",
-    "priceRequired": "Veuillez entrer un prix valide",
+    "priceRequired": "Ajoutez au moins un prix",
     "imagesRequired": "Veuillez télécharger au moins une image",
     "equipmentCreated": "Matériel créé!",
     "equipmentUpdated": "Matériel mis à jour!",
@@ -1053,3 +1053,4 @@
     "browseEquipment": "Explorer le matériel disponible"
   }
 }
+

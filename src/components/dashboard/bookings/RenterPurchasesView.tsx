@@ -101,11 +101,16 @@ export default function RenterPurchasesView() {
               <tr key={purchase._id}>
                 <TableCell>
                   <div className="flex items-center gap-3">
-                    <EquipmentImage
-                      src={purchase.equipmentImage || []}
-                      alt={purchase.equipmentName}
-                      size="lg"
-                    />
+                    <div className="w-44 h-32 relative flex-shrink-0">
+                      <EquipmentImage
+                        src={purchase.equipmentImage || []}
+                        alt={purchase.equipmentName}
+                        size="custom"
+                        width={200}
+                        height={160}
+                        cover
+                      />
+                    </div>
                     <div className="space-y-0.5 flex-1">
                       <div className="text-sm font-semibold text-gray-900 whitespace-nowrap">
                         {purchase.equipmentName}
@@ -162,12 +167,17 @@ export default function RenterPurchasesView() {
             date={formatDate(purchase.createdAt)}
             status={purchase.status}
             image={
-              <EquipmentImage
-                src={purchase.equipmentImage || []}
-                alt={purchase.equipmentName}
-                size="lg"
-                onClick={() => { window.location.href = `/equipment/${purchase.equipmentId}` }}
-              />
+              <div className="w-44 h-32 relative">
+                <EquipmentImage
+                  src={purchase.equipmentImage || []}
+                  alt={purchase.equipmentName}
+                  size="custom"
+                  width={200}
+                  height={160}
+                  cover
+                  onClick={() => { window.location.href = `/equipment/${purchase.equipmentId}` }}
+                />
+              </div>
             }
             fields={[
               {

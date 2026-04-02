@@ -2,6 +2,7 @@ import { AlertCircle, MapPin, Tag } from "lucide-react"
 import { useEquipmentStore } from "@/src/stores/equipmentStore"
 import { useTranslations } from "next-intl"
 import { EquipmentWithSupplier } from "@/src/lib/models/equipment"
+import { useTooltip } from "@/src/hooks/useTooltip"
 
 interface CardHeaderProps {
   item: EquipmentWithSupplier
@@ -13,6 +14,8 @@ export default function CardHeader({ item, onStatusChange }: CardHeaderProps) {
   const updating = useEquipmentStore((state) => state.updating)
   const convertToLocalized = useEquipmentStore((state) => state.convertToLocalized)
   const t = useTranslations("dashboard.equipment")
+  const { ref: rejectedTooltipRef, isOpen: showRejectedTooltip, toggle: toggleRejectedTooltip } = useTooltip()
+  const { ref: reasonTooltipRef, isOpen: showReasonTooltip, toggle: toggleReasonTooltip } = useTooltip()
   
   if (!convertToLocalized) return null
 
@@ -23,7 +26,6 @@ export default function CardHeader({ item, onStatusChange }: CardHeaderProps) {
     rejectionReason,
     createdBy,
     listingType,
-    isAvailable,
     isSold,
     location,
     createdAt,
@@ -38,13 +40,13 @@ export default function CardHeader({ item, onStatusChange }: CardHeaderProps) {
         <div className="flex items-center gap-2">
           <span className="font-semibold text-gray-900 text-sm">{name}</span>
           {status === "rejected" && rejectionReason && (
-            <div className="relative group inline-block">
-              <span className="inline-flex items-center text-red-600 cursor-help">
+            <div ref={reasonTooltipRef} className="relative inline-block">
+              <span onClick={toggleReasonTooltip} className="inline-flex items-center text-red-600 cursor-pointer">
                 <AlertCircle className="w-3.5 h-3.5" />
               </span>
-              <div className="absolute bottom-full left-0 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none min-w-max max-w-xs z-50 whitespace-normal">
+              <div onClick={toggleReasonTooltip} className={`absolute bottom-full  mb-2 px-3 py-2 bg-gray-700 text-white text-xs rounded-lg min-w-[150px] max-w-[calc(100vw-2rem)] break-words transition-opacity pointer-events-auto z-50 cursor-pointer ${showReasonTooltip ? 'opacity-100' : 'opacity-0'}`}>
                 {rejectionReason}
-                <div className="absolute top-full left-4 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+                <div className="absolute top-full right-4 -mt-1 border-4 border-transparent border-t-gray-700"></div>
               </div>
             </div>
           )}
@@ -79,13 +81,14 @@ export default function CardHeader({ item, onStatusChange }: CardHeaderProps) {
             </button>
           </>
         ) : status === "rejected" && isSupplier ? (
-          <div className="relative group">
-            <span className="inline-block px-3 py-1.5 text-xs font-semibold rounded-md bg-red-100 text-red-700 cursor-help">{t("rejected")}</span>
-            <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none min-w-max z-50 whitespace-nowrap">
+          <div ref={rejectedTooltipRef} className="relative">
+            <span onClick={toggleRejectedTooltip} className="inline-block px-3 py-1.5 text-xs font-semibold rounded-md bg-red-100 text-red-700 cursor-pointer">{t("rejected")}</span>
+            <div onClick={toggleRejectedTooltip} className={`absolute bottom-full right-0 mb-2 px-3 py-2 bg-gray-700 text-white text-xs rounded-lg max-w-[calc(100vw-2rem)] text-center break-words transition-opacity pointer-events-auto z-50 cursor-pointer ${showRejectedTooltip ? 'opacity-100' : 'opacity-0'}`}>
               {t("editBeforeResubmit")}
-              <div className="absolute top-full right-4 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+              <div className="absolute top-full left-4 -mt-1 border-4 border-transparent border-t-gray-700"></div>
             </div>
           </div>
+          
         ) : (
           <span className={`inline-block px-3 py-1.5 text-xs font-semibold rounded-md ${
             status === "approved" ? "bg-green-100 text-green-700" :

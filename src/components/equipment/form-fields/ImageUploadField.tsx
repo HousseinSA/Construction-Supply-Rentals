@@ -17,7 +17,7 @@ export default function ImageUploadField({
 
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-2">
+      <label className="block text-sm font-medium text-primary mb-2">
         {t("images")} <span className="text-red-500">*</span>
         <span className="text-sm text-gray-500 ml-2">
           {t("imageConstraints")}

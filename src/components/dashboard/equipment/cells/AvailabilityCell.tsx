@@ -29,7 +29,6 @@ function AvailabilityCell({ item }: AvailabilityCellProps) {
   const disabled = useMemo(() => isAvailabilityDisabled(item), [item])
 
   const currentValue = item.isAvailable ? "available" : "unavailable"
-  const equipmentId = item._id?.toString() || ""
 
   const handleChange = useCallback(
     (val: string) => {

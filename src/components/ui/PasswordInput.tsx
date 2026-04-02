@@ -17,7 +17,7 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
 
     return (
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-primary mb-2">
           {label}
         </label>
         <div className="relative">

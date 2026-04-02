@@ -1,9 +1,8 @@
 import { useEffect, useRef } from "react"
 import { useEquipmentStore } from "@/src/stores/equipmentStore"
-import { usePolling } from "../../usePolling";
+import { useEquipmentSSE } from "../core"
 
 const DEBOUNCE_DELAY = 500
-const POLLING_INTERVAL = 20000
 
 export function useManageEquipmentEffects(
   fetchLocations: () => Promise<string[]>,
@@ -27,7 +26,15 @@ export function useManageEquipmentEffects(
     setIsSupplier,
     setConvertToLocalized,
     setOnPricingReview,
+    forceUpdate,
   } = useEquipmentStore()
+
+  useEquipmentSSE({ 
+    enabled: true,
+    onUpdate: () => {
+      forceUpdate()
+    }
+  })
 
   useEffect(() => {
     const checkMobile = () => {
@@ -47,9 +54,12 @@ export function useManageEquipmentEffects(
 
   useEffect(() => {
     fetchLocations().then((data) => {
-      setLocations(data.map((loc: string) => ({ value: loc, label: loc })))
+      setLocations(data.map((loc: string) => ({ 
+        value: loc, 
+        label: convertToLocalized(loc) 
+      })))
     })
-  }, [fetchLocations, setLocations])
+  }, [fetchLocations, setLocations, convertToLocalized])
 
   useEffect(() => {
     setIsSupplier(!!supplierId)
@@ -76,15 +86,4 @@ export function useManageEquipmentEffects(
       if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current)
     }
   }, [searchValue, filterValues, currentPage, supplierId])
-
-  usePolling(() => {
-    if (isMobile) {
-      mobileInfiniteScroll.fetchEquipment(1, false)
-    } else {
-      fetchEquipment(true, true)
-    }
-  }, { 
-    interval: POLLING_INTERVAL,
-    enabled: typeof window !== 'undefined' && window.location.pathname.includes('/dashboard/equipment') && !mobileInfiniteScroll.loadingMore
-  })
 }

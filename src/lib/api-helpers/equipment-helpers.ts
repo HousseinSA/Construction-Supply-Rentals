@@ -33,29 +33,52 @@ export async function checkEquipmentOwnership(
 }
 
 export async function validateAndGetEquipmentAccess(equipmentId: string, checkOwnership: boolean = true) {
-  const auth = await getAuthenticatedUser()
-  if (!auth.authenticated) return { error: auth.error }
-
   const idValidation = validateObjectId(equipmentId, "equipment ID")
   if (!idValidation.valid) return { error: idValidation.error }
 
-  const db = await connectDB()
-  const isAdmin = auth.user!.role === "admin"
-  const userId = auth.user!.id
+  const auth = await getAuthenticatedUser()
+  
+  if (checkOwnership && !auth.authenticated) {
+    return { error: auth.error }
+  }
 
-  if (checkOwnership) {
-    const ownership = await checkEquipmentOwnership(db, equipmentId, userId, isAdmin)
-    if (!ownership.authorized) return { error: ownership.error }
+  const db = await connectDB()
+
+  if (auth.authenticated) {
+    const isAdmin = auth.user!.role === "admin"
+    const userId = auth.user!.id
+
+    if (checkOwnership) {
+      const ownership = await checkEquipmentOwnership(db, equipmentId, userId, isAdmin)
+      if (!ownership.authorized) return { error: ownership.error }
+
+      return {
+        db,
+        equipment: ownership.equipment!,
+        isAdmin,
+        userId,
+      }
+    }
+
+    const equipment = await db.collection("equipment").findOne({ _id: new ObjectId(equipmentId) }) as Equipment | null
+
+    if (!equipment) {
+      return { error: errorResponse("Equipment not found", 404) }
+    }
 
     return {
       db,
-      equipment: ownership.equipment!,
+      equipment,
       isAdmin,
       userId,
     }
   }
 
-  const equipment = await db.collection("equipment").findOne({ _id: new ObjectId(equipmentId) }) as Equipment | null
+  const equipment = await db.collection("equipment").findOne({ 
+    _id: new ObjectId(equipmentId),
+    status: "approved",
+    isAvailable: true
+  }) as Equipment | null
 
   if (!equipment) {
     return { error: errorResponse("Equipment not found", 404) }
@@ -64,8 +87,8 @@ export async function validateAndGetEquipmentAccess(equipmentId: string, checkOw
   return {
     db,
     equipment,
-    isAdmin,
-    userId,
+    isAdmin: false,
+    userId: null,
   }
 }
 

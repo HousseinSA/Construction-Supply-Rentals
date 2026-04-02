@@ -133,7 +133,6 @@ export default function LoginForm() {
           name="emailOrPhone"
           value={formData.emailOrPhone}
           onChange={handleInputChange}
-          required
         />
 
         <PasswordInput
@@ -141,7 +140,6 @@ export default function LoginForm() {
           name="password"
           value={formData.password}
           onChange={handleInputChange}
-          required
         />
 
         <div className="text-right">

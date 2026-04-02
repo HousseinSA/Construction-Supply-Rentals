@@ -126,12 +126,17 @@ export default function RenterBookingView() {
             {paginatedData.map((booking) => (
               <tr key={booking._id?.toString()}>
                 <TableCell>
-                  <div className="flex items-center gap-2">
-                    <EquipmentImage
-                      src={booking.bookingItems[0]?.equipmentImage || "/equipment-images/default-fallback-image.png"}
-                      alt={booking.bookingItems[0]?.equipmentName || "Equipment"}
-                      size="lg"
-                    />
+                  <div className="flex items-center gap-4">
+                    <div className="w-44 h-32 relative flex-shrink-0">
+                      <EquipmentImage
+                        src={booking.bookingItems[0]?.equipmentImage || "/equipment-images/default-fallback-image.png"}
+                        alt={booking.bookingItems[0]?.equipmentName || "Equipment"}
+                        size="custom"
+                        width={200}
+                        height={160}
+                        cover
+                      />
+                    </div>
                     <div className="space-y-1 flex-1">
                       {booking.bookingItems?.map((item, idx) => (
                         <div key={idx} className="space-y-0.5">
@@ -225,12 +230,17 @@ export default function RenterBookingView() {
               isAdminView={false}
               date={new Date(booking.createdAt).toLocaleDateString()}
               image={
-                <EquipmentImage
-                  src={booking.bookingItems[0]?.equipmentImage}
-                  alt={booking.bookingItems[0]?.equipmentName || "Equipment"}
-                  size="lg"
-                  onClick={() => { window.location.href = `/equipment/${booking.bookingItems[0]?.equipmentId}` }}
-                />
+                <div className="w-44 h-32 relative">
+                  <EquipmentImage
+                    src={booking.bookingItems[0]?.equipmentImage}
+                    alt={booking.bookingItems[0]?.equipmentName || "Equipment"}
+                    size="custom"
+                    width={200}
+                    height={160}
+                    cover
+                    onClick={() => { window.location.href = `/equipment/${booking.bookingItems[0]?.equipmentId}` }}
+                  />
+                </div>
               }
               status={booking.status}
               fields={[

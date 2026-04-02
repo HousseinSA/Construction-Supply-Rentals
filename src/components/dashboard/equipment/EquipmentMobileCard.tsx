@@ -25,7 +25,6 @@ function EquipmentMobileCard({ item, onStatusChange }: EquipmentMobileCardProps)
   const { ref: tooltipRef, isOpen: showTooltip, toggle: toggleTooltip } = useTooltip()
   const [showPricingModal, setShowPricingModal] = useState(false)
   const { pricesList, supplierName, cardBorderClass } = useCardData(item)
-  const updating = useEquipmentStore((state) => state.updating)
   const navigating = useEquipmentStore((state) => state.navigating)
   const isSupplier = useEquipmentStore((state) => state.isSupplier)
   const onPricingReview = useEquipmentStore((state) => state.onPricingReview)
@@ -40,7 +39,7 @@ function EquipmentMobileCard({ item, onStatusChange }: EquipmentMobileCardProps)
       <CardHeader item={item} onStatusChange={onStatusChange} />
 
       <div className="flex gap-4 pb-3 border-b border-gray-200">
-        <div className="w-36 sm:w-44 md:w-48 lg:w-52 h-36 relative rounded-lg flex-shrink-0 overflow-hidden">
+        <div className="w-44 sm:w-52 md:w-56 lg:w-60 h-40 relative flex-shrink-0 overflow-hidden">
           <EquipmentImage
             src={item.images?.[0] || "/equipment-images/default-fallback-image.png"}
             alt={item.name}
@@ -122,13 +121,20 @@ function EquipmentMobileCard({ item, onStatusChange }: EquipmentMobileCardProps)
             disabled={item.status !== "approved" || item.isSold || item.hasActiveBookings || item.hasPendingSale}
           />
           {(item.status !== "approved" || (item.status === "approved" && (item.hasActiveBookings || item.hasPendingSale)) || item.isSold) && (
-            <div onClick={toggleTooltip} className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap transition-opacity pointer-events-auto z-10 cursor-pointer ${showTooltip ? 'opacity-100' : 'opacity-0'}`}>
-              {item.status !== "approved" && t("pendingVerification")}
-              {item.status === "approved" && item.isSold && t("equipmentSold")}
-              {item.status === "approved" && !item.isSold && item.listingType === "forSale" && item.hasPendingSale && t("hasPendingSale")}
-              {item.status === "approved" && !item.isSold && item.hasActiveBookings && t("hasActiveBookings")}
-              <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
-            </div>
+            <>
+              <div 
+                onClick={toggleTooltip}
+                className="absolute inset-0 cursor-pointer z-[5]"
+              />
+              <div className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-gray-700 text-white text-xs rounded-lg w-max max-w-[calc(100vw-2rem)] text-center break-words transition-opacity pointer-events-none z-10 ${showTooltip ? 'opacity-100' : 'opacity-0'}`}>
+                {item.status === "pending" && t("pendingVerification")}
+                {item.status === "rejected" && t("editBeforeResubmit")}
+                {item.status === "approved" && item.isSold && t("equipmentSold")}
+                {item.status === "approved" && !item.isSold && item.listingType === "forSale" && item.hasPendingSale && t("hasPendingSale")}
+                {item.status === "approved" && !item.isSold && item.hasActiveBookings && t("hasActiveBookings")}
+                <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-700"></div>
+              </div>
+            </>
           )}
         </div>
         <CardActions item={item} />

@@ -62,7 +62,6 @@ export interface Equipment {
   isSold?: boolean
   listingType: "forSale" | "forRent"
   createdBy: "admin" | "supplier"
-  createdById: ObjectId | string
   approvedBy?: ObjectId | string
   approvedAt?: Date
   createdAt: Date
@@ -114,7 +113,6 @@ export const LOCKED_FIELDS = [
   "location",
   "usageCategory",
   "createdBy",
-  "createdById",
 ] as const
 
 export const LOCKED_FIELDS_FOR_EDIT = [
@@ -131,26 +129,3 @@ export const SUPPLIER_EDITABLE_FIELDS = [
   "specifications",
 ] as const
 
-export function canEditEquipment(
-  equipment: Equipment,
-  userRole: "admin" | "user",
-  userId: string,
-): { canEdit: boolean; reason?: string } {
-  if (userRole === "admin") {
-    return { canEdit: true }
-  }
-
-  if (equipment.supplierId?.toString() !== userId) {
-    return { canEdit: false, reason: "You don't own this equipment" }
-  }
-
-  if (equipment.status === "rejected") {
-    return { canEdit: false, reason: "Cannot edit rejected equipment" }
-  }
-
-  if (equipment.isSold === true) {
-    return { canEdit: false, reason: "Cannot edit sold equipment" }
-  }
-
-  return { canEdit: true }
-}

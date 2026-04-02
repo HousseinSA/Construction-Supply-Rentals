@@ -73,7 +73,7 @@
       "new": "جديد",
       "excellent": "حالة ممتازة",
       "good": "حالة جيدة",
-      "Fair": "مقبول"
+      "fair": "مقبول"
     },
     "hoursUsed": "ساعات الاستخدام",
     "kilometersUsed": "الكيلومترات المستخدمة",
@@ -981,7 +981,7 @@
     "equipmentTypeRequired": "يرجى اختيار نوع المعدة",
     "locationRequired": "يرجى اختيار المدينة",
     "priceTypeRequired": "يرجى اختيار نوع التسعير",
-    "priceRequired": "يرجى إدخال سعر صحيح",
+    "priceRequired": "أضف سعرًا واحدًا على الأقل",
     "imagesRequired": "يرجى رفع صورة واحدة على الأقل",
     "equipmentCreated": "تم إنشاء المعدة !",
     "equipmentUpdated": "تم تحديث المعدة !",

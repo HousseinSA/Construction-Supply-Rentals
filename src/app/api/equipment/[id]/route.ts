@@ -15,6 +15,7 @@ import {
   buildCommonUpdateData,
   handleStatusUpdate,
 } from "@/src/lib/api-helpers"
+import { sseManager, SSE_CHANNELS } from "@/src/lib/sse"
 
 export async function GET(
   request: NextRequest,
@@ -31,7 +32,7 @@ export async function GET(
     const access = await validateAndGetEquipmentAccess(id, false)
     if ('error' in access) return access.error
 
-    const { db, equipment } = access
+    const { db, equipment, userId } = access
 
     let supplierInfo = null
     if (isAdmin && equipment.supplierId) {
@@ -41,7 +42,7 @@ export async function GET(
     const bookingStatus = await getBookingStatusForEquipment(
       db,
       id,
-      access.userId,
+      userId || undefined
     )
 
     return successResponse({
@@ -102,6 +103,42 @@ export async function PATCH(
     await db
       .collection("equipment")
       .updateOne({ _id: new ObjectId(id) }, { $set: updateData })
+    
+    const supplierId = equipment.supplierId?.toString()
+    
+    sseManager.broadcast(SSE_CHANNELS.EQUIPMENT_ADMIN, {
+      type: 'equipment.updated',
+      data: { id, ...updateData }
+    })
+    
+    if (supplierId) {
+      sseManager.broadcast(SSE_CHANNELS.EQUIPMENT_SUPPLIER(supplierId), {
+        type: 'equipment.updated',
+        data: { id, ...updateData }
+      })
+    }
+    
+    if (updateData.isAvailable !== undefined || updateData.status === 'approved') {
+      sseManager.broadcast(SSE_CHANNELS.EQUIPMENT_PUBLIC, {
+        type: 'equipment.updated',
+        data: { id, ...updateData }
+      })
+    }
+    
+    if (body.status) {
+      if (body.status === 'approved') {
+        sseManager.broadcast(SSE_CHANNELS.EQUIPMENT_SUPPLIER(supplierId), {
+          type: 'equipment.approved',
+          data: { id, supplierId }
+        })
+      } else if (body.status === 'rejected') {
+        sseManager.broadcast(SSE_CHANNELS.EQUIPMENT_SUPPLIER(supplierId), {
+          type: 'equipment.rejected',
+          data: { id, supplierId, reason: body.rejectionReason || '' }
+        })
+      }
+    }
+    
     return successResponse({})
   } catch (error) {
     console.error("[PATCH /equipment/:id] Error:", error)
@@ -167,6 +204,27 @@ export async function PUT(
     await db
       .collection("equipment")
       .updateOne({ _id: new ObjectId(id) }, { $set: updateData })
+
+    const supplierId = equipment.supplierId?.toString()
+    
+    sseManager.broadcast(SSE_CHANNELS.EQUIPMENT_ADMIN, {
+      type: 'equipment.updated',
+      data: { id, ...updateData }
+    })
+    
+    if (supplierId) {
+      sseManager.broadcast(SSE_CHANNELS.EQUIPMENT_SUPPLIER(supplierId), {
+        type: 'equipment.updated',
+        data: { id, ...updateData }
+      })
+    }
+
+    if (updateData.isAvailable !== undefined || updateData.status === 'approved') {
+      sseManager.broadcast(SSE_CHANNELS.EQUIPMENT_PUBLIC, {
+        type: 'equipment.updated',
+        data: { id, ...updateData }
+      })
+    }
 
     return successResponse({
       hasPendingPricing: !!updateData.pendingPricing,

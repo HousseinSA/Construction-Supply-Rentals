@@ -204,7 +204,6 @@ export function buildEquipmentDocument(
     isAvailable: true,
     listingType: body.listingType ?? "forRent",
     createdBy,
-    createdById: new ObjectId(auth.id),
     ...(status === "approved" && { approvedAt: new Date() }),
     createdAt: new Date(),
     updatedAt: new Date(),

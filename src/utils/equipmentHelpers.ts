@@ -31,8 +31,11 @@ export const getAvailabilityTooltipMessage = (
   item: EquipmentWithSupplier,
   t: (key: string) => string
 ) => {
-  if (item.status !== "approved") {
+  if (item.status === "pending") {
     return t("pendingVerification")
+  }
+  if (item.status === "rejected") {
+    return t("editBeforeResubmit")
   }
   if (item.isSold === true) {
     return t("equipmentSold")

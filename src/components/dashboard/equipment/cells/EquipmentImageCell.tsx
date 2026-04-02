@@ -1,12 +1,11 @@
 import { useRouter } from "@/src/i18n/navigation"
 import { Loader2, AlertCircle, Tag } from "lucide-react"
-import Image from "next/image"
-import { getOptimizedCloudinaryUrl } from "@/src/lib/cloudinary-url"
+import EquipmentImage from "@/src/components/ui/EquipmentImage"
 import TooltipWrapper from "@/src/components/ui/TooltipWrapper"
 import { useEquipmentStore } from "@/src/stores/equipmentStore"
 import { useTranslations } from "next-intl"
 import { EquipmentWithSupplier } from "@/src/lib/models/equipment"
-import { memo, useMemo, useCallback } from "react"
+import { memo, useCallback } from "react"
 
 interface EquipmentImageCellProps {
   item: EquipmentWithSupplier
@@ -27,22 +26,8 @@ function EquipmentImageCell({ item }: EquipmentImageCellProps) {
     rejectionReason,
     createdBy,
     listingType,
-    isAvailable,
     isSold
   } = item
-
-  const imageSrc = useMemo(() => {
-    const firstImage = images?.[0]
-    return firstImage
-      ? getOptimizedCloudinaryUrl(firstImage, {
-          width: 200,
-          height: 160,
-          quality: "auto:good",
-          format: "auto",
-          crop: "fill",
-        })
-      : "/equipment-images/default-fallback-image.png"
-  }, [images])
 
   const handleImageClick = useCallback(() => {
     navigateToEquipment(`/equipment/${equipmentId}?admin=true`, equipmentId, router)
@@ -51,16 +36,15 @@ function EquipmentImageCell({ item }: EquipmentImageCellProps) {
   return (
     <td className="px-6 py-4 sticky left-0 z-10 bg-white">
       <div className="flex items-center gap-4">
-        <div className="relative">
-          <Image
-            src={imageSrc}
+        <div className="relative w-44 h-32">
+          <EquipmentImage
+            src={images?.[0] || "/equipment-images/default-fallback-image.png"}
             alt={name}
-            width={144}
-            height={112}
-            sizes="144px"
-            className="w-36 h-28 object-cover rounded-lg shadow-sm cursor-pointer hover:opacity-80 transition-opacity"
+            size="custom"
+            width={200}
+            height={160}
+            cover
             onClick={handleImageClick}
-            loading="lazy"
           />
           {navigating === equipmentId && (
             <div className="absolute inset-0 bg-black/25 rounded-lg flex items-center justify-center">

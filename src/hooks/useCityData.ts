@@ -1,7 +1,7 @@
 import { useLocale } from "next-intl"
 import { useMemo } from "react"
 
-const CITIES = [
+const  CITIES = [
   { latin: "Nouakchott", ar: "نواكشوط" },
   { latin: "Nouadhibou", ar: "نواذيبو" },
   { latin: "Rosso", ar: "روصو" },
