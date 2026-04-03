@@ -18,7 +18,6 @@ import {
   buildEquipmentDocument,
 } from "@/src/lib/api-helpers/equipment-route-helpers"
 import type { EquipmentType } from "@/src/lib/api-helpers/types"
-import { sseManager, SSE_CHANNELS } from "@/src/lib/sse"
 
 
 export async function GET(request: NextRequest) {
@@ -115,11 +114,6 @@ export async function POST(request: NextRequest) {
         pricing: body.pricing,
         listingType: body.listingType
       })
-
-      sseManager.broadcast(SSE_CHANNELS.EQUIPMENT_ADMIN, {
-        type: 'equipment.created',
-        data: { ...equipmentDoc, _id: result.insertedId } as any
-      })
     }
 
     return successResponse(
@@ -171,34 +165,6 @@ export async function PUT(request: NextRequest) {
 
     if (result.matchedCount === 0) {
       return errorResponse("Equipment not found", 404)
-    }
-
-    const equipment = await db.collection("equipment").findOne({ _id: new ObjectId(equipmentId) })
-    
-    if (equipment) {
-      const supplierId = equipment.supplierId?.toString()
-      
-      if (status === "approved") {
-        sseManager.broadcast(SSE_CHANNELS.EQUIPMENT_SUPPLIER(supplierId), {
-          type: 'equipment.approved',
-          data: { id: equipmentId, supplierId }
-        })
-        
-        sseManager.broadcast(SSE_CHANNELS.EQUIPMENT_PUBLIC, {
-          type: 'equipment.created',
-          data: { 
-            _id: equipment._id,
-            status: 'approved',
-            isAvailable: equipment.isAvailable,
-            updatedAt: updateData.updatedAt
-          } as any
-        })
-      } else if (status === "rejected") {
-        sseManager.broadcast(SSE_CHANNELS.EQUIPMENT_SUPPLIER(supplierId), {
-          type: 'equipment.rejected',
-          data: { id: equipmentId, supplierId, reason: body.rejectionReason || '' }
-        })
-      }
     }
 
     return successResponse({ message: "Equipment status updated successfully" })

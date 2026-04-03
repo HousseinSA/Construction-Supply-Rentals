@@ -24,7 +24,7 @@ interface EquipmentStore {
   currentPage: number
   publicCache: Map<string, PublicEquipmentCache>
   publicLoading: boolean
-  setEquipment: (equipment: EquipmentWithSupplier[], query?: string, source?: 'api' | 'sse') => void
+  setEquipment: (equipment: EquipmentWithSupplier[], query?: string) => void
   setLoading: (loading: boolean) => void
   setUpdating: (id: string | null) => void
   setNavigating: (id: string | null) => void
@@ -32,7 +32,6 @@ interface EquipmentStore {
   setConvertToLocalized: (fn: (city: string) => string) => void
   setOnPricingReview: (fn: (item: EquipmentWithSupplier) => void) => void
   setCurrentPage: (page: number) => void
-  forceUpdate: () => void
   updateEquipment: (id: string, updates: Partial<Equipment>, timestamp?: number) => void
   addEquipment: (equipment: EquipmentWithSupplier) => void
   getEquipmentById: (id: string) => EquipmentWithSupplier | null
@@ -55,7 +54,7 @@ interface EquipmentStore {
   shouldRefetch: (query?: string) => boolean
   invalidateCache: (selective?: boolean) => void
   getPublicEquipment: (query: string) => Equipment[] | null
-  setPublicEquipment: (query: string, equipment: Equipment[], source?: 'api' | 'sse') => void
+  setPublicEquipment: (query: string, equipment: Equipment[]) => void
   setPublicLoading: (loading: boolean) => void
   shouldRefetchPublic: (query: string) => boolean
   invalidatePublicCache: (query?: string) => void
@@ -77,7 +76,7 @@ export const useEquipmentStore = create<EquipmentStore>((set, get) => {
   currentPage: 1,
   publicCache: new Map(),
   publicLoading: true,
-  setEquipment: (equipment, query, source = 'api') => {
+  setEquipment: (equipment, query) => {
     const state = get()
     const now = Date.now()
     
@@ -88,8 +87,8 @@ export const useEquipmentStore = create<EquipmentStore>((set, get) => {
       const localTime = state.itemTimestamps.get(id) || 0
       const itemTime = item.updatedAt ? new Date(item.updatedAt).getTime() : now
       
-      if (source === 'sse' || itemTime > localTime) {
-        state.itemTimestamps.set(id, source === 'sse' ? now : itemTime)
+      if (itemTime > localTime) {
+        state.itemTimestamps.set(id, itemTime)
         return item
       }
       
@@ -156,9 +155,6 @@ export const useEquipmentStore = create<EquipmentStore>((set, get) => {
       equipmentMap: newMap,
       lastFetch: Date.now() 
     })
-  },
-  forceUpdate: () => {
-    set({ lastFetch: Date.now() })
   },
   updateEquipmentStatus: async (id, status, reason, t) => {
     set({ updating: id })
@@ -262,14 +258,14 @@ export const useEquipmentStore = create<EquipmentStore>((set, get) => {
     return cached.equipment
   },
 
-  setPublicEquipment: (query, equipment, source = 'api') => {
+  setPublicEquipment: (query, equipment) => {
     const state = get()
     const now = Date.now()
     
     const existingCache = state.publicCache.get(query)
     let merged = equipment
     
-    if (existingCache && source === 'api') {
+    if (existingCache) {
       merged = equipment.map(item => {
         const id = item._id?.toString()
         if (!id) return item

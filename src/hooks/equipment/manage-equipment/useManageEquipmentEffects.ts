@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react"
 import { useEquipmentStore } from "@/src/stores/equipmentStore"
-import { useEquipmentSSE } from "../core"
 
 const DEBOUNCE_DELAY = 500
 
@@ -26,15 +25,7 @@ export function useManageEquipmentEffects(
     setIsSupplier,
     setConvertToLocalized,
     setOnPricingReview,
-    forceUpdate,
   } = useEquipmentStore()
-
-  useEquipmentSSE({ 
-    enabled: true,
-    onUpdate: () => {
-      forceUpdate()
-    }
-  })
 
   useEffect(() => {
     const checkMobile = () => {

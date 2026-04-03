@@ -2,7 +2,7 @@ import { useEffect, useCallback, useMemo, useState, useRef } from "react"
 import { useEquipmentStore } from "@/src/stores/equipmentStore"
 import { useInfiniteScrollEquipment } from "./useInfiniteScrollEquipment"
 import { EQUIPMENT_ITEMS_PER_PAGE } from "@/src/lib/equipment-query-params"
-import { useEquipmentCache, useEquipmentSSE } from "./core"
+import { useEquipmentCache } from "./core"
 
 function buildPublicEquipmentParams(
   page: number,
@@ -14,7 +14,6 @@ function buildPublicEquipmentParams(
   params.set("available", "true")
   params.set("page", page.toString())
   params.set("limit", EQUIPMENT_ITEMS_PER_PAGE.toString())
-
   if (selectedCity && listingType !== "forSale") {
     params.set("city", selectedCity)
     params.set("listingType", "forRent")
@@ -45,7 +44,7 @@ export function usePublicEquipment(
   const { cachedData, updateCache } = useEquipmentCache({
     cacheKey: queryKey,
     getCached: getPublicEquipment,
-    setCached: (key, data) => setPublicEquipment(key, data, 'api'),
+    setCached: (key, data) => setPublicEquipment(key, data),
     shouldRefetch: shouldRefetchPublic,
   })
 
@@ -66,15 +65,6 @@ export function usePublicEquipment(
     dependencies: [selectedCity, selectedType, listingType],
     initialEquipment: cachedData,
     startFromPage: 1,
-  })
-
-  useEquipmentSSE({ 
-    enabled: true,
-    onUpdate: () => {
-      if (!mobileInfiniteScroll.loading) {
-        mobileInfiniteScroll.fetchEquipment(1, false)
-      }
-    }
   })
 
   useEffect(() => {
