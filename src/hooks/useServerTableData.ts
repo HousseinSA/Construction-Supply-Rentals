@@ -1,11 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from "react"
-import { usePolling } from "./usePolling"
 
 interface UseServerTableDataConfig<T> {
   endpoint: string
   itemsPerPage?: number
   additionalParams?: Record<string, string>
-  pollingInterval?: number
   transformResponse?: (data: any) => T[]
   shouldRefetch?: () => boolean
   onStatsUpdate?: (stats: any) => void
@@ -16,7 +14,6 @@ export function useServerTableData<T>({
   endpoint,
   itemsPerPage = 10,
   additionalParams = {},
-  pollingInterval = 30000,
   transformResponse,
   shouldRefetch,
   onStatsUpdate,
@@ -167,8 +164,6 @@ export function useServerTableData<T>({
       }
     }
   }, [])
-
-  usePolling(fetchData, { interval: pollingInterval })
 
   return {
     data,

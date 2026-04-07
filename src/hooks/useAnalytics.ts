@@ -1,6 +1,5 @@
 import { useEffect, useCallback, useRef } from 'react'
 import { useAnalyticsStore } from '@/src/stores/analyticsStore'
-import { usePolling } from './usePolling'
 
 export function useAnalytics() {
   const { analytics, loading, setAnalytics, setLoading, shouldRefetch } = useAnalyticsStore()
@@ -26,8 +25,6 @@ export function useAnalytics() {
       }
     }
   }, [setAnalytics, setLoading])
-
-  usePolling(fetchAnalytics, { interval: 30000 })
 
   useEffect(() => {
     if (shouldRefetch()) {
