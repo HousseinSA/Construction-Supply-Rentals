@@ -9,13 +9,13 @@ import PricingInfoModal from "../PricingInfoModal"
 
 interface PriceCellProps {
   item: EquipmentWithSupplier
+  onPricingReview?: (item: EquipmentWithSupplier) => void
 }
 
-function PriceCell({ item }: PriceCellProps) {
+function PriceCell({ item, onPricingReview }: PriceCellProps) {
   const [showModal, setShowModal] = useState(false)
   const t = useTranslations("dashboard.equipment")
   const isSupplier = useEquipmentStore(state => state.isSupplier)
-  const onPricingReview = useEquipmentStore(state => state.onPricingReview)
   const prices = useEquipmentPrices(item, false)
 
   return (

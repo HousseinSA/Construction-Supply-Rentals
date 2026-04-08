@@ -16,6 +16,7 @@ interface EquipmentListProps {
   itemsPerPage: number
   onPageChange: (page: number) => void
   onStatusChange: (id: string, action: "approve" | "reject") => void
+  onPricingReview?: (item: EquipmentWithSupplier) => void
   mobileEquipment: EquipmentWithSupplier[]
   loadingMoreMobile: boolean
   hasMoreMobile: boolean
@@ -31,6 +32,7 @@ export default function EquipmentList({
   itemsPerPage,
   onPageChange,
   onStatusChange,
+  onPricingReview,
   mobileEquipment,
   loadingMoreMobile,
   hasMoreMobile,
@@ -86,6 +88,7 @@ export default function EquipmentList({
                 key={item._id?.toString()}
                 item={item}
                 onStatusChange={onStatusChange}
+                onPricingReview={onPricingReview}
               />
             ))}
           </TableBody>
@@ -98,6 +101,7 @@ export default function EquipmentList({
             key={item._id?.toString()}
             item={item}
             onStatusChange={onStatusChange}
+            onPricingReview={onPricingReview}
           />
         ))}
       </div>

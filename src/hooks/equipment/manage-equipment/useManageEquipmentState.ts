@@ -14,6 +14,7 @@ interface FilterValues {
 }
 
 export function useManageEquipmentState() {
+  const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
   const [searchValue, setSearchValue] = useState("")
@@ -27,6 +28,8 @@ export function useManageEquipmentState() {
   const [isMobile, setIsMobile] = useState(false)
 
   return {
+    currentPage,
+    setCurrentPage,
     totalPages,
     setTotalPages,
     totalCount,

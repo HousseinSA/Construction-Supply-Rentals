@@ -126,27 +126,7 @@ export async function fetchEquipmentWithPagination(
   }
 }
 
-export async function enrichEquipmentWithBookingStatus(db: Db, equipment: Equipment[]) {
-  if (equipment.length === 0) return equipment
 
-  const { getBatchBookingStatus } = await import('./index')
-  const equipmentIds: ObjectId[] = []
-  
-  for (const item of equipment) {
-    if (item._id) equipmentIds.push(item._id as ObjectId)
-  }
-  
-  const bookingStatusMap = await getBatchBookingStatus(db, equipmentIds)
-
-  return equipment.map((item) => {
-    const defaultStatus = {
-      hasActiveBookings: false,
-      hasPendingSale: false
-    }
-    const status = item._id ? (bookingStatusMap.get(item._id.toString()) || defaultStatus) : defaultStatus
-    return { ...item, ...status }
-  })
-}
 
 export function validateEquipmentCreation(body: CreateEquipmentBody): ValidationResult {
   const { categoryId, equipmentTypeId, pricing, location, images, specifications, listingType } = body

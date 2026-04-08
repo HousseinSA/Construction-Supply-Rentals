@@ -16,6 +16,7 @@ import DashboardPageHeader from "../DashboardPageHeader"
 import EquipmentList from "./EquipmentList"
 import EquipmentModals from "./EquipmentModals"
 import TableLoading from "@/src/components/ui/TableLoading"
+import ReloadButton from "@/src/components/ui/ReloadButton"
 
 export default function ManageEquipment() {
   const { user } = useUserSession()
@@ -61,7 +62,6 @@ export default function ManageEquipment() {
   } = useManageEquipment({
     convertToLocalized,
     supplierId,
-    onPricingReview: handlePricingReview,
   })
 
   const filters = useMemo(
@@ -78,13 +78,16 @@ export default function ManageEquipment() {
           title={t("manageTitle")}
           showBackButton={false}
           actions={
-            <Link
-              href="/dashboard/equipment/create"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium"
-            >
-              <Plus className="w-5 h-5" />
-              <span className="hidden sm:inline">{t("createEquipment")}</span>
-            </Link>
+            <div className="flex items-center gap-2">
+              <ReloadButton onReload={refetch} loading={loading} />
+              <Link
+                href="/dashboard/equipment/create"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium"
+              >
+                <Plus className="w-5 h-5" />
+                <span className="hidden sm:inline">{t("createEquipment")}</span>
+              </Link>
+            </div>
           }
         />
         <TableFilters
@@ -111,6 +114,7 @@ export default function ManageEquipment() {
               itemsPerPage={itemsPerPage}
               onPageChange={goToPage}
               onStatusChange={handleStatusChangeCallback}
+              onPricingReview={handlePricingReview}
               mobileEquipment={mobileEquipment}
               loadingMoreMobile={loadingMoreMobile}
               hasMoreMobile={hasMoreMobile}

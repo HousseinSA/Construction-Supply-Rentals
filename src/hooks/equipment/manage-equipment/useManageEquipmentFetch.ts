@@ -22,11 +22,9 @@ export function useManageEquipmentFetch(
   const { setEquipment, shouldRefetch } = useEquipmentStore()
   const queryStringRef = useRef<string>("")
 
-  const { fetchEquipment: coreFetch, loading: coreLoading } = useEquipmentFetch({
+  const { fetchEquipment: coreFetch } = useEquipmentFetch({
     onLoadingChange: (loading) => {
-      if (loading !== coreLoading) {
-        useEquipmentStore.getState().setLoading(loading)
-      }
+      useEquipmentStore.getState().setLoading(loading)
     },
   })
 
@@ -42,7 +40,7 @@ export function useManageEquipmentFetch(
   }, [])
 
   const fetchEquipment = useCallback(
-    async (skipCache = false, isPolling = false) => {
+    async (skipCache = false) => {
       const params = buildEquipmentQueryParams(
         currentPage,
         EQUIPMENT_ITEMS_PER_PAGE,
@@ -57,7 +55,7 @@ export function useManageEquipmentFetch(
         return
       }
 
-      const result = await coreFetch(params, { isPolling, skipCache })
+      const result = await coreFetch(params, { skipCache })
 
       if (result) {
         setEquipment(result.data, queryString)

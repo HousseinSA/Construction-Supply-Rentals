@@ -3,11 +3,10 @@ import type { FetchResult } from "./types"
 
 interface UseEquipmentFetchOptions {
   onLoadingChange?: (loading: boolean) => void
-  skipLoadingOnPolling?: boolean
 }
 
 export function useEquipmentFetch(options: UseEquipmentFetchOptions = {}) {
-  const { onLoadingChange, skipLoadingOnPolling = true } = options
+  const { onLoadingChange } = options
   const abortControllerRef = useRef<AbortController | null>(null)
   const initialLoadRef = useRef(true)
   const [loading, setLoadingState] = useState(true)
@@ -20,9 +19,9 @@ export function useEquipmentFetch(options: UseEquipmentFetchOptions = {}) {
   const fetchEquipment = useCallback(
     async (
       params: URLSearchParams,
-      options: { isPolling?: boolean; skipCache?: boolean } = {}
+      options: { skipCache?: boolean } = {}
     ): Promise<FetchResult | null> => {
-      const { isPolling = false, skipCache = false } = options
+      const { skipCache = false } = options
 
       if (abortControllerRef.current) {
         abortControllerRef.current.abort()
@@ -30,7 +29,7 @@ export function useEquipmentFetch(options: UseEquipmentFetchOptions = {}) {
       abortControllerRef.current = new AbortController()
 
       const isInitialLoad = initialLoadRef.current
-      const shouldShowLoading = isInitialLoad && !(isPolling && skipLoadingOnPolling)
+      const shouldShowLoading = isInitialLoad || skipCache
 
       try {
         if (shouldShowLoading) setLoading(true)
@@ -59,7 +58,7 @@ export function useEquipmentFetch(options: UseEquipmentFetchOptions = {}) {
         if (shouldShowLoading) setLoading(false)
       }
     },
-    [setLoading, skipLoadingOnPolling]
+    [setLoading]
   )
 
   const abort = useCallback(() => {

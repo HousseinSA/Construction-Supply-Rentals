@@ -5,7 +5,7 @@ import { useRouter } from "@/src/i18n/navigation"
 import { EquipmentWithSupplier } from "@/src/lib/models/equipment"
 
 interface CardActionsProps {
-  item: EquipmentWithSupplier & { hasActiveBookings?: boolean }
+  item: EquipmentWithSupplier
 }
 
 export default function CardActions({ item }: CardActionsProps) {
@@ -15,32 +15,22 @@ export default function CardActions({ item }: CardActionsProps) {
   const t = useTranslations("dashboard.equipment")
   const router = useRouter()
 
-  const { _id, status, listingType, isAvailable, hasActiveBookings, createdBy, isSold } = item
+  const { _id, status, createdBy, isSold } = item
   const itemId = _id?.toString() || ""
 
   const canEdit = !isSupplier && createdBy === "admin" && !isSold
-  const canEditSupplier = isSupplier && (status === "rejected" || (status === "approved" && !hasActiveBookings)) && !isSold
+  const canEditSupplier = isSupplier && (status === "rejected" || status === "approved") && !isSold
 
   return (
     <div className="flex gap-2">
       {canEdit && (
-        <div className="relative group">
-          <button
-            onClick={() => !hasActiveBookings && navigateToEquipment(`/dashboard/equipment/edit/${itemId}`, `edit-${itemId}`, router)}
-            disabled={navigating === `edit-${itemId}` || hasActiveBookings}
-            className={`px-3 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-1.5 ${
-              hasActiveBookings ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "text-blue-600 bg-blue-50 hover:bg-blue-100"
-            }`}
-          >
-            {navigating === `edit-${itemId}` ? <Loader2 className="w-4 h-4 animate-spin" /> : <Edit className="w-4 h-4" />}
-          </button>
-          {hasActiveBookings && (
-            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-              {t("cannotEditActiveBooking")}
-              <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
-            </div>
-          )}
-        </div>
+        <button
+          onClick={() => navigateToEquipment(`/dashboard/equipment/edit/${itemId}`, `edit-${itemId}`, router)}
+          disabled={navigating === `edit-${itemId}`}
+          className="px-3 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-1.5 text-blue-600 bg-blue-50 hover:bg-blue-100"
+        >
+          {navigating === `edit-${itemId}` ? <Loader2 className="w-4 h-4 animate-spin" /> : <Edit className="w-4 h-4" />}
+        </button>
       )}
       {canEditSupplier && (
         <button

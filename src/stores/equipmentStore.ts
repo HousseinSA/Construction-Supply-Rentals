@@ -19,9 +19,6 @@ interface EquipmentStore {
   updating: string | null
   navigating: string | null
   isSupplier: boolean
-  convertToLocalized: ((city: string) => string) | null
-  onPricingReview: ((item: EquipmentWithSupplier) => void) | null
-  currentPage: number
   publicCache: Map<string, PublicEquipmentCache>
   publicLoading: boolean
   setEquipment: (equipment: EquipmentWithSupplier[], query?: string) => void
@@ -29,15 +26,9 @@ interface EquipmentStore {
   setUpdating: (id: string | null) => void
   setNavigating: (id: string | null) => void
   setIsSupplier: (isSupplier: boolean) => void
-  setConvertToLocalized: (fn: (city: string) => string) => void
-  setOnPricingReview: (fn: (item: EquipmentWithSupplier) => void) => void
-  setCurrentPage: (page: number) => void
   updateEquipment: (id: string, updates: Partial<Equipment>, timestamp?: number) => void
   addEquipment: (equipment: EquipmentWithSupplier) => void
   getEquipmentById: (id: string) => EquipmentWithSupplier | null
-  updatePublicCache: (id: string, updates: Partial<Equipment>) => void
-  addToPublicCache: (equipment: Equipment) => void
-  removeFromPublicCache: (id: string) => void
   updateEquipmentStatus: (
     id: string,
     status: EquipmentStatus,
@@ -71,9 +62,6 @@ export const useEquipmentStore = create<EquipmentStore>((set, get) => {
   updating: null,
   navigating: null,
   isSupplier: false,
-  convertToLocalized: null,
-  onPricingReview: null,
-  currentPage: 1,
   publicCache: new Map(),
   publicLoading: true,
   setEquipment: (equipment, query) => {
@@ -113,9 +101,6 @@ export const useEquipmentStore = create<EquipmentStore>((set, get) => {
   setUpdating: (id) => set({ updating: id }),
   setNavigating: (id) => set({ navigating: id }),
   setIsSupplier: (isSupplier) => set({ isSupplier }),
-  setConvertToLocalized: (fn) => set({ convertToLocalized: fn }),
-  setOnPricingReview: (fn) => set({ onPricingReview: fn }),
-  setCurrentPage: (page) => set({ currentPage: page }),
   getEquipmentById: (id) => {
     const state = get()
     const idx = state.equipmentMap.get(id)
@@ -310,78 +295,6 @@ export const useEquipmentStore = create<EquipmentStore>((set, get) => {
       set({ lastFetch: Date.now() })
     } else {
       state.publicCache.clear()
-      set({ lastFetch: Date.now() })
-    }
-  },
-  updatePublicCache: (id, updates) => {
-    const state = get()
-    const now = Date.now()
-    const updateTime = updates.updatedAt ? new Date(updates.updatedAt).getTime() : now
-    let updated = false
-    
-    state.publicCache.forEach((cacheEntry, query) => {
-      const equipmentIndex = cacheEntry.equipment.findIndex(
-        (eq) => eq._id?.toString() === id
-      )
-      
-      if (equipmentIndex !== -1) {
-        const existing = cacheEntry.equipment[equipmentIndex]
-        const existingTime = existing.updatedAt ? new Date(existing.updatedAt).getTime() : 0
-        
-        if (updateTime > existingTime) {
-          cacheEntry.equipment[equipmentIndex] = {
-            ...cacheEntry.equipment[equipmentIndex],
-            ...updates
-          }
-          cacheEntry.timestamp = now
-          updated = true
-        }
-      }
-    })
-    
-    if (updated) {
-      set({ lastFetch: now })
-    }
-  },
-  addToPublicCache: (equipment) => {
-    const state = get()
-    const id = equipment._id?.toString()
-    if (!id) return
-    
-    let updated = false
-    state.publicCache.forEach((cacheEntry) => {
-      const exists = cacheEntry.equipment.some(
-        (eq) => eq._id?.toString() === id
-      )
-      
-      if (!exists) {
-        cacheEntry.equipment.unshift(equipment)
-        cacheEntry.timestamp = Date.now()
-        updated = true
-      }
-    })
-    
-    if (updated) {
-      set({ lastFetch: Date.now() })
-    }
-  },
-  removeFromPublicCache: (id) => {
-    const state = get()
-    let updated = false
-    
-    state.publicCache.forEach((cacheEntry) => {
-      const idx = cacheEntry.equipment.findIndex(
-        (eq) => eq._id?.toString() === id
-      )
-      
-      if (idx !== -1) {
-        cacheEntry.equipment.splice(idx, 1)
-        cacheEntry.timestamp = Date.now()
-        updated = true
-      }
-    })
-    
-    if (updated) {
       set({ lastFetch: Date.now() })
     }
   },

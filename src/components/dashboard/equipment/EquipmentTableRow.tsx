@@ -1,6 +1,7 @@
 import { useLocale } from "next-intl"
 import { EquipmentWithSupplier } from "@/src/lib/models/equipment"
 import { useEquipmentStore } from "@/src/stores/equipmentStore"
+import { useCityData } from "@/src/hooks/useCityData"
 import EquipmentImageCell from "./cells/EquipmentImageCell"
 import { MemoizedLocationCell, MemoizedDateCell } from "./cells/SimpleCells"
 import PriceCell from "./cells/PriceCell"
@@ -12,14 +13,13 @@ import ActionsCell from "./cells/ActionsCell"
 interface EquipmentTableRowProps {
   item: EquipmentWithSupplier
   onStatusChange: (id: string, action: "approve" | "reject") => void
+  onPricingReview?: (item: EquipmentWithSupplier) => void
 }
 
-export default function EquipmentTableRow({ item, onStatusChange }: EquipmentTableRowProps) {
+export default function EquipmentTableRow({ item, onStatusChange, onPricingReview }: EquipmentTableRowProps) {
   const locale = useLocale()
   const isSupplier = useEquipmentStore((state) => state.isSupplier)
-  const convertToLocalized = useEquipmentStore((state) => state.convertToLocalized)
-  
-  if (!convertToLocalized) return null
+  const { convertToLocalized } = useCityData()
   
   const isRTL = locale === "ar"
   const borderSide = isRTL ? "border-r-4" : "border-l-4"
@@ -33,7 +33,7 @@ export default function EquipmentTableRow({ item, onStatusChange }: EquipmentTab
     <tr className={`hover:bg-gray-50 transition-colors ${borderClass}`}>
       <EquipmentImageCell item={item} />
       <MemoizedLocationCell location={convertToLocalized(item.location)} />
-      <PriceCell item={item} />
+      <PriceCell item={item} onPricingReview={onPricingReview} />
       {!isSupplier && (
         <SupplierCell createdBy={item.createdBy} supplier={item.supplier} />
       )}

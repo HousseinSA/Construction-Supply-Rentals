@@ -19,20 +19,19 @@ import { formatPhoneNumber } from "@/src/lib/format"
 interface EquipmentMobileCardProps {
   item: EquipmentWithSupplier & { hasActiveBookings?: boolean; hasPendingSale?: boolean }
   onStatusChange: (id: string, action: "approve" | "reject") => void
+  onPricingReview?: (item: EquipmentWithSupplier) => void
 }
 
-function EquipmentMobileCard({ item, onStatusChange }: EquipmentMobileCardProps) {
+function EquipmentMobileCard({ item, onStatusChange, onPricingReview }: EquipmentMobileCardProps) {
   const { ref: tooltipRef, isOpen: showTooltip, toggle: toggleTooltip } = useTooltip()
   const [showPricingModal, setShowPricingModal] = useState(false)
   const { pricesList, supplierName, cardBorderClass } = useCardData(item)
   const navigating = useEquipmentStore((state) => state.navigating)
   const isSupplier = useEquipmentStore((state) => state.isSupplier)
-  const onPricingReview = useEquipmentStore((state) => state.onPricingReview)
   const updateEquipmentAvailability = useEquipmentStore((state) => state.updateEquipmentAvailability)
   const navigateToEquipment = useEquipmentStore((state) => state.navigateToEquipment)
   const t = useTranslations("dashboard.equipment")
   const router = useRouter()
-
   return (
     <>
     <div className={`p-4 bg-white rounded-lg border shadow-sm hover:shadow-md transition-all grid grid-rows-[minmax(50px,auto)_auto_auto] gap-2 ${cardBorderClass}`}>

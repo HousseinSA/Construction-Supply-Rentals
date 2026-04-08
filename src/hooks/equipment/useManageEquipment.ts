@@ -12,21 +12,19 @@ import {
 interface UseManageEquipmentConfig {
   convertToLocalized: (location: string) => string
   supplierId?: string
-  onPricingReview?: (item: any) => void
 }
 
 export function useManageEquipment({
   convertToLocalized,
   supplierId,
-  onPricingReview,
 }: UseManageEquipmentConfig) {
 const loading = useEquipmentStore((state) => state.loading)
 const updating = useEquipmentStore((state) => state.updating)
-const currentPage = useEquipmentStore((state) => state.currentPage)
-const setCurrentPage = useEquipmentStore((state) => state.setCurrentPage)
 const invalidateCache = useEquipmentStore((state) => state.invalidateCache)
 
   const {
+    currentPage,
+    setCurrentPage,
     totalPages,
     setTotalPages,
     totalCount,
@@ -81,7 +79,6 @@ const invalidateCache = useEquipmentStore((state) => state.invalidateCache)
     filterValues,
     supplierId,
     convertToLocalized,
-    onPricingReview,
     mobileInfiniteScroll,
   )
 

@@ -13,7 +13,6 @@ import {
 } from "@/src/lib/api-helpers"
 import {
   fetchEquipmentWithPagination,
-  enrichEquipmentWithBookingStatus,
   validateEquipmentCreation,
   buildEquipmentDocument,
 } from "@/src/lib/api-helpers/equipment-route-helpers"
@@ -54,16 +53,7 @@ export async function GET(request: NextRequest) {
       isAdmin
     }, searchTerm || undefined)
 
-    if (!isAdmin || equipment.length === 0) {
-      return successResponse({ data: equipment, pagination })
-    }
-
-    const enrichedEquipment = await enrichEquipmentWithBookingStatus(db, equipment)
-
-    return successResponse({
-      data: enrichedEquipment,
-      pagination
-    })
+    return successResponse({ data: equipment, pagination })
   } catch (error) {
     console.error("[GET /equipment] Error:", error)
     return errorResponse(

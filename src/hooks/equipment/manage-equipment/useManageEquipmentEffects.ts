@@ -5,7 +5,7 @@ const DEBOUNCE_DELAY = 500
 
 export function useManageEquipmentEffects(
   fetchLocations: () => Promise<string[]>,
-  fetchEquipment: (skipCache?: boolean, isPolling?: boolean) => Promise<void>,
+  fetchEquipment: (skipCache?: boolean) => Promise<void>,
   setLocations: (locations: Array<{ value: string; label: string }>) => void,
   isMobile: boolean,
   setIsMobile: (mobile: boolean) => void,
@@ -15,17 +15,12 @@ export function useManageEquipmentEffects(
   filterValues: any,
   supplierId: string | undefined,
   convertToLocalized: (location: string) => string,
-  onPricingReview: ((item: any) => void) | undefined,
   mobileInfiniteScroll: any,
 ) {
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
   const fetchEquipmentRef = useRef<(skipCache?: boolean) => Promise<void>>(async () => {})
 
-  const {
-    setIsSupplier,
-    setConvertToLocalized,
-    setOnPricingReview,
-  } = useEquipmentStore()
+  const { setIsSupplier } = useEquipmentStore()
 
   useEffect(() => {
     const checkMobile = () => {
@@ -54,9 +49,7 @@ export function useManageEquipmentEffects(
 
   useEffect(() => {
     setIsSupplier(!!supplierId)
-    setConvertToLocalized(convertToLocalized)
-    if (onPricingReview) setOnPricingReview(onPricingReview)
-  }, [supplierId, convertToLocalized, onPricingReview, setIsSupplier, setConvertToLocalized, setOnPricingReview])
+  }, [supplierId, setIsSupplier])
 
   useEffect(() => {
     fetchEquipmentRef.current = fetchEquipment
@@ -71,7 +64,7 @@ export function useManageEquipmentEffects(
   useEffect(() => {
     if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current)
     debounceTimerRef.current = setTimeout(() => {
-      fetchEquipmentRef.current(true)
+      fetchEquipmentRef.current(false)
     }, DEBOUNCE_DELAY)
     return () => {
       if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current)

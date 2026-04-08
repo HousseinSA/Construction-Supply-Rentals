@@ -1,5 +1,6 @@
 import { AlertCircle, MapPin, Tag } from "lucide-react"
 import { useEquipmentStore } from "@/src/stores/equipmentStore"
+import { useCityData } from "@/src/hooks/useCityData"
 import { useTranslations } from "next-intl"
 import { EquipmentWithSupplier } from "@/src/lib/models/equipment"
 import { useTooltip } from "@/src/hooks/useTooltip"
@@ -12,13 +13,11 @@ interface CardHeaderProps {
 export default function CardHeader({ item, onStatusChange }: CardHeaderProps) {
   const isSupplier = useEquipmentStore((state) => state.isSupplier)
   const updating = useEquipmentStore((state) => state.updating)
-  const convertToLocalized = useEquipmentStore((state) => state.convertToLocalized)
+  const { convertToLocalized } = useCityData()
   const t = useTranslations("dashboard.equipment")
   const { ref: rejectedTooltipRef, isOpen: showRejectedTooltip, toggle: toggleRejectedTooltip } = useTooltip()
   const { ref: reasonTooltipRef, isOpen: showReasonTooltip, toggle: toggleReasonTooltip } = useTooltip()
   
-  if (!convertToLocalized) return null
-
   const {
     referenceNumber,
     name,
