@@ -1,7 +1,7 @@
 import { RefreshCw, AlertCircle } from "lucide-react"
 import PriceDisplay from "@/src/components/ui/PriceDisplay"
 import { EquipmentWithSupplier } from "@/src/lib/models/equipment"
-import { useEquipmentStore } from "@/src/stores/equipmentStore"
+import { useUserSession } from "@/src/hooks/useUserSession"
 import { useEquipmentPrices } from "@/src/hooks/equipment/useEquipmentPrices"
 import { memo, useState } from "react"
 import { useTranslations } from "next-intl"
@@ -15,7 +15,8 @@ interface PriceCellProps {
 function PriceCell({ item, onPricingReview }: PriceCellProps) {
   const [showModal, setShowModal] = useState(false)
   const t = useTranslations("dashboard.equipment")
-  const isSupplier = useEquipmentStore(state => state.isSupplier)
+  const { user } = useUserSession()
+  const isSupplier = user?.isSupplier ?? false
   const prices = useEquipmentPrices(item, false)
 
   return (

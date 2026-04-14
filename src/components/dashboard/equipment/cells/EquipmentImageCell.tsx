@@ -13,8 +13,7 @@ interface EquipmentImageCellProps {
 
 function EquipmentImageCell({ item }: EquipmentImageCellProps) {
   const router = useRouter()
-  const navigating = useEquipmentStore((state) => state.navigating)
-  const navigateToEquipment = useEquipmentStore((state) => state.navigateToEquipment)
+  const { navigating, navigateToEquipment } = useEquipmentStore()
   const t = useTranslations("dashboard.equipment")
 
   const equipmentId = item._id?.toString() || ""

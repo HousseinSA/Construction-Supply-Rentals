@@ -60,7 +60,6 @@ export default function PublicEquipmentList({
           <EquipmentCard key={item._id?.toString()} equipment={item} />
         ))}
       </div>
-
       {hasMore && (
         <div ref={sentinelRef} className="flex justify-center py-8">
           {loadingMore ? (

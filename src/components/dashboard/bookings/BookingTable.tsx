@@ -50,7 +50,6 @@ export default function BookingTable() {
         setShowDetailsModal(true)
         setHasProcessedHighlight(true)
         setTimeout(() => setHighlightId(null), 3000)
-        
         const newUrl = window.location.pathname
         router.replace(newUrl, { scroll: false })
       }
@@ -121,8 +120,6 @@ export default function BookingTable() {
         <div className="xl:bg-white xl:rounded-lg xl:shadow-sm xl:border xl:border-gray-200 overflow-hidden">
           {session?.user?.userType === "renter" ? (
             <RenterBookingView />
-          ) : loading ? (
-            <TableLoading message={tEquipment("loading")} />
           ) : error ? (
             <div className="p-12 text-center">
               <div className="text-red-500 text-lg mb-4">{t("error")}</div>
@@ -133,13 +130,8 @@ export default function BookingTable() {
                 {t("retry")}
               </button>
             </div>
-          ) : bookings.length === 0 ? (
-            <div className="p-12 text-center text-gray-500 font-medium">
-              {t("noBookings")}
-            </div>
           ) : (
             <>
-              {/* Desktop Table */}
               <div className="hidden xl:block">
                 <Table>
                   <TableHeader>
@@ -157,39 +149,69 @@ export default function BookingTable() {
                     </tr>
                   </TableHeader>
                   <TableBody>
-                    {bookings.map((booking) => (
-                      <BookingTableRow
-                        key={booking._id}
-                        booking={booking}
-                        onViewDetails={handleViewDetails}
-                        t={t}
-                        highlight={highlightId === booking._id}
-                      />
-                    ))}
+                    {loading ? (
+                      <tr>
+                        <td colSpan={10} className="p-12 text-center">
+                          <div className="animate-pulse text-gray-600 font-medium">
+                            {tEquipment("loading")}
+                          </div>
+                        </td>
+                      </tr>
+                    ) : bookings.length === 0 ? (
+                      <tr>
+                        <td colSpan={10} className="p-12 text-center text-gray-500 font-medium">
+                          {t("noBookings")}
+                        </td>
+                      </tr>
+                    ) : (
+                      bookings.map((booking) => (
+                        <BookingTableRow
+                          key={booking._id}
+                          booking={booking}
+                          onViewDetails={handleViewDetails}
+                          t={t}
+                          highlight={highlightId === booking._id}
+                        />
+                      ))
+                    )}
                   </TableBody>
                 </Table>
               </div>
 
               <div className="xl:hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {bookings.map((booking) => (
-                  <BookingMobileCard
-                    key={booking._id}
-                    booking={booking}
-                    onViewDetails={handleViewDetails}
-                    t={t}
-                    highlight={highlightId === booking._id}
-                  />
-                ))}
+                {loading ? (
+                  <div className="p-12 text-center col-span-full">
+                    <div className="animate-pulse text-gray-600 font-medium">
+                      {tEquipment("loading")}
+                    </div>
+                  </div>
+                ) : bookings.length === 0 ? (
+                  <div className="p-12 text-center text-gray-500 font-medium col-span-full">
+                    {t("noBookings")}
+                  </div>
+                ) : (
+                  bookings.map((booking) => (
+                    <BookingMobileCard
+                      key={booking._id}
+                      booking={booking}
+                      onViewDetails={handleViewDetails}
+                      t={t}
+                      highlight={highlightId === booking._id}
+                    />
+                  ))
+                )}
               </div>
 
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={goToPage}
-                itemsPerPage={itemsPerPage}
-                totalItems={totalItems}
-                showInfo={true}
-              />
+              {!loading && bookings.length > 0 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={goToPage}
+                  itemsPerPage={itemsPerPage}
+                  totalItems={totalItems}
+                  showInfo={true}
+                />
+              )}
             </>
           )}
         </div>

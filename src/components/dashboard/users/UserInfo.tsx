@@ -1,5 +1,5 @@
 "use client"
-import { Users } from 'lucide-react'
+import { User as UserIcon } from 'lucide-react'
 import { User } from '@/src/lib/types'
 import CopyButton from '@/src/components/ui/CopyButton'
 import { formatPhoneNumber } from '@/src/lib/format'
@@ -41,7 +41,7 @@ export default function UserInfo({ user, t }: UserInfoProps) {
   return (
     <div className="flex items-center">
       <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-        <Users className="h-5 w-5 text-blue-600" />
+        <UserIcon className="h-5 w-5 text-blue-600" />
       </div>
       <div className="mx-2">
         <div className="text-sm font-medium text-gray-900">

@@ -7,8 +7,10 @@ interface UseInfiniteScrollEquipmentConfig {
   onLoadingChange?: (loading: boolean) => void
   dependencies?: any[]
   initialEquipment?: any[]
+  initialHasMore?: boolean
   startFromPage?: number
-  totalPages?: number
+  shouldRefetch?: () => boolean
+  onFetchSuccess?: (equipment: any[], hasMore: boolean) => void
 }
 
 export function useInfiniteScrollEquipment({
@@ -17,17 +19,22 @@ export function useInfiniteScrollEquipment({
   onLoadingChange,
   dependencies = [],
   initialEquipment = [],
+  initialHasMore = false,
   startFromPage = 1,
-  totalPages = 1,
+  shouldRefetch,
+  onFetchSuccess,
 }: UseInfiniteScrollEquipmentConfig) {
   const [equipment, setEquipment] = useState<any[]>(initialEquipment)
   const [page, setPage] = useState(startFromPage)
-  const [hasMore, setHasMore] = useState(true)
+  const [hasMore, setHasMore] = useState(initialHasMore)
   const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  const hasInitialData = initialEquipment.length > 0
+
   const { fetchEquipment: coreFetch, loading, abort } = useEquipmentFetch({
     onLoadingChange,
+    hasInitialData,
   })
 
   const fetchEquipment = useCallback(
@@ -39,16 +46,20 @@ export function useInfiniteScrollEquipment({
         setError(null)
 
         const params = buildParams(pageNum, itemsPerPage)
-        const result = await coreFetch(params)
+        const result = await coreFetch(params, { shouldRefetch })
 
         if (result) {
           const newEquipment = result.data || []
+          const newHasMore = result.pagination?.hasMore ?? false
           if (append) {
             setEquipment(prev => [...prev, ...newEquipment])
           } else {
             setEquipment(newEquipment)
+            if (onFetchSuccess && !append) {
+              onFetchSuccess(newEquipment, newHasMore)
+            }
           }
-          setHasMore(result.pagination?.hasMore ?? false)
+          setHasMore(newHasMore)
         }
       } catch (error: any) {
         console.error("Failed to fetch equipment:", error)
@@ -59,7 +70,7 @@ export function useInfiniteScrollEquipment({
         }
       }
     },
-    [buildParams, itemsPerPage, coreFetch],
+    [buildParams, itemsPerPage, coreFetch, shouldRefetch, onFetchSuccess],
   )
 
   const loadMore = useCallback(() => {
@@ -73,13 +84,14 @@ export function useInfiniteScrollEquipment({
   const reset = useCallback(() => {
     setPage(startFromPage)
     setEquipment(initialEquipment)
-    const shouldHaveMore = totalPages > startFromPage || (totalPages === 0 && initialEquipment.length >= itemsPerPage)
-    setHasMore(shouldHaveMore)
-  }, [startFromPage, initialEquipment, totalPages, itemsPerPage])
+    setHasMore(initialHasMore)
+  }, [startFromPage, initialEquipment, initialHasMore])
 
   useEffect(() => {
-    reset()
-    if (initialEquipment.length === 0) {
+    if (initialEquipment.length > 0) {
+      setEquipment(initialEquipment)
+      setHasMore(initialHasMore)
+    } else {
       const timer = setTimeout(() => fetchEquipment(startFromPage, false), 0)
       return () => clearTimeout(timer)
     }

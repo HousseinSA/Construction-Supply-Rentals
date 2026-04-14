@@ -94,19 +94,6 @@ export default function RenterBookingView() {
     )
   }
 
-  if (loading) {
-    return <TableLoading message={t("loading")} />
-  }
-
-  if (bookings.length === 0) {
-    return (
-      <div className="p-12 text-center">
-        <div className="text-gray-500 text-lg mb-2">{t("noBookings")}</div>
-        <div className="text-gray-400 text-sm">{t("noBookingsDesc")}</div>
-      </div>
-    )
-  }
-
   return (  
     <>
       <div className="hidden xl:block overflow-x-auto">
@@ -123,8 +110,24 @@ export default function RenterBookingView() {
             </tr>
           </TableHeader>
           <TableBody>
-            {paginatedData.map((booking) => (
-              <tr key={booking._id?.toString()}>
+            {loading ? (
+              <tr>
+                <td colSpan={7} className="p-12 text-center">
+                  <div className="animate-pulse text-gray-600 font-medium">
+                    {t("loading")}
+                  </div>
+                </td>
+              </tr>
+            ) : bookings.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="p-12 text-center">
+                  <div className="text-gray-500 text-lg mb-2">{t("noBookings")}</div>
+                  <div className="text-gray-400 text-sm">{t("noBookingsDesc")}</div>
+                </td>
+              </tr>
+            ) : (
+              paginatedData.map((booking) => (
+                <tr key={booking._id?.toString()}>
                 <TableCell>
                   <div className="flex items-center gap-4">
                     <div className="w-44 h-32 relative flex-shrink-0">
@@ -205,13 +208,26 @@ export default function RenterBookingView() {
                     )}
                   </div>
                 </TableCell>
-              </tr>
-            ))}
+                </tr>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
       <div className="xl:hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 ">
-        {paginatedData.map((booking) => {
+        {loading ? (
+          <div className="p-12 text-center col-span-full">
+            <div className="animate-pulse text-gray-600 font-medium">
+              {t("loading")}
+            </div>
+          </div>
+        ) : bookings.length === 0 ? (
+          <div className="p-12 text-center col-span-full">
+            <div className="text-gray-500 text-lg mb-2">{t("noBookings")}</div>
+            <div className="text-gray-400 text-sm">{t("noBookingsDesc")}</div>
+          </div>
+        ) : (
+          paginatedData.map((booking) => {
           const equipmentTitle = `${booking.bookingItems[0]?.equipmentName}${
             booking.bookingItems.length > 1
               ? ` +${booking.bookingItems.length - 1}`
@@ -279,17 +295,20 @@ export default function RenterBookingView() {
               }
             />
           )
-        })}
+          })
+        )}
       </div>
 
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={goToPage}
-        itemsPerPage={itemsPerPage}
-        totalItems={totalItems}
-        showInfo={true}
-      />
+      {!loading && bookings.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={goToPage}
+          itemsPerPage={itemsPerPage}
+          totalItems={totalItems}
+          showInfo={true}
+        />
+      )}
 
       <ConfirmModal
         isOpen={showCancelDialog}

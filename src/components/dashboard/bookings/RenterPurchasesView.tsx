@@ -64,25 +64,6 @@ export default function RenterPurchasesView() {
     )
   }
 
-  if (loading) {
-    return (
-      <div className="p-12 text-center">
-        <div className="animate-pulse text-gray-600 font-medium">
-          {t("loading")}
-        </div>
-      </div>
-    )
-  }
-
-  if (purchases.length === 0) {
-    return (
-      <div className="p-12 text-center">
-        <div className="text-gray-500 text-lg mb-2">{t("noPurchases")}</div>
-        <div className="text-gray-400 text-sm">{t("noPurchasesDesc")}</div>
-      </div>
-    )
-  }
-
   return (
     <>
       <div className="hidden lg:block overflow-x-auto">
@@ -97,8 +78,24 @@ export default function RenterPurchasesView() {
             </tr>
           </TableHeader>
           <TableBody>
-            {paginatedData.map((purchase) => (
-              <tr key={purchase._id}>
+            {loading ? (
+              <tr>
+                <td colSpan={5} className="p-12 text-center">
+                  <div className="animate-pulse text-gray-600 font-medium">
+                    {t("loading")}
+                  </div>
+                </td>
+              </tr>
+            ) : purchases.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="p-12 text-center">
+                  <div className="text-gray-500 text-lg mb-2">{t("noPurchases")}</div>
+                  <div className="text-gray-400 text-sm">{t("noPurchasesDesc")}</div>
+                </td>
+              </tr>
+            ) : (
+              paginatedData.map((purchase) => (
+                <tr key={purchase._id}>
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <div className="w-44 h-32 relative flex-shrink-0">
@@ -152,16 +149,29 @@ export default function RenterPurchasesView() {
                     )}
                   </div>
                 </TableCell>
-              </tr>
-            ))}
+                </tr>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
 
       <div className="lg:hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {paginatedData.map((purchase) => (
-          <GenericMobileCard
-            key={purchase._id}
+        {loading ? (
+          <div className="p-12 text-center col-span-full">
+            <div className="animate-pulse text-gray-600 font-medium">
+              {t("loading")}
+            </div>
+          </div>
+        ) : purchases.length === 0 ? (
+          <div className="p-12 text-center col-span-full">
+            <div className="text-gray-500 text-lg mb-2">{t("noPurchases")}</div>
+            <div className="text-gray-400 text-sm">{t("noPurchasesDesc")}</div>
+          </div>
+        ) : (
+          paginatedData.map((purchase) => (
+            <GenericMobileCard
+              key={purchase._id}
             id={purchase.referenceNumber || ""}
             title={purchase.equipmentName}
             date={formatDate(purchase.createdAt)}
@@ -201,18 +211,21 @@ export default function RenterPurchasesView() {
                 </button>
               ) : undefined
             }
-          />
-        ))}
+            />
+          ))
+        )}
       </div>
 
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={goToPage}
-        itemsPerPage={itemsPerPage}
-        totalItems={totalItems}
-        showInfo={true}
-      />
+      {!loading && purchases.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={goToPage}
+          itemsPerPage={itemsPerPage}
+          totalItems={totalItems}
+          showInfo={true}
+        />
+      )}
 
       <ConfirmModal
         isOpen={showDialog}

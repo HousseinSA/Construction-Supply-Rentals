@@ -18,7 +18,6 @@ import {
 } from "@/src/lib/api-helpers/equipment-route-helpers"
 import type { EquipmentType } from "@/src/lib/api-helpers/types"
 
-
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)

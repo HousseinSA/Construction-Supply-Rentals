@@ -1,13 +1,6 @@
 import { create } from "zustand"
 import { Equipment, EquipmentWithSupplier } from "@/src/lib/models/equipment"
-import { EquipmentStatus } from "@/src/lib/types"
-import { showToast } from "@/src/lib/toast"
-import { CACHE_DURATION, MAX_CACHE_ENTRIES } from "@/src/lib/equipment-query-params"
-
-interface PublicEquipmentCache {
-  equipment: Equipment[]
-  timestamp: number
-}
+import { CACHE_DURATION } from "@/src/lib/equipment-query-params"
 
 interface EquipmentStore {
   equipment: EquipmentWithSupplier[]
@@ -18,41 +11,24 @@ interface EquipmentStore {
   lastQuery: string | null
   updating: string | null
   navigating: string | null
-  isSupplier: boolean
-  publicCache: Map<string, PublicEquipmentCache>
-  publicLoading: boolean
+  publicEquipment: EquipmentWithSupplier[]
+  publicHasMore: boolean
   setEquipment: (equipment: EquipmentWithSupplier[], query?: string) => void
+  setPublicEquipment: (equipment: EquipmentWithSupplier[], query: string, hasMore: boolean) => void
+  getPublicEquipment: (query: string) => { equipment: EquipmentWithSupplier[], hasMore: boolean }
   setLoading: (loading: boolean) => void
   setUpdating: (id: string | null) => void
   setNavigating: (id: string | null) => void
-  setIsSupplier: (isSupplier: boolean) => void
   updateEquipment: (id: string, updates: Partial<Equipment>, timestamp?: number) => void
   addEquipment: (equipment: EquipmentWithSupplier) => void
   getEquipmentById: (id: string) => EquipmentWithSupplier | null
-  updateEquipmentStatus: (
-    id: string,
-    status: EquipmentStatus,
-    reason?: string,
-    t?: any,
-  ) => Promise<boolean>
-  updateEquipmentAvailability: (
-    id: string,
-    isAvailable: boolean,
-    t?: any,
-  ) => Promise<boolean>
   navigateToEquipment: (url: string, id: string, router: any) => void
   resetNavigating: () => void
   shouldRefetch: (query?: string) => boolean
   invalidateCache: (selective?: boolean) => void
-  getPublicEquipment: (query: string) => Equipment[] | null
-  setPublicEquipment: (query: string, equipment: Equipment[]) => void
-  setPublicLoading: (loading: boolean) => void
-  shouldRefetchPublic: (query: string) => boolean
-  invalidatePublicCache: (query?: string) => void
 }
 
-export const useEquipmentStore = create<EquipmentStore>((set, get) => {
-  return {
+export const useEquipmentStore = create<EquipmentStore>((set, get) => ({
   equipment: [],
   equipmentMap: new Map(),
   itemTimestamps: new Map(),
@@ -61,20 +37,16 @@ export const useEquipmentStore = create<EquipmentStore>((set, get) => {
   lastQuery: null,
   updating: null,
   navigating: null,
-  isSupplier: false,
-  publicCache: new Map(),
-  publicLoading: true,
+  publicEquipment: [],
+  publicHasMore: false,
   setEquipment: (equipment, query) => {
     const state = get()
     const now = Date.now()
-    
     const merged = equipment.map(item => {
       const id = item._id?.toString()
       if (!id) return item
-      
       const localTime = state.itemTimestamps.get(id) || 0
       const itemTime = item.updatedAt ? new Date(item.updatedAt).getTime() : now
-      
       if (itemTime > localTime) {
         state.itemTimestamps.set(id, itemTime)
         return item
@@ -100,7 +72,6 @@ export const useEquipmentStore = create<EquipmentStore>((set, get) => {
   setLoading: (loading) => set({ loading }),
   setUpdating: (id) => set({ updating: id }),
   setNavigating: (id) => set({ navigating: id }),
-  setIsSupplier: (isSupplier) => set({ isSupplier }),
   getEquipmentById: (id) => {
     const state = get()
     const idx = state.equipmentMap.get(id)
@@ -141,70 +112,6 @@ export const useEquipmentStore = create<EquipmentStore>((set, get) => {
       lastFetch: Date.now() 
     })
   },
-  updateEquipmentStatus: async (id, status, reason, t) => {
-    set({ updating: id })
-    try {
-      const body: any = { status }
-      if (status === "rejected" && reason) {
-        body.rejectionReason = reason
-      }
-      const response = await fetch(`/api/equipment/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      })
-      if (response.ok) {
-        get().updateEquipment(id, {
-          status,
-          ...(reason && { rejectionReason: reason }),
-        })
-        showToast.success(
-          t(status === "approved" ? "equipmentApproved" : "equipmentRejected"),
-        )
-        return true
-      }
-      showToast.error(t("equipmentUpdateFailed"))
-      return false
-    } catch (error) {
-      showToast.error(t("equipmentUpdateFailed"))
-      return false
-    } finally {
-      set({ updating: null })
-    }
-  },
-
-  updateEquipmentAvailability: async (id, isAvailable, t) => {
-    const state = get()
-    const original = state.getEquipmentById(id)
-    
-    set({ updating: id })
-    state.updateEquipment(id, { isAvailable })
-    
-    try {
-      const response = await fetch(`/api/equipment/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isAvailable }),
-      })
-      if (response.ok) {
-        showToast.success(t("availabilityUpdated"))
-        return true
-      }
-      if (original) {
-        state.updateEquipment(id, { isAvailable: original.isAvailable })
-      }
-      showToast.error(t("equipmentUpdateFailed"))
-      return false
-    } catch (error) {
-      if (original) {
-        state.updateEquipment(id, { isAvailable: original.isAvailable })
-      }
-      showToast.error(t("equipmentUpdateFailed"))
-      return false
-    } finally {
-      set({ updating: null })
-    }
-  },
 
   navigateToEquipment: (url, id, router) => {
     set({ navigating: id })
@@ -228,74 +135,20 @@ export const useEquipmentStore = create<EquipmentStore>((set, get) => {
     }
   },
 
-  getPublicEquipment: (query) => {
-    const state = get()
-    const cached = state.publicCache.get(query)
-    if (!cached) return null
-    
-    const isExpired = Date.now() - cached.timestamp > CACHE_DURATION
-    if (isExpired) {
-      state.publicCache.delete(query)
-      set({ lastFetch: Date.now() })
-      return null
-    }
-    
-    return cached.equipment
-  },
-
-  setPublicEquipment: (query, equipment) => {
-    const state = get()
-    const now = Date.now()
-    
-    const existingCache = state.publicCache.get(query)
-    let merged = equipment
-    
-    if (existingCache) {
-      merged = equipment.map(item => {
-        const id = item._id?.toString()
-        if (!id) return item
-        
-        const existing = existingCache.equipment.find(e => e._id?.toString() === id)
-        if (!existing) return item
-        
-        const existingTime = existing.updatedAt ? new Date(existing.updatedAt).getTime() : 0
-        const itemTime = item.updatedAt ? new Date(item.updatedAt).getTime() : now
-        
-        return itemTime > existingTime ? item : existing
-      })
-    }
-    
-    if (state.publicCache.size >= MAX_CACHE_ENTRIES && !state.publicCache.has(query)) {
-      const firstKey = state.publicCache.keys().next().value
-      if (firstKey) state.publicCache.delete(firstKey)
-    }
-    
-    state.publicCache.set(query, {
-      equipment: merged,
-      timestamp: now
+  setPublicEquipment: (equipment, query, hasMore) => {
+    set({ 
+      publicEquipment: equipment,
+      publicHasMore: hasMore,
+      lastFetch: Date.now(),
+      lastQuery: query
     })
-    
-    set({ lastFetch: now })
   },
 
-  setPublicLoading: (loading) => set({ publicLoading: loading }),
-
-  shouldRefetchPublic: (query) => {
-    const cached = get().publicCache.get(query)
-    if (!cached) return true
-    
-    const isExpired = Date.now() - cached.timestamp > CACHE_DURATION
-    return isExpired
-  },
-
-  invalidatePublicCache: (query) => {
-    const state = get()
-    if (query) {
-      state.publicCache.delete(query)
-      set({ lastFetch: Date.now() })
-    } else {
-      state.publicCache.clear()
-      set({ lastFetch: Date.now() })
+  getPublicEquipment: (query) => {
+    const { publicEquipment, lastQuery, publicHasMore } = get()
+    if (query === lastQuery) {
+      return { equipment: publicEquipment, hasMore: publicHasMore }
     }
+    return { equipment: [], hasMore: false }
   },
-}})
+}))

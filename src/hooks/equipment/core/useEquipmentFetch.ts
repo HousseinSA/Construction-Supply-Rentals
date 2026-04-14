@@ -3,13 +3,14 @@ import type { FetchResult } from "./types"
 
 interface UseEquipmentFetchOptions {
   onLoadingChange?: (loading: boolean) => void
+  hasInitialData?: boolean
 }
 
 export function useEquipmentFetch(options: UseEquipmentFetchOptions = {}) {
-  const { onLoadingChange } = options
+  const { onLoadingChange, hasInitialData = false } = options
   const abortControllerRef = useRef<AbortController | null>(null)
   const initialLoadRef = useRef(true)
-  const [loading, setLoadingState] = useState(true)
+  const [loading, setLoadingState] = useState(!hasInitialData)
 
   const setLoading = useCallback((isLoading: boolean) => {
     setLoadingState(isLoading)
@@ -19,10 +20,10 @@ export function useEquipmentFetch(options: UseEquipmentFetchOptions = {}) {
   const fetchEquipment = useCallback(
     async (
       params: URLSearchParams,
-      options: { skipCache?: boolean } = {}
+      options: { skipCache?: boolean; shouldRefetch?: () => boolean } = {}
     ): Promise<FetchResult | null> => {
-      const { skipCache = false } = options
-
+      const { skipCache = false, shouldRefetch } = options
+      if (shouldRefetch && !shouldRefetch()) return null
       if (abortControllerRef.current) {
         abortControllerRef.current.abort()
       }

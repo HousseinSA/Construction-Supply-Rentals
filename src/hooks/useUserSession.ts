@@ -3,7 +3,6 @@ import { useSession } from "next-auth/react"
 
 export function useUserSession() {
   const { data: session, status } = useSession()
-
   const user = useMemo(() => {
     if (!session?.user) return null
     return {

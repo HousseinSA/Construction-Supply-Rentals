@@ -30,7 +30,9 @@ export default async function middleware(request: NextRequest) {
     const newUrl = new URL(`/${cookieLocale}${pathWithoutLocale}`, request.url)
     newUrl.search = request.nextUrl.search
     const response = NextResponse.redirect(newUrl)
-    response.headers.set("Cache-Control", "no-store, must-revalidate")
+    response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
+    response.headers.set("Pragma", "no-cache")
+    response.headers.set("Expires", "0")
     return response
   }
 
@@ -72,7 +74,9 @@ export default async function middleware(request: NextRequest) {
     localeDetection: true,
   })(request)
 
-  response.headers.set("Cache-Control", "no-store, must-revalidate")
+  response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
+  response.headers.set("Pragma", "no-cache")
+  response.headers.set("Expires", "0")
 
   return response
 }

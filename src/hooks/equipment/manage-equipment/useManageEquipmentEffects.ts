@@ -20,8 +20,6 @@ export function useManageEquipmentEffects(
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
   const fetchEquipmentRef = useRef<(skipCache?: boolean) => Promise<void>>(async () => {})
 
-  const { setIsSupplier } = useEquipmentStore()
-
   useEffect(() => {
     const checkMobile = () => {
       const mobile = window.innerWidth < 1280
@@ -46,10 +44,6 @@ export function useManageEquipmentEffects(
       })))
     })
   }, [fetchLocations, setLocations, convertToLocalized])
-
-  useEffect(() => {
-    setIsSupplier(!!supplierId)
-  }, [supplierId, setIsSupplier])
 
   useEffect(() => {
     fetchEquipmentRef.current = fetchEquipment

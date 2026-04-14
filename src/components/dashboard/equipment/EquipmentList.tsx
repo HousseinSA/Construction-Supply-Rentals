@@ -1,4 +1,5 @@
 import { useEquipmentStore } from "@/src/stores/equipmentStore"
+import { useUserSession } from "@/src/hooks/useUserSession"
 import { Table, TableHeader, TableBody, TableHead } from "../../ui/Table"
 import { EquipmentWithSupplier } from "@/src/lib/models/equipment"
 import EquipmentTableRow from "./EquipmentTableRow"
@@ -39,10 +40,13 @@ export default function EquipmentList({
   onLoadMoreMobile,
   loading,
 }: EquipmentListProps) {
-  const isSupplier = useEquipmentStore((state) => state.isSupplier)
+  const { user } = useUserSession()
+  const isSupplier = user?.isSupplier ?? false
   const t = useTranslations("dashboard.equipment")
   const tCommon = useTranslations("equipment")
   const sentinelRef = useRef<HTMLDivElement>(null)
+
+  const columnCount = isSupplier ? 7 : 8
 
   const handlePageChange = (page: number) => {
     onPageChange(page)
@@ -83,27 +87,55 @@ export default function EquipmentList({
             </tr>
           </TableHeader>
           <TableBody>
-            {equipment.map((item) => (
-              <EquipmentTableRow
-                key={item._id?.toString()}
-                item={item}
-                onStatusChange={onStatusChange}
-                onPricingReview={onPricingReview}
-              />
-            ))}
+            {loading ? (
+              <tr>
+                <td colSpan={columnCount} className="p-12 text-center">
+                  <div className="animate-pulse text-gray-600 font-medium">
+                    {t("loading")}
+                  </div>
+                </td>
+              </tr>
+            ) : equipment.length === 0 ? (
+              <tr>
+                <td colSpan={columnCount} className="p-12 text-center text-gray-500 font-medium">
+                  {t("noEquipmentFound")}
+                </td>
+              </tr>
+            ) : (
+              equipment.map((item) => (
+                <EquipmentTableRow
+                  key={item._id?.toString()}
+                  item={item}
+                  onStatusChange={onStatusChange}
+                  onPricingReview={onPricingReview}
+                />
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
 
       <div className="xl:hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {mobileEquipment.map((item) => (
-          <EquipmentMobileCard
-            key={item._id?.toString()}
-            item={item}
-            onStatusChange={onStatusChange}
-            onPricingReview={onPricingReview}
-          />
-        ))}
+        {loading ? (
+          <div className="p-12 text-center col-span-full">
+            <div className="animate-pulse text-gray-600 font-medium">
+              {t("loading")}
+            </div>
+          </div>
+        ) : mobileEquipment.length === 0 ? (
+          <div className="p-12 text-center text-gray-500 font-medium col-span-full">
+            {t("noEquipmentFound")}
+          </div>
+        ) : (
+          mobileEquipment.map((item) => (
+            <EquipmentMobileCard
+              key={item._id?.toString()}
+              item={item}
+              onStatusChange={onStatusChange}
+              onPricingReview={onPricingReview}
+            />
+          ))
+        )}
       </div>
 
       {hasMoreMobile && (
@@ -120,14 +152,16 @@ export default function EquipmentList({
       )}
 
       <div className="hidden xl:block">
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-          itemsPerPage={itemsPerPage}
-          totalItems={totalItems}
-          showInfo={true}
-        />
+        {!loading && equipment.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            totalItems={totalItems}
+            showInfo={true}
+          />
+        )}
       </div>
     </>
   )

@@ -12,7 +12,7 @@ interface UsersStore {
   invalidateCache: () => void
 }
 
-const CACHE_DURATION = 5 * 60 * 1000 
+const CACHE_DURATION = 1 * 60 * 1000 
 
 export const useUsersStore = create<UsersStore>((set, get) => ({
   users: [],

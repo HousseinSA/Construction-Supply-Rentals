@@ -2,7 +2,7 @@ import { useTranslations } from "next-intl"
 import Dropdown from "@/src/components/ui/Dropdown"
 import TooltipWrapper from "@/src/components/ui/TooltipWrapper"
 import { getAvailabilityTooltipMessage, isAvailabilityDisabled } from "@/src/utils/equipmentHelpers"
-import { useEquipmentStore } from "@/src/stores/equipmentStore"
+import { useEquipmentActions } from "@/src/hooks/equipment/useEquipmentActions"
 import { EquipmentWithSupplier } from "@/src/lib/models/equipment"
 import { memo, useMemo, useCallback } from "react"
 
@@ -12,9 +12,7 @@ interface AvailabilityCellProps {
 
 function AvailabilityCell({ item }: AvailabilityCellProps) {
   const t = useTranslations("dashboard.equipment")
-  const updateEquipmentAvailability = useEquipmentStore(
-    state => state.updateEquipmentAvailability
-  )
+  const { updateAvailability } = useEquipmentActions(t)
   
   const options = useMemo(
     () => [
@@ -32,9 +30,9 @@ function AvailabilityCell({ item }: AvailabilityCellProps) {
 
   const handleChange = useCallback(
     (val: string) => {
-      updateEquipmentAvailability(item._id?.toString() || "", val === "available", t)
+      updateAvailability(item._id?.toString() || "", val === "available")
     },
-    [item._id, updateEquipmentAvailability, t]
+    [item._id, updateAvailability]
   )
 
   return (

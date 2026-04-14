@@ -1,5 +1,6 @@
 import { Edit, Eye, Loader2 } from "lucide-react"
 import { useEquipmentStore } from "@/src/stores/equipmentStore"
+import { useUserSession } from "@/src/hooks/useUserSession"
 import { useTranslations } from "next-intl"
 import { useRouter } from "@/src/i18n/navigation"
 import { EquipmentWithSupplier } from "@/src/lib/models/equipment"
@@ -9,9 +10,9 @@ interface CardActionsProps {
 }
 
 export default function CardActions({ item }: CardActionsProps) {
-  const isSupplier = useEquipmentStore((state) => state.isSupplier)
-  const navigating = useEquipmentStore((state) => state.navigating)
-  const navigateToEquipment = useEquipmentStore((state) => state.navigateToEquipment)
+  const { user } = useUserSession()
+  const isSupplier = user?.isSupplier ?? false
+  const { navigating, navigateToEquipment } = useEquipmentStore()
   const t = useTranslations("dashboard.equipment")
   const router = useRouter()
 

@@ -1,6 +1,6 @@
 import { useLocale } from "next-intl"
 import { EquipmentWithSupplier } from "@/src/lib/models/equipment"
-import { useEquipmentStore } from "@/src/stores/equipmentStore"
+import { useUserSession } from "@/src/hooks/useUserSession"
 import { useCityData } from "@/src/hooks/useCityData"
 import EquipmentImageCell from "./cells/EquipmentImageCell"
 import { MemoizedLocationCell, MemoizedDateCell } from "./cells/SimpleCells"
@@ -18,7 +18,8 @@ interface EquipmentTableRowProps {
 
 export default function EquipmentTableRow({ item, onStatusChange, onPricingReview }: EquipmentTableRowProps) {
   const locale = useLocale()
-  const isSupplier = useEquipmentStore((state) => state.isSupplier)
+  const { user } = useUserSession()
+  const isSupplier = user?.isSupplier ?? false
   const { convertToLocalized } = useCityData()
   
   const isRTL = locale === "ar"

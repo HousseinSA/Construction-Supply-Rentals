@@ -23,7 +23,7 @@ export default function ManageEquipment() {
   const t = useTranslations("dashboard.equipment")
   const { convertToLocalized } = useCityData()
   
-  const equipment = useEquipmentStore((state) => state.equipment)
+  const { equipment } = useEquipmentStore()
   
   const supplierId = useMemo(
     () => (user?.isSupplier ? user.id : undefined),
@@ -99,29 +99,21 @@ export default function ManageEquipment() {
           onFilterChange={handleFilterChange}
         />
         <div className="xl:bg-white xl:rounded-lg xl:shadow-sm xl:border xl:border-gray-200 min-h-[600px] flex flex-col">
-          {loading ? (
-            <TableLoading message={t("loading")} />
-          ) : equipment.length === 0 ? (
-            <div className="p-12 text-center text-gray-500 font-medium">
-              {t("noEquipmentFound")}
-            </div>
-          ) : (
-            <EquipmentList
-              equipment={equipment}
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalItems={totalItems}
-              itemsPerPage={itemsPerPage}
-              onPageChange={goToPage}
-              onStatusChange={handleStatusChangeCallback}
-              onPricingReview={handlePricingReview}
-              mobileEquipment={mobileEquipment}
-              loadingMoreMobile={loadingMoreMobile}
-              hasMoreMobile={hasMoreMobile}
-              onLoadMoreMobile={loadMoreMobile}
-              loading={loading}
-            />
-          )}
+          <EquipmentList
+            equipment={equipment}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            itemsPerPage={itemsPerPage}
+            onPageChange={goToPage}
+            onStatusChange={handleStatusChangeCallback}
+            onPricingReview={handlePricingReview}
+            mobileEquipment={mobileEquipment}
+            loadingMoreMobile={loadingMoreMobile}
+            hasMoreMobile={hasMoreMobile}
+            onLoadMoreMobile={loadMoreMobile}
+            loading={loading}
+          />
         </div>
         <EquipmentModals
           confirmModal={confirmModal}

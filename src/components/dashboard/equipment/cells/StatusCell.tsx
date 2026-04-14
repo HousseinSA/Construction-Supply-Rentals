@@ -2,6 +2,7 @@ import { useTranslations } from "next-intl"
 import TooltipWrapper from "@/src/components/ui/TooltipWrapper"
 import { getStatusBadgeStyles } from "@/src/utils/equipmentHelpers"
 import { useEquipmentStore } from "@/src/stores/equipmentStore"
+import { useUserSession } from "@/src/hooks/useUserSession"
 import { EquipmentWithSupplier } from "@/src/lib/models/equipment"
 import { memo, useMemo, useCallback } from "react"
 
@@ -12,8 +13,9 @@ interface StatusCellProps {
 
 function StatusCell({ item, onStatusChange }: StatusCellProps) {
   const t = useTranslations("dashboard.equipment")
-  const isSupplier = useEquipmentStore((state) => state.isSupplier)
-  const updating = useEquipmentStore((state) => state.updating)
+  const { user } = useUserSession()
+  const isSupplier = user?.isSupplier ?? false
+  const { updating } = useEquipmentStore()
   
   const { status } = item
   const equipmentId = item._id?.toString() || ""

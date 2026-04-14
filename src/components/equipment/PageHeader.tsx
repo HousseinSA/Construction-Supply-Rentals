@@ -1,7 +1,9 @@
 import { useCityData } from "@/src/hooks/useCityData"
 import { useTranslations, useLocale } from "next-intl"
 import { useState, useEffect } from "react"
+import { useCategoryMapping } from "@/src/hooks/useCategoryMapping"
 import PageBanner from "@/components/ui/PageBanner"
+
 
 interface PageHeaderProps {
   selectedCity?: string | null
@@ -15,15 +17,15 @@ export default function PageHeader({ selectedCity, selectedType, listingType }: 
   const locale = useLocale()
   const { getDisplayValue } = useCityData()
   const [equipmentTypeName, setEquipmentTypeName] = useState<string>('')
-
+const {getEquipmentTypeName} = useCategoryMapping()
   useEffect(() => {
     if (selectedType) {
       fetch(`/api/equipment-types/${selectedType}`)
         .then(res => res.json())
         .then(data => {
           if (data.success) {
-            const typeName = data.data.name[locale as keyof typeof data.data.name] || data.data.name
-            setEquipmentTypeName(typeName)
+           const translatedName = getEquipmentTypeName(data.data.name)
+            setEquipmentTypeName(translatedName)
           }
         })
         .catch(console.error)

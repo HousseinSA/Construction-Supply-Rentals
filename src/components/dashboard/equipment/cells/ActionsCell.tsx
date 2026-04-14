@@ -3,6 +3,7 @@ import { useRouter } from "@/src/i18n/navigation"
 import { Edit, Eye, Loader2 } from "lucide-react"
 import { canEditEquipment } from "@/src/utils/equipmentHelpers"
 import { useEquipmentStore } from "@/src/stores/equipmentStore"
+import { useUserSession } from "@/src/hooks/useUserSession"
 import { EquipmentWithSupplier } from "@/src/lib/models/equipment"
 import { memo, useMemo, useCallback } from "react"
 interface ActionsCellProps {
@@ -12,10 +13,9 @@ interface ActionsCellProps {
 function ActionsCell({ item }: ActionsCellProps) {
   const t = useTranslations("dashboard.equipment")
   const router = useRouter()
-  const isSupplier = useEquipmentStore((state) => state.isSupplier)
-  const navigating = useEquipmentStore((state) => state.navigating)
-  const navigateToEquipment = useEquipmentStore((state) => state.navigateToEquipment)
-  
+  const { user } = useUserSession()
+  const isSupplier = user?.isSupplier ?? false
+    const {navigating, navigateToEquipment} = useEquipmentStore()
   const canEdit = useMemo(() => canEditEquipment(item, isSupplier), [item, isSupplier])
 
   const equipmentId = item._id?.toString() || ""

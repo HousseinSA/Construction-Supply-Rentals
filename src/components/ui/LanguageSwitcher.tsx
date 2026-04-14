@@ -31,12 +31,11 @@ export default function LanguageSwitcher({
   const currentLanguage = languages.find((lang) => lang.code === locale)
 
   const handleLanguageChange = (langCode: string) => {
-    document.cookie = `NEXT_LOCALE=${langCode}; path=/; max-age=${60 * 60 * 24}`
+    document.cookie = `NEXT_LOCALE=${langCode}; path=/; max-age=${60 * 60 * 24 * 365}`
     const queryString = searchParams.toString()
     const fullPath = queryString ? `${pathname}?${queryString}` : pathname
-    router.replace(fullPath, { locale: langCode })
-    setIsOpen(false)
-    onLanguageChange?.()
+    const newUrl = `/${langCode}${fullPath}`
+    window.location.href = newUrl
   }
 
   return (

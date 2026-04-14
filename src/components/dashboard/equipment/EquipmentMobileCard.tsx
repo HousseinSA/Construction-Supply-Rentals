@@ -12,6 +12,7 @@ import { Loader2, RefreshCw, AlertCircle } from "lucide-react"
 import { useTooltip } from "@/src/hooks/useTooltip"
 import { useCardData } from "./mobile-card/useCardData"
 import { useEquipmentStore } from "@/src/stores/equipmentStore"
+import { useUserSession } from "@/src/hooks/useUserSession"
 import { useTranslations } from "next-intl"
 import { useRouter } from "@/src/i18n/navigation"
 import { formatPhoneNumber } from "@/src/lib/format"
@@ -26,10 +27,9 @@ function EquipmentMobileCard({ item, onStatusChange, onPricingReview }: Equipmen
   const { ref: tooltipRef, isOpen: showTooltip, toggle: toggleTooltip } = useTooltip()
   const [showPricingModal, setShowPricingModal] = useState(false)
   const { pricesList, supplierName, cardBorderClass } = useCardData(item)
-  const navigating = useEquipmentStore((state) => state.navigating)
-  const isSupplier = useEquipmentStore((state) => state.isSupplier)
-  const updateEquipmentAvailability = useEquipmentStore((state) => state.updateEquipmentAvailability)
-  const navigateToEquipment = useEquipmentStore((state) => state.navigateToEquipment)
+  const { user } = useUserSession()
+  const isSupplier = user?.isSupplier ?? false
+  const {navigating,updateEquipmentAvailability,navigateToEquipment} = useEquipmentStore()
   const t = useTranslations("dashboard.equipment")
   const router = useRouter()
   return (

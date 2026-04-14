@@ -100,60 +100,70 @@ export default function SalesTable() {
             onFilterChange={handleFilterChange}
           />
         <div className="xl:bg-white xl:rounded-lg xl:shadow-sm xl:border xl:border-gray-200 overflow-hidden">
-          {loading ? (
-            <TableLoading message={t("loading")} />
-          ) : (
-            <>
-              <div className="hidden xl:block">
-                <Table>
-                  <TableHeader>
+          <>
+            <div className="hidden xl:block">
+              <Table>
+                <TableHeader>
+                  <tr>
+                    <TableHead>{t("table.equipment")}</TableHead>
+                    <TableHead>{t("table.buyer")}</TableHead>
+                    <TableHead>{t("table.price")}</TableHead>
+                    <TableHead>{t("table.commission")}</TableHead>
+                    <TableHead>{t("table.supplier")}</TableHead>
+                    <TableHead align="center">{t("table.status")}</TableHead>
+                    <TableHead align="center">{t("table.date")}</TableHead>
+                    <TableHead align="center">{t("table.actions")}</TableHead>
+                  </tr>
+                </TableHeader>
+                <TableBody>
+                  {loading ? (
                     <tr>
-                      <TableHead>{t("table.equipment")}</TableHead>
-                      <TableHead>{t("table.buyer")}</TableHead>
-                      <TableHead>{t("table.price")}</TableHead>
-                      <TableHead>{t("table.commission")}</TableHead>
-                      <TableHead>{t("table.supplier")}</TableHead>
-                      <TableHead align="center">{t("table.status")}</TableHead>
-                      <TableHead align="center">{t("table.date")}</TableHead>
-                      <TableHead align="center">{t("table.actions")}</TableHead>
+                      <td colSpan={8} className="p-12 text-center">
+                        <div className="animate-pulse text-gray-600 font-medium">
+                          {t("loading")}
+                        </div>
+                      </td>
                     </tr>
-                  </TableHeader>
-                  <TableBody>
-                    {sales.length === 0 ? (
-                      <tr>
-                        <td colSpan={8} className="p-12 text-center text-gray-500 font-medium">
-                          {t("noSales")}
-                        </td>
-                      </tr>
-                    ) : (
-                      sales.map((sale) => (
-                        <SalesTableRow key={sale._id} sale={sale} onViewDetails={handleViewDetails} t={t} highlight={highlightId === sale._id} />
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-              <div className="xl:hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {sales.length === 0 ? (
-                  <div className="p-12 text-center text-gray-500 font-medium col-span-full">{t("noSales")}</div>
-                ) : (
-                  sales.map((sale) => (
-                    <SalesMobileCard key={sale._id} sale={sale} onViewDetails={handleViewDetails} t={t} highlight={highlightId === sale._id} />
-                  ))
-                )}
-              </div>
-              {sales.length > 0 && (
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={goToPage}
-                  itemsPerPage={itemsPerPage}
-                  totalItems={totalItems}
-                  showInfo={true}
-                />
+                  ) : sales.length === 0 ? (
+                    <tr>
+                      <td colSpan={8} className="p-12 text-center text-gray-500 font-medium">
+                        {t("noSales")}
+                      </td>
+                    </tr>
+                  ) : (
+                    sales.map((sale) => (
+                      <SalesTableRow key={sale._id} sale={sale} onViewDetails={handleViewDetails} t={t} highlight={highlightId === sale._id} />
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+            <div className="xl:hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {loading ? (
+                <div className="p-12 text-center col-span-full">
+                  <div className="animate-pulse text-gray-600 font-medium">
+                    {t("loading")}
+                  </div>
+                </div>
+              ) : sales.length === 0 ? (
+                <div className="p-12 text-center text-gray-500 font-medium col-span-full">{t("noSales")}</div>
+              ) : (
+                sales.map((sale) => (
+                  <SalesMobileCard key={sale._id} sale={sale} onViewDetails={handleViewDetails} t={t} highlight={highlightId === sale._id} />
+                ))
               )}
-            </>
-          )}
+            </div>
+            {!loading && sales.length > 0 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={goToPage}
+                itemsPerPage={itemsPerPage}
+                totalItems={totalItems}
+                showInfo={true}
+              />
+            )}
+          </>
         </div>
 
         {selectedSale && (
