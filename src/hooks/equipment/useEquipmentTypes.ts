@@ -1,16 +1,12 @@
 import { useState, useEffect } from "react"
+import { EquipmentType } from "@/src/lib/models"
 
-interface EquipmentType {
-  _id: string
-  name: string
-  nameAr: string
-  nameFr: string
-  category: string
-  image?: string
+interface EquipmentTypeWithCount extends EquipmentType {
+  equipmentCount?: number
 }
 
 export function useEquipmentTypes(category: string) {
-  const [equipmentTypes, setEquipmentTypes] = useState<EquipmentType[]>([])
+  const [equipmentTypes, setEquipmentTypes] = useState<EquipmentTypeWithCount[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 

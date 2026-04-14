@@ -21,7 +21,6 @@ export default function CategoryPage() {
         <EquipmentTypesGrid
           equipmentTypes={equipmentTypes}
           loading={loading}
-          categoryImage={categoryInfo.image}
           getEquipmentTypeName={getEquipmentTypeName}
           getEquipmentTypeDesc={getEquipmentTypeDesc}
         />

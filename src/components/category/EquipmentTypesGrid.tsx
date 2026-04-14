@@ -10,7 +10,6 @@ interface EquipmentTypeWithCount extends EquipmentType {
 interface EquipmentTypesGridProps {
   equipmentTypes: EquipmentTypeWithCount[]
   loading: boolean
-  categoryImage: string
   getEquipmentTypeName: (name: string) => string
   getEquipmentTypeDesc: (name: string) => string
 }
@@ -18,7 +17,6 @@ interface EquipmentTypesGridProps {
 export default function EquipmentTypesGrid({
   equipmentTypes,
   loading,
-  categoryImage,
   getEquipmentTypeName,
   getEquipmentTypeDesc,
 }: EquipmentTypesGridProps) {
@@ -37,7 +35,6 @@ export default function EquipmentTypesGrid({
         <EquipmentTypeCard
           key={type._id}
           type={type}
-          categoryImage={categoryImage}
           getEquipmentTypeName={getEquipmentTypeName}
           getEquipmentTypeDesc={getEquipmentTypeDesc}
         />

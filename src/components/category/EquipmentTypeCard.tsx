@@ -13,14 +13,12 @@ interface EquipmentTypeWithCount extends EquipmentType {
 
 interface EquipmentTypeCardProps {
   type: EquipmentTypeWithCount
-  categoryImage: string
   getEquipmentTypeName: (name: string) => string
   getEquipmentTypeDesc: (name: string) => string
 }
 
 export default function EquipmentTypeCard({
   type,
-  categoryImage,
   getEquipmentTypeName,
   getEquipmentTypeDesc,
 }: EquipmentTypeCardProps) {
@@ -28,7 +26,6 @@ export default function EquipmentTypeCard({
   const fontClass = useFontClass()
   const [isLoading, setIsLoading] = useState(false)
   const hasEquipment = (type.equipmentCount || 0) > 0
-
   const cardContent = (
     <div className={`bg-white rounded-2xl shadow-sm transition-all duration-300 overflow-hidden flex flex-col h-full border border-gray-100 group hover:shadow-md hover:border-primary/20 cursor-pointer ${fontClass}`}>
       <div className="relative w-full aspect-[3/2] bg-gray-50 rounded-t-2xl overflow-hidden">
@@ -45,17 +42,15 @@ export default function EquipmentTypeCard({
             {getEquipmentTypeName(type.name)}
           </h3>
           <p className="text-sm text-gray-500 mb-3 leading-snug line-clamp-2">
-            {getEquipmentTypeDesc(type.name) ||
-              type.description ||
-              t("defaultEquipmentDesc")}
+            {getEquipmentTypeDesc(type.name)}
           </p>
         </div>
         <div className="flex justify-between items-center mt-auto pt-2.5 border-t border-gray-50">
           <div className="flex items-center space-x-1">
-            <span className="text-base font-medium text-primary">
+            <span className="text-lg font-semibold text-primary">
               {type.equipmentCount || 0}
             </span>
-            <span className="text-sm text-gray-400">{t("available")}</span>
+            <span className="text-md text-gray-400">{t("available")}</span>
           </div>
           <Button variant="card-primary" size="card" disabled={isLoading}>
             {isLoading ? t("loading") : t("viewEquipment")}
