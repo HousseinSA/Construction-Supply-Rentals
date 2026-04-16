@@ -34,19 +34,20 @@ export function useBookings() {
         body: JSON.stringify({ bookingId, status, adminId, adminNotes })
       })
 
+      const data = await response.json()
+
       if (response.ok) {
-        const data = await response.json()
         if (data.booking) {
           updateBooking(bookingId, data.booking)
         } else {
           invalidateCache()
         }
-        return true
+        return { success: true, message: data.message }
       }
-      return false
+      return { success: false, error: data.error || 'Failed to update booking status' }
     } catch (error) {
       console.error('Failed to update booking:', error)
-      return false
+      return { success: false, error: 'Network error. Please try again.' }
     }
   }
 

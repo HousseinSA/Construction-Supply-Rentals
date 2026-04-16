@@ -638,7 +638,11 @@
         "subtitle": "View and manage all equipment listings"
       },
       "analytics": {
-        "title": "Analytics"
+        "title": "Analytics",
+         "tabs": {
+        "overview": "Overview",
+        "earnings": "Platform Earnings"
+      }
       },
       "bookings": {
         "title": "Bookings"
@@ -740,6 +744,34 @@
     },
     "analytics": {
       "title": " Statistics",
+      "commission": {
+        "dateFilter": "Filter by Date",
+        "filters": {
+          "today": "Today",
+          "last7days": "Last 7 Days",
+          "last30days": "Last 30 Days",
+          "thisMonth": "This Month",
+          "lastMonth": "Last Month",
+          "last3months": "Last 3 Months",
+          "last6months": "Last 6 Months",
+          "thisYear": "This Year",
+          "allTime": "All Time"
+        },
+        "totalCommission": "Total Commission Earned",
+        "bookingCommission": "Booking Commission",
+        "saleCommission": "Sale Commission",
+        "transactions": "transactions",
+        "bookings": "bookings",
+        "sales": "sales",
+        "earningsBreakdown": "Earnings Breakdown",
+        "platformEarned": "Platform Commission Earned",
+        "commissionByCategory": "Commission by Category",
+        "noCategoryData": "No category data available",
+        "topBookedEquipment": "Top Booked Equipment",
+        "topSoldEquipment": "Top Sold Equipment",
+        "noBookingData": "No booking data available",
+        "noSaleData": "No sale data available"
+      },
       "timeRanges": {
         "last7Days": "Last 7 Days",
         "last30Days": "Last 30 Days",
@@ -880,6 +912,8 @@
       "noPaidBookings": "No paid bookings",
       "noCompletedBookings": "No completed bookings",
       "noCancelledBookings": "No cancelled bookings",
+      "statusUpdateFailed":"Failed to update status",
+      "statusUpdated":"status updated successfully",
       "error": "Failed to fetch bookings",
       "retry": "Retry",
       "cancelBooking": "Cancel Booking",

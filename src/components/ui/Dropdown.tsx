@@ -7,6 +7,7 @@ import { useFontClass } from "@/src/hooks/useFontClass"
 interface DropdownOption {
   value: string
   label: string
+  disabled?: boolean
 }
 
 interface DropdownProps {
@@ -176,11 +177,12 @@ export default function Dropdown({
               <button
                 key={option.value}
                 type="button"
-                onClick={() => handleSelect(option.value)}
+                onClick={() => !option.disabled && handleSelect(option.value)}
+                disabled={option.disabled}
                 className={`
                   w-full ${
                     compact ? "px-3 py-2 text-sm" : "px-4 py-3"
-                  } hover:bg-gray-50 transition-colors duration-150
+                  } transition-colors duration-150
                   ${
                     compact
                       ? "first:rounded-t-lg last:rounded-b-lg"
@@ -189,7 +191,9 @@ export default function Dropdown({
                   ${
                     value === option.value
                       ? "bg-primary/5 text-primary font-medium"
-                      : "text-gray-900"
+                      : option.disabled
+                      ? "text-gray-400 cursor-not-allowed bg-gray-50"
+                      : "text-gray-900 hover:bg-gray-50 cursor-pointer"
                   }
                   ${fontClass.includes("arabic") ? "text-right" : "text-left"}
                 `}

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { formatReferenceNumber } from "@/src/lib/format-reference"
+import { formatReferenceNumber } from "@/src/lib/format"
 import { Copy, Check } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 

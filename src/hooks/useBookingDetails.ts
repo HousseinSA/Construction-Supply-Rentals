@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import { useBookings } from './useBookings'
 import { calculateCommission } from '@/src/lib/commission'
+import { showToast } from '@/src/lib/toast'
+import { useTranslations } from 'next-intl'
 
 export function useBookingDetails(booking: any, onStatusUpdate: () => void, onClose: () => void) {
   const { updateBookingStatus } = useBookings()
+  const t = useTranslations('dashboard.bookings')
   const [status, setStatus] = useState(booking.status)
   const [adminNotes, setAdminNotes] = useState(booking.adminNotes || '')
   const [loading, setLoading] = useState(false)
@@ -11,14 +14,15 @@ export function useBookingDetails(booking: any, onStatusUpdate: () => void, onCl
   const handleStatusUpdate = async (userId?: string) => {
     setLoading(true)
     try {
-      const success = await updateBookingStatus(booking._id, status, userId, adminNotes)
-      if (success) {
+      const result = await updateBookingStatus(booking._id, status, userId, adminNotes)
+      if (result.success) {
+        showToast.success( t('statusUpdated'))
         onStatusUpdate()
         onClose()
+      } else {
+        showToast.error(t('statusUpdateFailed') )
       }
-    } catch (error) {
-      console.error('Failed to update booking:', error)
-    } finally {
+    }  finally {
       setLoading(false)
     }
   }
@@ -26,7 +30,6 @@ export function useBookingDetails(booking: any, onStatusUpdate: () => void, onCl
   const calculateItemCommission = (subtotal: number, usage: number, pricingType?: string) => {
     return calculateCommission(subtotal, usage, pricingType)
   }
-
   const totalCommission = booking.bookingItems.reduce(
     (sum: number, item: any) => sum + calculateCommission(item.subtotal, item.usage, item.pricingType),
     0

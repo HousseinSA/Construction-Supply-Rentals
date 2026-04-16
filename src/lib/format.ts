@@ -41,3 +41,8 @@ export const formatTime = (date: Date) =>
     minute: "2-digit",
     hour12: true,
   }).replace('AM', ' AM').replace('PM', ' PM')
+
+ export function formatReferenceNumber(ref: string): string {
+  if (!ref || ref.length !== 6) return ref
+  return `#${ref}`
+}

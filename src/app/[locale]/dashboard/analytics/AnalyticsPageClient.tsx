@@ -1,13 +1,22 @@
 "use client"
 
+import { useState } from "react"
 import { ArrowLeft } from "lucide-react"
 import { Link } from "@/src/i18n/navigation"
 import { useTranslations } from "next-intl"
 import HomeButton from "@/src/components/ui/HomeButton"
 import AnalyticsManagement from "@/src/components/dashboard/analytics/AnalyticsManagement"
+import PlatformEarnings from "@/src/components/dashboard/analytics/PlatformEarnings"
+import Tabs from "@/src/components/ui/Tabs"
 
 export default function AnalyticsPageClient() {
   const t = useTranslations("dashboard.pages.analytics")
+  const [activeTab, setActiveTab] = useState<"overview" | "earnings">("overview")
+  
+  const tabs = [
+    { id: "overview", label: t("tabs.overview") },
+    { id: "earnings", label: t("tabs.earnings") }
+  ]
   
   return (
     <div className="min-h-screen bg-gray-50">
@@ -30,8 +39,11 @@ export default function AnalyticsPageClient() {
             <HomeButton />
           </div>
         </div>
-        
-        <AnalyticsManagement />
+
+        <div className="mb-6">
+          <Tabs tabs={tabs} activeTab={activeTab} onTabChange={(id) => setActiveTab(id as "overview" | "earnings")} />
+        </div>
+        {activeTab === "overview" ? <AnalyticsManagement /> : <PlatformEarnings />}
       </div>
     </div>
   )

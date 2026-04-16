@@ -30,7 +30,7 @@ export function validateBooking(booking: any): { valid: boolean; errors: string[
 export function validateStatusTransition(currentStatus: BookingStatus, newStatus: BookingStatus): boolean {
   const validTransitions: Record<BookingStatus, BookingStatus[]> = {
     'pending': ['paid', 'cancelled'],
-    'paid': ['completed', 'cancelled'],
+    'paid': ['completed'],
     'completed': [],
     'cancelled': []
   };

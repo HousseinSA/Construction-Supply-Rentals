@@ -634,7 +634,11 @@
         "subtitle": "Voir et gérer toutes les annonces de matériel"
       },
       "analytics": {
-        "title": "Analyses"
+        "title": "Analyses",
+         "tabs": {
+        "overview": "Aperçu",
+        "earnings": "Revenus de la Plateforme"
+      }
       },
       "bookings": {
         "title": "Réservations"
@@ -736,6 +740,34 @@
     },
     "analytics": {
       "title": "Statistiques",
+      "commission": {
+        "dateFilter": "Filtrer par Date",
+        "filters": {
+          "today": "Aujourd'hui",
+          "last7days": "7 Derniers Jours",
+          "last30days": "30 Derniers Jours",
+          "thisMonth": "Ce Mois",
+          "lastMonth": "Mois Dernier",
+          "last3months": "3 Derniers Mois",
+          "last6months": "6 Derniers Mois",
+          "thisYear": "Cette Année",
+          "allTime": "Tout le Temps"
+        },
+        "totalCommission": "Commission Totale Gagnée",
+        "bookingCommission": "Commission de Réservation",
+        "saleCommission": "Commission de Vente",
+        "transactions": "transactions",
+        "bookings": "réservations",
+        "sales": "ventes",
+        "earningsBreakdown": "Répartition des Revenus",
+        "platformEarned": "Commission de la Plateforme Gagnée",
+        "commissionByCategory": "Commission par Catégorie",
+        "noCategoryData": "Aucune donnée de catégorie disponible",
+        "topBookedEquipment": "Équipements les Plus Réservés",
+        "topSoldEquipment": "Équipements les Plus Vendus",
+        "noBookingData": "Aucune donnée de réservation disponible",
+        "noSaleData": "Aucune donnée de vente disponible"
+      },
       "timeRanges": {
         "last7Days": "7 Derniers Jours",
         "last30Days": "30 Derniers Jours",
@@ -877,6 +909,8 @@
       "noCompletedBookings": "Aucune réservation terminée",
       "noCancelledBookings": "Aucune réservation annulée",
       "error": "Échec du chargement des réservations",
+      "statusUpdated":"Statut mis à jour avec succès",
+      "statusUpdateFailed":"Échec de la mise à jour du statut",
       "retry": "Réessayer",
       "cancelBooking": "Annuler la Réservation",
       "cancelBookingTitle": "Annuler la Réservation",

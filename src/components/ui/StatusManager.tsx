@@ -1,6 +1,7 @@
 "use client"
 
 import Dropdown from "./Dropdown"
+import { BookingStatus } from "@/src/lib/types"
 
 interface StatusManagerProps {
   currentStatus: string
@@ -13,7 +14,18 @@ interface StatusManagerProps {
   }
 }
 
-const STATUS_ORDER = ['pending', 'paid', 'completed', 'cancelled']
+const STATUS_ORDER: BookingStatus[] = ['pending', 'paid', 'completed', 'cancelled']
+
+const VALID_TRANSITIONS: Record<BookingStatus, BookingStatus[]> = {
+  'pending': ['paid', 'cancelled'],
+  'paid': ['completed'],
+  'completed': [],
+  'cancelled': []
+}
+
+function validateStatusTransition(currentStatus: BookingStatus, newStatus: BookingStatus): boolean {
+  return VALID_TRANSITIONS[currentStatus]?.includes(newStatus) || false
+}
 
 export default function StatusManager({
   currentStatus,
@@ -21,35 +33,30 @@ export default function StatusManager({
   onStatusChange,
   labels,
 }: StatusManagerProps) {
-  if (currentStatus === 'cancelled') {
+  if (currentStatus === 'completed' || currentStatus === 'cancelled') {
     return (
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium text-gray-700">{labels.currentStatus}</span>
-          <span className="font-semibold px-4 py-2 rounded-full text-sm bg-red-100 text-red-800">
-            {labels.statusOptions.cancelled}
+          <span className={`font-semibold px-4 py-2 rounded-full text-sm ${
+            currentStatus === 'completed' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+          }`}>
+            {labels.statusOptions[currentStatus]}
           </span>
         </div>
-        <p className="text-xs text-gray-500 mt-2">
-        </p>
       </div>
     )
   }
 
-  const currentIndex = STATUS_ORDER.indexOf(currentStatus)
   const availableStatuses = Object.keys(labels.statusOptions)
 
   const options = STATUS_ORDER
     .filter(status => availableStatuses.includes(status))
-    .map((status, index) => {
-      const isDisabled = status !== 'cancelled' && index < currentIndex
-
-      return {
-        value: status,
-        label: labels.statusOptions[status],
-        disabled: isDisabled,
-      }
-    }).filter(opt => !opt.disabled) 
+    .map(status => ({
+      value: status,
+      label: labels.statusOptions[status],
+      disabled: !validateStatusTransition(currentStatus as BookingStatus, status),
+    })) 
 
   return (
     <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-4">

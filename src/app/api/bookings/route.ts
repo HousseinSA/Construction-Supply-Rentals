@@ -544,7 +544,7 @@ export async function PUT(request: NextRequest) {
   } catch (error: any) {
     return NextResponse.json(
       {
-        success: false,
+        success:false,
         error: error.message || "Failed to update booking status",
       },
       { status: 400 },

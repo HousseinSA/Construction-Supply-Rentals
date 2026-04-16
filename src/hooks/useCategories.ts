@@ -1,6 +1,5 @@
-import { useEffect, useCallback } from "react"
+import { useState, useEffect } from "react"
 import { Category as CategoryModel } from "@/lib/models/category"
-import { useCategoriesStore } from "@/src/stores"
 
 export interface Category
   extends Omit<CategoryModel, "_id" | "categoryId" | "createdBy"> {
@@ -11,41 +10,50 @@ export interface Category
   equipmentTypeCount: number
 }
 
+const getInitialCategories = (): Category[] => {
+  if (typeof window === 'undefined') return []
+  
+    const cached = localStorage.getItem('categories')
+    return cached ? JSON.parse(cached) : []
+ 
+}
+
 export function useCategories() {
-  const { categories, loading, error, setCategories, setLoading, setError } = useCategoriesStore()
-
-  const fetchCategories = useCallback(async () => {
-    if (categories.length > 0) {
-      setLoading(false)
-      return
-    }
-
-    try {
-      setLoading(true)
-      setError(null)
-      const response = await fetch("/api/categories")
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch categories")
-      }
-
-      const data = await response.json()
-      setCategories(data)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error")
-      console.error("Failed to fetch categories:", err)
-      setLoading(false)
-    }
-  }, [categories.length, setCategories, setLoading, setError])
+  const initialCategories = getInitialCategories()
+  const [categories, setCategories] = useState<Category[]>(initialCategories)
+  const [loading, setLoading] = useState(initialCategories.length === 0)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetchCategories()
-  }, [fetchCategories])
+    if (categories.length > 0) return
+
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        const response = await fetch("/api/categories")
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch categories")
+        }
+
+        const data = await response.json()
+        localStorage.setItem('categories', JSON.stringify(data))
+        setCategories(data)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Unknown error")
+        console.error("Failed to fetch categories:", err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [categories.length])
 
   return {
     categories,
     loading,
     error,
-    refetch: fetchCategories,
   }
 }

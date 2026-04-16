@@ -1,5 +1,4 @@
 export { useSearchStore } from "./searchStore"
-export { useCategoriesStore } from "./categoriesStore"
 export { useEquipmentStore, type EquipmentWithSupplier } from "./equipmentStore"
 export { useBookingsStore, type BookingWithDetails } from "./bookingsStore"
 export { useUsersStore } from "./usersStore"

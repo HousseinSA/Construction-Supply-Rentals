@@ -625,7 +625,11 @@
       },
       "analytics": {
         "title": "الإحصائيات",
-        "subtitle": "عرض إحصائيات "
+        "subtitle": "عرض إحصائيات",
+        "tabs": {
+        "overview": "تحليلات عامة",
+        "earnings": "أرباح المنصة"
+      }
       },
       "bookings": {
         "title": "الحجوزات",
@@ -733,6 +737,34 @@
     },
     "analytics": {
       "title": "الإحصائيات",
+      "commission": {
+        "dateFilter": "تصفية حسب التاريخ",
+        "filters": {
+          "today": "اليوم",
+          "last7days": "آخر 7 أيام",
+          "last30days": "آخر 30 يوم",
+          "thisMonth": "هذا الشهر",
+          "lastMonth": "الشهر الماضي",
+          "last3months": "آخر 3 أشهر",
+          "last6months": "آخر 6 أشهر",
+          "thisYear": "هذا العام",
+          "allTime": "كل الوقت"
+        },
+        "totalCommission": "إجمالي العمولة المكتسبة",
+        "bookingCommission": "عمولة الحجز",
+        "saleCommission": "عمولة البيع",
+        "transactions": "معاملات",
+        "bookings": "حجوزات",
+        "sales": "مبيعات",
+        "earningsBreakdown": "تفصيل الأرباح",
+        "platformEarned": "عمولة المنصة المكتسبة",
+        "commissionByCategory": "العمولة حسب الفئة",
+        "noCategoryData": "لا توجد بيانات فئات متاحة",
+        "topBookedEquipment": "أكثر المعدات حجزاً",
+        "topSoldEquipment": "أكثر المعدات مبيعاً",
+        "noBookingData": "لا توجد بيانات حجوزات متاحة",
+        "noSaleData": "لا توجد بيانات مبيعات متاحة"
+      },
       "timeRanges": {
         "last7Days": "آخر 7 أيام",
         "last30Days": "آخر 30 يوم",
@@ -876,6 +908,8 @@
       "noPaidBookings": "لا توجد حجوزات مدفوعة",
       "noCompletedBookings": "لا توجد حجوزات مكتملة",
       "noCancelledBookings": "لا توجد حجوزات ملغاة",
+      "statusUpdated":"تم تحديث حالة بنجاح",
+      "statusUpdateFailed":"فشل في تحديث حالة",
       "error": "فشل في تحميل الحجوزات",
       "retry": "إعادة المحاولة",
       "cancelBooking": "إلغاء الحجز",
