@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { BookingStatus } from './types';
+import { VALID_TRANSITIONS } from './constants/booking';
 
 export function validateObjectId(id: string): boolean {
   return ObjectId.isValid(id);
@@ -28,12 +29,5 @@ export function validateBooking(booking: any): { valid: boolean; errors: string[
 }
 
 export function validateStatusTransition(currentStatus: BookingStatus, newStatus: BookingStatus): boolean {
-  const validTransitions: Record<BookingStatus, BookingStatus[]> = {
-    'pending': ['paid', 'cancelled'],
-    'paid': ['completed'],
-    'completed': [],
-    'cancelled': []
-  };
-
-  return validTransitions[currentStatus]?.includes(newStatus) || false;
+  return VALID_TRANSITIONS[currentStatus]?.includes(newStatus) || false;
 }

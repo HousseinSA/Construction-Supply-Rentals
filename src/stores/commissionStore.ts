@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { CategoryCommission, TopEquipment } from '../lib/types'
 
 export interface CommissionData {
   overview: {
@@ -9,56 +10,54 @@ export interface CommissionData {
     totalBookings: number
     totalSales: number
   }
-  categoryBreakdown: Array<{
-    categoryId: string
-    categoryName: string
-    bookingAmount: number
-    saleAmount: number
-    totalCommission: number
-  }>
+  categoryBreakdown: CategoryCommission[]
+  topBookedEquipment: TopEquipment[]
+  topSoldEquipment: TopEquipment[]
 }
 
 interface CommissionStore {
-  commission: Record<string, CommissionData | null>
-  loading: Record<string, boolean>
-  lastFetch: Record<string, number>
-  setCommission: (dateFilter: string, data: CommissionData) => void
-  setLoading: (dateFilter: string, loading: boolean) => void
-  shouldRefetch: (dateFilter: string) => boolean
-  invalidateCache: (dateFilter?: string) => void
+  commission: CommissionData | null
+  loading: boolean
+  error: string | null
+  lastFetch: number | null
+  currentFilter: string | null
+  setCommission: (data: CommissionData, filter: string) => void
+  setLoading: (loading: boolean) => void
+  setError: (error: string | null) => void
+  shouldRefetch: (filter: string) => boolean
+  invalidateCache: () => void
 }
 
-const CACHE_DURATION = 5 * 60 * 1000
+export const CACHE_DURATION = 5 * 60 * 1000
 
 export const useCommissionStore = create<CommissionStore>((set, get) => ({
-  commission: {},
-  loading: {},
-  lastFetch: {},
+  commission: null,
+  loading: false,
+  error: null,
+  lastFetch: null,
+  currentFilter: null,
   
-  setCommission: (dateFilter, data) =>
-    set((state) => ({
-      commission: { ...state.commission, [dateFilter]: data },
-      lastFetch: { ...state.lastFetch, [dateFilter]: Date.now() },
-    })),
+  setCommission: (data, filter) =>
+    set({
+      commission: data,
+      currentFilter: filter,
+      lastFetch: Date.now(),
+      error: null,
+    }),
   
-  setLoading: (dateFilter, loading) =>
-    set((state) => ({
-      loading: { ...state.loading, [dateFilter]: loading },
-    })),
+  setLoading: (loading) => set({ loading }),
   
-  shouldRefetch: (dateFilter) => {
-    const { lastFetch } = get()
-    const lastFetchTime = lastFetch[dateFilter]
-    return !lastFetchTime || Date.now() - lastFetchTime > CACHE_DURATION
+  setError: (error) => set({ error }),
+  
+  shouldRefetch: (filter) => {
+    const { lastFetch, currentFilter } = get()
+    
+    if (currentFilter !== filter) return true
+    
+    if (!lastFetch || Date.now() - lastFetch > CACHE_DURATION) return true
+    
+    return false
   },
   
-  invalidateCache: (dateFilter) => {
-    if (dateFilter) {
-      set((state) => ({
-        lastFetch: { ...state.lastFetch, [dateFilter]: 0 },
-      }))
-    } else {
-      set({ lastFetch: {} })
-    }
-  },
+  invalidateCache: () => set({ lastFetch: null }),
 }))

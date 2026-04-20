@@ -28,8 +28,13 @@ export async function GET(request: Request) {
       ]).toArray(),
       
       db.collection('equipment').aggregate([
-        { $match: { location: { $exists: true, $ne: null, $ne: '' } } },
-        { $group: { _id: '$location', count: { $sum: 1 } } },
+        { $match: { location: { $exists: true, $ne: null } } },
+        { 
+          $group: { 
+            _id: { $toLower: '$location' }, 
+            count: { $sum: 1 }
+          } 
+        },
         { $sort: { count: -1 } },
         { $limit: 10 }
       ]).toArray(),
@@ -77,7 +82,7 @@ export async function GET(request: Request) {
       }, {}),
       
       equipmentByCity: equipmentByCity.map(item => ({
-        city: item._id,
+        city: item._id.charAt(0).toUpperCase() + item._id.slice(1),
         count: item.count
       })),
       

@@ -2,44 +2,60 @@ import { useEffect, useCallback, useRef } from "react"
 import { useCommissionStore } from "@/src/stores/commissionStore"
 
 export function useCommissionAnalytics(dateFilter: string = "last30days") {
-  const { commission, loading, setCommission, setLoading, shouldRefetch } = useCommissionStore()
-  
-  const hasLoadedRef = useRef<Record<string, boolean>>({})
+  const { commission, loading, error, setCommission, setLoading, setError, shouldRefetch } = useCommissionStore()
+  const abortControllerRef = useRef<AbortController | null>(null)
 
-  const fetchAnalytics = useCallback(async () => {
-    const isInitialLoad = !hasLoadedRef.current[dateFilter]
+  const fetchAnalytics = useCallback(async (signal?: AbortSignal) => {
     try {
-      if (isInitialLoad) {
-        setLoading(dateFilter, true)
-      }
+      setLoading(true)
+      setError(null)
       
-      const response = await fetch(`/api/analytics/commission?dateFilter=${dateFilter}`)
+      const response = await fetch(`/api/analytics/commission?dateFilter=${dateFilter}`, { signal })
       
       if (!response.ok) {
-        throw new Error("Failed to fetch commission analytics")
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Failed to fetch commission analytics")
       }
 
       const data = await response.json()
-      setCommission(dateFilter, data)
-      hasLoadedRef.current[dateFilter] = true
+      
+      if (!signal?.aborted) {
+        setCommission(data, dateFilter)
+      }
     } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        return
+      }
+      
+      const errorMessage = err instanceof Error ? err.message : "Failed to fetch commission analytics"
       console.error("Error fetching commission analytics:", err)
+      
+      if (!signal?.aborted) {
+        setError(errorMessage)
+      }
     } finally {
-      if (isInitialLoad) {
-        setLoading(dateFilter, false)
+      if (!signal?.aborted) {
+        setLoading(false)
       }
     }
-  }, [dateFilter, setCommission, setLoading])
+  }, [dateFilter, setCommission, setLoading, setError])
 
   useEffect(() => {
     if (shouldRefetch(dateFilter)) {
-      fetchAnalytics()
+      abortControllerRef.current?.abort()
+      abortControllerRef.current = new AbortController()
+      fetchAnalytics(abortControllerRef.current.signal)
+    }
+    
+    return () => {
+      abortControllerRef.current?.abort()
     }
   }, [dateFilter, fetchAnalytics, shouldRefetch])
 
   return { 
-    analytics: commission[dateFilter] || null, 
-    loading: loading[dateFilter] || false,
-    fetchAnalytics
+    analytics: commission, 
+    loading,
+    error,
+    refetch: fetchAnalytics
   }
 }

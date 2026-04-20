@@ -1,5 +1,5 @@
 import EquipmentTypeCard from "./EquipmentTypeCard"
-import LoadingSkeleton from "@/src/components/equipment/LoadingSkeleton"
+import {LoadingSkeleton} from "@/src/components/equipment/LoadingSkeleton"
 import EmptyState from "@/components/ui/EmptyState"
 import { EquipmentType } from "@/src/lib/models"
 

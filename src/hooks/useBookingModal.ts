@@ -4,7 +4,9 @@ import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { PricingType } from "@/src/lib/types"
 import { useBookingSuccessStore } from "@/src/stores/bookingSuccessStore"
-import { calculateCommission } from "@/src/lib/commission"
+import { calculateCommission } from '@/src/lib/utils/commission-utils'
+import { BOOKING_COMMISSION_RATE } from '@/src/lib/constants/commission'
+
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 
 export function useBookingModal(
@@ -59,7 +61,6 @@ export function useBookingModal(
     
     setLoading(true)
     try {
-      // Calculate rate and subtotal
       const pricing = equipment.pricing
       let rate = 0
       if (pricingType === 'hourly') rate = pricing?.hourlyRate || 0
@@ -69,7 +70,7 @@ export function useBookingModal(
       else if (pricingType === 'per_ton') rate = pricing?.tonRate || 0
       
       const subtotal = rate * usage
-      const commission = calculateCommission(subtotal)
+      const commission = calculateCommission(subtotal,BOOKING_COMMISSION_RATE)
 
       const bookingData: any = {
         renterId: session.user.id,

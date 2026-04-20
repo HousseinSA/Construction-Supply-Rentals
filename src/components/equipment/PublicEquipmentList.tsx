@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react"
 import { useTranslations } from "next-intl"
 import { Loader2 } from "lucide-react"
 import EquipmentCard from "./EquipmentCard"
-import LoadingSkeleton from "./LoadingSkeleton"
+import {LoadingSkeleton} from "./LoadingSkeleton"
 import EmptyState from "@/components/ui/EmptyState"
 import type { Equipment } from "@/src/lib/models/equipment"
 

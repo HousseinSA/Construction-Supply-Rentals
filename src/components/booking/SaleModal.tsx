@@ -7,7 +7,8 @@ import { useParams, useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { usePriceFormatter } from "@/src/hooks/usePriceFormatter"
 import { useBookingSuccessStore } from "@/src/stores/bookingSuccessStore"
-import { calculateSaleCommission } from "@/src/lib/commission"
+import { calculateCommission } from '@/src/lib/utils/commission-utils'
+import { SALE_COMMISSION_RATE } from '@/src/lib/constants/commission'
 import BaseRequestModal from "@/src/components/shared/BaseRequestModal"
 import type { Equipment } from "@/src/lib/models/equipment"
 
@@ -46,7 +47,7 @@ export default function SaleModal({
 
     try {
       const salePrice = equipment.pricing?.salePrice || 0
-      const commission = calculateSaleCommission(salePrice)
+      const commission = calculateCommission(salePrice,SALE_COMMISSION_RATE)
 
       const saleData = {
         buyerId,

@@ -2,6 +2,7 @@
 
 import Dropdown from "./Dropdown"
 import { BookingStatus } from "@/src/lib/types"
+import { VALID_TRANSITIONS, STATUS_ORDER } from "@/src/lib/constants/booking"
 
 interface StatusManagerProps {
   currentStatus: string
@@ -12,15 +13,6 @@ interface StatusManagerProps {
     currentStatus: string
     statusOptions: Record<string, string>
   }
-}
-
-const STATUS_ORDER: BookingStatus[] = ['pending', 'paid', 'completed', 'cancelled']
-
-const VALID_TRANSITIONS: Record<BookingStatus, BookingStatus[]> = {
-  'pending': ['paid', 'cancelled'],
-  'paid': ['completed'],
-  'completed': [],
-  'cancelled': []
 }
 
 function validateStatusTransition(currentStatus: BookingStatus, newStatus: BookingStatus): boolean {

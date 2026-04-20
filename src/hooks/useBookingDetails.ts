@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useBookings } from './useBookings'
-import { calculateCommission } from '@/src/lib/commission'
+import { calculateCommission } from '@/src/lib/utils/commission-utils'
+import { BOOKING_COMMISSION_RATE } from '@/src/lib/constants/commission'
 import { showToast } from '@/src/lib/toast'
 import { useTranslations } from 'next-intl'
 
@@ -27,11 +28,12 @@ export function useBookingDetails(booking: any, onStatusUpdate: () => void, onCl
     }
   }
 
-  const calculateItemCommission = (subtotal: number, usage: number, pricingType?: string) => {
-    return calculateCommission(subtotal, usage, pricingType)
+  const calculateItemCommission = (subtotal: number) => {
+    return calculateCommission(subtotal, BOOKING_COMMISSION_RATE)
   }
+  
   const totalCommission = booking.bookingItems.reduce(
-    (sum: number, item: any) => sum + calculateCommission(item.subtotal, item.usage, item.pricingType),
+    (sum: number, item: any) => sum + calculateCommission(item.subtotal, BOOKING_COMMISSION_RATE),
     0
   )
 

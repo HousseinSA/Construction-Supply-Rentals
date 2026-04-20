@@ -1,188 +1,58 @@
 import { NextResponse } from "next/server"
 import { connectDB } from "@/src/lib/mongodb"
+import { getDateRange, calculateCommission, calculateCategoryCommissions } from "@/src/lib/utils/commission-utils"
+import { buildBookingSalesAggregation, buildTopEquipmentAggregation } from "@/src/lib/aggregations/commission-aggregations"
+import { BOOKING_COMMISSION_RATE, SALE_COMMISSION_RATE, DATE_FILTER_OPTIONS, DateFilterOption } from "@/src/lib/constants/commission"
+
+const QUERY_TIMEOUT = 30000
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error('Database query timeout')), ms)
+    )
+  ])
+}
 
 export async function GET(request: Request) {
   try {
     const db = await connectDB()
     const { searchParams } = new URL(request.url)
-    const dateFilter = searchParams.get("dateFilter") || "last30days"
+    const dateFilterParam = searchParams.get("dateFilter") || "last30days"
 
+    if (!DATE_FILTER_OPTIONS.includes(dateFilterParam as DateFilterOption)) {
+      return NextResponse.json(
+        { error: "Invalid date filter" },
+        { status: 400 }
+      )
+    }
+
+    const dateFilter = dateFilterParam as DateFilterOption
     const dateRange = getDateRange(dateFilter)
 
-    const [bookings, sales, categories, topBookedEquipment, topSoldEquipment] = await Promise.all([
-      db.collection("bookings").aggregate([
-        {
-          $match: {
-            status: "completed",
-            createdAt: { $gte: dateRange.start, $lte: dateRange.end }
-          }
-        },
-        {
-          $unwind: "$bookingItems"
-        },
-        {
-          $lookup: {
-            from: "equipment",
-            localField: "bookingItems.equipmentId",
-            foreignField: "_id",
-            as: "equipment"
-          }
-        },
-        {
-          $unwind: { path: "$equipment", preserveNullAndEmptyArrays: true }
-        },
-        {
-          $lookup: {
-            from: "categories",
-            localField: "equipment.categoryId",
-            foreignField: "_id",
-            as: "category"
-          }
-        },
-        {
-          $unwind: { path: "$category", preserveNullAndEmptyArrays: true }
-        },
-        {
-          $group: {
-            _id: null,
-            totalBookingValue: { $sum: "$bookingItems.subtotal" },
-            totalBookings: { $sum: 1 },
-            categoryBreakdown: {
-              $push: {
-                categoryId: "$equipment.categoryId",
-                categoryName: "$category.name",
-                amount: "$bookingItems.subtotal"
-              }
-            }
-          }
-        }
-      ]).toArray(),
-      db.collection("sales").aggregate([
-        {
-          $match: {
-            status: "paid",
-            createdAt: { $gte: dateRange.start, $lte: dateRange.end }
-          }
-        },
-        {
-          $lookup: {
-            from: "equipment",
-            localField: "equipmentId",
-            foreignField: "_id",
-            as: "equipment"
-          }
-        },
-        {
-          $unwind: { path: "$equipment", preserveNullAndEmptyArrays: true }
-        },
-        {
-          $lookup: {
-            from: "categories",
-            localField: "equipment.categoryId",
-            foreignField: "_id",
-            as: "category"
-          }
-        },
-        {
-          $unwind: { path: "$category", preserveNullAndEmptyArrays: true }
-        },
-        {
-          $group: {
-            _id: null,
-            totalSaleValue: { $sum: "$salePrice" },
-            totalSales: { $sum: 1 },
-            categoryBreakdown: {
-              $push: {
-                categoryId: "$equipment.categoryId",
-                categoryName: "$category.name",
-                amount: "$salePrice"
-              }
-            }
-          }
-        }
-      ]).toArray(),
+    const bookingsCollection = db.collection("bookings")
+    const salesCollection = db.collection("sales")
+    const categoriesCollection = db.collection("categories")
 
-      db.collection("categories").find({ isActive: true }).toArray(),
+    const [bookings, sales, categories, topBookedEquipment, topSoldEquipment] = await withTimeout(
+      Promise.all([
+        bookingsCollection.aggregate(buildBookingSalesAggregation(dateRange, 'booking')).toArray(),
+        salesCollection.aggregate(buildBookingSalesAggregation(dateRange, 'sale')).toArray(),
+        categoriesCollection.find({ isActive: true }, { projection: { _id: 1, name: 1 } }).toArray(),
+        bookingsCollection.aggregate(buildTopEquipmentAggregation(dateRange, 'booking')).toArray(),
+        salesCollection.aggregate(buildTopEquipmentAggregation(dateRange, 'sale')).toArray()
+      ]),
+      QUERY_TIMEOUT
+    )
 
-      db.collection("bookings").aggregate([
-        {
-          $match: {
-            status: "completed",
-            createdAt: { $gte: dateRange.start, $lte: dateRange.end }
-          }
-        },
-        {
-          $unwind: "$bookingItems"
-        },
-        {
-          $group: {
-            _id: "$bookingItems.equipmentId",
-            count: { $sum: 1 }
-          }
-        },
-        {
-          $lookup: {
-            from: "equipment",
-            localField: "_id",
-            foreignField: "_id",
-            as: "equipment"
-          }
-        },
-        {
-          $unwind: { path: "$equipment", preserveNullAndEmptyArrays: true }
-        },
-        {
-          $project: {
-            equipmentId: "$_id",
-            equipmentName: "$equipment.name",
-            count: 1
-          }
-        },
-        { $sort: { count: -1 } }
-      ]).toArray(),
+    const bookingData = bookings[0] || { totalValue: 0, totalCount: 0, categoryBreakdown: [] }
+    const saleData = sales[0] || { totalValue: 0, totalCount: 0, categoryBreakdown: [] }
 
-      db.collection("sales").aggregate([
-        {
-          $match: {
-            status: "paid",
-            createdAt: { $gte: dateRange.start, $lte: dateRange.end }
-          }
-        },
-        {
-          $group: {
-            _id: "$equipmentId",
-            count: { $sum: 1 }
-          }
-        },
-        {
-          $lookup: {
-            from: "equipment",
-            localField: "_id",
-            foreignField: "_id",
-            as: "equipment"
-          }
-        },
-        {
-          $unwind: { path: "$equipment", preserveNullAndEmptyArrays: true }
-        },
-        {
-          $project: {
-            equipmentId: "$_id",
-            equipmentName: "$equipment.name",
-            count: 1
-          }
-        },
-        { $sort: { count: -1 } }
-      ]).toArray()
-    ])
-
-    const bookingData = bookings[0] || { totalBookingValue: 0, totalBookings: 0, categoryBreakdown: [] }
-    const saleData = sales[0] || { totalSaleValue: 0, totalSales: 0, categoryBreakdown: [] }
-
-    const bookingCommission = bookingData.totalBookingValue * 0.10
-    const saleCommission = saleData.totalSaleValue * 0.05
+    const bookingCommission = calculateCommission(bookingData.totalValue, BOOKING_COMMISSION_RATE)
+    const saleCommission = calculateCommission(saleData.totalValue, SALE_COMMISSION_RATE)
     const totalCommission = bookingCommission + saleCommission
-    const totalTransactions = bookingData.totalBookings + saleData.totalSales
+    const totalTransactions = bookingData.totalCount + saleData.totalCount
 
     const categoryCommissions = calculateCategoryCommissions(
       bookingData.categoryBreakdown,
@@ -196,8 +66,8 @@ export async function GET(request: Request) {
         bookingCommission,
         saleCommission,
         totalTransactions,
-        totalBookings: bookingData.totalBookings,
-        totalSales: saleData.totalSales
+        totalBookings: bookingData.totalCount,
+        totalSales: saleData.totalCount
       },
       categoryBreakdown: categoryCommissions,
       topBookedEquipment: topBookedEquipment.filter(e => e.equipmentName),
@@ -205,101 +75,12 @@ export async function GET(request: Request) {
     })
   } catch (error) {
     console.error("Commission analytics API error:", error)
+    
+    const isTimeout = error instanceof Error && error.message === 'Database query timeout'
+    
     return NextResponse.json(
-      { error: "Failed to fetch commission analytics" },
-      { status: 500 }
+      { error: isTimeout ? "Request timeout - please try again" : "Failed to fetch commission analytics" },
+      { status: isTimeout ? 504 : 500 }
     )
   }
-}
-
-function getDateRange(filter: string): { start: Date; end: Date } {
-  const now = new Date()
-  const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999)
-  let start: Date
-
-  switch (filter) {
-    case "today":
-      start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
-      break
-    case "last7days":
-      start = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-      start.setHours(0, 0, 0, 0)
-      break
-    case "last30days":
-      start = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
-      start.setHours(0, 0, 0, 0)
-      break
-    case "thisMonth":
-      start = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0)
-      break
-    case "lastMonth":
-      start = new Date(now.getFullYear(), now.getMonth() - 1, 1, 0, 0, 0, 0)
-      end.setMonth(end.getMonth() - 1)
-      end.setDate(0)
-      end.setHours(23, 59, 59, 999)
-      break
-    case "last3months":
-      start = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000)
-      start.setHours(0, 0, 0, 0)
-      break
-    case "last6months":
-      start = new Date(now.getTime() - 180 * 24 * 60 * 60 * 1000)
-      start.setHours(0, 0, 0, 0)
-      break
-    case "thisYear":
-      start = new Date(now.getFullYear(), 0, 1, 0, 0, 0, 0)
-      break
-    case "allTime":
-      start = new Date(0)
-      break
-    default:
-      start = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
-      start.setHours(0, 0, 0, 0)
-  }
-
-  return { start, end }
-}
-
-function calculateCategoryCommissions(
-  bookingBreakdown: any[],
-  saleBreakdown: any[],
-  categories: any[]
-): any[] {
-  const categoryMap = new Map()
-
-  categories.forEach(cat => {
-    categoryMap.set(cat._id.toString(), {
-      categoryId: cat._id.toString(),
-      categoryName: cat.name,
-      bookingAmount: 0,
-      saleAmount: 0,
-      totalCommission: 0
-    })
-  })
-
-  bookingBreakdown.forEach(item => {
-    if (item.categoryId) {
-      const key = item.categoryId.toString()
-      if (categoryMap.has(key)) {
-        const cat = categoryMap.get(key)
-        cat.bookingAmount += item.amount
-        cat.totalCommission += item.amount * 0.10
-      }
-    }
-  })
-
-  saleBreakdown.forEach(item => {
-    if (item.categoryId) {
-      const key = item.categoryId.toString()
-      if (categoryMap.has(key)) {
-        const cat = categoryMap.get(key)
-        cat.saleAmount += item.amount
-        cat.totalCommission += item.amount * 0.05
-      }
-    }
-  })
-
-  return Array.from(categoryMap.values())
-    .filter(cat => cat.totalCommission > 0)
-    .sort((a, b) => b.totalCommission - a.totalCommission)
 }

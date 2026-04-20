@@ -10,6 +10,31 @@ export type PricingType = "hourly" | "daily" | "monthly" | "per_km" | "per_ton"
 
 export type BookingStatus = "pending" | "paid" | "completed" | "cancelled"
 
+export interface TopEquipment {
+  equipmentId: string
+  equipmentName: string
+  count: number
+}
+
+export interface CategoryCommission {
+  categoryId: string
+  categoryName: string
+  bookingAmount: number
+  saleAmount: number
+  totalCommission: number
+}
+
+export interface CategoryBreakdownItem {
+  categoryId: string | { toString(): string }
+  amount: number
+}
+
+export interface CategoryDocument {
+  _id: { toString(): string }
+  name: string
+  isActive: boolean
+}
+
 export type NotificationType =
   | "new_booking"
   | "new_equipment"
