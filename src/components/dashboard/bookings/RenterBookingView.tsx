@@ -23,11 +23,12 @@ import { AlertTriangle } from "lucide-react"
 import GenericMobileCard from "@/src/components/ui/GenericMobileCard"
 import ReferenceNumber from "@/src/components/ui/ReferenceNumber"
 import PriceDisplay from "@/src/components/ui/PriceDisplay"
+import ErrorState from "@/src/components/ui/ErrorState"
 
 export default function RenterBookingView() {
   const t = useTranslations("dashboard.bookings")
   const tCommon = useTranslations("common")
-  const { bookings, loading } = useBookings()
+  const { bookings, loading, error, fetchBookings } = useBookings()
   const [cancellingId, setCancellingId] = useState<string | null>(null)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(
@@ -96,6 +97,10 @@ export default function RenterBookingView() {
 
   return (  
     <>
+      {error ? (
+        <ErrorState onRetry={fetchBookings} />
+      ) : (
+        <>
       <div className="hidden xl:block overflow-x-auto">
         <Table>
           <TableHeader>
@@ -308,6 +313,8 @@ export default function RenterBookingView() {
           totalItems={totalItems}
           showInfo={true}
         />
+      )}
+      </>
       )}
 
       <ConfirmModal

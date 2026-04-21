@@ -21,10 +21,11 @@ import ReferenceNumber from "@/src/components/ui/ReferenceNumber"
 import { useTransactionCancel } from "@/src/hooks/useTransactionCancel"
 import { formatDate } from "@/src/lib/table-utils"
 import PriceDisplay from "@/src/components/ui/PriceDisplay"
+import ErrorState from "@/src/components/ui/ErrorState"
 
 export default function RenterPurchasesView() {
   const t = useTranslations("dashboard.purchases")
-  const { purchases, loading } = usePurchases()
+  const { purchases, loading, error, fetchPurchases } = usePurchases()
 
   const {
     currentPage,
@@ -66,6 +67,10 @@ export default function RenterPurchasesView() {
 
   return (
     <>
+      {error ? (
+        <ErrorState onRetry={fetchPurchases} />
+      ) : (
+        <>
       <div className="hidden lg:block overflow-x-auto">
         <Table>
           <TableHeader>
@@ -225,6 +230,8 @@ export default function RenterPurchasesView() {
           totalItems={totalItems}
           showInfo={true}
         />
+      )}
+      </>
       )}
 
       <ConfirmModal

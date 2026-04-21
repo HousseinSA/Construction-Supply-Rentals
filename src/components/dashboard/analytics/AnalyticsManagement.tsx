@@ -5,16 +5,20 @@ import { Users, MapPin } from "lucide-react"
 import { useAnalytics } from "@/src/hooks/useAnalytics"
 import { ColoredIcon } from "@/src/components/ui/EquipmentImage"
 import { AnalyticsManagementSkeleton } from "../../equipment/LoadingSkeleton"
+ import ErrorState from "@/src/components/ui/ErrorState"
 
 export default function AnalyticsManagement() {
   const t = useTranslations("dashboard")
-  const { analytics, loading } = useAnalytics()
+  const { analytics, loading, error, fetchAnalytics } = useAnalytics()
 
   if (loading) {
     return <AnalyticsManagementSkeleton/>
   }
 
-  if (!analytics) return null
+  if (error) {
+    return <ErrorState onRetry={fetchAnalytics} />
+  }
+
 
   return (
     <div className="space-y-6">
@@ -34,7 +38,6 @@ export default function AnalyticsManagement() {
             </div>
           </div>
         </div>
-
         <div className="bg-white rounded-lg border border-gray-200 p-4">
           <div className="flex items-center justify-between">
             <div>
@@ -160,7 +163,6 @@ export default function AnalyticsManagement() {
           </div>
         </div>
 
-        {/* Top Suppliers */}
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
             {t("analytics.topPartners")}

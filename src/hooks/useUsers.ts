@@ -33,6 +33,7 @@ export function useUsers() {
   const {
     data: users,
     loading,
+    error,
     searchValue,
     setSearchValue,
     filterValues,
@@ -98,6 +99,7 @@ export function useUsers() {
   return {
     users: displayUsers,
     loading,
+    error,
     fetchUsers: refetch,
     updateUserStatus,
     searchValue,

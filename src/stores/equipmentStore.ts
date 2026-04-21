@@ -7,6 +7,7 @@ interface EquipmentStore {
   equipmentMap: Map<string, number>
   itemTimestamps: Map<string, number>
   loading: boolean
+  error: boolean
   lastFetch: number | null
   lastQuery: string | null
   updating: string | null
@@ -17,6 +18,7 @@ interface EquipmentStore {
   setPublicEquipment: (equipment: EquipmentWithSupplier[], query: string, hasMore: boolean) => void
   getPublicEquipment: (query: string) => { equipment: EquipmentWithSupplier[], hasMore: boolean }
   setLoading: (loading: boolean) => void
+  setError: (error: boolean) => void
   setUpdating: (id: string | null) => void
   setNavigating: (id: string | null) => void
   updateEquipment: (id: string, updates: Partial<Equipment>, timestamp?: number) => void
@@ -33,6 +35,7 @@ export const useEquipmentStore = create<EquipmentStore>((set, get) => ({
   equipmentMap: new Map(),
   itemTimestamps: new Map(),
   loading: true,
+  error: false,
   lastFetch: null,
   lastQuery: null,
   updating: null,
@@ -70,6 +73,7 @@ export const useEquipmentStore = create<EquipmentStore>((set, get) => ({
     })
   },
   setLoading: (loading) => set({ loading }),
+  setError: (error) => set({ error }),
   setUpdating: (id) => set({ updating: id }),
   setNavigating: (id) => set({ navigating: id }),
   getEquipmentById: (id) => {

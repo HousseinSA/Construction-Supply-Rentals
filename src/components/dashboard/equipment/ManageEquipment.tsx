@@ -4,7 +4,6 @@ import { useMemo } from "react"
 import { useTranslations } from "next-intl"
 import { Plus } from "lucide-react"
 
-import { useEquipmentStore } from "@/src/stores/equipmentStore"
 import { useCityData } from "@/src/hooks/useCityData"
 import { useManageEquipment } from "@/src/hooks/equipment/useManageEquipment"
 import { useEquipmentActions } from "@/src/hooks/equipment/useEquipmentActions"
@@ -15,15 +14,13 @@ import { createEquipmentFilters } from "@/src/lib/equipment-filters"
 import DashboardPageHeader from "../DashboardPageHeader"
 import EquipmentList from "./EquipmentList"
 import EquipmentModals from "./EquipmentModals"
-import TableLoading from "@/src/components/ui/TableLoading"
 import ReloadButton from "@/src/components/ui/ReloadButton"
+import ErrorState from "@/src/components/ui/ErrorState"
 
 export default function ManageEquipment() {
   const { user } = useUserSession()
   const t = useTranslations("dashboard.equipment")
   const { convertToLocalized } = useCityData()
-  
-  const { equipment } = useEquipmentStore()
   
   const supplierId = useMemo(
     () => (user?.isSupplier ? user.id : undefined),
@@ -43,6 +40,8 @@ export default function ManageEquipment() {
 
   const {
     loading,
+    error,
+    equipment,
     updating,
     refetch,
     searchValue,
@@ -99,21 +98,25 @@ export default function ManageEquipment() {
           onFilterChange={handleFilterChange}
         />
         <div className="xl:bg-white xl:rounded-lg xl:shadow-sm xl:border xl:border-gray-200 min-h-[600px] flex flex-col">
-          <EquipmentList
-            equipment={equipment}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalItems={totalItems}
-            itemsPerPage={itemsPerPage}
-            onPageChange={goToPage}
-            onStatusChange={handleStatusChangeCallback}
-            onPricingReview={handlePricingReview}
-            mobileEquipment={mobileEquipment}
-            loadingMoreMobile={loadingMoreMobile}
-            hasMoreMobile={hasMoreMobile}
-            onLoadMoreMobile={loadMoreMobile}
-            loading={loading}
-          />
+          {error ? (
+            <ErrorState onRetry={refetch} />
+          ) : (
+            <EquipmentList
+              equipment={equipment}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              itemsPerPage={itemsPerPage}
+              onPageChange={goToPage}
+              onStatusChange={handleStatusChangeCallback}
+              onPricingReview={handlePricingReview}
+              mobileEquipment={mobileEquipment}
+              loadingMoreMobile={loadingMoreMobile}
+              hasMoreMobile={hasMoreMobile}
+              onLoadMoreMobile={loadMoreMobile}
+              loading={loading}
+            />
+          )}
         </div>
         <EquipmentModals
           confirmModal={confirmModal}

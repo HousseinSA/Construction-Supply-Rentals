@@ -1,4 +1,4 @@
-import { create } from 'zustand'
+import { create } from "zustand"
 
 export interface AnalyticsData {
   overview: {
@@ -18,7 +18,7 @@ export interface AnalyticsData {
 }
 
 interface AnalyticsStore {
-  analytics: AnalyticsData | null
+  analytics: AnalyticsData
   loading: boolean
   lastFetch: number | null
   setAnalytics: (analytics: AnalyticsData) => void
@@ -28,9 +28,19 @@ interface AnalyticsStore {
 }
 
 const CACHE_DURATION = 5 * 60 * 1000
-
+const initialAnalytics = {
+  overview: {
+    totalUsers: 0,
+    totalEquipment: 0,
+    activeEquipment: 0,
+    newUsersThisMonth: 0,
+  },
+  usersByRole: {},
+  equipmentByCity: [],
+  topSuppliers: [],
+}
 export const useAnalyticsStore = create<AnalyticsStore>((set, get) => ({
-  analytics: null,
+  analytics: initialAnalytics,
   loading: true,
   lastFetch: null,
   setAnalytics: (analytics) => set({ analytics, lastFetch: Date.now() }),

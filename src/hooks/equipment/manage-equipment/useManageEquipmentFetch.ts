@@ -19,7 +19,7 @@ export function useManageEquipmentFetch(
   setTotalPages: (pages: number) => void,
   setTotalCount: (count: number) => void,
 ) {
-  const { setEquipment, shouldRefetch } = useEquipmentStore()
+  const { setEquipment, shouldRefetch, setError } = useEquipmentStore()
   const queryStringRef = useRef<string>("")
 
   const { fetchEquipment: coreFetch } = useEquipmentFetch({
@@ -55,17 +55,25 @@ export function useManageEquipmentFetch(
         return
       }
 
+      if (skipCache) {
+        useEquipmentStore.getState().setLoading(true)
+      }
+      setError(false)
+      
       const result = await coreFetch(params, { skipCache })
-
       if (result) {
         setEquipment(result.data, queryString)
         if (result.pagination) {
           setTotalPages(result.pagination.totalPages)
           setTotalCount(result.pagination.totalCount)
         }
+        useEquipmentStore.getState().setLoading(false)
+      } else {
+        setError(true)
+        useEquipmentStore.getState().setLoading(false)
       }
     },
-    [coreFetch, setEquipment, setTotalPages, setTotalCount, currentPage, supplierId, searchValue, filterValues, shouldRefetch],
+    [coreFetch, setEquipment, setError, setTotalPages, setTotalCount, currentPage, supplierId, searchValue, filterValues, shouldRefetch],
   )
 
   return {

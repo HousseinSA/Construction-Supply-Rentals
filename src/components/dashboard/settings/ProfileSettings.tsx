@@ -7,6 +7,7 @@ import { showToast } from "@/src/lib/toast"
 import { useSettings } from "@/src/hooks/useSettings"
 import Input from "@/src/components/ui/Input"
 import PasswordInput from "@/src/components/ui/PasswordInput"
+import ErrorState from "@/src/components/ui/ErrorState"
 
 interface ProfileSettingsProps {
   apiEndpoint: string
@@ -22,7 +23,7 @@ export default function ProfileSettings({
   passwordLabel 
 }: ProfileSettingsProps) {
   const t = useTranslations("dashboard")
-  const { settings, loading: isInitialLoading, updateSettings } = useSettings(apiEndpoint)
+  const { settings, loading: isInitialLoading, error, updateSettings, refetch } = useSettings(apiEndpoint)
   const [localSettings, setLocalSettings] = useState({ phone: "", password: "" })
   const [isLoading, setIsLoading] = useState(false)
 
@@ -49,6 +50,10 @@ export default function ProfileSettings({
         <span className="mr-3 text-gray-600">{t("equipment.loading")}</span>
       </div>
     )
+  }
+
+  if (error) {
+    return <ErrorState onRetry={refetch} />
   }
 
   return (

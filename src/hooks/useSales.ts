@@ -10,6 +10,7 @@ export function useSales() {
   const {
     data: sales,
     loading,
+    error,
     searchValue,
     setSearchValue,
     filterValues,
@@ -52,7 +53,7 @@ export function useSales() {
   return {
     sales,
     loading,
-    error: null,
+    error,
     fetchSales: refetch,
     updateSaleStatus,
     searchValue,

@@ -20,7 +20,10 @@ export function useServerTableData<T>({
   invalidateCache,
 }: UseServerTableDataConfig<T>) {
   const [data, setData] = useState<T[]>([])
-  const [loading, setLoading] = useState(() => shouldRefetch ? shouldRefetch() : true)
+  const [loading, setLoading] = useState(() =>
+    shouldRefetch ? shouldRefetch() : true,
+  )
+  const [error, setError] = useState<boolean>(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
@@ -35,14 +38,19 @@ export function useServerTableData<T>({
       abortControllerRef.current.abort()
     }
     abortControllerRef.current = new AbortController()
-    
+    const timeoutId = setTimeout(
+      () => abortControllerRef.current?.abort(),
+      10000,
+    )
+
     const needsRefetch = shouldRefetch ? shouldRefetch() : true
-    
     if (!needsRefetch) {
+      clearTimeout(timeoutId)
       return
     }
     try {
       setLoading(true)
+      setError(false)
       const params = new URLSearchParams()
       params.set("page", currentPage.toString())
       params.set("limit", itemsPerPage.toString())
@@ -68,8 +76,9 @@ export function useServerTableData<T>({
         cache: "no-store",
         signal: abortControllerRef.current.signal,
       })
-      const result = await response.json()
+      clearTimeout(timeoutId)
 
+      const result = await response.json()
       if (result.success) {
         const transformedData = transformResponse
           ? transformResponse(result.data)
@@ -89,8 +98,13 @@ export function useServerTableData<T>({
         }
       }
     } catch (error: any) {
-      if (error.name === "AbortError") return
+      clearTimeout(timeoutId)
+      if (error.name === "AbortError") {
+        setError(true)
+        return
+      }
       console.error(`Error fetching data from ${endpoint}:`, error)
+      setError(true)
     } finally {
       setLoading(false)
     }
@@ -112,7 +126,7 @@ export function useServerTableData<T>({
       if (currentPage !== 1) {
         setCurrentPage(1)
       }
-      if (invalidateCache && value !== 'all') {
+      if (invalidateCache && value !== "all") {
         invalidateCache()
       }
     },
@@ -133,7 +147,7 @@ export function useServerTableData<T>({
   )
 
   const resetFilters = useCallback(() => {
-    setSearchValue('')
+    setSearchValue("")
     setFilterValues({})
     setCurrentPage(1)
   }, [])
@@ -168,6 +182,7 @@ export function useServerTableData<T>({
   return {
     data,
     loading,
+    error,
     searchValue,
     setSearchValue: handleSearchChange,
     filterValues,

@@ -1,6 +1,9 @@
-import { useCallback, useMemo } from "react"
+import { useCallback } from "react"
 import { useEquipmentStore } from "@/src/stores/equipmentStore"
-import { buildEquipmentQueryParams, EQUIPMENT_ITEMS_PER_PAGE } from "@/src/lib/equipment-query-params"
+import {
+  buildEquipmentQueryParams,
+  EQUIPMENT_ITEMS_PER_PAGE,
+} from "@/src/lib/equipment-query-params"
 import { useInfiniteScrollEquipment } from "./useInfiniteScrollEquipment"
 import {
   useManageEquipmentState,
@@ -18,10 +21,8 @@ export function useManageEquipment({
   convertToLocalized,
   supplierId,
 }: UseManageEquipmentConfig) {
-const loading = useEquipmentStore((state) => state.loading)
-const updating = useEquipmentStore((state) => state.updating)
-const invalidateCache = useEquipmentStore((state) => state.invalidateCache)
-
+const {loading, error:storeError, updating, equipment, invalidateCache
+} = useEquipmentStore()
   const {
     currentPage,
     setCurrentPage,
@@ -44,7 +45,6 @@ const invalidateCache = useEquipmentStore((state) => state.invalidateCache)
     setSearchValue,
     setCurrentPage,
     invalidateCache,
-    
   )
 
   const { fetchLocations, fetchEquipment } = useManageEquipmentFetch(
@@ -58,13 +58,18 @@ const invalidateCache = useEquipmentStore((state) => state.invalidateCache)
 
   const mobileInfiniteScroll = useInfiniteScrollEquipment({
     buildParams: (pageNum: number, itemsPerPage: number) => {
-      return buildEquipmentQueryParams(pageNum, itemsPerPage, supplierId, searchValue, filterValues)
+      return buildEquipmentQueryParams(
+        pageNum,
+        itemsPerPage,
+        supplierId,
+        searchValue,
+        filterValues,
+      )
     },
     itemsPerPage: EQUIPMENT_ITEMS_PER_PAGE,
     dependencies: [supplierId, searchValue, filterValues],
     initialEquipment: [],
     startFromPage: 1,
-    totalPages: totalPages,
   })
 
   useManageEquipmentEffects(
@@ -88,8 +93,10 @@ const invalidateCache = useEquipmentStore((state) => state.invalidateCache)
   }, [invalidateCache, fetchEquipment])
 
   return {
-    loading,
     updating,
+    loading,
+    equipment,
+    error: storeError || mobileInfiniteScroll.error,
     refetch,
     searchValue,
     setSearchValue: handleSearchChange,

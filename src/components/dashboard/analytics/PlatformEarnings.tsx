@@ -13,11 +13,12 @@ import {
   SALE_COMMISSION_RATE,
 } from "@/src/lib/constants/commission"
 import { AnalyticsEarningSkeleton } from "../../equipment/LoadingSkeleton"
+import ErrorState from "@/src/components/ui/ErrorState"
 
 export default function PlatformEarnings() {
   const t = useTranslations("dashboard.analytics")
   const [dateFilter, setDateFilter] = useState("last30days")
-  const { analytics, loading } = useCommissionAnalytics(dateFilter)
+  const { analytics, loading, error, refetch } = useCommissionAnalytics(dateFilter)
 
   const dateFilterOptions = useMemo(
     () => [
@@ -49,7 +50,9 @@ export default function PlatformEarnings() {
     return <AnalyticsEarningSkeleton />
   }
 
-  if (!analytics) return null
+  if (error) {
+    return <ErrorState onRetry={refetch} />
+  }
 
   return (
     <div className="space-y-6">

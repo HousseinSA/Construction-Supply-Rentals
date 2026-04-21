@@ -1,5 +1,5 @@
-import { create } from 'zustand'
-import { CategoryCommission, TopEquipment } from '../lib/types'
+import { create } from "zustand"
+import { CategoryCommission, TopEquipment } from "../lib/types"
 
 export interface CommissionData {
   overview: {
@@ -16,7 +16,7 @@ export interface CommissionData {
 }
 
 interface CommissionStore {
-  commission: CommissionData | null
+  commission: CommissionData
   loading: boolean
   error: string | null
   lastFetch: number | null
@@ -29,14 +29,25 @@ interface CommissionStore {
 }
 
 export const CACHE_DURATION = 5 * 60 * 1000
-
+const initialCommission = {
+  overview: {
+    totalCommission: 0,
+    bookingCommission: 0,
+    saleCommission: 0,
+    totalTransactions: 0,
+    totalBookings: 0,
+    totalSales: 0,
+  },
+  categoryBreakdown: [],
+  topBookedEquipment: [],
+  topSoldEquipment: [],
+}
 export const useCommissionStore = create<CommissionStore>((set, get) => ({
-  commission: null,
+  commission: initialCommission,
   loading: false,
   error: null,
   lastFetch: null,
   currentFilter: null,
-  
   setCommission: (data, filter) =>
     set({
       commission: data,
@@ -44,20 +55,13 @@ export const useCommissionStore = create<CommissionStore>((set, get) => ({
       lastFetch: Date.now(),
       error: null,
     }),
-  
   setLoading: (loading) => set({ loading }),
-  
   setError: (error) => set({ error }),
-  
   shouldRefetch: (filter) => {
     const { lastFetch, currentFilter } = get()
-    
     if (currentFilter !== filter) return true
-    
     if (!lastFetch || Date.now() - lastFetch > CACHE_DURATION) return true
-    
     return false
   },
-  
   invalidateCache: () => set({ lastFetch: null }),
 }))

@@ -12,8 +12,8 @@ import SalesDetailsModal from "./SalesDetailsModal"
 import Pagination from "@/src/components/ui/Pagination"
 import HomeButton from "@/src/components/ui/HomeButton"
 import TableFilters from "@/src/components/ui/TableFilters"
-import TableLoading from "@/src/components/ui/TableLoading"
 import { Table, TableHeader, TableBody, TableHead } from "@/src/components/ui/Table"
+import ErrorState from "@/src/components/ui/ErrorState"
 
 export default function SalesTable() {
   const searchParams = useSearchParams()
@@ -21,7 +21,7 @@ export default function SalesTable() {
   const highlightRef = searchParams.get("highlight")
   const t = useTranslations("dashboard.sales")
   const tPages = useTranslations("dashboard.pages")
-  const { sales, loading, searchValue, setSearchValue, filterValues, handleFilterChange, currentPage, totalPages, goToPage, totalItems, itemsPerPage } = useSales()
+  const { sales, loading, error, fetchSales, searchValue, setSearchValue, filterValues, handleFilterChange, currentPage, totalPages, goToPage, totalItems, itemsPerPage } = useSales()
   const [selectedSale, setSelectedSale] = useState<SaleWithDetails | null>(null)
   const [showDetailsModal, setShowDetailsModal] = useState(false)
   const [highlightId, setHighlightId] = useState<string | null>(null)
@@ -100,6 +100,9 @@ export default function SalesTable() {
             onFilterChange={handleFilterChange}
           />
         <div className="xl:bg-white xl:rounded-lg xl:shadow-sm xl:border xl:border-gray-200 overflow-hidden">
+          {error ? (
+            <ErrorState onRetry={fetchSales} />
+          ) : (
           <>
             <div className="hidden xl:block">
               <Table>
@@ -164,6 +167,7 @@ export default function SalesTable() {
               />
             )}
           </>
+          )}
         </div>
 
         {selectedSale && (

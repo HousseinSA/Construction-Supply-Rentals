@@ -7,6 +7,7 @@ export function useBookings() {
   const {
     data: bookings,
     loading,
+    error,
     searchValue,
     setSearchValue,
     filterValues,
@@ -54,7 +55,7 @@ export function useBookings() {
   return {
     bookings,
     loading,
-    error: null,
+    error,
     fetchBookings: refetch,
     updateBookingStatus,
     searchValue,

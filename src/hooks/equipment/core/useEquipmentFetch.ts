@@ -12,15 +12,18 @@ export function useEquipmentFetch(options: UseEquipmentFetchOptions = {}) {
   const initialLoadRef = useRef(true)
   const [loading, setLoadingState] = useState(!hasInitialData)
 
-  const setLoading = useCallback((isLoading: boolean) => {
-    setLoadingState(isLoading)
-    onLoadingChange?.(isLoading)
-  }, [onLoadingChange])
+  const setLoading = useCallback(
+    (isLoading: boolean) => {
+      setLoadingState(isLoading)
+      onLoadingChange?.(isLoading)
+    },
+    [onLoadingChange],
+  )
 
   const fetchEquipment = useCallback(
     async (
       params: URLSearchParams,
-      options: { skipCache?: boolean; shouldRefetch?: () => boolean } = {}
+      options: { skipCache?: boolean; shouldRefetch?: () => boolean } = {},
     ): Promise<FetchResult | null> => {
       const { skipCache = false, shouldRefetch } = options
       if (shouldRefetch && !shouldRefetch()) return null
@@ -28,6 +31,10 @@ export function useEquipmentFetch(options: UseEquipmentFetchOptions = {}) {
         abortControllerRef.current.abort()
       }
       abortControllerRef.current = new AbortController()
+      const timeoutId = setTimeout(
+        () => abortControllerRef.current?.abort(),
+        10000,
+      )
 
       const isInitialLoad = initialLoadRef.current
       const shouldShowLoading = isInitialLoad || skipCache
@@ -39,6 +46,7 @@ export function useEquipmentFetch(options: UseEquipmentFetchOptions = {}) {
           cache: "no-store",
           signal: abortControllerRef.current.signal,
         })
+        clearTimeout(timeoutId)
 
         const result = await response.json()
 
@@ -52,14 +60,13 @@ export function useEquipmentFetch(options: UseEquipmentFetchOptions = {}) {
 
         return null
       } catch (error: any) {
+        clearTimeout(timeoutId)
         if (error.name === "AbortError") return null
         console.error("Error fetching equipment:", error)
         return null
-      } finally {
-        if (shouldShowLoading) setLoading(false)
-      }
+      } 
     },
-    [setLoading]
+    [setLoading],
   )
 
   const abort = useCallback(() => {

@@ -24,7 +24,12 @@
     "filters": "Filters",
     "applyFilters": "Apply Filters",
     "clearFilters": "Clear Filters",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "error": {
+      "title": "Something went wrong",
+      "message": "Unable to load data. Please try again.",
+      "retry": "Try Again"
+    }
   },
   "quickSearch": {
     "button": "Search",
@@ -509,7 +514,7 @@
         "Fair": "Fair"
       },
       "brand": "Brand",
-      "brandPlaceholder": "e.g., Caterpillar, Komatsu, Volvo", 
+      "brandPlaceholder": "e.g., Caterpillar, Komatsu, Volvo",
       "model": "Model",
       "modelPlaceholder": "e.g., 320D, PC200",
       "year": "Year of Manufacturing",
@@ -639,10 +644,10 @@
       },
       "analytics": {
         "title": "Analytics",
-         "tabs": {
-        "overview": "Overview",
-        "earnings": "Platform Earnings"
-      }
+        "tabs": {
+          "overview": "Overview",
+          "earnings": "Platform Earnings"
+        }
       },
       "bookings": {
         "title": "Bookings"
@@ -684,8 +689,8 @@
       "emailCopied": "Email copied to clipboard",
       "phoneCopied": "Phone copied to clipboard",
       "status": "Status",
-      "role":"Role",
-      "processing":"Processing...",
+      "role": "Role",
+      "processing": "Processing...",
       "active": "Active",
       "blocked": "Blocked",
       "confirmBlockTitle": "Block User",
@@ -912,8 +917,8 @@
       "noPaidBookings": "No paid bookings",
       "noCompletedBookings": "No completed bookings",
       "noCancelledBookings": "No cancelled bookings",
-      "statusUpdateFailed":"Failed to update status",
-      "statusUpdated":"status updated successfully",
+      "statusUpdateFailed": "Failed to update status",
+      "statusUpdated": "status updated successfully",
       "error": "Failed to fetch bookings",
       "retry": "Retry",
       "cancelBooking": "Cancel Booking",
@@ -1089,4 +1094,3 @@
     "browseEquipment": "Explore available equipment"
   }
 }
-

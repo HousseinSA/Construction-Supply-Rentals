@@ -23,7 +23,12 @@
     "filters": "فلتر",
     "applyFilters": "تطبيق الفلتر",
     "clearFilters": "مسح الفلتر",
-    "loading": "جاري التحميل..."
+    "loading": "جاري التحميل...",
+    "error": {
+      "title": "حدث خطأ ما",
+      "message": "تعذر تحميل البيانات. يرجى المحاولة مرة أخرى.",
+      "retry": "حاول مرة أخرى"
+    }
   },
   "quickSearch": {
     "button": "بحث",
@@ -616,7 +621,6 @@
         "allAvailability": "الكل",
         "allLocations": "جميع المواقع"
       }
-      
     },
     "pages": {
       "equipment": {
@@ -627,9 +631,9 @@
         "title": "الإحصائيات",
         "subtitle": "عرض إحصائيات",
         "tabs": {
-        "overview": "تحليلات عامة",
-        "earnings": "أرباح المنصة"
-      }
+          "overview": "تحليلات عامة",
+          "earnings": "أرباح المنصة"
+        }
       },
       "bookings": {
         "title": "الحجوزات",
@@ -678,9 +682,9 @@
       "phoneCopied": "تم نسخ رقم الهاتف",
       "status": "الحالة",
       "active": "نشط",
-      "processing":"جاري المعالجة...",
+      "processing": "جاري المعالجة...",
       "blocked": "محظور",
-      "role":"الدور",
+      "role": "الدور",
       "confirmBlockTitle": "حظر المستخدم",
       "confirmBlockMessage": "متأكد من حظر هذا المستخدم؟",
       "confirmUnblockTitle": "إلغاء حظر المستخدم",
@@ -908,8 +912,8 @@
       "noPaidBookings": "لا توجد حجوزات مدفوعة",
       "noCompletedBookings": "لا توجد حجوزات مكتملة",
       "noCancelledBookings": "لا توجد حجوزات ملغاة",
-      "statusUpdated":"تم تحديث حالة بنجاح",
-      "statusUpdateFailed":"فشل في تحديث حالة",
+      "statusUpdated": "تم تحديث حالة بنجاح",
+      "statusUpdateFailed": "فشل في تحديث حالة",
       "error": "فشل في تحميل الحجوزات",
       "retry": "إعادة المحاولة",
       "cancelBooking": "إلغاء الحجز",
@@ -1039,7 +1043,7 @@
     "usage": "الاستخدام المطلوب",
     "estimatedDistance": "المسافة التقديرية",
     "startDate": "تاريخ البدء",
-    "endDate":"تاريخ الانتهاء",
+    "endDate": "تاريخ الانتهاء",
     "rentalPeriod": "فترة الإيجار",
     "selectDate": " اختر التاريخ",
     "from": "من",

@@ -67,6 +67,7 @@ export function usePublicEquipment(
 
   return {
     loading: mobileInfiniteScroll.loading,
+    error: mobileInfiniteScroll.error,
     equipment: mobileInfiniteScroll.equipment,
     loadingMore: mobileInfiniteScroll.loadingMore,
     hasMore: mobileInfiniteScroll.hasMore,

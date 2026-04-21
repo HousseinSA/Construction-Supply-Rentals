@@ -22,6 +22,7 @@ import {
   TableHead,
 } from "@/src/components/ui/Table"
 import type { BookingWithDetails } from "@/src/stores/bookingsStore"
+import ErrorState from "@/src/components/ui/ErrorState"
 
 export default function BookingTable() {
   const { data: session } = useSession()
@@ -121,15 +122,7 @@ export default function BookingTable() {
           {session?.user?.userType === "renter" ? (
             <RenterBookingView />
           ) : error ? (
-            <div className="p-12 text-center">
-              <div className="text-red-500 text-lg mb-4">{t("error")}</div>
-              <button
-                onClick={fetchBookings}
-                className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
-              >
-                {t("retry")}
-              </button>
-            </div>
+            <ErrorState onRetry={fetchBookings} />
           ) : (
             <>
               <div className="hidden xl:block">

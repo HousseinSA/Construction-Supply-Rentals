@@ -4,6 +4,7 @@ import { useCommissionStore } from "@/src/stores/commissionStore"
 export function useCommissionAnalytics(dateFilter: string = "last30days") {
   const { commission, loading, error, setCommission, setLoading, setError, shouldRefetch } = useCommissionStore()
   const abortControllerRef = useRef<AbortController | null>(null)
+  const timeoutIdRef = useRef<NodeJS.Timeout | null>(null)
 
   const fetchAnalytics = useCallback(async (signal?: AbortSignal) => {
     try {
@@ -11,6 +12,10 @@ export function useCommissionAnalytics(dateFilter: string = "last30days") {
       setError(null)
       
       const response = await fetch(`/api/analytics/commission?dateFilter=${dateFilter}`, { signal })
+      
+      if (timeoutIdRef.current) {
+        clearTimeout(timeoutIdRef.current)
+      }
       
       if (!response.ok) {
         const errorData = await response.json()
@@ -23,7 +28,14 @@ export function useCommissionAnalytics(dateFilter: string = "last30days") {
         setCommission(data, dateFilter)
       }
     } catch (err) {
+      if (timeoutIdRef.current) {
+        clearTimeout(timeoutIdRef.current)
+      }
+      
       if (err instanceof Error && err.name === 'AbortError') {
+        if (!signal?.aborted) {
+          setError("Timeout")
+        }
         return
       }
       
@@ -44,11 +56,19 @@ export function useCommissionAnalytics(dateFilter: string = "last30days") {
     if (shouldRefetch(dateFilter)) {
       abortControllerRef.current?.abort()
       abortControllerRef.current = new AbortController()
+      
+      timeoutIdRef.current = setTimeout(() => {
+        abortControllerRef.current?.abort()
+      }, 10000)
+      
       fetchAnalytics(abortControllerRef.current.signal)
     }
     
     return () => {
       abortControllerRef.current?.abort()
+      if (timeoutIdRef.current) {
+        clearTimeout(timeoutIdRef.current)
+      }
     }
   }, [dateFilter, fetchAnalytics, shouldRefetch])
 
