@@ -15,7 +15,7 @@ interface UseInfiniteScrollEquipmentConfig {
 
 export function useInfiniteScrollEquipment({
   buildParams,
-  itemsPerPage = 10,
+  itemsPerPage = 12,
   onLoadingChange,
   dependencies = [],
   initialEquipment = [],

@@ -11,6 +11,7 @@ import SalesMobileCard from "./SalesMobileCard"
 import SalesDetailsModal from "./SalesDetailsModal"
 import Pagination from "@/src/components/ui/Pagination"
 import HomeButton from "@/src/components/ui/HomeButton"
+import ReloadButton from "@/src/components/ui/ReloadButton"
 import TableFilters from "@/src/components/ui/TableFilters"
 import { Table, TableHeader, TableBody, TableHead } from "@/src/components/ui/Table"
 import ErrorState from "@/src/components/ui/ErrorState"
@@ -67,7 +68,10 @@ export default function SalesTable() {
                 <h1 className="text-2xl font-bold text-primary">{tPages("sales.title")}</h1>
               </div>
             </div>
-            <HomeButton />
+            <div className="flex items-center gap-2">
+              <ReloadButton onReload={fetchSales} loading={loading} />
+              <HomeButton />
+            </div>
           </div>
         </div>
         <TableFilters

@@ -23,7 +23,7 @@ export function useSales() {
     refetch,
   } = useServerTableData<SaleWithDetails>({
     endpoint: '/api/sales',
-    itemsPerPage: 10,
+    itemsPerPage: 12,
     transformResponse: (data) => {
       setSales(data)
       return data

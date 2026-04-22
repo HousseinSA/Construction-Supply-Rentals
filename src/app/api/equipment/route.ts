@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
 
     const { equipment, pagination } = await fetchEquipmentWithPagination(db, query, {
       page: parseInt(getParam("page") || "1"),
-      limit: parseInt(getParam("limit") || "10"),
+      limit: parseInt(getParam("limit") || "12"),
       includeSupplier: getBoolParam("includeSupplier"),
       isAdmin
     }, searchTerm || undefined)

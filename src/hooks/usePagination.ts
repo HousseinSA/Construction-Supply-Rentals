@@ -21,7 +21,7 @@ interface UsePaginationReturn<T> {
 
 export function usePagination<T>({
   data,
-  itemsPerPage = 10,
+  itemsPerPage = 12,
   initialPage = 1,
 }: UsePaginationProps<T>): UsePaginationReturn<T> {
   const [currentPage, setCurrentPage] = useState(initialPage)

@@ -1,7 +1,6 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import { usePurchases } from "@/src/hooks/usePurchases"
 import { usePagination } from "@/src/hooks/usePagination"
 import {
   Table,
@@ -22,10 +21,17 @@ import { useTransactionCancel } from "@/src/hooks/useTransactionCancel"
 import { formatDate } from "@/src/lib/table-utils"
 import PriceDisplay from "@/src/components/ui/PriceDisplay"
 import ErrorState from "@/src/components/ui/ErrorState"
+import { SaleWithDetails } from "@/src/stores/salesStore"
 
-export default function RenterPurchasesView() {
+interface RenterPurchasesViewProps {
+  purchases: SaleWithDetails[]
+  loading: boolean
+  error: string | null
+  fetchPurchases: () => void
+}
+
+export default function RenterPurchasesView({ purchases, loading, error, fetchPurchases }: RenterPurchasesViewProps) {
   const t = useTranslations("dashboard.purchases")
-  const { purchases, loading, error, fetchPurchases } = usePurchases()
 
   const {
     currentPage,
@@ -34,7 +40,7 @@ export default function RenterPurchasesView() {
     goToPage,
     totalItems,
     itemsPerPage,
-  } = usePagination({ data: purchases, itemsPerPage: 10 })
+  } = usePagination({ data: purchases, itemsPerPage: 12 })
 
   const {
     cancellingId,

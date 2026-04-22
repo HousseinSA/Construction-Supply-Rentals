@@ -48,7 +48,7 @@ export function useUsers() {
     resetFilters,
   } = useServerTableData<User>({
     endpoint: API_ENDPOINT,
-    itemsPerPage: 10,
+    itemsPerPage: 12,
     shouldRefetch,
     transformResponse: (data) => {
       setUsers(data)

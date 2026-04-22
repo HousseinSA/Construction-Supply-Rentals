@@ -1,7 +1,7 @@
 import { useLocale } from "next-intl"
 import { useMemo } from "react"
 
-const  CITIES = [
+const CITIES = [
   { latin: "Nouakchott", ar: "نواكشوط" },
   { latin: "Nouadhibou", ar: "نواذيبو" },
   { latin: "Rosso", ar: "روصو" },
@@ -14,20 +14,21 @@ const  CITIES = [
   { latin: "Tidjikja", ar: "تيجيكجة" },
 ] as const
 
-const latinToArMap = new Map(CITIES.map(c => [c.latin.toLowerCase(), c.ar]))
-const arToLatinMap = new Map(CITIES.map(c => [c.ar, c.latin]))
+const latinToArMap = new Map(CITIES.map((c) => [c.latin.toLowerCase(), c.ar]))
+const arToLatinMap = new Map(CITIES.map((c) => [c.ar, c.latin]))
 
 export function useCityData() {
   const locale = useLocale() as "en" | "ar" | "fr"
 
   const cities = useMemo(
-    () => (locale === "ar" ? CITIES.map(c => c.ar) : CITIES.map(c => c.latin)),
-    [locale]
+    () =>
+      locale === "ar" ? CITIES.map((c) => c.ar) : CITIES.map((c) => c.latin),
+    [locale],
   )
 
   const convertToLatin = useMemo(
     () => (city: string) => arToLatinMap.get(city) || city,
-    []
+    [],
   )
 
   const convertToLocalized = useMemo(
@@ -36,11 +37,12 @@ export function useCityData() {
       if (locale === "ar") {
         return latinToArMap.get(latinCity.toLowerCase()) || latinCity
       }
-      // For Latin languages, find proper capitalization from CITIES array
-      const foundCity = CITIES.find(c => c.latin.toLowerCase() === latinCity.toLowerCase())
+      const foundCity = CITIES.find(
+        (c) => c.latin.toLowerCase() === latinCity.toLowerCase(),
+      )
       return foundCity ? foundCity.latin : latinCity
     },
-    [locale]
+    [locale],
   )
 
   const getDisplayValue = useMemo(
@@ -50,7 +52,7 @@ export function useCityData() {
         ? latinToArMap.get(selectedCity.toLowerCase()) || selectedCity
         : selectedCity
     },
-    [locale, cities]
+    [locale, cities],
   )
 
   return {

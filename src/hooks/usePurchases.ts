@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { useSalesStore } from '@/src/stores/salesStore'
 
@@ -6,21 +6,16 @@ export function usePurchases() {
   const { data: session } = useSession()
   const { sales: purchases, loading, setSales, setLoading, shouldRefetch } = useSalesStore()
   const [error, setError] = useState<string | null>(null)
-  const hasLoadedRef = useRef(false)
 
   const fetchPurchases = useCallback(async () => {
-    const isInitialLoad = !hasLoadedRef.current
     try {
-      if (isInitialLoad) {
-        setLoading(true)
-      }
+      setLoading(true)
       setError(null)
       
       const response = await fetch('/api/sales/my-purchases')
       const data = await response.json()
       if (data.success) {
         setSales(data.data || [])
-        hasLoadedRef.current = true
       } else {
         setError(data.error || 'Failed to fetch purchases')
       }
@@ -28,9 +23,7 @@ export function usePurchases() {
       console.error('Failed to fetch purchases:', error)
       setError('Network error')
     } finally {
-      if (isInitialLoad) {
-        setLoading(false)
-      }
+      setLoading(false)
     }
   }, [setSales, setLoading])
 

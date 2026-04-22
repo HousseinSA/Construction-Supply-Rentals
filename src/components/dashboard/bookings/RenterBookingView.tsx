@@ -2,10 +2,8 @@
 
 import { useState } from "react"
 import { useTranslations } from "next-intl"
-import { useBookings } from "@/src/hooks/useBookings"
 import { usePagination } from "@/src/hooks/usePagination"
 import { formatDate, getTranslatedUnit } from "@/src/lib/table-utils"
-import TableLoading from "@/src/components/ui/TableLoading"
 import {
   Table,
   TableHeader,
@@ -24,11 +22,18 @@ import GenericMobileCard from "@/src/components/ui/GenericMobileCard"
 import ReferenceNumber from "@/src/components/ui/ReferenceNumber"
 import PriceDisplay from "@/src/components/ui/PriceDisplay"
 import ErrorState from "@/src/components/ui/ErrorState"
+import { BookingWithDetails } from "@/src/stores/bookingsStore"
 
-export default function RenterBookingView() {
+interface RenterBookingViewProps {
+  bookings: BookingWithDetails[]
+  loading: boolean
+  error: boolean
+  fetchBookings: () => void
+}
+
+export default function RenterBookingView({ bookings, loading, error, fetchBookings }: RenterBookingViewProps) {
   const t = useTranslations("dashboard.bookings")
   const tCommon = useTranslations("common")
-  const { bookings, loading, error, fetchBookings } = useBookings()
   const [cancellingId, setCancellingId] = useState<string | null>(null)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(
@@ -42,7 +47,7 @@ export default function RenterBookingView() {
     goToPage,
     totalItems,
     itemsPerPage,
-  } = usePagination({ data: bookings, itemsPerPage: 10 })
+  } = usePagination({ data: bookings, itemsPerPage: 12 })
 
   const handleCancelClick = (bookingId: string) => {
     setSelectedBookingId(bookingId)

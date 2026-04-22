@@ -20,7 +20,7 @@ export function useBookings() {
     refetch,
   } = useServerTableData<BookingWithDetails>({
     endpoint: '/api/bookings',
-    itemsPerPage: 10,
+    itemsPerPage: 12,
     transformResponse: (data) => {
       setBookings(data)
       return data
@@ -45,7 +45,7 @@ export function useBookings() {
         }
         return { success: true, message: data.message }
       }
-      return { success: false, error: data.error || 'Failed to update booking status' }
+      return { success: false, error: data.error}
     } catch (error) {
       console.error('Failed to update booking:', error)
       return { success: false, error: 'Network error. Please try again.' }

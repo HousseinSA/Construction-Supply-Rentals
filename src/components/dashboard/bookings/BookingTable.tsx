@@ -13,8 +13,8 @@ import BookingMobileCard from "./BookingMobileCard"
 import RenterBookingView from "./RenterBookingView"
 import Pagination from "@/src/components/ui/Pagination"
 import HomeButton from "@/src/components/ui/HomeButton"
+import ReloadButton from "@/src/components/ui/ReloadButton"
 import TableFilters from "@/src/components/ui/TableFilters"
-import TableLoading from "@/src/components/ui/TableLoading"
 import {
   Table,
   TableHeader,
@@ -80,7 +80,10 @@ export default function BookingTable() {
                 </h1>
               </div>
             </div>
-            <HomeButton />
+            <div className="flex items-center gap-2">
+              <ReloadButton onReload={fetchBookings} loading={loading} />
+              <HomeButton />
+            </div>
           </div>
         </div>
 

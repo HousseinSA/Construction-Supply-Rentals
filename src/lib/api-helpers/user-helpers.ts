@@ -4,7 +4,7 @@ const STATS_CACHE_DURATION = 5 * 60 * 1000
 
 export function validatePagination(page: string | null, limit: string | null) {
   const validPage = Math.max(1, parseInt(page || '1') || 1)
-  const validLimit = Math.min(100, Math.max(1, parseInt(limit || '10') || 10))
+  const validLimit = Math.min(100, Math.max(1, parseInt(limit || '12') || 12))
   return { 
     page: validPage, 
     limit: validLimit, 
