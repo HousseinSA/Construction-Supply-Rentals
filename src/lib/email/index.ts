@@ -1,4 +1,3 @@
-// Export all email functions
 export { 
   sendBookingStartReminderEmail,
   sendBookingPendingReminderEmail, 
@@ -21,7 +20,6 @@ export {
   sendPricingRejectionEmail
 } from "./builders/equipment-emails"
 
-// Export types for external use
 export type {
   PersonInfo,
   BookingEmailDetails,

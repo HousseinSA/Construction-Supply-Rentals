@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { usePagination } from "@/src/hooks/usePagination"
+import { useBookings } from "@/src/hooks/useBookings"
 import { formatDate, getTranslatedUnit } from "@/src/lib/table-utils"
 import {
   Table,
@@ -22,18 +23,11 @@ import GenericMobileCard from "@/src/components/ui/GenericMobileCard"
 import ReferenceNumber from "@/src/components/ui/ReferenceNumber"
 import PriceDisplay from "@/src/components/ui/PriceDisplay"
 import ErrorState from "@/src/components/ui/ErrorState"
-import { BookingWithDetails } from "@/src/stores/bookingsStore"
 
-interface RenterBookingViewProps {
-  bookings: BookingWithDetails[]
-  loading: boolean
-  error: boolean
-  fetchBookings: () => void
-}
-
-export default function RenterBookingView({ bookings, loading, error, fetchBookings }: RenterBookingViewProps) {
+export default function RenterBookingView() {
   const t = useTranslations("dashboard.bookings")
   const tCommon = useTranslations("common")
+  const { bookings, loading, error, fetchBookings } = useBookings()
   const [cancellingId, setCancellingId] = useState<string | null>(null)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(

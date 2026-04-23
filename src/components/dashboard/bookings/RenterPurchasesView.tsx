@@ -26,7 +26,7 @@ import { SaleWithDetails } from "@/src/stores/salesStore"
 interface RenterPurchasesViewProps {
   purchases: SaleWithDetails[]
   loading: boolean
-  error: string | null
+  error: boolean
   fetchPurchases: () => void
 }
 

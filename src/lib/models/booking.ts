@@ -7,7 +7,7 @@ export interface BookingItem {
   equipmentName: string;
   pricingType?: string;
   rate: number;
-  equipmentImage: string;
+  equipmentImage?: string;
   usage: number;
   usageUnit?: string;
   subtotal: number;

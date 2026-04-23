@@ -36,8 +36,6 @@ export default function PricingRejectionBanner({
 
   if (Object.keys(activeRejections).length === 0) return null
 
-  const formatPrice = (value: number) => `${value} MRU`
-
   const priceTypes = [
     { key: "hourlyRate" as const },
     { key: "dailyRate" as const },

@@ -27,7 +27,6 @@ export default function BookingTableRow({
   t,
   highlight = false,
 }: BookingTableRowProps) {
-  console.group(booking.bookingItems)
   const tCommon = useTranslations("common")
   const tBooking = useTranslations("booking")
   const locale = useLocale()

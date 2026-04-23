@@ -153,3 +153,75 @@ export async function validateReferences(
 
   return errors;
 }
+
+export function determineEndDate(
+  startDate: Date | undefined,
+  endDate: Date | undefined,
+  usage: number,
+  pricingType: string
+): Date | undefined {
+  if (!startDate) return endDate ? new Date(endDate) : undefined
+
+  if (endDate && pricingType === "daily") {
+    return new Date(endDate)
+  }
+
+  if (
+    pricingType === "hourly" ||
+    pricingType === "per_km" ||
+    pricingType === "monthly"
+  ) {
+    return calculateBookingEndDate(startDate, usage, pricingType)
+  }
+
+  return endDate ? new Date(endDate) : undefined
+}
+
+export function buildBookingDocument(
+  params: {
+    renterId: string
+    usage: number
+    renterMessage?: string
+    startDate?: Date
+    endDate?: Date
+  },
+  calculation: {
+    rate: number
+    subtotal: number
+    equipmentName: string
+    supplierId: ObjectId
+    usageUnit: string
+    pricingType: string
+  },
+  referenceNumber: string,
+  equipmentId: ObjectId,
+  commission: number,
+  calculatedEndDate?: Date
+) {
+  return {
+    referenceNumber,
+    renterId: new ObjectId(params.renterId),
+    bookingItems: [
+      {
+        equipmentId,
+        supplierId: calculation.supplierId,
+        equipmentName: calculation.equipmentName,
+        pricingType: calculation.pricingType,
+        rate: calculation.rate,
+        usage: params.usage,
+        usageUnit: calculation.usageUnit,
+        subtotal: calculation.subtotal,
+        commission,
+      },
+    ],
+    totalPrice: calculation.subtotal,
+    totalCommission: commission,
+    grandTotal: calculation.subtotal,
+    status: "pending" as const,
+    renterMessage: params.renterMessage || "",
+    startDate: params.startDate ? new Date(params.startDate) : undefined,
+    endDate: calculatedEndDate || (params.endDate ? new Date(params.endDate) : undefined),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
+}

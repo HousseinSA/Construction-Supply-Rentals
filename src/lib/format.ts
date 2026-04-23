@@ -42,7 +42,16 @@ export const formatTime = (date: Date) =>
     hour12: true,
   }).replace('AM', ' AM').replace('PM', ' PM')
 
- export function formatReferenceNumber(ref: string): string {
+export function formatReferenceNumber(ref: string): string {
   if (!ref || ref.length !== 6) return ref
   return `#${ref}`
+}
+
+export function formatBookingDate(date: Date | undefined | null): string {
+  if (!date) return ""
+  return new Date(date).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  })
 }
