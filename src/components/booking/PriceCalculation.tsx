@@ -1,4 +1,4 @@
-import { memo } from "react"
+import { memo, useMemo } from "react"
 import { useLocale, useTranslations } from "next-intl"
 
 interface PriceCalculationProps {
@@ -14,9 +14,9 @@ function PriceCalculation({
   usage,
   subtotal,
 }: PriceCalculationProps) {
-const t  = useTranslations("booking")
-const locale = useLocale()
-const isRTL = locale === 'ar'
+  const t = useTranslations("booking")
+  const locale = useLocale()
+  const isRTL = useMemo(() => locale === 'ar', [locale])
   return (
     <div className="bg-gray-50 rounded-lg p-4 space-y-2">
       <div className="flex justify-between text-sm items-center">

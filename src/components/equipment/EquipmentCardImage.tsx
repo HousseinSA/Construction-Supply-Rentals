@@ -13,6 +13,7 @@ interface EquipmentImageProps {
   yourEquipmentLabel: string
   forSaleLabel: string
   onClick: () => void
+  compact?: boolean
 }
 
 export default function EquipmentImage({
@@ -23,10 +24,11 @@ export default function EquipmentImage({
   yourEquipmentLabel,
   forSaleLabel,
   onClick,
+  compact = false,
 }: EquipmentImageProps) {
   return (
     <div
-      className="relative w-full aspect-[3/2] bg-gray-50 rounded-t-2xl overflow-hidden cursor-pointer"
+      className={`relative w-full ${compact ? 'aspect-[4/3]' : 'aspect-[3/2]'} bg-gray-50 rounded-t-2xl overflow-hidden cursor-pointer`}
       onClick={onClick}
     >
       <Image

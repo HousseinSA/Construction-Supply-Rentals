@@ -123,7 +123,7 @@ export default function DatePicker({ startDate, endDate, onDateChange, label, re
 
   return (
     <div ref={ref} className="relative">
-      <label className="block text-sm font-medium text-gray-700 mb-2">
+      <label className="block text-sm font-medium text-primary mb-2">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       <button

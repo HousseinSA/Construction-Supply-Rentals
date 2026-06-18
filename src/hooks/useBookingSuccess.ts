@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useRef } from "react"
 import { useSearchParams } from "next/navigation"
 import { requiresTransport } from "@/src/lib/constants/transport"
 import { useBookingSuccessStore } from "@/src/stores/bookingSuccessStore"
@@ -9,85 +9,157 @@ export function useBookingSuccess() {
   const equipmentName = searchParams.get("equipment")
   const equipmentId = searchParams.get("equipmentId")
   const type = searchParams.get("type") || "booking"
-  
+
   const [relatedEquipment, setRelatedEquipment] = useState<Equipment[]>([])
+  const [transportEquipment, setTransportEquipment] = useState<Equipment[]>([])
+  
   const [loading, setLoading] = useState(true)
   const [mainEquipment, setMainEquipment] = useState<Equipment | null>(null)
   const [mainLoading, setMainLoading] = useState(false)
-  
+
+  const [relatedOffset, setRelatedOffset] = useState(0)
+  const [transportOffset, setTransportOffset] = useState(0)
+
+  const [relatedHasMore, setRelatedHasMore] = useState(true)
+  const [transportHasMore, setTransportHasMore] = useState(true)
+
+  const [relatedLoadingMore, setRelatedLoadingMore] = useState(false)
+  const [transportLoadingMore, setTransportLoadingMore] = useState(false)
+
   const needsTransport = equipmentName ? requiresTransport(equipmentName) : false
   const storedEquipment = useBookingSuccessStore((state) => state.equipment)
   const clearEquipment = useBookingSuccessStore((state) => state.clearEquipment)
+  const hasFetchedMain = useRef(false)
 
   const fetchMainEquipment = useCallback(async () => {
-    if (!equipmentId) return
+    if (!equipmentId || hasFetchedMain.current) return
+
     if (storedEquipment) {
       setMainEquipment(storedEquipment)
+      hasFetchedMain.current = true
       return
     }
+
     try {
       setMainLoading(true)
       const res = await fetch(`/api/equipment/${equipmentId}`)
       const data = await res.json()
-      if (data.success) setMainEquipment(data.data)
+      if (data.success) {
+        setMainEquipment(data.data)
+        hasFetchedMain.current = true
+      }
     } catch (err) {
-      console.error('Failed to fetch equipment:', err)
+      console.error("Failed to fetch equipment:", err)
     } finally {
       setMainLoading(false)
     }
   }, [equipmentId, storedEquipment])
 
-  const fetchRelatedEquipment = useCallback(async () => {
-    try {
-      if (needsTransport) {
-        const response = await fetch("/api/equipment/available-transport")
-        const data = await response.json()
-        if (data.success) {
-          setRelatedEquipment(data.equipment || [])
+  const fetchAllSuggestions = useCallback(
+    async (
+      relatedOff = 0,
+      transportOff = 0,
+      isLoadMore = false
+    ) => {
+      if (!equipmentId) return
+
+      try {
+        if (isLoadMore) {
+          if (relatedOff > 0) setRelatedLoadingMore(true)
+          if (transportOff > 0) setTransportLoadingMore(true)
         }
-      } else if (equipmentId) {
-        const response = await fetch(`/api/equipment/related?id=${equipmentId}&limit=6&type=${type}`)
+
+        const response = await fetch(
+          `/api/equipment/suggestions?` +
+            `equipmentId=${equipmentId}&` +
+            `needsTransport=${needsTransport}&` +
+            `relatedOffset=${relatedOff}&` +
+            `transportOffset=${transportOff}`
+        )
+
         const data = await response.json()
+
         if (data.success) {
-          setRelatedEquipment(data.equipment || [])
+          if (relatedOff === 0 && transportOff === 0) {
+            setRelatedEquipment(data.related.equipment)
+            setTransportEquipment(data.transport.equipment)
+          } else {
+            if (relatedOff > 0) {
+              setRelatedEquipment((prev) => [...prev, ...data.related.equipment])
+            }
+            if (transportOff > 0) {
+              setTransportEquipment((prev) => [...prev, ...data.transport.equipment])
+            }
+          }
+
+          setRelatedHasMore(data.related.hasMore)
+          setTransportHasMore(data.transport.hasMore)
         }
-      } else {
-        const response = await fetch("/api/equipment?limit=6")
-        const data = await response.json()
-        if (data.success) {
-          setRelatedEquipment(data.data || [])
-        }
+      } catch (error) {
+        console.error("Failed to fetch equipment suggestions:", error)
+      } finally {
+        setLoading(false)
+        setRelatedLoadingMore(false)
+        setTransportLoadingMore(false)
       }
-    } catch (error) {
-      console.error("Failed to fetch equipment:", error)
-      setRelatedEquipment([])
-    } finally {
-      setLoading(false)
+    },
+    [equipmentId, needsTransport]
+  )
+
+  const loadMoreRelated = useCallback(() => {
+    if (!relatedLoadingMore && relatedHasMore) {
+      const newOffset = relatedOffset + 12
+      setRelatedOffset(newOffset)
+      fetchAllSuggestions(newOffset, 0, true)
     }
-  }, [equipmentId, needsTransport, type])
+  }, [relatedLoadingMore, relatedHasMore, relatedOffset, fetchAllSuggestions])
+
+  const loadMoreTransport = useCallback(() => {
+    if (!transportLoadingMore && transportHasMore) {
+      const newOffset = transportOffset + 12
+      setTransportOffset(newOffset)
+      fetchAllSuggestions(0, newOffset, true)
+    }
+  }, [transportLoadingMore, transportHasMore, transportOffset, fetchAllSuggestions])
 
   useEffect(() => {
-    fetchRelatedEquipment()
-    fetchMainEquipment()
-  }, [fetchRelatedEquipment, fetchMainEquipment])
+    fetchAllSuggestions(0, 0, false)
+  }, [equipmentId, needsTransport])
 
   useEffect(() => {
-    if (mainEquipment && relatedEquipment.length > 0 && !loading) {
+    if (storedEquipment) {
+      setMainEquipment(storedEquipment)
+      hasFetchedMain.current = true
+    } else if (!hasFetchedMain.current) {
+      fetchMainEquipment()
+    }
+  }, [storedEquipment, fetchMainEquipment])
+
+  useEffect(() => {
+    if (mainEquipment && !loading) {
       const timer = setTimeout(() => {
         clearEquipment()
       }, 500)
       return () => clearTimeout(timer)
     }
-  }, [mainEquipment, relatedEquipment, loading, clearEquipment])
+  }, [mainEquipment, loading, clearEquipment])
 
   return {
     equipmentName,
     equipmentId,
     type,
-    relatedEquipment,
-    loading,
     mainEquipment,
     mainLoading,
-    needsTransport
+    needsTransport,
+    
+    relatedEquipment,
+    relatedHasMore,
+    relatedLoadingMore,
+    loadMoreRelated,
+    
+    transportEquipment,
+    transportHasMore,
+    transportLoadingMore,
+    loadMoreTransport,
   }
 }

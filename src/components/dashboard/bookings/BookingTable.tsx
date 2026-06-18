@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo, useRef } from "react"
 import { useTranslations } from "next-intl"
 import { ArrowLeft } from "lucide-react"
 import { Link } from "@/src/i18n/navigation"
@@ -24,6 +24,8 @@ import {
 import type { BookingWithDetails } from "@/src/stores/bookingsStore"
 import ErrorState from "@/src/components/ui/ErrorState"
 
+const TABLE_COLUMNS_COUNT = 10
+
 export default function BookingTable() {
   const { data: session } = useSession()
   const searchParams = useSearchParams()
@@ -38,28 +40,45 @@ export default function BookingTable() {
   const [showDetailsModal, setShowDetailsModal] = useState(false)
   const [highlightId, setHighlightId] = useState<string | null>(null)
   const [hasProcessedHighlight, setHasProcessedHighlight] = useState(false)
+  const highlightTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  const highlightedBooking = useMemo(() => {
+    if (!highlightRef || !bookings.length) return null
+    return bookings.find(b => b.referenceNumber === highlightRef)
+  }, [highlightRef, bookings])
 
   useEffect(() => {
-    if (highlightRef && bookings.length > 0 && !hasProcessedHighlight) {
-      const index = bookings.findIndex(b => b.referenceNumber === highlightRef)
-      if (index !== -1) {
-        const page = Math.floor(index / itemsPerPage) + 1
-        goToPage(page)
-        const foundBooking = bookings[index]
-        setHighlightId(foundBooking._id)
-        setSelectedBooking(foundBooking)
-        setShowDetailsModal(true)
-        setHasProcessedHighlight(true)
-        setTimeout(() => setHighlightId(null), 3000)
-        const newUrl = window.location.pathname
-        router.replace(newUrl, { scroll: false })
+    if (highlightedBooking && !hasProcessedHighlight) {
+      const index = bookings.indexOf(highlightedBooking)
+      const page = Math.floor(index / itemsPerPage) + 1
+      goToPage(page)
+      setHighlightId(highlightedBooking._id)
+      setSelectedBooking(highlightedBooking)
+      setShowDetailsModal(true)
+      setHasProcessedHighlight(true)
+      
+      highlightTimeoutRef.current = setTimeout(() => setHighlightId(null), 3000)
+      
+      const newUrl = window.location.pathname
+      router.replace(newUrl, { scroll: false })
+    }
+  }, [highlightedBooking, bookings, itemsPerPage, goToPage, hasProcessedHighlight, router])
+
+  useEffect(() => {
+    return () => {
+      if (highlightTimeoutRef.current) {
+        clearTimeout(highlightTimeoutRef.current)
       }
     }
-  }, [highlightRef, bookings, itemsPerPage, goToPage, hasProcessedHighlight, router])
+  }, [])
 
   const handleViewDetails = (booking: BookingWithDetails) => {
     setSelectedBooking(booking)
     setShowDetailsModal(true)
+  }
+
+  const handleStatusUpdate = () => {
+    fetchBookings()
   }
 
   return (
@@ -87,7 +106,6 @@ export default function BookingTable() {
           </div>
         </div>
 
-        {/* Filters */}
         {session?.user?.userType !== "renter" && (
           <TableFilters
             searchValue={searchValue}
@@ -147,7 +165,7 @@ export default function BookingTable() {
                   <TableBody>
                     {loading ? (
                       <tr>
-                        <td colSpan={10} className="p-12 text-center">
+                        <td colSpan={TABLE_COLUMNS_COUNT} className="p-12 text-center">
                           <div className="animate-pulse text-gray-600 font-medium">
                             {tEquipment("loading")}
                           </div>
@@ -155,7 +173,7 @@ export default function BookingTable() {
                       </tr>
                     ) : bookings.length === 0 ? (
                       <tr>
-                        <td colSpan={10} className="p-12 text-center text-gray-500 font-medium">
+                        <td colSpan={TABLE_COLUMNS_COUNT} className="p-12 text-center text-gray-500 font-medium">
                           {t("noBookings")}
                         </td>
                       </tr>
@@ -220,7 +238,7 @@ export default function BookingTable() {
               setShowDetailsModal(false)
               setSelectedBooking(null)
             }}
-            onStatusUpdate={() => {}}
+            onStatusUpdate={handleStatusUpdate}
           />
         )}
       </div>

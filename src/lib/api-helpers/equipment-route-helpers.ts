@@ -1,7 +1,10 @@
 import { ObjectId } from "mongodb"
 import type { Db } from "mongodb"
 import { errorResponse } from "./validation-helpers"
-import { getUsageCategoryFromEquipmentType, getInitialEquipmentStatus } from '@/src/lib/models/equipment'
+import {
+  getUsageCategoryFromEquipmentType,
+  getInitialEquipmentStatus,
+} from "@/src/lib/models/equipment"
 import type {
   Equipment,
   EquipmentQuery,
@@ -10,8 +13,8 @@ import type {
   AuthContext,
   FetchEquipmentOptions,
   PaginationResult,
-  ValidationResult
-} from './types'
+  ValidationResult,
+} from "./types"
 
 const MAX_IMAGES = 10
 const COLLECTION_NAME = "equipment"
@@ -23,7 +26,7 @@ const buildPagination = (page: number, limit: number, totalCount: number) => {
     limit,
     totalCount,
     totalPages,
-    hasMore: page < totalPages
+    hasMore: page < totalPages,
   }
 }
 
@@ -31,7 +34,7 @@ async function fetchWithPagination(
   db: Db,
   query: EquipmentQuery,
   skip: number,
-  limit: number
+  limit: number,
 ) {
   const collection = db.collection<Equipment>(COLLECTION_NAME)
   const [equipment, totalCount] = await Promise.all([
@@ -41,7 +44,7 @@ async function fetchWithPagination(
       .skip(skip)
       .limit(limit)
       .toArray(),
-    collection.countDocuments(query)
+    collection.countDocuments(query),
   ])
   return { equipment, totalCount }
 }
@@ -51,7 +54,7 @@ async function fetchWithSupplierAggregation(
   query: EquipmentQuery,
   skip: number,
   limit: number,
-  searchTerm?: string
+  searchTerm?: string,
 ) {
   const collection = db.collection<Equipment>(COLLECTION_NAME)
   const pipeline: any[] = [
@@ -65,19 +68,67 @@ async function fetchWithSupplierAggregation(
         localField: "supplierId",
         foreignField: "_id",
         as: "supplier",
-        pipeline: [{ $project: { password: 0 } }]
-      }
+        pipeline: [{ $project: { password: 0 } }],
+      },
     },
     {
-      $unwind: { path: "$supplier", preserveNullAndEmptyArrays: true }
+      $unwind: { path: "$supplier", preserveNullAndEmptyArrays: true },
+    },
+    {
+      $lookup: {
+        from: "bookings",
+        let: { equipmentId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $in: ["$$equipmentId", "$bookingItems.equipmentId"] },
+                  { $in: ["$status", ["pending", "paid"]] },
+                ],
+              },
+            },
+          },
+          { $limit: 1 },
+        ],
+        as: "activeBookings",
+      },
+    },
+    {
+      $lookup: {
+        from: "sales",
+        let: { equipmentId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$equipmentId", "$$equipmentId"] },
+                  { $in: ["$status", ["pending", "paid"]] },
+                ],
+              },
+            },
+          },
+          { $limit: 1 },
+        ],
+        as: "pendingSales",
+      },
     },
     {
       $addFields: {
         supplier: {
-          $cond: [{ $eq: ["$createdBy", "supplier"] }, "$supplier", null]
-        }
-      }
-    }
+          $cond: [{ $eq: ["$createdBy", "supplier"] }, "$supplier", null],
+        },
+        hasActiveBookings: { $gt: [{ $size: "$activeBookings" }, 0] },
+        hasPendingSale: { $gt: [{ $size: "$pendingSales" }, 0] },
+      },
+    },
+    {
+      $project: {
+        activeBookings: 0,
+        pendingSales: 0,
+      },
+    },
   ]
 
   if (searchTerm) {
@@ -93,15 +144,15 @@ async function fetchWithSupplierAggregation(
           { "specifications.model": searchRegex },
           { "specifications.condition": searchRegex },
           { "supplier.businessName": searchRegex },
-          { "supplier.fullName": searchRegex }
-        ]
-      }
+          { "supplier.fullName": searchRegex },
+        ],
+      },
     })
   }
 
   const [equipment, totalCount] = await Promise.all([
     collection.aggregate<Equipment>(pipeline).toArray(),
-    collection.countDocuments(query)
+    collection.countDocuments(query),
   ])
 
   return { equipment, totalCount }
@@ -111,43 +162,53 @@ export async function fetchEquipmentWithPagination(
   db: Db,
   query: EquipmentQuery,
   options: FetchEquipmentOptions,
-  searchTerm?: string
+  searchTerm?: string,
 ): Promise<PaginationResult> {
   const { page, limit, includeSupplier, isAdmin } = options
   const skip = (page - 1) * limit
 
-  const { equipment, totalCount } = (isAdmin && includeSupplier)
-    ? await fetchWithSupplierAggregation(db, query, skip, limit, searchTerm)
-    : await fetchWithPagination(db, query, skip, limit)
+  const { equipment, totalCount } =
+    isAdmin && includeSupplier
+      ? await fetchWithSupplierAggregation(db, query, skip, limit, searchTerm)
+      : await fetchWithPagination(db, query, skip, limit)
 
   return {
     equipment,
-    pagination: buildPagination(page, limit, totalCount)
+    pagination: buildPagination(page, limit, totalCount),
   }
 }
 
-
-
-export function validateEquipmentCreation(body: CreateEquipmentBody): ValidationResult {
-  const { categoryId, equipmentTypeId, pricing, location, images, specifications, listingType } = body
+export function validateEquipmentCreation(
+  body: CreateEquipmentBody,
+): ValidationResult {
+  const {
+    categoryId,
+    equipmentTypeId,
+    pricing,
+    location,
+    images,
+    specifications,
+    listingType,
+  } = body
 
   const validations = [
     {
       condition: !categoryId || !equipmentTypeId || !pricing || !location,
-      message: "Missing required fields: categoryId, equipmentTypeId, pricing, location"
+      message:
+        "Missing required fields: categoryId, equipmentTypeId, pricing, location",
     },
     {
       condition: listingType === "forSale" && !specifications?.condition,
-      message: "Condition is required for sale equipment"
+      message: "Condition is required for sale equipment",
     },
     {
       condition: !images || !Array.isArray(images) || images.length === 0,
-      message: "At least one image is required"
+      message: "At least one image is required",
     },
     {
       condition: images?.length > MAX_IMAGES,
-      message: `Maximum ${MAX_IMAGES} images allowed`
-    }
+      message: `Maximum ${MAX_IMAGES} images allowed`,
+    },
   ]
 
   for (const { condition, message } of validations) {
@@ -161,11 +222,12 @@ export function buildEquipmentDocument(
   body: CreateEquipmentBody,
   auth: AuthContext,
   equipmentType: EquipmentType,
-  referenceNumber: string
+  referenceNumber: string,
 ) {
   const usageCategory = getUsageCategoryFromEquipmentType(equipmentType.name)
   const status = getInitialEquipmentStatus(auth.role as "admin" | "user")
-  const createdBy = auth.role === "admin" || auth.userType !== "supplier" ? "admin" : "supplier"
+  const createdBy =
+    auth.role === "admin" || auth.userType !== "supplier" ? "admin" : "supplier"
 
   return {
     referenceNumber,

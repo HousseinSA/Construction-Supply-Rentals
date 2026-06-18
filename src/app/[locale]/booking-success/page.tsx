@@ -9,10 +9,17 @@ export default function BookingSuccessPage() {
   const {
     equipmentName,
     type,
-    relatedEquipment,
     mainEquipment,
     mainLoading,
-    needsTransport
+    needsTransport,
+    relatedEquipment,
+    relatedHasMore,
+    relatedLoadingMore,
+    loadMoreRelated,
+    transportEquipment,
+    transportHasMore,
+    transportLoadingMore,
+    loadMoreTransport,
   } = useBookingSuccess()
 
   return (
@@ -22,8 +29,15 @@ export default function BookingSuccessPage() {
       mainLoading={mainLoading}
       mainEquipment={mainEquipment}
       equipmentName={equipmentName}
-      relatedEquipment={relatedEquipment}
       needsTransport={needsTransport}
+      relatedEquipment={relatedEquipment}
+      relatedHasMore={relatedHasMore}
+      relatedLoadingMore={relatedLoadingMore}
+      onLoadMoreRelated={loadMoreRelated}
+      transportEquipment={transportEquipment}
+      transportHasMore={transportHasMore}
+      transportLoadingMore={transportLoadingMore}
+      onLoadMoreTransport={loadMoreTransport}
     />
   )
 }

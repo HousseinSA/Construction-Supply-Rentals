@@ -16,9 +16,10 @@ import type { Equipment } from "@/src/lib/models/equipment"
 
 interface EquipmentCardProps {
   equipment: Equipment
+  compact?: boolean
 }
 
-export default function EquipmentCard({ equipment }: EquipmentCardProps) {
+export default function EquipmentCard({ equipment, compact = false }: EquipmentCardProps) {
   const t = useTranslations("equipment")
   const tDetails = useTranslations("equipmentDetails")
   const router = useRouter()
@@ -57,10 +58,11 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
         yourEquipmentLabel={tDetails("yourEquipment")}
         forSaleLabel={t("forSale")}
         onClick={handleNavigate}
+        compact={compact}
       />
-      <div className="p-4 flex flex-col flex-1">
+      <div className={`${compact ? 'p-3' : 'p-4'} flex flex-col flex-1`}>
         <div className="flex-1">
-          <h3 className="text-base font-medium text-gray-800 mb-2 leading-tight line-clamp-1">
+          <h3 className={`${compact ? 'text-sm' : 'text-base'} font-medium text-gray-800 mb-2 leading-tight line-clamp-1`}>
             {equipment.name}
           </h3>
           
@@ -75,9 +77,9 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
               </span>
             )}
           </div>
-          <EquipmentSpecs specs={equipment.specifications} />
+          {!compact && <EquipmentSpecs specs={equipment.specifications} />}
         </div>
-        <div className="space-y-2.5 mt-auto border-t border-gray-100 pt-3">
+        <div className={`space-y-2.5 mt-auto border-t border-gray-100 ${compact ? 'pt-2' : 'pt-3'}`}>
           <PricingDisplay 
             pricing={equipment.pricing}
             isForSale={isForSale}

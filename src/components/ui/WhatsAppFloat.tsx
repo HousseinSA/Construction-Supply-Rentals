@@ -30,7 +30,7 @@ export default function WhatsAppFloat() {
   if (shouldHide) return null
 
   const handleClick = () => {
-    const whatsappUrl = `https://wa.me/22233703131`
+    const whatsappUrl = `https://wa.me/30607010`
     window.open(whatsappUrl, "_blank")
   }
 

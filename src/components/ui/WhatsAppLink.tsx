@@ -27,10 +27,10 @@ export default function WhatsAppLink({
 }: WhatsAppLinkProps) {
     const locale = useLocale()
 
-  const phoneNumber = "33 70 31 31"
+  const phoneNumber = "30 60 70 10"
   return (
     <a
-      href={`https://wa.me/22233703131`}
+      href={`https://wa.me/30607010`}
       target="_blank"
       rel="noopener noreferrer"
       className={`hidden  lg:flex text-gray-700 hover:text-green-400 [&>svg]:text-green-400 flex ${className} items-center gap-2 hover:text-green-400 transition-colors ${
